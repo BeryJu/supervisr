@@ -17,12 +17,28 @@ class ServerProduct(Product, models.Model):
     is_virtual = models.BooleanField(default=True)
     is_managed = models.BooleanField(default=True)
 
+    def __unicode__(self):
+        return _("")
+
 class ServerCPU(models.Model):
     cpu_id = models.AutoField(primary_key=True)
-    cores = models.IntegerField()
+    physical_cores = models.IntegerField()
     smt = models.BooleanField()
+    frequency = models.IntegerField(default=0)
     make = models.TextField()
     model = models.TextField()
+
+    @property
+    def cores(self):
+        return self.physical_cores * 2 if self.smt else self.physical_cores
+
+    def __unicode__(self):
+        return _("%(make)s %(model)s @ %(frequency)s (%(cores)s Cores)" % {
+            'make': self.make,
+            'model': self.model,
+            'frequency': self.frequency,
+            'cores': self.cores
+            })
 
 class ServerDrive(models.Model):
     drive_id = models.AutoField(primary_key=True)
@@ -31,10 +47,28 @@ class ServerDrive(models.Model):
     model = models.TextField()
     rpm = models.IntegerField() # 0 indicates SSD
 
+    @property
+    def is_flash(self):
+        return self.rpm == 0
+
+    def __unicode__(self):
+        return _("%(make)s %(model)s %(capacity)sGB (%(rpm)srpm, is_flash: %(is_flash))" % {
+            'make': self.make,
+            'model': self.model,
+            'capacity': self.capacity,
+            'rpm': self.rpm,
+            'is_flash': self.is_flash
+            })
+
 class ServerNIC(models.Model):
     nic_id = models.AutoField(primary_key=True)
     speed = models.IntegerField()
     ips = models.ManyToManyField('IPAddress', blank=True, null=True)
+
+    def __unicode__(self):
+        return _("Generic NIC @ %(speed)s Mbits" % {
+            'speed': self.speed
+            })
 
 class IPAddress(models.Model):
     ipaddress_id = models.AutoField(primary_key=True)
