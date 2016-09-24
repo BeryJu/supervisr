@@ -52,7 +52,7 @@ class ServerDrive(models.Model):
         return self.rpm == 0
 
     def __unicode__(self):
-        return _("%(make)s %(model)s %(capacity)sGB (%(rpm)srpm, is_flash: %(is_flash))" % {
+        return _("%(make)s %(model)s %(capacity)sGB (%(rpm)srpm, is_flash: %(is_flash)s)" % {
             'make': self.make,
             'model': self.model,
             'capacity': self.capacity,
