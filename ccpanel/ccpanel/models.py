@@ -10,6 +10,7 @@ class Product(object):
 
 class ServerProduct(Product, models.Model):
     server_id = models.AutoField(primary_key=True)
+    name = models.TextField()
     cpus = models.ForeignKey('ServerCPU')
     ram = models.IntegerField()
     drives = models.ForeignKey('ServerDrive')
@@ -18,7 +19,7 @@ class ServerProduct(Product, models.Model):
     is_managed = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return _("")
+        return self.name
 
 class ServerCPU(models.Model):
     cpu_id = models.AutoField(primary_key=True)
