@@ -1,9 +1,11 @@
-from django.conf import LDAP as CONF
+from django.conf import settings
 import ldap
-import ldap.modlist as modlist
+import ldap.modlist
 import logging
 import time
 logger = logging.getLogger(__name__)
+
+CONF = settings.LDAP
 
 class LDAP(object):
 
@@ -15,14 +17,14 @@ class LDAP(object):
         ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
         for key, value in CONF['OPTIONS'].iteritems():
             self.con.set_option(key, value)
-        if ldap.OPT_X_TLS in CONF['OPTIONS']
+        if ldap.OPT_X_TLS in CONF['OPTIONS'] \
             and CONF['OPTIONS'][ldap.OPT_X_TLS] is True:
             self.con.start_tls_s()
 
     @staticmethod
     def _encode_pass(password):
         unicode_pass = unicode('\"' + str(password) + '\"', 'iso-8859-1')
-        return = unicode_pass.encode('utf-16-le')
+        return  unicode_pass.encode('utf-16-le')
 
     def _lookup_user(self, mail):
         # Find out dn for user
@@ -65,7 +67,7 @@ class LDAP(object):
         # Sanity check first
         assert user.username == user.email
         # The dn of our new entry/object
-        username = user.id + '_' + user.first_name + '_' user.last_name
+        username = user.id + '_' + user.first_name + '_' + user.last_name
         cn = 'cn='+username
         dn = cn + ','+ CONF['CREATE_BASE']
         logger.debug('New CN: '+cn)
@@ -76,11 +78,11 @@ class LDAP(object):
             'sAMAccountName'   : username,
             'givenName'        : user.first_name,
             'sn'               : user.last_name,
-            'displayName'      : user.id + ' - ' + user.first_name + ' ' + user.last_name
+            'displayName'      : user.id + ' - ' + user.first_name + ' ' + user.last_name,
             'mail'             : user.email,
             'userPrincipalName': username+'@'+CONF['DOMAIN'],
         }
-        ldif = modlist.addModlist(attrs)
+        ldif = ldap.modlist.addModlist(attrs)
         self.con.add_s(dn,ldif)
 
     def change_password(self, mail, old_password, new_password):
