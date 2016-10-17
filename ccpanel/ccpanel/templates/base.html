@@ -7,6 +7,8 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <link rel="stylesheet" href="{ static "css/bootstrap.min.css" %}" integrity="2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj">
     <title>CCPanel</title>
+    {% block header %}
+    {% endblock %}
   </head>
   <body>
     <div class="container">
@@ -25,6 +27,18 @@
       </nav>
     </div>
     <div class="content">
+      <div class="row">
+        {% block messages %}
+        {% for msg in messages %}
+        <div class="alert alert-{{ msg.level }} alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          {{ msg.message }}
+        </div>
+        {% endfor %}
+        {% endblock %}
+        {% block content %}
+        {% endblock %}
+      </div>
       {% block content %}
       {% endblock %}
     </div>
