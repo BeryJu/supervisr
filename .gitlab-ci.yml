@@ -1,6 +1,15 @@
 before_script:
   - sudo apt-get update >/dev/null
-  - sudo apt-get -y install python-pip python-dev libsasl2-dev python-dev libldap2-dev libssl-dev libmysqlclient-dev >/dev/null
+  - sudo apt-get -y install python-pip python-dev libsasl2-dev libldap2-dev libssl-dev libmysqlclient-dev >/dev/null
   - sudo pip install django python-ldap mysqlclient >/dev/null
 stages:
   - test
+test:
+  script:
+    - cd ccpanel/
+    - python manage.py makemigrations
+    - python manage.py migrate
+    - python manage.py test
+  type: test
+  stage: test
+

@@ -90,4 +90,4 @@ ENV/
 .ropeproject
 
 # Development DBs
-.db
+*.db
