@@ -1,13 +1,39 @@
 {% extends "base.html" %}
 
-{% block body %}
-<form method="post" action="">
-  {% for field in form %}
-  <div class="form-group">
-    {{ field.label_tag }}
-    {{ field }}
+{% block content %}
+<div class="col-md-4 col-md-offset-4">
+  <div class="login-panel panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Please Log In</h3>
+    </div>
+    <div class="panel-body">
+      <form role="form" method="POST">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <fieldset>
+          {% for field in form %}
+          <div class="form-group">
+            <div class="col-sm-4">
+              {{ field.label_tag }}
+            </div>
+            <div class="col-sm-8">
+              {{ field }}
+            </div>
+          </div>
+          {% endfor %}
+          <button class="btn btn-lg btn-success btn-block">Login</button>
+        </fieldset>
+      </form>
+    </div>
   </div>
-  {% endfor %}
-  <button type="submit" class="btn btn-default btn-large">Login</button>
-</form>
+  <div class="login-panel panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Don't have an account yet?</h3>
+    </div>
+    <div class="panel-body">
+      <a href="{{ SUB }}/account/new" class="btn btn-lg btn-block btn-primary">Sign up here!</a>
+    </div>
+  </div>
+</div>
 {% endblock %}
+

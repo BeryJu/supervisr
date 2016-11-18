@@ -10,5 +10,5 @@ def login(req):
         if form.is_valid():
             return redirect(reverse(common_index))
     else:
-        form = NameForm()
+        form = AuthenticationForm()
     return render(req, 'account/login.html', { 'form': form })
