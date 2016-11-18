@@ -6,7 +6,7 @@ stages:
   - test
 test:
   script:
-    - cd ccpanel/
+    - cd supervisr/
     - python manage.py makemigrations
     - python manage.py migrate
     - python manage.py test
