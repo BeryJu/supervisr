@@ -1,5 +1,5 @@
 from django.contrib import admin
-from ccpanel.models import *
+from supervisr.models import *
 # Register your models here.
 admin.site.register(ServerProduct)
 admin.site.register(ServerCPU)

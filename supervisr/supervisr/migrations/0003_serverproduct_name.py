@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ccpanel', '0002_auto_20160924_1244'),
+        ('supervisr', '0002_auto_20160924_1244'),
     ]
 
     operations = [

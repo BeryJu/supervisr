@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ccpanel', '0001_initial'),
+        ('supervisr', '0001_initial'),
     ]
 
     operations = [
@@ -25,6 +25,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='servernic',
             name='ips',
-            field=models.ManyToManyField(blank=True, null=True, to='ccpanel.IPAddress'),
+            field=models.ManyToManyField(blank=True, null=True, to='supervisr.IPAddress'),
         ),
     ]

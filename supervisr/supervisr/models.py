@@ -64,7 +64,7 @@ class ServerDrive(models.Model):
 class ServerNIC(models.Model):
     nic_id = models.AutoField(primary_key=True)
     speed = models.IntegerField()
-    ips = models.ManyToManyField('IPAddress', blank=True, null=True)
+    ips = models.ManyToManyField('IPAddress', blank=True)
 
     def __unicode__(self):
         return _("Generic NIC @ %(speed)s Mbits" % {
