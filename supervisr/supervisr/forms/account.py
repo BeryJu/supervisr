@@ -15,4 +15,4 @@ class SignupForm(forms.Form):
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
     captcha = ReCaptchaField()
     tos_accept = forms.BooleanField(required=True, label=_('I accept the Terms of service'))
-    news_accept forms.BooleanField(required=False, label=_('Subscribe to Newsletters'))
+    news_accept = forms.BooleanField(required=False, label=_('Subscribe to Newsletters'))
