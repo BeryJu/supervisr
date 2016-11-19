@@ -1,4 +1,6 @@
 #!/bin/bash -x
+find . | grep .pyc$ | xargs rm
+sudo pip install -U -r ../requirements.txt
 git pull
 python manage.py makemigrations
 python manage.py migrate
