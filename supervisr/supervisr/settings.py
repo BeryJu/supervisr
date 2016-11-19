@@ -1,5 +1,6 @@
 import ldap
 import os
+from django.contrib import messages
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
@@ -58,6 +59,15 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Message Tag fix for bootstrap CSS Classes
+MESSAGE_TAGS = {
+    messages.DEBUG: 'primary',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
+
 ROOT_URLCONF = 'supervisr.urls'
 
 TEMPLATES = [
@@ -85,7 +95,7 @@ WSGI_APPLICATION = 'supervisr.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'supervisr_dev.db',
+        'NAME': '_dev.db',
     }
 }
 

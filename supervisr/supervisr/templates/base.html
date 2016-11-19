@@ -1,4 +1,7 @@
 {% extends "skel.html" %}
+
+{% load crispy_forms_tags %}
+{% load i18n %}
 {% load static %}
 
 {% block body %}
@@ -45,14 +48,18 @@
 </nav>
 <div class="content">
   <div class="row">
+    <div class="container">
     {% block messages %}
-      {% for msg in messages %}
-      <div class="alert alert-{{ msg.level }} alert-dismissible" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        {{ msg.message }}
-      </div>
-      {% endfor %}
+      {% if messages %}
+        {% for msg in messages %}
+        <div class="alert alert-{{ msg.level_tag }} alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <strong>{% trans msg.level_tag|capfirst %}</strong> {{ msg.message }}
+        </div>
+        {% endfor %}
+      {% endif %}
     {% endblock %}
+    </div>
     <div class="container">
       {% block content %}
       {% endblock %}
