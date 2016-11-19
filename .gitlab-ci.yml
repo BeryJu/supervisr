@@ -1,7 +1,7 @@
 before_script:
   - sudo apt-get update >/dev/null
   - sudo apt-get -y install python-pip python-dev libsasl2-dev libldap2-dev libssl-dev libmysqlclient-dev >/dev/null
-  - sudo pip install django python-ldap mysqlclient >/dev/null
+  - sudo pip install -U -r requirements.txt  >/dev/null
 stages:
   - test
 test:
