@@ -7,12 +7,12 @@ logger = logging.getLogger(__name__)
 
 CONF = settings.LDAP
 
-class LDAP(object):
+class LDAPConnector(object):
 
     con = None
 
     def __init__(self):
-        super(LDAP, self).__init__()
+        super(LDAPConnector, self).__init__()
         self.con = ldap.initialize('ldap://'+CONF['server'])
         ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
         for key, value in CONF['OPTIONS'].iteritems():
@@ -21,12 +21,17 @@ class LDAP(object):
             and CONF['OPTIONS'][ldap.OPT_X_TLS] is True:
             self.con.start_tls_s()
 
+    # Switch so we can easily disable LDAP
+    @staticmethod
+    def enabled():
+        return True
+
     @staticmethod
     def _encode_pass(password):
         unicode_pass = unicode('\"' + str(password) + '\"', 'iso-8859-1')
         return  unicode_pass.encode('utf-16-le')
 
-    def _lookup_user(self, mail):
+    def lookup_user(self, mail):
         # Find out dn for user
         filter = "(mail=%s)" % mail
         results = self.con.search_s(CONF['BASE_DN'], ldap.SCOPE_SUBTREE, filter, ['dn'])
@@ -42,7 +47,7 @@ class LDAP(object):
             logger.error(e)
 
     def auth_user(self, mail, password, rebind=False):
-        dn = self._lookup_user(mail)
+        dn = self.lookup_user(mail)
         # Try to bind as new user
         try:
             self.con.bind_s(results[0][0], password, ldap.AUTH_SIMPLE)
@@ -83,10 +88,10 @@ class LDAP(object):
             'userPrincipalName': username+'@'+CONF['DOMAIN'],
         }
         ldif = ldap.modlist.addModlist(attrs)
-        self.con.add_s(dn,ldif)
+        return self.con.add_s(dn,ldif)
 
     def change_password(self, mail, old_password, new_password):
-        dn = self._lookup_user(mail)
+        dn = self.lookup_user(mail)
         # Reset Password
         mod = [
             (ldap.MOD_DELETE, 'unicodePwd', [LDAP._encode_pass(old_password)])
