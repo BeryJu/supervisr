@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.utils.translation import ugettext as _
-from ..ldap_conector import LDAPConnector
+from ..ldap_connector import LDAPConnector
 from ..forms.account import AuthenticationForm, SignupForm
 
 def login(req):
