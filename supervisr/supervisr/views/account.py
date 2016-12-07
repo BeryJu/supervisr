@@ -43,4 +43,4 @@ def signup(req):
             return redirect(reverse('account-login'))
     else:
         form = SignupForm()
-    return render(req, 'account/login.html', { 'form': form })
+    return render(req, 'account/signup.html', { 'form': form })

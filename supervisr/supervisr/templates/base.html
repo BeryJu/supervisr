@@ -1,5 +1,6 @@
 {% extends "skel.html" %}
 
+{% load branding %}
 {% load crispy_forms_tags %}
 {% load i18n %}
 {% load static %}
@@ -15,7 +16,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">supervisr</a>
+      <a class="navbar-brand" href="#">{% branding %}</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->

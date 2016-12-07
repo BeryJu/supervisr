@@ -3,7 +3,10 @@ import os
 import sys
 from django.contrib import messages
 
+BRAND_NAME = 'supervisr'
+
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+NOCAPTCHA = True
 
 RECAPTCHA_PUBLIC_KEY = ''
 RECAPTCHA_PRIVATE_KEY = ''

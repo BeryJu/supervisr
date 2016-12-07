@@ -1,3 +1,4 @@
+{% load branding %}
 {% load crispy_forms_tags %}
 {% load i18n %}
 {% load static %}
@@ -8,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
-    <title>supervisr</title>
+    <title>{% branding %}</title>
     {% block header %}
     {% endblock %}
   </head>
