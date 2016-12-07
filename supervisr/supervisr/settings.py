@@ -1,5 +1,6 @@
 import ldap
 import os
+import sys
 from django.contrib import messages
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
@@ -90,7 +91,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'supervisr.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
@@ -119,38 +119,46 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+sys.path.append('..')
+try:
+  from local_settings import *
+except ImportError, e:
+  pass
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
     'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
+        'default': {
+            'format': '[%(asctime)s] %(levelname)s [%(name)s::%(funcName)s::%(lineno)s] %(message)s',
         },
     },
     'handlers': {
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+            'formatter': 'default',
         },
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
         },
-        'SysLog':{
-            'level':'DEBUG',
-            'class':'logging.handlers.SysLogHandler',
-            'formatter': 'simple',
-            'address':(SYSLOG_HOST, SYSLOG_PORT)
+        'syslog': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.SysLogHandler',
+            'formatter': 'default',
+            'address': (SYSLOG_HOST, SYSLOG_PORT)
         }
     },
     'loggers': {
-        '': {
-            'handlers': ['console', 'mail_admins', 'SysLog'],
+        'django': {
+            'handlers': ['console', 'mail_admins', 'syslog'],
+            'propagate': True,
+        },
+        'supervisr': {
+            'handlers': ['console', 'mail_admins', 'syslog'],
             'propagate': True,
         },
     }
 }
+

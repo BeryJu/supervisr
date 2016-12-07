@@ -91,3 +91,6 @@ ENV/
 
 # Development DBs
 *.db
+
+# Local settings
+local_settings.py
