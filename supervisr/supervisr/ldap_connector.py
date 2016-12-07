@@ -29,7 +29,7 @@ class LDAPConnector(object):
     @staticmethod
     def _encode_pass(password):
         unicode_pass = unicode('\"' + str(password) + '\"', 'iso-8859-1')
-        return  unicode_pass.encode('utf-16-le')
+        return unicode_pass.encode('utf-16-le')
 
     def lookup_user(self, mail):
         # Find out dn for user

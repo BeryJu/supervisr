@@ -6,6 +6,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 RECAPTCHA_PUBLIC_KEY = ''
 RECAPTCHA_PRIVATE_KEY = ''
+SYSLOG_HOST = ''
+SYSLOG_PORT = 514
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -116,3 +118,39 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
+        'SysLog':{
+            'level':'DEBUG',
+            'class':'logging.handlers.SysLogHandler',
+            'formatter': 'simple',
+            'address':(SYSLOG_HOST, SYSLOG_PORT)
+        }
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console', 'mail_admins', 'SysLog'],
+            'propagate': True,
+        },
+    }
+}
