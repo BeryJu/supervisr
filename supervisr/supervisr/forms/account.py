@@ -18,11 +18,8 @@ class AuthenticationForm(forms.Form):
         # Test if user exists in LDAP
         if LDAPConnector.enabled():
             ldap = LDAPConnector()
-            ldap.bind()
-            try:
-                ldap_user = ldap.lookup_user(email)
-            except Exception as e:
-                raise ValidationError(e)
+            if ldap.is_email_used(email):
+                raise ValidationError(_("Email already exists"))
         return mail
 
 class SignupForm(forms.Form):
@@ -42,11 +39,8 @@ class SignupForm(forms.Form):
         # Test if user exists in LDAP
         if LDAPConnector.enabled():
             ldap = LDAPConnector()
-            ldap.bind()
-            try:
-                ldap_user = ldap.lookup_user(email)
-            except Exception as e:
-                raise ValidationError(e)
+            if ldap.is_email_used(email):
+                raise ValidationError(_("Email already exists"))
         return mail
 
     def clean_password_rep(self):

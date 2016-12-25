@@ -1,6 +1,9 @@
 from django.conf import settings
-import ldap
-import ldap.modlist
+from ldap3 import Server, Connection, ALL
+from ldap3 import MODIFY_REPLACE
+from ldap3.core.exceptions import LDAPInvalidCredentialsResult
+from ldap3.extend.microsoft.modifyPassword import modify_ad_password
+from ldap3.extend.microsoft.unlockAccount import unlock_ad_account
 import logging
 import time
 logger = logging.getLogger(__name__)
@@ -11,17 +14,15 @@ ENABLED = settings.LDAP_ENABLED
 class LDAPConnector(object):
 
     con = None
-    is_bound = False
 
     def __init__(self):
         super(LDAPConnector, self).__init__()
-        self.con = ldap.initialize('ldaps://'+CONF['SERVER'])
-        ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
-        for key, value in CONF['OPTIONS'].iteritems():
-            self.con.set_option(key, value)
-#        if ldap.OPT_X_TLS in CONF['OPTIONS'] \
-#            and CONF['OPTIONS'][ldap.OPT_X_TLS] is True:
-#            self.con.start_tls_s()
+        self.server = Server(CONF['SERVER'])
+        full_user = CONF['BIND_USER']+'@'+CONF['DOMAIN']
+        self.con = Connection(self.server, raise_exceptions=True,
+            user=full_user, password=CONF['BIND_PASS'])
+        self.con.bind()
+        self.con.start_tls()
 
     # Switch so we can easily disable LDAP
     @staticmethod
@@ -30,78 +31,60 @@ class LDAPConnector(object):
 
     @staticmethod
     def encode_pass(password):
-        unicode_pass = unicode('\"' + str(password) + '\"')
-        return unicode_pass.encode('utf-16-le')
+        return '"{}"'.format(password).encode('utf-16-le')
 
-    def lookup_user(self, mail):
-        assert self.is_bound == True
+    def lookup_user(self, mail, field='distinguishedName'):
         # Find out dn for user
         filter = "(mail=%s)" % mail
-        results = self.con.search_s(CONF['BASE'], ldap.SCOPE_SUBTREE, filter, ['distinguishedName'])
+        assert self.con.search(CONF['BASE'], filter, attributes=[field]) == True
+        results = self.con.entries
         assert len(results) == 1
-        assert len(results[0]) >= 1
-        return results[0][0]
+        return results[0][field].raw_values[0]
 
-    def bind(self):
-        full_user = CONF['BIND_USER']+'@'+CONF['DOMAIN']
-        try:
-            self.con.bind_s(full_user, CONF['BIND_PASS']) #, ldap.AUTH_SIMPLE)
-            self.is_bound = True
-        except ldap.LDAPError as e:
-            logger.error(e)
-            self.is_bound = False
-
-    def auth_user(self, mail, password, rebind=False):
-        assert self.is_bound == True
-        dn = self.lookup_user(mail)
+    def auth_user(self, mail, password):
+        upn = self.lookup_user(mail, field='userPrincipalName')
         # Try to bind as new user
+        logger.debug("binding as %s" % upn)
         try:
-            self.con.bind_s(results[0][0], password, ldap.AUTH_SIMPLE)
+            t_con = Connection(self.server, user=upn, password=password, raise_exceptions=True)
+            t_con.bind()
             return True
-        except ldap.INVALID_CREDENTIALS as e:
-            logger.debug("User %s failed to login (Wrong credentials)" % mail)
+        except LDAPInvalidCredentialsResult as e:
+            logger.debug("User %s failed to login (Wrong credentials)" % upn)
         except Exception as e:
             logger.error(e)
-        # Optionally rebind
-        # useful is same instance of this clss is used multiple times
-        if rebind is True:
-            self.con.unbind_s()
-            self.bind()
         return False
 
-    def check_email_used(self, mail):
-        assert self.is_bound == True
+    def is_email_used(self, mail):
         filter = "(mail=%s)" % mail
-        results = self.con.search_s(CONF['BASE'], ldap.SCOPE_SUBTREE, filter, ['dn'])
-        return len(results) == 1
+        assert self.con.search(CONF['BASE'], filter, attributes=['mail'])
+        return len(self.con.entries) == 1
 
     def create_user(self, user, raw_password):
-        # Sanity check first
-        assert self.is_bound == True
         # The dn of our new entry/object
         username = 'c_' + str(user.id) + '_' + user.username
         dn = 'cn='+username+','+CONF['CREATE_BASE']
         logger.info('New DN: '+dn)
         attrs = {
-            'cn'               : str(username),
-            'description'      : str('t='+str(time.time())),
-            'sAMAccountName'   : str(username),
-            'givenName'        : str(user.username),
-            'displayName'      : str(username),
-            'mail'             : str(user.email),
-            'userPrincipalName': str(username+'@'+CONF['DOMAIN']),
-            'objectclass'      : ['top','person','organizationalPerson', 'user'],
+            'cn'                : str(username),
+            'description'       : str('t='+str(time.time())),
+            'sAMAccountName'    : str(username),
+            'givenName'         : str(user.username),
+            'displayName'       : str(username),
+            'mail'              : str(user.email),
+            'userPrincipalName' : str(username+'@'+CONF['DOMAIN']),
+            'objectclass'       : ['top','person','organizationalPerson', 'user'],
         }
-        ldif = ldap.modlist.addModlist(attrs)
-        add = self.con.add_s(dn, ldif)
-        return self.change_password(user.email, None, raw_password)
+        self.con.add(dn, 'user', attrs)
+        return self.change_password(user.email, raw_password)
 
-    def change_password(self, mail, old_password, new_password):
-        assert self.is_bound == True
+    def change_password(self, mail, new_password):
         dn = self.lookup_user(mail)
-        # Reset Password
-        mods = []
-        if old_password is not None:
-            mods.append((ldap.MOD_DELETE, 'unicodePwd', [LDAPConnector.encode_pass(old_password)]))
-        mods.append((ldap.MOD_ADD, 'unicodePwd', [LDAPConnector.encode_pass(new_password)]))
-        return self.con.modify_s(dn, mods)
+        self.con.modify(dn, {
+            'unicodePwd': [(MODIFY_REPLACE, [LDAPConnector.encode_pass(new_password)])],
+        })
+        self.con.modify(dn, {
+            'userAccountControl': [(MODIFY_REPLACE, [str(66048)])],
+        })
+        logger.debug("changed password for %s" % mail)
+        return self.con.result

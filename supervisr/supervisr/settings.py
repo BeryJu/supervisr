@@ -131,7 +131,7 @@ except ImportError, e:
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
     'formatters': {
         'default': {
             'format': '[%(asctime)s] %(levelname)s [%(name)s::%(funcName)s::%(lineno)s] %(message)s',
@@ -155,12 +155,13 @@ LOGGING = {
         }
     },
     'loggers': {
-        'django': {
-            'handlers': ['console', 'mail_admins', 'syslog'],
+        'supervisr': {
+            'handlers': ['console', 'syslog'],
+            'level': 'DEBUG',
             'propagate': True,
         },
-        'supervisr': {
-            'handlers': ['console', 'mail_admins', 'syslog'],
+        'django': {
+            'handlers': ['console', 'syslog'],
             'propagate': True,
         },
     }
