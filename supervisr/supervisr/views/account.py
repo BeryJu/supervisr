@@ -2,6 +2,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
+from django.contrib.auth import logout as django_logout
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
@@ -54,3 +55,29 @@ def signup(req):
     else:
         form = SignupForm()
     return render(req, 'account/signup.html', { 'form': form })
+
+@login_required
+def change_password(req):
+    if req.method == 'POST':
+        form = ChangePasswordForm(req.POST)
+        if form.is_valid():
+            # Change Django password
+            req.user.set_password(form.cleaned_data.get('password'))
+            # Update ldap password if LDAP is enabled
+            if LDAPConnector.enabled():
+                ldap = LDAPConnector()
+                ldap.change_password(req.user.email,
+                    form.cleaned_data.get('password'))
+            logger.info("Successfully changed password for %s" \
+                % form.cleaned_data.get('email'))
+            messages.success(req, _("Successfully changed password!"))
+            return redirect(reverse('common-index'))
+    else:
+        form = ChangePasswordForm()
+    return render(req, 'account/change_password.html', { 'form': form })
+
+@login_required
+def logout(req):
+    django_logout(req)
+    messages.success(req, _("Successfully logged out!"))
+    return redirect(reverse('common-index'))

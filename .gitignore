@@ -94,3 +94,6 @@ ENV/
 
 # Local settings
 local_settings.py
+
+# Compiled HTML files
+*.html.py
