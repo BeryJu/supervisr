@@ -1,6 +1,7 @@
 from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.utils.translation import ugettext as _
@@ -12,7 +13,7 @@ def login(req):
         form = AuthenticationForm(req.POST)
         if form.is_valid():
             user = authenticate(
-                username=form.cleaned_data.get('mail'),
+                username=form.cleaned_data.get('email'),
                 password=form.cleaned_data.get('password'))
             if user is not None:
                 login(req, user)
@@ -31,9 +32,11 @@ def signup(req):
         if form.is_valid():
             # Create django user
             new_d_user = User.objects.create_user(
-                username=form.cleaned_data.get('mail'),
-                email=form.cleaned_data.get('mail'),
-                password=form.cleaned_data.get('password'))
+                username=form.cleaned_data.get('name'),
+                email=form.cleaned_data.get('email'))
+            new_d_user.save()
+            new_d_user.is_active = True
+            new_d_user.set_password(form.cleaned_data.get('password'))
             # Create LDAP user if LDAP is active
             if LDAPConnector.enabled():
                 ldap = LDAPConnector()

@@ -25,6 +25,7 @@ SECRET_KEY = '--a*212*x(2z-#muz3(lai@l&f23da6-()m2z4^$up6_y=1%fg'
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 
+LDAP_ENABLED = False
 LDAP = {
     'SERVERS': '',
     'BASE': '',
@@ -130,7 +131,7 @@ except ImportError, e:
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
         'default': {
             'format': '[%(asctime)s] %(levelname)s [%(name)s::%(funcName)s::%(lineno)s] %(message)s',
@@ -138,7 +139,7 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },

@@ -12,6 +12,7 @@
     </div>
     <div class="panel-body">
       <form role="form" method="POST">
+        {% csrf_token %}
         {{ form|crispy }}
         <button type="submit" class="btn btn-lg btn-block btn-primary">{% trans 'Login' %}</button>
       </form>
