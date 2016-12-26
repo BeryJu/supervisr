@@ -9,5 +9,6 @@ urlpatterns = [
     url(r'^accounts/signup/$', account.signup, name='account-signup'),
     url(r'^accounts/logout/$', account.logout, name='account-logout'),
     url(r'^accounts/change_password/$', account.change_password, name='account-change_password'),
+    url(r'^accounts/confirm/(?P<uuid>[a-z0-9\-]{36})/$', account.confirm, name='account-confirm'),
     url(r'^admin/', admin.site.urls),
 ]

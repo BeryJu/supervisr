@@ -20,6 +20,7 @@ USE_L10N = True
 USE_TZ = True
 STATIC_URL = '/static/'
 
+DOMAIN = ''
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/static"
 SECRET_KEY = '--a*212*x(2z-#muz3(lai@l&f23da6-()m2z4^$up6_y=1%fg'
