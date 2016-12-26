@@ -3,6 +3,9 @@ from django.contrib import admin
 from .views import common
 from .views import account
 
+handler404 = 'supervisr.views.common.uncaught_404'
+handler500 = 'supervisr.views.common.uncaught_500'
+
 urlpatterns = [
     url(r'^$', common.index, name='common-index'),
     url(r'^accounts/login/$', account.login, name='account-login'),
