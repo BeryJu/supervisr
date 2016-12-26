@@ -137,6 +137,10 @@ LOGGING = {
         'default': {
             'format': '[%(asctime)s] %(levelname)s [%(name)s::%(funcName)s::%(lineno)s] %(message)s',
         },
+        'syslog': {
+            'format': '%(asctime)s supervisr %(funcName)s: %(message)s',
+            'datefmt': '%Y-%m-%dT%H:%M:%S',
+        },
     },
     'handlers': {
         'console': {
@@ -151,7 +155,7 @@ LOGGING = {
         'syslog': {
             'level': 'DEBUG',
             'class': 'logging.handlers.SysLogHandler',
-            'formatter': 'default',
+            'formatter': 'syslog',
             'address': (SYSLOG_HOST, SYSLOG_PORT)
         }
     },
@@ -163,6 +167,7 @@ LOGGING = {
         },
         'django': {
             'handlers': ['console', 'syslog'],
+            'level': 'INFO',
             'propagate': True,
         },
     }

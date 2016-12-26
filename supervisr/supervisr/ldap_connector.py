@@ -57,7 +57,7 @@ class LDAPConnector(object):
 
     def is_email_used(self, mail):
         filter = "(mail=%s)" % mail
-        assert self.con.search(CONF['BASE'], filter, attributes=['mail'])
+        self.con.search(CONF['BASE'], filter, attributes=['mail'])
         return len(self.con.entries) == 1
 
     def create_user(self, user, raw_password):

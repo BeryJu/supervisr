@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import ValidationError
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 from ..ldap_connector import LDAPConnector
@@ -10,18 +11,6 @@ class AuthenticationForm(forms.Form):
     remember = forms.BooleanField(required=False, label=_('Remember'))
     captcha = ReCaptchaField()
 
-    def clean_mail(self):
-        email = self.cleaned_data.get('email')
-        # Check if user exists already, error early
-        if User.objects.filter(email=email).exists():
-            raise ValidationError(_("Email already exists"))
-        # Test if user exists in LDAP
-        if LDAPConnector.enabled():
-            ldap = LDAPConnector()
-            if ldap.is_email_used(email):
-                raise ValidationError(_("Email already exists"))
-        return mail
-
 class SignupForm(forms.Form):
     email = forms.EmailField(label=_('Mail'))
     name = forms.CharField(label=_('Name'))
@@ -31,7 +20,7 @@ class SignupForm(forms.Form):
     tos_accept = forms.BooleanField(required=True, label=_('I accept the Terms of service'))
     news_accept = forms.BooleanField(required=False, label=_('Subscribe to Newsletters'))
 
-    def clean_mail(self):
+    def clean_email(self):
         email = self.cleaned_data.get('email')
         # Check if user exists already, error early
         if User.objects.filter(email=email).exists():
@@ -41,7 +30,7 @@ class SignupForm(forms.Form):
             ldap = LDAPConnector()
             if ldap.is_email_used(email):
                 raise ValidationError(_("Email already exists"))
-        return mail
+        return email
 
     def clean_password_rep(self):
         password_a = self.cleaned_data.get('password')
