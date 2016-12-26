@@ -63,12 +63,14 @@ class LDAPConnector(object):
     def create_user(self, user, raw_password):
         # The dn of our new entry/object
         username = 'c_' + str(user.id) + '_' + user.username
+        # sAMAccountName is limited to 20 chars (https://msdn.microsoft.com/en-us/library/ms679635.aspx)
+        username_trunk = username[:20] if len(username) > 20 else username
         dn = 'cn='+username+','+CONF['CREATE_BASE']
         logger.info('New DN: '+dn)
         attrs = {
             'cn'                : str(username),
             'description'       : str('t='+str(time.time())),
-            'sAMAccountName'    : str(username),
+            'sAMAccountName'    : str(username_trunk),
             'givenName'         : str(user.username),
             'displayName'       : str(username),
             'mail'              : str(user.email),

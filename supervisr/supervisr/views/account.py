@@ -78,7 +78,7 @@ def signup(req):
             template = loader.get_template('email/acount_confirm.html')
             ctx = Context({ 'url': url })
             send_mail(_("Confirm your account on BeryJu.org"), \
-                '', 'my@beryju.org', [new_d_user.email],
+                '', settings.EMAIL_FROM, [new_d_user.email],
                 fail_silently=False,
                 html_message=template.render(ctx))
             logger.info("Successfully signed up %s" % \

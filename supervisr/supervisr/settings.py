@@ -13,6 +13,8 @@ RECAPTCHA_PRIVATE_KEY = ''
 SYSLOG_HOST = ''
 SYSLOG_PORT = 514
 
+EMAIL_FROM = 'BeryJu.org Beta <my@beryju.org>'
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
