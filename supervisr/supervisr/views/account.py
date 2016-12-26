@@ -54,20 +54,28 @@ def signup(req):
             # Create LDAP user if LDAP is active
             if LDAPConnector.enabled():
                 ldap = LDAPConnector()
-                ldap.create_user(new_d_user,
-                    form.cleaned_data.get('password'))
+                # Returns false if user could not be created
+                if not ldap.create_user(new_d_user, \
+                    form.cleaned_data.get('password')):
+                    # Add message what happend and return
+                    messages.error(req, _("Failed to create user"))
+                    new_d_user.delete()
+                    return redirect(reverse('account-login'))
                 ldap.disable_user(new_d_user.email)
             # Send confirmation email
             ac = AccountConfirmation(user=new_d_user)
             ac.save()
-            url = settings.DOMAIN + reverse('account-confirm', kwargs={'uuid': ac.pk})
+            url = settings.DOMAIN + reverse('account-confirm',
+                kwargs={'uuid': ac.pk})
             # get template and context
             template = loader.get_template('email/acount_confirm.html')
             ctx = Context({ 'url': url })
-            send_mail(_("Confirm your account on BeryJu.org"), '', 'my@beryju.org', [new_d_user.email],
+            send_mail(_("Confirm your account on BeryJu.org"), \
+                '', 'my@beryju.org', [new_d_user.email],
                 fail_silently=False,
                 html_message=template.render(ctx))
-            logger.info("Successfully signed up %s" % form.cleaned_data.get('email'))
+            logger.info("Successfully signed up %s" % \
+                form.cleaned_data.get('email'))
             return redirect(reverse('account-login'))
     else:
         form = SignupForm()
@@ -93,6 +101,32 @@ def change_password(req):
         form = ChangePasswordForm()
     return render(req, 'account/change_password.html', { 'form': form })
 
+# TODO: finish implementing account.reset_password
+def reset_password(req, uuid):
+    current_time = time.time()
+    if AccountConfirmation.objects.filter(pk=uuid).exists():
+        ac = AccountConfirmation.objects.get(pk=uuid)
+        if ac.confirmed:
+            messages.error(req, _("Link already used!"))
+            return redirect(reverse('account-login'))
+        if ac.expires < current_time:
+            messages.error(req, _("Confirmation expired"))
+            return redirect(reverse('account-login'))
+        # activate django user
+        ac.user.is_active = True
+        ac.user.save()
+        # activate LDAP user
+        if LDAPConnector.enabled():
+            ldap = LDAPConnector()
+            ldap.enable_user(ac.user.email)
+        # invalidate confirmation
+        ac.confirmed = True
+        ac.save()
+        messages.success(req, _("Account successfully activated!"))
+    else:
+        messages.error(req, _("Confirmation not found"))
+    return redirect(reverse('account-login'))
+
 @login_required
 def logout(req):
     django_logout(req)
@@ -106,7 +140,6 @@ def confirm(req, uuid):
         if ac.confirmed:
             messages.error(req, _("Account already confirmed!"))
             return redirect(reverse('account-login'))
-            return render(req, 'account/confirmation.html', {})
         if ac.expires < current_time:
             messages.error(req, _("Confirmation expired"))
             return redirect(reverse('account-login'))

@@ -78,6 +78,8 @@ MESSAGE_TAGS = {
 }
 
 ROOT_URLCONF = 'supervisr.urls'
+handler404 = 'supervisr.views.common.uncaught_404'
+handler500 = 'supervisr.views.common.uncaught_500'
 
 TEMPLATES = [
     {

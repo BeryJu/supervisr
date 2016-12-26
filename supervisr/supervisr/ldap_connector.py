@@ -1,7 +1,7 @@
 from django.conf import settings
 from ldap3 import Server, Connection, ALL
 from ldap3 import MODIFY_REPLACE
-from ldap3.core.exceptions import LDAPInvalidCredentialsResult
+from ldap3.core.exceptions import LDAPInvalidCredentialsResult, LDAPOperationResult
 from ldap3.extend.microsoft.modifyPassword import modify_ad_password
 from ldap3.extend.microsoft.unlockAccount import unlock_ad_account
 import logging
@@ -75,7 +75,11 @@ class LDAPConnector(object):
             'userPrincipalName' : str(username+'@'+CONF['DOMAIN']),
             'objectclass'       : ['top','person','organizationalPerson', 'user'],
         }
-        self.con.add(dn, 'user', attrs)
+        try:
+            self.con.add(dn, 'user', attrs)
+        except LDAPOperationResult as e:
+            logger.error("Failed to create user")
+            return False
         return self.change_password(user.email, raw_password)
 
     def disable_user(self, mail):
