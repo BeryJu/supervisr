@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 from ..ldap_connector import LDAPConnector
 from captcha.fields import ReCaptchaField
+import logging
+logger = logging.getLogger(__name__)
 
 class AuthenticationForm(forms.Form):
     email = forms.EmailField(label=_('Mail'))
@@ -23,12 +25,14 @@ class SignupForm(forms.Form):
     def clean_email(self):
         email = self.cleaned_data.get('email')
         # Check if user exists already, error early
-        if User.objects.filter(email=email).exists():
+        if len(User.objects.filter(email=email)) > 0:
+            logger.debug("email %s exists in django" % email)
             raise ValidationError(_("Email already exists"))
         # Test if user exists in LDAP
         if LDAPConnector.enabled():
             ldap = LDAPConnector()
             if ldap.is_email_used(email):
+                logger.debug("email %s exists in ldap" % email)
                 raise ValidationError(_("Email already exists"))
         return email
 

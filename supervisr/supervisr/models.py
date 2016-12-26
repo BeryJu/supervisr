@@ -1,7 +1,24 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.utils.translation import ugettext as _
-from .common import Product
+from django.contrib.auth.models import User
+import uuid
+import time
+
+def expiry_date():
+    return time.time() + 172800 # 2 days
+
+class AccountConfirmation(models.Model):
+    account_confirmation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User)
+    expires = models.BigIntegerField(default=expiry_date, editable=False)
+    confirmed = models.BooleanField(default=False)
+
+class Product(object):
+    product_id = models.AutoField(primary_key=True)
+    name = models.TextField()
+    slug = models.TextField()
+    price = models.DecimalField()
 
 class ServerProduct(Product, models.Model):
     server_id = models.AutoField(primary_key=True)

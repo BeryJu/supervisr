@@ -78,7 +78,7 @@ class LDAPConnector(object):
         self.con.add(dn, 'user', attrs)
         return self.change_password(user.email, raw_password)
 
-    def disable_account(self, mail):
+    def disable_user(self, mail):
         dn = self.lookup_user(mail)
         self.con.modify(dn, {
             'userAccountControl': [(MODIFY_REPLACE, [str(66050)])],
@@ -86,7 +86,7 @@ class LDAPConnector(object):
         logger.debug("disabled account %s" % mail)
         return self.con.result
 
-    def enable_account(self, mail):
+    def enable_user(self, mail):
         dn = self.lookup_user(mail)
         self.con.modify(dn, {
             'userAccountControl': [(MODIFY_REPLACE, [str(66048)])],

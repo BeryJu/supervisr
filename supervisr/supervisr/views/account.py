@@ -8,10 +8,12 @@ from django.contrib.auth import logout as django_logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
+from django.template import loader, Context
 from django.shortcuts import render, redirect
 from django.utils.translation import ugettext as _
 from ..ldap_connector import LDAPConnector
 from ..forms.account import AuthenticationForm, SignupForm, ChangePasswordForm
+from ..models import AccountConfirmation
 import logging
 import time
 logger = logging.getLogger(__name__)
@@ -59,9 +61,12 @@ def signup(req):
             ac = AccountConfirmation(user=new_d_user)
             ac.save()
             url = settings.DOMAIN + reverse('account-confirm', kwargs={'uuid': ac.pk})
+            # get template and context
+            template = loader.get_template('email/acount_confirm.html')
+            ctx = Context({ 'url': url })
             send_mail(_("Confirm your account on BeryJu.org"), '', 'my@beryju.org', [new_d_user.email],
                 fail_silently=False,
-                html_message=render(req, 'email/account_confirmation.html', {'url': url}))
+                html_message=template.render(ctx))
             logger.info("Successfully signed up %s" % form.cleaned_data.get('email'))
             return redirect(reverse('account-login'))
     else:
@@ -100,21 +105,22 @@ def confirm(req, uuid):
         ac = AccountConfirmation.objects.get(pk=uuid)
         if ac.confirmed:
             messages.error(req, _("Account already confirmed!"))
+            return redirect(reverse('account-login'))
             return render(req, 'account/confirmation.html', {})
-        if ac.expires > current_time:
+        if ac.expires < current_time:
             messages.error(req, _("Confirmation expired"))
-            return render(req, 'account/confirmation.html', {})
+            return redirect(reverse('account-login'))
         # activate django user
         ac.user.is_active = True
         ac.user.save()
         # activate LDAP user
         if LDAPConnector.enabled():
             ldap = LDAPConnector()
-            ldap.enable_account(ac.user.email)
+            ldap.enable_user(ac.user.email)
         # invalidate confirmation
         ac.confirmed = True
         ac.save()
         messages.success(req, _("Account successfully activated!"))
     else:
         messages.error(req, _("Confirmation not found"))
-    return render(req, 'account/confirmation.html', {})
+    return redirect(reverse('account-login'))

@@ -61,6 +61,6 @@ class Migration(migrations.Migration):
                 ('drives', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr.ServerDrive')),
                 ('nics', models.ManyToManyField(to='supervisr.ServerNIC')),
             ],
-            bases=(supervisr.models.server.Product, models.Model),
+            bases=(supervisr.models.Product, models.Model),
         ),
     ]
