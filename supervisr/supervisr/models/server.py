@@ -1,12 +1,7 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.utils.translation import ugettext as _
-
-class Product(object):
-    product_id = models.AutoField(primary_key=True)
-    name = models.TextField()
-    slug = models.TextField()
-    price = models.DecimalField()
+from .common import Product
 
 class ServerProduct(Product, models.Model):
     server_id = models.AutoField(primary_key=True)
