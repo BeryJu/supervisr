@@ -31,8 +31,15 @@ def login(req):
                 logger.info("Successfully logged in %s" % form.cleaned_data.get('email'))
                 return redirect(reverse('common-index'))
             else:
-                messages.error(req, _("Invalid Login"))
-                logger.info("Failed to log in %s" % form.cleaned_data.get('email'))
+                # Check if the user's account is pending
+                # and inform that, they need to check their emails
+                user = User.objects.get(username=form.cleaned_data.get('email'))
+                ac = AccountConfirmation.objects.get(user=user)
+                if not ac.confirmed:
+                    messages.error(req, _('Account not confirmed yet. Check your emails.'))
+                else:
+                    messages.error(req, _("Invalid Login"))
+                    logger.info("Failed to log in %s" % form.cleaned_data.get('email'))
                 return redirect(reverse('account-login'))
     else:
         form = AuthenticationForm()
