@@ -100,10 +100,10 @@ def confirm(req, uuid):
         ac = AccountConfirmation.objects.get(pk=uuid)
         if ac.confirmed:
             messages.error(req, _("Account already confirmed!"))
-            break
+            return render(req, 'account/confirmation.html', {})
         if ac.expires > current_time:
             messages.error(req, _("Confirmation expired"))
-            break
+            return render(req, 'account/confirmation.html', {})
         # activate django user
         ac.user.is_active = True
         ac.user.save()
