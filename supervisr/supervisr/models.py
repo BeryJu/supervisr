@@ -39,6 +39,11 @@ class Product(models.Model):
     invite_only = models.BooleanField(default=False)
     users = models.ManyToManyField(User)
 
+    @classmethod
+    def related_set(cls, wip):
+        classes = cls.__subclasses__()
+        return sum([c.objects.all() for c in classes], [])
+
 class ExternalProduct(Product):
     external_product_id = models.AutoField(primary_key=True)
     url = models.TextField()
