@@ -18,14 +18,14 @@ def expiry_date():
 
 class AccountConfirmation(models.Model):
     account_confirmation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey('User')
+    user = models.ForeignKey(User)
     expires = models.BigIntegerField(default=expiry_date, editable=False)
     confirmed = models.BooleanField(default=False)
 
 class Notification(models.Model):
     notification_id = models.AutoField(primary_key=True)
-    source_user = models.ForeignKey('User')
-    destination_user = models.ForeignKey('User')
+    source_user = models.ForeignKey(User, related_name='outgoing_notifications')
+    destination_user = models.ForeignKey(User, related_name='incoming_notifications')
     destination_link = models.TextField()
     importance = models.IntegerField(choices=NOTIFICATION_IMPORTANCE, default=0)
     read = models.BooleanField(default=False)
@@ -35,18 +35,16 @@ class Product(models.Model):
     name = models.TextField()
     slug = models.TextField()
     description = models.TextField()
-    price = models.DecimalField()
+    price = models.DecimalField(decimal_places=3, max_digits=99999)
     invite_only = models.BooleanField(default=False)
-    users = models.ManyToManyField('User')
+    users = models.ManyToManyField(User)
 
 class ExternalProduct(Product):
     external_product_id = models.AutoField(primary_key=True)
-    name = models.TextField()
     url = models.TextField()
 
 class ServerProduct(Product):
     server_id = models.AutoField(primary_key=True)
-    name = models.TextField()
     cpus = models.ForeignKey('ServerCPU')
     ram = models.IntegerField()
     drives = models.ForeignKey('ServerDrive')
