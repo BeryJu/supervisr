@@ -1,5 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-Hello world, {{ user.name }}
+<div class="row">
+    <div class="container">
+        {% for product in user.products %}
+            <div class="col-3">
+                <h1>{{ product.name }}</h1>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

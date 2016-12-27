@@ -5,22 +5,46 @@ from django.contrib.auth.models import User
 import uuid
 import time
 
+NOTIFICATION_IMPORTANCE = (
+    (40, _('Urgent')),
+    (30, _('Important')),
+    (20, _('Medium')),
+    (10, _('Information (Semi-medium)')),
+    (0, _('Information'))
+)
+
 def expiry_date():
     return time.time() + 172800 # 2 days
 
 class AccountConfirmation(models.Model):
     account_confirmation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey('User')
     expires = models.BigIntegerField(default=expiry_date, editable=False)
     confirmed = models.BooleanField(default=False)
 
-class Product(object):
+class Notification(models.Model):
+    notification_id = models.AutoField(primary_key=True)
+    source_user = models.ForeignKey('User')
+    destination_user = models.ForeignKey('User')
+    destination_link = models.TextField()
+    importance = models.IntegerField(choices=NOTIFICATION_IMPORTANCE, default=0)
+    read = models.BooleanField(default=False)
+
+class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
     name = models.TextField()
     slug = models.TextField()
+    description = models.TextField()
     price = models.DecimalField()
+    invite_only = models.BooleanField(default=False)
+    users = models.ManyToManyField('User')
 
-class ServerProduct(Product, models.Model):
+class ExternalProduct(Product):
+    external_product_id = models.AutoField(primary_key=True)
+    name = models.TextField()
+    url = models.TextField()
+
+class ServerProduct(Product):
     server_id = models.AutoField(primary_key=True)
     name = models.TextField()
     cpus = models.ForeignKey('ServerCPU')
