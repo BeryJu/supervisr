@@ -33,7 +33,7 @@ class Notification(models.Model):
 class UserProductRelationship(models.Model):
     user_product_relationship_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User)
-    product = models.ForeignKey(Product)
+    product = models.ForeignKey('Product')
     expiry_delta = models.BigIntegerField(default=0)
     discount_percent = models.IntegerField(default=0)
 
@@ -46,7 +46,7 @@ class Product(models.Model):
     invite_only = models.BooleanField(default=False)
     users = models.ManyToManyField(User, through='UserProductRelationship')
     managed = models.BooleanField(default=True)
-    management_url = models.URLField(max_length=1000)
+    management_url = models.URLField(max_length=1000, default='')
 
     @classmethod
     def related_set(cls, wip):
