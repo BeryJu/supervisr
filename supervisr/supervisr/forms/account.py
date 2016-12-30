@@ -14,8 +14,8 @@ class AuthenticationForm(forms.Form):
     captcha = ReCaptchaField()
 
 class SignupForm(forms.Form):
-    email = forms.EmailField(label=_('Mail'))
     name = forms.CharField(label=_('Name'))
+    email = forms.EmailField(label=_('Mail'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
     captcha = ReCaptchaField()
