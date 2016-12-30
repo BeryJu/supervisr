@@ -5,9 +5,9 @@ from ..models import *
 
 @login_required
 def index(req):
-    user_products = Product.objects.select_related().all()
+    user_products = UserProductRelationship.objects.filter(user=req.user)
     return render(req, 'common/index.html', {
-        'products': user_products
+        'uprs': user_products
     })
 
 def uncaught_404(req):

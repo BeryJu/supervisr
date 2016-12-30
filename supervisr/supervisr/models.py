@@ -30,6 +30,13 @@ class Notification(models.Model):
     importance = models.IntegerField(choices=NOTIFICATION_IMPORTANCE, default=0)
     read = models.BooleanField(default=False)
 
+class UserProductRelationship(models.Model):
+    user_product_relationship_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User)
+    product = models.ForeignKey(Product)
+    expiry_delta = models.BigIntegerField(default=0)
+    discount_percent = models.IntegerField(default=0)
+
 class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
     name = models.TextField()
@@ -37,7 +44,7 @@ class Product(models.Model):
     description = models.TextField()
     price = models.DecimalField(decimal_places=3, max_digits=99999)
     invite_only = models.BooleanField(default=False)
-    users = models.ManyToManyField(User)
+    users = models.ManyToManyField(User, through='UserProductRelationship')
     managed = models.BooleanField(default=True)
     management_url = models.URLField(max_length=1000)
 

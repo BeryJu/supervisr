@@ -5,16 +5,16 @@
 {% block content %}
 <div class="row">
   <div class="container">
-    {% for product in products %}
+    {% for upr in uprs %}
     <div class="col-3">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h3 class="panel-title">{{ product.name }}</h3>
+          <h3 class="panel-title">{{ upr.product.name }}</h3>
         </div>
         <div class="panel-body">
-          {{ product.description }}
-          {% if product.__name__ == 'ExternalProduct' %}
-            <a target="_blank" href="{{ product.url }}" class="btn btn-lg btn-main">{% trans 'Open' %}</a>
+          {{ upr.product.description }}
+          {% if upr.product.management_url %}
+            <a target="_blank" href="{{ upr.product.management_url }}" class="btn btn-lg btn-main">{% trans 'Open' %}</a>
           {% else %}
             <a target="_blank" href="" class="btn btn-lg btn-main">{% trans 'Open' %}</a>
           {% endif %}
