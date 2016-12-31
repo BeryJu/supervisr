@@ -42,7 +42,7 @@ class Product(models.Model):
     name = models.TextField()
     slug = models.TextField()
     description = models.TextField()
-    price = models.DecimalField(decimal_places=3, max_digits=99999)
+    price = models.DecimalField(decimal_places=3, max_digits=65)
     invite_only = models.BooleanField(default=False)
     users = models.ManyToManyField(User, through='UserProductRelationship')
     managed = models.BooleanField(default=True)

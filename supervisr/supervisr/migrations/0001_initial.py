@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
                 ('name', models.TextField()),
                 ('slug', models.TextField()),
                 ('description', models.TextField()),
-                ('price', models.DecimalField(decimal_places=3, max_digits=99999)),
+                ('price', models.DecimalField(decimal_places=3, max_digits=65)),
                 ('invite_only', models.BooleanField(default=False)),
                 ('managed', models.BooleanField(default=True)),
                 ('management_url', models.URLField(default='', max_length=1000)),
