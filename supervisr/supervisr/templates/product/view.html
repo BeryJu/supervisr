@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="container">
+    <h1>{{ product.name }}</h1>
+    <p>{% trans product.description %}</p>
+    {% if product.price > 0 %}
+      <p>{{ product.price }}</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

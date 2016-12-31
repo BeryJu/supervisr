@@ -30,12 +30,24 @@ class Notification(models.Model):
     importance = models.IntegerField(choices=NOTIFICATION_IMPORTANCE, default=0)
     read = models.BooleanField(default=False)
 
+    def __unicode__(self):
+        return _("Notification %(source_user)s %(destination_user)s" % {
+            'user': self.user,
+            'product': self.product,
+            })
+
 class UserProductRelationship(models.Model):
     user_product_relationship_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User)
     product = models.ForeignKey('Product')
     expiry_delta = models.BigIntegerField(default=0)
     discount_percent = models.IntegerField(default=0)
+
+    def __unicode__(self):
+        return _("UserProductRelationship %(product)s %(user)s" % {
+            'user': self.user,
+            'product': self.product,
+            })
 
 class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
@@ -48,13 +60,18 @@ class Product(models.Model):
     managed = models.BooleanField(default=True)
     management_url = models.URLField(max_length=1000, default='')
 
+    def __unicode__(self):
+        return self.name
+
     @classmethod
     def related_set(cls, wip):
         classes = cls.__subclasses__()
         return sum([c.objects.all() for c in classes], [])
 
-class ServerProduct(Product):
+class ServerProduct(models.Model):
     server_id = models.AutoField(primary_key=True)
+    product = models.ForeignKey(Product)
+    name = models.TextField()
     cpus = models.ForeignKey('ServerCPU')
     ram = models.IntegerField()
     drives = models.ForeignKey('ServerDrive')
@@ -127,3 +144,6 @@ class HostedApplicationProduct(models.Model):
     version = models.TextField()
     developer = models.TextField()
     developer_site = models.URLField(max_length=1000)
+
+    def __unicode__(self):
+        return self.name
