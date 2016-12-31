@@ -2,6 +2,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from .views import common
 from .views import account
+from .views import product
 
 handler404 = 'supervisr.views.common.uncaught_404'
 handler500 = 'supervisr.views.common.uncaught_500'
@@ -14,8 +15,8 @@ urlpatterns = [
     url(r'^accounts/change_password/$', account.change_password, name='account-change_password'),
     url(r'^accounts/confirm/(?P<uuid>[a-z0-9\-]{36})/$', account.confirm, name='account-confirm'),
     url(r'^product(s?)/$', product.index, name='product-index'),
-    url(r'^product/(?P<slug>[a-zA-Z0-9])/$', product.view, name='product-view'),
-    url(r'^product/(?P<slug>[a-zA-Z0-9])/new/$', product.new, name='product-new'),
-    url(r'^product/(?P<slug>[a-zA-Z0-9])/edit/$', product.edit, name='product-edit'),
+    url(r'^product/(?P<slug>[a-zA-Z0-9]+)/$', product.view, name='product-view'),
+    url(r'^product/(?P<slug>[a-zA-Z0-9]+)/new/$', product.new, name='product-new'),
+    url(r'^product/(?P<slug>[a-zA-Z0-9]+)/edit/$', product.edit, name='product-edit'),
     url(r'^admin_django/', admin.site.urls),
 ]

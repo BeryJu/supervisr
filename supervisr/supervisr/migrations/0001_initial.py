@@ -117,7 +117,6 @@ class Migration(migrations.Migration):
                 ('drives', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr.ServerDrive')),
                 ('nics', models.ManyToManyField(to='supervisr.ServerNIC')),
             ],
-            bases=('supervisr.product',),
         ),
         migrations.AddField(
             model_name='userproductrelationship',

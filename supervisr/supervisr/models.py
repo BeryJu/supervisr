@@ -63,11 +63,6 @@ class Product(models.Model):
     def __unicode__(self):
         return self.name
 
-    @classmethod
-    def related_set(cls, wip):
-        classes = cls.__subclasses__()
-        return sum([c.objects.all() for c in classes], [])
-
 class ServerProduct(models.Model):
     server_id = models.AutoField(primary_key=True)
     product = models.ForeignKey(Product)
