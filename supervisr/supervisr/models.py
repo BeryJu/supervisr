@@ -40,8 +40,15 @@ class UserProductRelationship(models.Model):
     user_product_relationship_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User)
     product = models.ForeignKey('Product')
+    instance_name = models.TextField(blank=True, null=True)
     expiry_delta = models.BigIntegerField(default=0)
     discount_percent = models.IntegerField(default=0)
+
+    @property
+    def name(self):
+        if self.instance_name:
+            return self.instance_name
+        return self.product.name
 
     def __unicode__(self):
         return _("UserProductRelationship %(product)s %(user)s" % {
@@ -58,7 +65,7 @@ class Product(models.Model):
     invite_only = models.BooleanField(default=False)
     users = models.ManyToManyField(User, through='UserProductRelationship')
     managed = models.BooleanField(default=True)
-    management_url = models.URLField(max_length=1000, default='')
+    management_url = models.URLField(max_length=1000, blank=True, null=True)
 
     def __unicode__(self):
         return self.name

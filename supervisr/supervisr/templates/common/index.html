@@ -6,10 +6,10 @@
 <div class="row">
   <div class="container">
     {% for upr in uprs %}
-    <div class="col-3">
+    <div class="col-md-3">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h3 class="panel-title">{{ upr.product.name }}</h3>
+          <h3 class="panel-title">{{ upr.name }}</h3>
         </div>
         <div class="panel-body">
           {{ upr.product.description }}
