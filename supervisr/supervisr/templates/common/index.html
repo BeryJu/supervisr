@@ -16,7 +16,7 @@
           {% if upr.product.management_url %}
             <a target="_blank" href="{{ upr.product.management_url }}" class="btn btn-lg btn-main">{% trans 'Open' %}</a>
           {% else %}
-            <a target="_blank" href="" class="btn btn-lg btn-main">{% trans 'Open' %}</a>
+            <a href="{% url 'product-view' slug=upr.product.slug %}" class="btn btn-lg btn-main">{% trans 'Open' %}</a>
           {% endif %}
         </div>
       </div>
