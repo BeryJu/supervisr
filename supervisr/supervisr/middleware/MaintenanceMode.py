@@ -3,11 +3,13 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from ..models import *
 
-class MaintenanceMode(object):
+def maintenance_mode(get_response):
+    mm_setting = Setting.objects.filter(pk='supervisr:MaintenanceMode')
 
-    def process_request(self, req):
-        mm_setting = Setting.objects.get('supervisr:MaintenanceMode')
-        if mm_setting.value['enabled'] is True:
+    def middleware(req):
+        if mm_setting.exists() is True and \
+            mm_setting[0].value['enabled'] is True:
             return render(req, 'common/maintenance.html')
-        else:
-            return None
+        response = get_response(req)
+        return response
+    return middleware

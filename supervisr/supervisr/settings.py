@@ -9,9 +9,10 @@ NOCAPTCHA = True
 
 RECAPTCHA_PUBLIC_KEY = ''
 RECAPTCHA_PRIVATE_KEY = ''
-SYSLOG_HOST = ''
+SYSLOG_HOST = '127.0.0.1'
 SYSLOG_PORT = 514
 
+EMAIL_HOST = 'prd-mail01.prs.fr.beryju.org'
 EMAIL_FROM = 'BeryJu.org Beta <my@beryju.org>'
 
 LANGUAGE_CODE = 'en-us'
@@ -59,7 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'supervisr.middleware.MaintenanceMode.MaintenanceMode'
+    'supervisr.middleware.MaintenanceMode.maintenance_mode'
 ]
 
 # Message Tag fix for bootstrap CSS Classes
@@ -122,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 sys.path.append('..')
 try:
   from local_settings import *
-except ImportError, e:
+except ImportError as e:
   pass
 
 LOGGING = {

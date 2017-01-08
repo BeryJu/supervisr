@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.forms import ValidationError
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
@@ -11,14 +12,14 @@ class AuthenticationForm(forms.Form):
     email = forms.EmailField(label=_('Mail'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     remember = forms.BooleanField(required=False, label=_('Remember'))
-    captcha = ReCaptchaField()
+    captcha = ReCaptchaField(required=(not settings.DEBUG))
 
 class SignupForm(forms.Form):
     name = forms.CharField(label=_('Name'))
     email = forms.EmailField(label=_('Mail'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
-    captcha = ReCaptchaField()
+    captcha = ReCaptchaField(required=(not settings.DEBUG))
     tos_accept = forms.BooleanField(required=True, label=_('I accept the Terms of service'))
     news_accept = forms.BooleanField(required=False, label=_('Subscribe to Newsletters'))
 
