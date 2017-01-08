@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 import uuid
+import json
 import time
 
 NOTIFICATION_IMPORTANCE = (
@@ -18,7 +19,26 @@ def expiry_date():
 
 class Setting(models.Model):
     key = models.TextField(primary_key=True)
-    value = models.JSONField()
+    value_json = models.TextField()
+
+    # Cache the json from above in a dict
+    value_json_cached = None
+
+    @property
+    def value(self):
+        # Only serialize the json text when we have to
+        if self.value_json_cached is None:
+            self.value_json_cached = json.loads(self.value_json)
+        return self.value_json_cached
+
+    @value.setter
+    def value(self, value):
+        self.value_json_cached = value
+
+    def save(self, *args, **kwargs):
+        # Only convert back to JSON when saving
+        self.value_json = json.dumps(self.value_json_cached)
+        super(Model, self).save(*args, **kwargs)
 
 class AccountConfirmation(models.Model):
     account_confirmation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

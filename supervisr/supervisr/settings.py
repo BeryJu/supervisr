@@ -1,4 +1,3 @@
-import ldap
 import os
 import sys
 from django.contrib import messages
@@ -38,12 +37,6 @@ LDAP = {
     'BIND_PASS': '',
     'DOMAIN': '',
     'PORT': 389,
-    'OPTIONS': {
-        ldap.OPT_PROTOCOL_VERSION: 3,
-        ldap.OPT_REFERRALS: False,
-        ldap.OPT_X_TLS: ldap.OPT_X_TLS_DEMAND,
-        ldap.OPT_X_TLS_DEMAND: True,
-    }
 }
 
 INSTALLED_APPS = [
