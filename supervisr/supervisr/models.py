@@ -16,6 +16,10 @@ NOTIFICATION_IMPORTANCE = (
 def expiry_date():
     return time.time() + 172800 # 2 days
 
+class Setting(models.Model):
+    key = models.TextField(primary_key=True)
+    value = models.JSONField()
+
 class AccountConfirmation(models.Model):
     account_confirmation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User)

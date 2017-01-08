@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{% trans "Maintenance Mode" %}</h1>
+<p>{% blocktrans %}We're currently upgrading supervisr. Try again in a few minutes or shoot us an email at <a href="mailto:support@beryju.org">support@beryju.org</a>.{% endblocktrans %}</p>
+<small>Error Code: 503</small>
+{% endblock %}
