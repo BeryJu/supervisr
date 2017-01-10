@@ -1,5 +1,6 @@
 from django.conf.urls import url, include
 from django.contrib import admin
+from .views import about
 from .views import common
 from .views import account
 from .views import product
@@ -18,5 +19,6 @@ urlpatterns = [
     url(r'^product/(?P<slug>[a-zA-Z0-9\-]+)/$', product.view, name='product-view'),
     url(r'^product/(?P<slug>[a-zA-Z0-9\-]+)/new/$', product.new, name='product-new'),
     url(r'^product/(?P<slug>[a-zA-Z0-9\-]+)/edit/$', product.edit, name='product-edit'),
+    url(r'^about/changelog/$', about.changelog, name='about-changelog'),
     url(r'^admin_django/', admin.site.urls),
 ]

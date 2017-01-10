@@ -1,6 +1,6 @@
 {% extends "skel.html" %}
 
-{% load branding %}
+{% load supervisr_setting %}
 {% load crispy_forms_tags %}
 {% load i18n %}
 {% load static %}
@@ -16,7 +16,7 @@
         <span class="icon-bar"></span>
       </button>
       <a class="navbar-brand" href="/">
-        {% branding %}
+        {% supervisr_setting 'branding'  %}
       </a>
     </div>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -46,7 +46,7 @@
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
-<div class="content">
+<div class="container">
   <div class="row">
     <div class="container">
     {% block messages %}
@@ -66,4 +66,9 @@
     </div>
   </div>
 </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-muted">{% supervisr_setting 'branding' %} | {% supervisr_setting 'version' %}</p>
+  </div>
+</footer>
 {% endblock %}

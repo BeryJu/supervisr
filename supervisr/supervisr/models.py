@@ -10,41 +10,57 @@ NOTIFICATION_IMPORTANCE = (
     (40, _('Urgent')),
     (30, _('Important')),
     (20, _('Medium')),
-    (10, _('Information (Semi-medium)')),
+    (10, _('Notice')),
     (0, _('Information'))
 )
+NOTIFICATION_IMPORTANCE_URGENT = 40
+NOTIFICATION_IMPORTANCE_IMPORTANT = 30
+NOTIFICATION_IMPORTANCE_MEDIUM = 20
+NOTIFICATION_IMPORTANCE_NOTICE = 10
+NOTIFICATION_IMPORTANCE_INFORMATION = 0
+
+ACCOUNT_CONFIRMATION_KIND = (
+    (0, _('Sign up')),
+    (1, _('Password Reset')),
+)
+ACCOUNT_CONFIRMATION_KIND_SIGN_UP = 0
+ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET = 1
 
 def expiry_date():
     return time.time() + 172800 # 2 days
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, primary_key=True)
+    locale = models.CharField(max_length=5, default='en-US')
+
 class Setting(models.Model):
     key = models.TextField(primary_key=True)
-    value_json = models.TextField()
-
-    # Cache the json from above in a dict
+    value = models.TextField()
     value_json_cached = None
 
     @property
-    def value(self):
-        # Only serialize the json text when we have to
-        if self.value_json_cached is None:
-            self.value_json_cached = json.loads(self.value_json)
-        return self.value_json_cached
+    def value_bool(self):
+        return self.value.lower() == 'true'
 
-    @value.setter
-    def value(self, value):
-        self.value_json_cached = value
+    def set_bool(self, value):
+        self.value = str(value)
 
-    def save(self, *args, **kwargs):
-        # Only convert back to JSON when saving
-        self.value_json = json.dumps(self.value_json_cached)
-        super(Model, self).save(*args, **kwargs)
+    def __str__(self):
+        return "Setting %s" % self.key
+
+    @staticmethod
+    def get(key, default=''):
+        setting, created = Setting.objects.get_or_create(
+            key=key,
+            defaults={'value': default})
+        return setting
 
 class AccountConfirmation(models.Model):
     account_confirmation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User)
     expires = models.BigIntegerField(default=expiry_date, editable=False)
     confirmed = models.BooleanField(default=False)
+    kind = models.IntegerField(choices=ACCOUNT_CONFIRMATION_KIND, default=0)
 
 class Notification(models.Model):
     notification_id = models.AutoField(primary_key=True)
@@ -54,7 +70,7 @@ class Notification(models.Model):
     importance = models.IntegerField(choices=NOTIFICATION_IMPORTANCE, default=0)
     read = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return _("Notification %(source_user)s %(destination_user)s" % {
             'user': self.user,
             'product': self.product,
@@ -74,7 +90,7 @@ class UserProductRelationship(models.Model):
             return self.instance_name
         return self.product.name
 
-    def __unicode__(self):
+    def __str__(self):
         return _("UserProductRelationship %(product)s %(user)s" % {
             'user': self.user,
             'product': self.product,
@@ -91,7 +107,7 @@ class Product(models.Model):
     managed = models.BooleanField(default=True)
     management_url = models.URLField(max_length=1000, blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 class ServerProduct(models.Model):
@@ -105,7 +121,7 @@ class ServerProduct(models.Model):
     is_virtual = models.BooleanField(default=True)
     is_managed = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 class ServerCPU(models.Model):
@@ -120,7 +136,7 @@ class ServerCPU(models.Model):
     def cores(self):
         return self.physical_cores * 2 if self.smt else self.physical_cores
 
-    def __unicode__(self):
+    def __str__(self):
         return _("%(make)s %(model)s @ %(frequency)s (%(cores)s Cores)" % {
             'make': self.make,
             'model': self.model,
@@ -139,7 +155,7 @@ class ServerDrive(models.Model):
     def is_flash(self):
         return self.rpm == 0
 
-    def __unicode__(self):
+    def __str__(self):
         return _("%(make)s %(model)s %(capacity)sGB (%(rpm)srpm, is_flash: %(is_flash)s)" % {
             'make': self.make,
             'model': self.model,
@@ -153,7 +169,7 @@ class ServerNIC(models.Model):
     speed = models.IntegerField()
     ips = models.ManyToManyField('IPAddress', blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return _("Generic NIC @ %(speed)s Mbits" % {
             'speed': self.speed
             })
@@ -171,5 +187,5 @@ class HostedApplicationProduct(models.Model):
     developer = models.TextField()
     developer_site = models.URLField(max_length=1000)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

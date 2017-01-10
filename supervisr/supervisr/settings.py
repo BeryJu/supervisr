@@ -2,16 +2,11 @@ import os
 import sys
 from django.contrib import messages
 
-BRAND_NAME = 'supervisr'
-
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 NOCAPTCHA = True
 
-RECAPTCHA_PUBLIC_KEY = ''
-RECAPTCHA_PRIVATE_KEY = ''
 SYSLOG_HOST = '127.0.0.1'
 SYSLOG_PORT = 514
-
 EMAIL_HOST = 'prd-mail01.prs.fr.beryju.org'
 EMAIL_FROM = 'BeryJu.org Beta <my@beryju.org>'
 
@@ -22,12 +17,16 @@ USE_L10N = True
 USE_TZ = True
 STATIC_URL = '/static/'
 
-DOMAIN = ''
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/static"
 SECRET_KEY = '--a*212*x(2z-#muz3(lai@l&f23da6-()m2z4^$up6_y=1%fg'
 DEBUG = True
 ALLOWED_HOSTS = ['*']
+REMEMBER_SESSION_AGE = 60 * 60 * 24 * 30 # One Month
+
+# Settings are taken from DB, these are needed for django-recaptcha to work
+RECAPTCHA_PUBLIC_KEY = ''
+RECAPTCHA_PRIVATE_KEY = ''
 
 LDAP_ENABLED = False
 LDAP = {

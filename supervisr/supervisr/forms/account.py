@@ -4,6 +4,7 @@ from django.forms import ValidationError
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 from ..ldap_connector import LDAPConnector
+from ..models import *
 from captcha.fields import ReCaptchaField
 import logging
 logger = logging.getLogger(__name__)
@@ -12,14 +13,20 @@ class AuthenticationForm(forms.Form):
     email = forms.EmailField(label=_('Mail'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     remember = forms.BooleanField(required=False, label=_('Remember'))
-    captcha = ReCaptchaField(required=(not settings.DEBUG))
+    captcha = ReCaptchaField(
+        required=(not settings.DEBUG),
+        private_key=Setting.get('supervisr:recaptcha:private').value,
+        public_key=Setting.get('supervisr:recaptcha:public').value)
 
 class SignupForm(forms.Form):
     name = forms.CharField(label=_('Name'))
     email = forms.EmailField(label=_('Mail'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
-    captcha = ReCaptchaField(required=(not settings.DEBUG))
+    captcha = ReCaptchaField(
+        required=(not settings.DEBUG),
+        private_key=Setting.get('supervisr:recaptcha:private').value,
+        public_key=Setting.get('supervisr:recaptcha:public').value)
     tos_accept = forms.BooleanField(required=True, label=_('I accept the Terms of service'))
     news_accept = forms.BooleanField(required=False, label=_('Subscribe to Newsletters'))
 
@@ -60,3 +67,7 @@ class ChangePasswordForm(forms.Form):
         if password_a != password_b:
             raise forms.ValidationError(_("Your passwords do not match"))
         return password_b
+
+class PasswordResetForm(forms.Form):
+    email = forms.EmailField(label=_('Mail'))
+    captcha = ReCaptchaField(required=(not settings.DEBUG))

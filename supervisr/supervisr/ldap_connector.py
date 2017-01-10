@@ -1,6 +1,6 @@
 from django.conf import settings
 from ldap3 import Server, Connection, ALL
-from ldap3 import MODIFY_REPLACE
+from ldap3 import MODIFY_REPLACE, MOCK_SYNC
 from ldap3.core.exceptions import LDAPInvalidCredentialsResult, LDAPOperationResult
 from ldap3.extend.microsoft.modifyPassword import modify_ad_password
 from ldap3.extend.microsoft.unlockAccount import unlock_ad_account
@@ -15,14 +15,19 @@ class LDAPConnector(object):
 
     con = None
 
-    def __init__(self):
+    def __init__(self, mock=False):
         super(LDAPConnector, self).__init__()
-        self.server = Server(CONF['SERVER'])
         full_user = CONF['BIND_USER']+'@'+CONF['DOMAIN']
-        self.con = Connection(self.server, raise_exceptions=True,
-            user=full_user, password=CONF['BIND_PASS'])
-        self.con.bind()
-        self.con.start_tls()
+        if mock is False:
+            self.server = Server(CONF['SERVER'])
+            self.con = Connection(self.server, raise_exceptions=True,
+                user=full_user, password=CONF['BIND_PASS'])
+            self.con.bind()
+            self.con.start_tls()
+        else:
+            self.server = Server('fake_server')
+            self.con = Connection(self.server, raise_exceptions=True,
+                user=full_user, password=CONF['BIND_PASS'], client_strategy=MOCK_SYNC)
 
     # Switch so we can easily disable LDAP
     @staticmethod

@@ -1,14 +1,11 @@
 from django.contrib import admin
+from django.apps import apps
+from django.contrib.admin.sites import AlreadyRegistered
 from supervisr.models import *
-# Register your models here.
-admin.site.register(AccountConfirmation)
-admin.site.register(Notification)
-admin.site.register(UserProductRelationship)
-admin.site.register(Product)
-admin.site.register(ServerProduct)
-admin.site.register(ServerCPU)
-admin.site.register(ServerDrive)
-admin.site.register(ServerNIC)
-admin.site.register(IPAddress)
-admin.site.register(HostedApplicationProduct)
 
+app_models = apps.get_app_config('supervisr').get_models()
+for model in app_models:
+    try:
+        admin.site.register(model)
+    except AlreadyRegistered:
+        pass

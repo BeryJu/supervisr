@@ -1,7 +1,7 @@
 #!/bin/bash -x
 find . | grep .pyc$ | xargs rm
-sudo pip install -U -r ../requirements.txt
+sudo python3 -m pip install -U -r ../requirements.txt
 git pull
-python manage.py makemigrations supervisr
-python manage.py migrate
-python manage.py runserver 0.0.0.0:8080
+python3 manage.py makemigrations supervisr
+python3 manage.py migrate
+python3 manage.py runserver 0.0.0.0:8080
