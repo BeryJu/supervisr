@@ -3,3 +3,4 @@ django-crispy-forms>=1.6.1
 ldap3
 #mysqlclient
 django-recaptcha
+markdown
