@@ -1,5 +1,5 @@
 Django>=1.10.0
 django-crispy-forms>=1.6.1
 ldap3
-mysqlclient
+#mysqlclient
 django-recaptcha

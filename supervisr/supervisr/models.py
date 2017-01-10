@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
+from django.db.utils import OperationalError
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 import uuid
@@ -50,10 +51,14 @@ class Setting(models.Model):
 
     @staticmethod
     def get(key, default=''):
-        setting, created = Setting.objects.get_or_create(
-            key=key,
-            defaults={'value': default})
-        return setting
+        try:
+            setting, created = Setting.objects.get_or_create(
+                key=key,
+                defaults={'value': default})
+            return setting
+        except OperationalError as e:
+            # Migrations have not been applied yet, just ignore it
+            return Setting(key='temp', value=default)
 
 class AccountConfirmation(models.Model):
     account_confirmation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
