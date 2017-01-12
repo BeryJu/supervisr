@@ -1,9 +1,9 @@
 from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import User
 from ..models import *
-from ..forms import *
-from ..views.account import *
+from ..forms.account import *
 from ..ldap_connector import LDAPConnector
+from ..controllers import AccountController
 import os
 
 class AccountSignupTestCase(TestCase):
@@ -13,9 +13,7 @@ class AccountSignupTestCase(TestCase):
         self.factory = RequestFactory()
         self.ldap = LDAPConnector(mock=True)
         self.form = SignupForm()
-
-    def test_signup_form(self):
-        data = {
+        self.data = {
             'email': 'test@test.test',
             'name': 'Test user',
             'password': 'b3ryju0rg!',
@@ -24,9 +22,13 @@ class AccountSignupTestCase(TestCase):
             'news_accept': False,
             'g-recaptcha-response': "PASSED"
         }
-        self.form = SignupForm(data=data)
+
+    def test_signup_form(self):
+        self.form = SignupForm(data=self.data)
         self.assertTrue(self.form.is_valid())
 
     def test_signup(self):
-        # data =
-        req = self.factory.post('/accounts/signup/')
+        self.assertTrue(AccountController.signup(
+            name=self.data['name'],
+            email=self.data['email'],
+            password=self.data['password']))

@@ -8,12 +8,12 @@ from django.contrib.auth import logout as django_logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from django.template import loader, Context
 from django.shortcuts import render, redirect
 from django.utils.translation import ugettext as _
 from ..ldap_connector import LDAPConnector
 from ..forms.account import AuthenticationForm, SignupForm, ChangePasswordForm
 from ..models import AccountConfirmation
+from ..controllers import *
 import logging
 import time
 logger = logging.getLogger(__name__)
@@ -53,42 +53,12 @@ def signup(req):
     if req.method == 'POST':
         form = SignupForm(req.POST)
         if form.is_valid():
-            # Create django user
-            new_d_user = User.objects.create_user(
-                username=form.cleaned_data.get('email'),
+            # Create user
+            if not AccountController.signup(
                 email=form.cleaned_data.get('email'),
-                first_name=form.cleaned_data.get('name'))
-            new_d_user.save()
-            new_d_user.is_active = False
-            new_d_user.set_password(form.cleaned_data.get('password'))
-            new_d_user.save()
-            # Create user profile
-            new_up = UserProfile(user=new_d_user)
-            new_up.save()
-            # Create LDAP user if LDAP is active
-            if LDAPConnector.enabled():
-                ldap = LDAPConnector()
-                # Returns false if user could not be created
-                if not ldap.create_user(new_d_user, \
-                    form.cleaned_data.get('password')):
-                    # Add message what happend and return
-                    messages.error(req, _("Failed to create user"))
-                    new_d_user.delete()
-                    return redirect(reverse('account-login'))
-                ldap.disable_user(new_d_user.email)
-            # Send confirmation email
-            ac = AccountConfirmation(user=new_d_user)
-            ac.save()
-            domain = Setting.objects.get('supervisr:domain').value
-            url = domain + reverse('account-confirm',
-                kwargs={'uuid': ac.pk})
-            # get template and context
-            template = loader.get_template('email/acount_confirm.html')
-            ctx = Context({ 'url': url })
-            send_mail(_("Confirm your account on BeryJu.org"), \
-                '', settings.EMAIL_FROM, [new_d_user.email],
-                fail_silently=False,
-                html_message=template.render(ctx))
+                name=form.cleaned_data.get('name'),
+                password=form.cleaned_data.get('password')):
+                return redirect(reverse('account-login'))
             logger.info("Successfully signed up %s" % \
                 form.cleaned_data.get('email'))
             return redirect(reverse('account-login'))
@@ -101,16 +71,12 @@ def change_password(req):
     if req.method == 'POST':
         form = ChangePasswordForm(req.POST)
         if form.is_valid():
-            # Change Django password
-            req.user.set_password(form.cleaned_data.get('password'))
-            # Update ldap password if LDAP is enabled
-            if LDAPConnector.enabled():
-                ldap = LDAPConnector()
-                ldap.change_password(req.user.email,
-                    form.cleaned_data.get('password'))
-            logger.info("Successfully changed password for %s" \
-                % form.cleaned_data.get('email'))
-            messages.success(req, _("Successfully changed password!"))
+            if not AccountController.change_password(
+                email=req.user.email,
+                password=form.cleaned_data.get('password')):
+                messages.error(req, _("Failed to change password"))
+            else:
+                messages.success(req, _("Successfully changed password!"))
             return redirect(reverse('common-index'))
     else:
         form = ChangePasswordForm()

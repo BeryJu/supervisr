@@ -6,6 +6,7 @@ from ldap3.extend.microsoft.modifyPassword import modify_ad_password
 from ldap3.extend.microsoft.unlockAccount import unlock_ad_account
 import logging
 import time
+import sys
 logger = logging.getLogger(__name__)
 
 CONF = settings.LDAP
@@ -18,7 +19,8 @@ class LDAPConnector(object):
     def __init__(self, mock=False):
         super(LDAPConnector, self).__init__()
         full_user = CONF['BIND_USER']+'@'+CONF['DOMAIN']
-        if mock is False:
+        # Either use mock argument or test is in argv
+        if mock is False and 'test' not in sys.argv:
             self.server = Server(CONF['SERVER'])
             self.con = Connection(self.server, raise_exceptions=True,
                 user=full_user, password=CONF['BIND_PASS'])
