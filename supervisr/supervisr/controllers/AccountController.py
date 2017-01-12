@@ -32,6 +32,8 @@ def signup(email, name, password):
     # Send confirmation email
     ac = AccountConfirmation(user=new_d_user)
     ac.save()
+    # Run Product auto_add
+    Product.do_auto_add(new_d_user)
     # Send confirmation mail
     Mailer.send_account_confirmation(new_d_user.email, ac)
     # Add event for user
