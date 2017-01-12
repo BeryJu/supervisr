@@ -44,7 +44,6 @@ def get_username():
     res = base64.b64encode(u.bytes, altchars=b'_-')
     return res[offset:offset+10]
 
-
 def get_userid():
     # Custom default to set the unix_userid since we can't have an
     # AutoField as non-primary-key. Also so we can set a custom start,
@@ -60,6 +59,9 @@ class UserProfile(models.Model):
     unix_username = models.CharField(max_length=10, default=get_username, editable=False)
     unix_userid = models.IntegerField(default=get_userid)
     locale = models.CharField(max_length=5, default='en-US')
+
+    def __str__(self):
+        return "UserProfile %s" % self.user.email
 
 class Setting(models.Model):
     key = models.CharField(max_length=255, primary_key=True)
@@ -88,11 +90,20 @@ class Setting(models.Model):
             return Setting(key='temp', value=default)
 
 class AccountConfirmation(models.Model):
-    account_confirmation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    account_confirmation_id = models.UUIDField(primary_key=True, \
+        default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User)
     expires = models.BigIntegerField(default=expiry_date, editable=False)
     confirmed = models.BooleanField(default=False)
     kind = models.IntegerField(choices=ACCOUNT_CONFIRMATION_KIND, default=0)
+
+    @property
+    def is_expired(self):
+        return self.expires < time.time()
+
+    def __str__(self):
+        return "AccountConfirmation %s, expired: %r" % \
+            (self.user.email, self.is_expired())
 
 class Notification(models.Model):
     notification_id = models.AutoField(primary_key=True)
@@ -136,22 +147,12 @@ class Product(models.Model):
     price = models.DecimalField(decimal_places=3, max_digits=65)
     invite_only = models.BooleanField(default=False)
     users = models.ManyToManyField(User, through='UserProductRelationship')
+    revision = models.IntegerField(default=1)
     managed = models.BooleanField(default=True)
     management_url = models.URLField(max_length=1000, blank=True, null=True)
 
     def __str__(self):
-        return self.name
-
-class HostedApplicationProduct(models.Model):
-    hosted_application_id = models.AutoField(primary_key=True)
-    product = models.ForeignKey(Product)
-    name = models.TextField()
-    version = models.TextField()
-    developer = models.TextField()
-    developer_site = models.URLField(max_length=1000)
-
-    def __str__(self):
-        return self.name
+        return "Product %s" % self.name
 
 class Domain(Product):
     domain_name = models.CharField(max_length=255)

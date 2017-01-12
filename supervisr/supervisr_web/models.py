@@ -17,3 +17,6 @@ class WebDomain(Product):
     @domain.setter
     def domain(self, value):
         self.domain_web = value
+
+    def __str__(self):
+        return "WebDomain %s" % self.domain
