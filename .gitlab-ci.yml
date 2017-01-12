@@ -9,7 +9,8 @@ test:
     - cd supervisr/
     - python3 manage.py makemigrations
     - python3 manage.py migrate
-    - python3 manage.py test --pattern="*.py"
+    - coverage run --source='.' manage.py test --pattern=*.py
+    - coverage report
   type: test
   stage: test
 
