@@ -96,6 +96,18 @@ class Setting(models.Model):
             # Migrations have not been applied yet, just ignore it
             return Setting(key='temp', value=default)
 
+    @staticmethod
+    def set(key, value):
+        try:
+            setting, created = Setting.objects.get_or_create(
+                key=key,
+                defaults={'value': value })
+            if created is False:
+                setting.value = value
+                setting.save
+        except Exception as e:
+            raise e
+
 class AccountConfirmation(models.Model):
     account_confirmation_id = models.UUIDField(primary_key=True, \
         default=uuid.uuid4, editable=False)

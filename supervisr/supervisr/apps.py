@@ -17,6 +17,3 @@ class SupervisrCoreConfig(AppConfig):
             f.close()
         except Exception as e:
             settings.CHANGELOG = 'Failed to load Changelog.md'
-
-        # Split the 3rd line into 3 parts to get the latest version from the changelog
-        line = settings.CHANGELOG.split('\n')[2]
