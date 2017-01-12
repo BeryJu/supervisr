@@ -5,7 +5,7 @@ from django.db.models import Max
 from django.db.utils import OperationalError
 from django.utils.translation import ugettext as _
 from django.urls import reverse
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import User
 import uuid
 import json
 import time
