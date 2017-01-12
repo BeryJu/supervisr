@@ -6,7 +6,7 @@ from django.conf import settings
 import django.contrib.auth.models
 from django.db import migrations, models
 import django.db.models.deletion
-
+import supervisr.models
 
 class Migration(migrations.Migration):
 
@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 ('action_parmas_json', models.TextField()),
                 ('create_date', models.DateTimeField(auto_now_add=True)),
                 ('closed_date', models.DateTimeField(auto_now=True)),
-                ('invoker', models.ForeignKey(default=default=supervisr.models.get_system_user, on_delete=django.db.models.deletion.CASCADE, related_name='events_invoked', to=settings.AUTH_USER_MODEL)),
+                ('invoker', models.ForeignKey(default=supervisr.models.get_system_user, on_delete=django.db.models.deletion.CASCADE, related_name='events_invoked', to=settings.AUTH_USER_MODEL)),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
