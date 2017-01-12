@@ -1,8 +1,9 @@
-from django.contrib.auth.models import User
 from ..ldap_connector import LDAPConnector
 from ..forms.account import AuthenticationForm, SignupForm, ChangePasswordForm
-from ..models import AccountConfirmation, UserProfile
+from ..models import *
 from ..mailer import Mailer
+from django.contrib.auth.models import User
+from django.utils.translation import ugettext as _
 import logging
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,6 @@ def signup(email, name, password):
         # Returns false if user could not be created
         if not ldap.create_user(new_d_user, password):
             # Add message what happend and return
-            messages.error(req, _("Failed to create user"))
             new_d_user.delete()
             return False
         ldap.disable_user(new_d_user.email)
