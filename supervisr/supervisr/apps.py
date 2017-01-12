@@ -4,4 +4,4 @@ from django.apps import AppConfig
 
 
 class SupervisrCoreConfig(AppConfig):
-    name = 'supervisr_core'
+    name = 'supervisr'

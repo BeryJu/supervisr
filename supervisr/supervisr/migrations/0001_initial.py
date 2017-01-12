@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import supervisr_core.models
+import supervisr.models
 import uuid
 
 
@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
             name='AccountConfirmation',
             fields=[
                 ('account_confirmation_id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('expires', models.BigIntegerField(default=supervisr_core.models.expiry_date, editable=False)),
+                ('expires', models.BigIntegerField(default=supervisr.models.expiry_date, editable=False)),
                 ('confirmed', models.BooleanField(default=False)),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
@@ -94,7 +94,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('nic_id', models.AutoField(primary_key=True, serialize=False)),
                 ('speed', models.IntegerField()),
-                ('ips', models.ManyToManyField(blank=True, to='supervisr_core.IPAddress')),
+                ('ips', models.ManyToManyField(blank=True, to='supervisr.IPAddress')),
             ],
         ),
         migrations.CreateModel(
@@ -108,20 +108,20 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ServerProduct',
             fields=[
-                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, to='supervisr_core.Product')),
+                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, to='supervisr.Product')),
                 ('server_id', models.AutoField(primary_key=True, serialize=False)),
                 ('ram', models.IntegerField()),
                 ('is_virtual', models.BooleanField(default=True)),
                 ('is_managed', models.BooleanField(default=True)),
-                ('cpus', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_core.ServerCPU')),
-                ('drives', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_core.ServerDrive')),
-                ('nics', models.ManyToManyField(to='supervisr_core.ServerNIC')),
+                ('cpus', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr.ServerCPU')),
+                ('drives', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr.ServerDrive')),
+                ('nics', models.ManyToManyField(to='supervisr.ServerNIC')),
             ],
         ),
         migrations.AddField(
             model_name='userproductrelationship',
             name='product',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_core.Product'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr.Product'),
         ),
         migrations.AddField(
             model_name='userproductrelationship',
@@ -131,11 +131,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='product',
             name='users',
-            field=models.ManyToManyField(through='supervisr_core.UserProductRelationship', to=settings.AUTH_USER_MODEL),
+            field=models.ManyToManyField(through='supervisr.UserProductRelationship', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='hostedapplicationproduct',
             name='product',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_core.Product'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr.Product'),
         ),
     ]
