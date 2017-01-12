@@ -4,3 +4,4 @@ ldap3
 #mysqlclient
 django-recaptcha
 markdown
+docutils
