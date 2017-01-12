@@ -6,12 +6,12 @@ from django.db.utils import OperationalError
 from django.utils.translation import ugettext as _
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.utils import timezone
 import uuid
 import json
 import time
 import random
 import base64
-import datetime
 
 NOTIFICATION_IMPORTANCE = (
     (40, _('Urgent')),
@@ -204,7 +204,7 @@ class Event(models.Model):
 
     @property
     def get_localized_age(self):
-        now = datetime.datetime.now()
+        now = timezone.now()
         diff = now - self.create_date
         hours = int(diff.seconds / 3600)
         minutes = int(diff.seconds / 60)
@@ -214,3 +214,6 @@ class Event(models.Model):
             return _("%(hours)d hours ago" % { 'hours': hours })
         else:
             return _("%(minutes)d minutes ago" % { 'minutes': minutes })
+
+    def __str__(self):
+        return "Event '%s' '%s'" % (self.user.username, self.message)

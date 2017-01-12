@@ -80,7 +80,7 @@
           <tbody>
             {% for event in events %}
             <tr>
-              <td><span class="glyphicon {{ event.glyph }}" aria-hidden="true"></span></td>
+              <td><span class="glyphicon glyphicon-{{ event.glyph }}" aria-hidden="true"></span></td>
               <td>{% trans event.message %}</td>
               <td>{{ event.get_localized_age }}</td>
               {% if event.action_required %}
