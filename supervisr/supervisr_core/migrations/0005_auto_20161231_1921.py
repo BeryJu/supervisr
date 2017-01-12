@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr', '0004_userproductrelationship_instance_name'),
+        ('supervisr_core', '0004_userproductrelationship_instance_name'),
     ]
 
     operations = [

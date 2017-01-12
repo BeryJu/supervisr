@@ -3,5 +3,5 @@ from __future__ import unicode_literals
 from django.apps import AppConfig
 
 
-class SupervisrConfig(AppConfig):
-    name = 'supervisr'
+class SupervisrCoreConfig(AppConfig):
+    name = 'supervisr_core'

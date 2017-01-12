@@ -48,7 +48,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'captcha',
-    'supervisr',
+    'supervisr_core',
+    'supervisr_dns',
+    'supervisr_server',
+    'supervisr_web',
+    'supervisr_mail',
 ]
 
 MIDDLEWARE = [
@@ -59,7 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'supervisr.middleware.MaintenanceMode.maintenance_mode'
+    'supervisr_core.middleware.MaintenanceMode.maintenance_mode'
 ]
 
 # Message Tag fix for bootstrap CSS Classes
@@ -71,7 +75,7 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
 
-ROOT_URLCONF = 'supervisr.urls'
+ROOT_URLCONF = 'supervisr_core.urls'
 
 TEMPLATES = [
     {
@@ -89,7 +93,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'supervisr.wsgi.application'
+WSGI_APPLICATION = 'supervisr_core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases

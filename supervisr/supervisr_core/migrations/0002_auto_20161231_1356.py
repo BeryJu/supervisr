@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr', '0001_initial'),
+        ('supervisr_core', '0001_initial'),
     ]
 
     operations = [
@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='serverproduct',
             name='product',
-            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='supervisr.Product'),
+            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='supervisr_core.Product'),
             preserve_default=False,
         ),
     ]
