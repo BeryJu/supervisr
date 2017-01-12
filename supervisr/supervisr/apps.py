@@ -7,6 +7,7 @@ class SupervisrCoreConfig(AppConfig):
     name = 'supervisr'
 
     def ready(self):
+        # Looks ugly, but just goes two dirs up and gets CHANGELOG.md
         dir = os.path.dirname(__file__)
         two_up = os.path.split(os.path.split(dir)[0])[0]
         changelog_file = os.path.join(two_up, 'CHANGELOG.md')
@@ -16,3 +17,6 @@ class SupervisrCoreConfig(AppConfig):
             f.close()
         except Exception as e:
             settings.CHANGELOG = 'Failed to load Changelog.md'
+
+        # Split the 3rd line into 3 parts to get the latest version from the changelog
+        line = settings.CHANGELOG.split('\n')[2]

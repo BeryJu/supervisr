@@ -4,6 +4,7 @@
 
  - Split up into sub-apps
  - Harder, better, faster, stronger Admin interface
+ - Support for auto-adding and auto-all-adding Products
 
 ## Version 0.01
 

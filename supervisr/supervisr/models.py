@@ -153,6 +153,8 @@ class Product(models.Model):
     description = models.TextField()
     price = models.DecimalField(decimal_places=3, max_digits=65)
     invite_only = models.BooleanField(default=False)
+    auto_add = models.BooleanField(default=False)
+    auto_all_add = models.BooleanField(default=False)
     users = models.ManyToManyField(User, through='UserProductRelationship')
     revision = models.IntegerField(default=1)
     managed = models.BooleanField(default=True)
@@ -160,6 +162,30 @@ class Product(models.Model):
 
     def __str__(self):
         return "Product %s" % self.name
+
+    @staticmethod
+    def do_auto_add(user):
+        to_add = Product.objects.filter(auto_add=True)
+        for product in to_add:
+            UserProductRelationship.objects.create(
+                user=user,
+                product=product)
+
+    def save(self, *args, **kwargs):
+        super(Product, self).save(*args, **kwargs)
+        if self.auto_all_add is True:
+            # Since there is no better way to do the query other way roundd
+            # We have to do it like this
+            rels = list(UserProductRelationship.objects.filter(product=self))
+            rels_userlist = []
+            users = list(User.objects.all())
+            for rel in rels:
+                rels_userlist.append(rel.user)
+            missing_users = set(rels_userlist).symmetric_difference(set(users))
+            for missing_user in missing_users:
+                UserProductRelationship.objects.create(
+                    user=missing_user,
+                    product=self)
 
 class Domain(Product):
     domain_name = models.CharField(max_length=255)
