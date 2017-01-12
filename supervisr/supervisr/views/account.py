@@ -14,10 +14,12 @@ from ..ldap_connector import LDAPConnector
 from ..forms.account import AuthenticationForm, SignupForm, ChangePasswordForm
 from ..models import AccountConfirmation
 from ..controllers import *
+from ..decorators import anonymous_required
 import logging
 import time
 logger = logging.getLogger(__name__)
 
+@anonymous_required
 def login(req):
     if req.method == 'POST':
         form = AuthenticationForm(req.POST)
@@ -49,6 +51,7 @@ def login(req):
         form = AuthenticationForm()
     return render(req, 'account/login.html', { 'form': form })
 
+@anonymous_required
 def signup(req):
     if req.method == 'POST':
         form = SignupForm(req.POST)
@@ -88,6 +91,7 @@ def logout(req):
     messages.success(req, _("Successfully logged out!"))
     return redirect(reverse('common-index'))
 
+@anonymous_required
 def confirm(req, uuid):
     current_time = time.time()
     if AccountConfirmation.objects.filter(pk=uuid).exists():
