@@ -34,6 +34,11 @@ def signup(email, name, password):
     ac.save()
     # Send confirmation mail
     Mailer.send_account_confirmation(new_d_user.email, ac)
+    # Add event for user
+    Event.objects.create(
+        user=new_d_user,
+        message=_("You Signed up"),
+        current=False)
     return True
 
 def change_password(email, password):

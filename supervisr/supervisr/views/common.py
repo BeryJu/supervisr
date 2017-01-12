@@ -6,8 +6,14 @@ from ..models import *
 @login_required
 def index(req):
     user_products = UserProductRelationship.objects.filter(user=req.user)
+    hosted_applications = UserProductRelationship\
+        .objects.filter(user=req.user,product__managed=True)
+    events = Event.objects.filter(user=req.user)\
+        .order_by('-create_date')[:15]
     return render(req, 'common/index.html', {
-        'uprs': user_products
+        'uprs': user_products,
+        'hosted_applications': hosted_applications,
+        'events': events
     })
 
 def uncaught_404(req):

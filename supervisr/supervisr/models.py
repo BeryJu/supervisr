@@ -1,14 +1,17 @@
 from __future__ import unicode_literals
+from django.conf import settings
 from django.db import models
 from django.db.models import Max
 from django.db.utils import OperationalError
 from django.utils.translation import ugettext as _
-from django.contrib.auth.models import User
+from django.urls import reverse
+from django.contrib.auth.models import User, AnonymousUser
 import uuid
 import json
 import time
 import random
 import base64
+import datetime
 
 NOTIFICATION_IMPORTANCE = (
     (40, _('Urgent')),
@@ -30,8 +33,6 @@ ACCOUNT_CONFIRMATION_KIND = (
 ACCOUNT_CONFIRMATION_KIND_SIGN_UP = 0
 ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET = 1
 
-USER_PROFILE_ID_START = 5000
-
 def expiry_date():
     return time.time() + 172800 # 2 days
 
@@ -47,12 +48,19 @@ def get_username():
 def get_userid():
     # Custom default to set the unix_userid since we can't have an
     # AutoField as non-primary-key. Also so we can set a custom start,
-    # which is USER_PROFILE_ID_START
+    # which is settings.USER_PROFILE_ID_START
     try:
         highest = UserProfile.objects.all.aggregate(Max('unix_userid'))
         return highest + 1
     except Exception as e:
-        return USER_PROFILE_ID_START
+        return settings.USER_PROFILE_ID_START
+
+def get_system_user():
+    system_users = User.objects.filter(username=settings.SYSTEM_USER_NAME)
+    if system_users.exists():
+        return system_users[0]
+    else:
+        return 1 # Django starts AutoField's with 1 not 0
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True)
@@ -66,7 +74,6 @@ class UserProfile(models.Model):
 class Setting(models.Model):
     key = models.CharField(max_length=255, primary_key=True)
     value = models.TextField()
-    value_json_cached = None
 
     @property
     def value_bool(self):
@@ -169,3 +176,41 @@ class Domain(Product):
 
     def __str__(self):
         return "Domain '%s'" % self.domain_name
+
+class Event(models.Model):
+    event_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User)
+    glyph = models.CharField(max_length=200, default='envelope')
+    message = models.TextField()
+    current = models.BooleanField(default=True)
+    action_required = models.BooleanField(default=False)
+    action_view = models.TextField()
+    action_parmas_json = models.TextField()
+    create_date = models.DateTimeField(auto_now_add=True)
+    closed_date = models.DateTimeField(auto_now=True)
+    invoker = models.ForeignKey(User, default=get_system_user, related_name='events_invoked')
+
+    @property
+    def action_parmas(self):
+        return json.loads(self.action_parmas_json)
+
+    @action_parmas.setter
+    def action_params(self, value):
+        self.action_parmas_json = json.dumps(value)
+
+    @property
+    def get_url(self):
+        return reverse(self.action_view, kwargs=self.action_parmas)
+
+    @property
+    def get_localized_age(self):
+        now = datetime.datetime.now()
+        diff = now - self.create_date
+        hours = int(diff.seconds / 3600)
+        minutes = int(diff.seconds / 60)
+        if diff.days > 0:
+            return _("%(days)d days ago" % { 'days': diff.days })
+        elif hours > 0:
+            return _("%(hours)d hours ago" % { 'hours': hours })
+        else:
+            return _("%(minutes)d minutes ago" % { 'minutes': minutes })

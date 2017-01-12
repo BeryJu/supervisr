@@ -9,6 +9,11 @@ SYSLOG_HOST = '127.0.0.1'
 SYSLOG_PORT = 514
 EMAIL_HOST = 'prd-mail01.prs.fr.beryju.org'
 EMAIL_FROM = 'BeryJu.org Beta <my@beryju.org>'
+# WARNING!
+# This can only be changed before the first `migrate` is run
+# If you change this afterwards, it may cause serious damage!
+SYSTEM_USER_NAME = 'System'
+USER_PROFILE_ID_START = 5000
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
