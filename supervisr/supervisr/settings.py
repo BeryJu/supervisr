@@ -40,12 +40,15 @@ LDAP = {
 }
 
 INSTALLED_APPS = [
+    'jet.dashboard',
+    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.admindocs',
     'crispy_forms',
     'captcha',
     'supervisr',
@@ -63,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.admindocs.middleware.XViewMiddleware',
     'supervisr.middleware.MaintenanceMode.maintenance_mode'
 ]
 
@@ -128,6 +132,8 @@ try:
   from local_settings import *
 except ImportError as e:
   pass
+
+SERVER_EMAIL = EMAIL_FROM
 
 LOGGING = {
     'version': 1,

@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Setting',
             fields=[
-                ('key', models.TextField(primary_key=True, serialize=False)),
+                ('key', models.CharField(max_length=255, primary_key=True, serialize=False)),
                 ('value_json', models.TextField()),
             ],
         ),
