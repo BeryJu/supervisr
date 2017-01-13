@@ -40,7 +40,7 @@ class LDAPConnector(object):
 
     @staticmethod
     def encode_pass(password):
-        return '"{}"'.format(password).encode('utf-16-le')
+        return str('"{}"'.format(password).encode('utf-16-le'))
 
     def lookup_user(self, mail, field='distinguishedName'):
         # Find out dn for user
@@ -48,7 +48,7 @@ class LDAPConnector(object):
         assert self.con.search(CONF['BASE'], filter, attributes=[field]) == True
         results = self.con.entries
         assert len(results) == 1
-        return results[0][field].raw_values[0]
+        return str(results[0][field].raw_values[0])[2:-1]
 
     def auth_user(self, mail, password):
         upn = self.lookup_user(mail, field='userPrincipalName')
