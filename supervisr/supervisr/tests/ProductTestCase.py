@@ -1,10 +1,13 @@
-from django.test import TestCase, RequestFactory
+import os
+
 from django.contrib.auth.models import User
-from ..models import *
+from django.test import RequestFactory, TestCase
+
+from ..controllers import AccountController
 from ..forms.account import *
 from ..ldap_connector import LDAPConnector
-from ..controllers import AccountController
-import os
+from ..models import *
+
 
 class AccountSignupTestCase(TestCase):
 

@@ -1,5 +1,6 @@
 import os
 import sys
+
 from django.contrib import messages
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
@@ -23,6 +24,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 CHANGELOG = '' # This gets overwritten with ../../CHANGELOG.md on launch
+VERSION_HASH = '' # This gets overwritten with the current commit's hash on launch
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/static"
 SECRET_KEY = '--a*212*x(2z-#muz3(lai@l&f23da6-()m2z4^$up6_y=1%fg'
@@ -183,4 +185,3 @@ LOGGING = {
         },
     }
 }
-

@@ -1,10 +1,13 @@
-from ..ldap_connector import LDAPConnector
-from ..forms.account import AuthenticationForm, SignupForm, ChangePasswordForm
-from ..models import *
-from ..mailer import Mailer
+import logging
+
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
-import logging
+
+from ..forms.account import AuthenticationForm, ChangePasswordForm, SignupForm
+from ..ldap_connector import LDAPConnector
+from ..mailer import Mailer
+from ..models import *
+
 logger = logging.getLogger(__name__)
 
 def signup(email, name, password):

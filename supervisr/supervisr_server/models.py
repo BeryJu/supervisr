@@ -1,6 +1,8 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+
 from supervisr.models import Product
+
 
 class Server(Product):
     cpus = models.ForeignKey('ServerCPU')

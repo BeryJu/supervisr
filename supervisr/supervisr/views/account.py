@@ -1,22 +1,25 @@
-from django.urls import reverse
-from django.core.mail import send_mail
-from django.conf import settings
-from django.contrib import messages
-from django.contrib.auth import authenticate
-from django.contrib.auth import login as django_login
-from django.contrib.auth import logout as django_logout
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
-from django.utils.translation import ugettext as _
-from ..ldap_connector import LDAPConnector
-from ..forms.account import AuthenticationForm, SignupForm, ChangePasswordForm
-from ..models import AccountConfirmation
-from ..controllers import *
-from ..decorators import anonymous_required
 import logging
 import time
+
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import login as django_login
+from django.contrib.auth import logout as django_logout
+from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, render
+from django.urls import reverse
+from django.utils.translation import ugettext as _
+
+from ..controllers import *
+from ..decorators import anonymous_required
+from ..forms.account import AuthenticationForm, ChangePasswordForm, SignupForm
+from ..ldap_connector import LDAPConnector
+from ..models import AccountConfirmation
+
 logger = logging.getLogger(__name__)
 
 @anonymous_required

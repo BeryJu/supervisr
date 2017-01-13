@@ -1,12 +1,15 @@
+import logging
+
+from captcha.fields import ReCaptchaField
 from django import forms
 from django.conf import settings
-from django.forms import ValidationError
 from django.contrib.auth.models import User
+from django.forms import ValidationError
 from django.utils.translation import ugettext as _
+
 from ..ldap_connector import LDAPConnector
 from ..models import *
-from captcha.fields import ReCaptchaField
-import logging
+
 logger = logging.getLogger(__name__)
 
 class AuthenticationForm(forms.Form):

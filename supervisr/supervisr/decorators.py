@@ -1,6 +1,7 @@
 from django.http import HttpResponseRedirect
-from django.urls import reverse
 from django.shortcuts import redirect
+from django.urls import reverse
+
 
 def anonymous_required(view_function):
     return AnonymousRequired(view_function)

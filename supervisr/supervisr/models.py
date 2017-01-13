@@ -1,17 +1,19 @@
 from __future__ import unicode_literals
+
+import base64
+import json
+import random
+import time
+import uuid
+
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Max
 from django.db.utils import OperationalError
-from django.utils.translation import ugettext as _
 from django.urls import reverse
-from django.contrib.auth.models import User
 from django.utils import timezone
-import uuid
-import json
-import time
-import random
-import base64
+from django.utils.translation import ugettext as _
 
 NOTIFICATION_IMPORTANCE = (
     (40, _('Urgent')),

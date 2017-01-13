@@ -1,9 +1,12 @@
-from django.contrib.auth.models import User, AnonymousUser
-from django.test import TestCase, RequestFactory
-from django.urls import reverse
-from ..views import common, account
-from ..models import get_system_user
 import os
+
+from django.contrib.auth.models import AnonymousUser, User
+from django.test import RequestFactory, TestCase
+from django.urls import reverse
+
+from ..models import get_system_user
+from ..views import account, common
+
 
 class AccountSignupTestCase(TestCase):
 
@@ -46,4 +49,3 @@ class AccountSignupTestCase(TestCase):
         req.user = User.objects.get(pk=get_system_user())
         res = common.index(req)
         self.assertEqual(res.status_code, 200)
-

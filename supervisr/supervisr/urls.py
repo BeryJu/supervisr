@@ -1,13 +1,12 @@
-from django.conf.urls import url, include
+from django.conf.urls import include, url
 from django.contrib import admin
-from .views import about
-from .views import common
-from .views import account
-from .views import product
+
 import supervisr_dns
 import supervisr_mail
 import supervisr_server
 import supervisr_web
+
+from .views import about, account, common, product
 
 handler404 = 'supervisr.views.common.uncaught_404'
 handler500 = 'supervisr.views.common.uncaught_500'

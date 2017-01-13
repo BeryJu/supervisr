@@ -1,7 +1,11 @@
 from __future__ import unicode_literals
+
 import os
+import subprocess
+
 from django.apps import AppConfig
 from django.conf import settings
+
 
 class SupervisrCoreConfig(AppConfig):
     name = 'supervisr'
@@ -17,3 +21,10 @@ class SupervisrCoreConfig(AppConfig):
             f.close()
         except Exception as e:
             settings.CHANGELOG = 'Failed to load Changelog.md'
+        # Read this commit's shortened hash if git is in the path
+        try:
+            hash = subprocess.Popen(['git', 'log', '--pretty=format:%h', '-n 1'],
+                stdout=subprocess.PIPE).communicate()[0]
+            settings.VERSION_HASH = hash
+        except Exception as e:
+            settings.VERSION_HASH = 'dev'

@@ -1,6 +1,7 @@
 {% extends "core/skel.html" %}
 
 {% load supervisr_setting %}
+{% load setting %}
 {% load crispy_forms_tags %}
 {% load i18n %}
 {% load static %}
@@ -72,7 +73,12 @@
 </div>
 <footer class="footer">
   <div class="container">
-    <p class="text-muted text-center">{% supervisr_setting 'branding' %} | {% supervisr_setting 'version' %}</a></p>
+    <p class="text-muted text-center">
+      {% supervisr_setting 'branding' %} |
+      {% setting 'VERSION_HASH' %} |
+      <img src="https://git.beryju.org/BeryJu.org/supervisr/badges/master/build.svg" /> |
+      <img src="https://git.beryju.org/BeryJu.org/supervisr/badges/master/coverage.svg" /> |
+      {% blocktrans %}Found an Issue? Report it <a href="https://git.beryju.org/BeryJu.org/supervisr/issues">here</a>{% endblocktrans %}</p>
   </div>
 </footer>
 {% endblock %}

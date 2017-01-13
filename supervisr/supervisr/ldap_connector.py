@@ -1,12 +1,14 @@
+import logging
+import sys
+import time
+
 from django.conf import settings
-from ldap3 import Server, Connection, ALL
-from ldap3 import MODIFY_REPLACE, MOCK_SYNC
-from ldap3.core.exceptions import LDAPInvalidCredentialsResult, LDAPOperationResult
+from ldap3 import ALL, MOCK_SYNC, MODIFY_REPLACE, Connection, Server
+from ldap3.core.exceptions import (LDAPInvalidCredentialsResult,
+                                   LDAPOperationResult)
 from ldap3.extend.microsoft.modifyPassword import modify_ad_password
 from ldap3.extend.microsoft.unlockAccount import unlock_ad_account
-import logging
-import time
-import sys
+
 logger = logging.getLogger(__name__)
 
 CONF = settings.LDAP

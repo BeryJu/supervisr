@@ -1,9 +1,11 @@
-from django.core.mail import send_mail
 from django.conf import settings
-from django.utils.translation import ugettext as _
+from django.core.mail import send_mail
+from django.template import Context, loader
 from django.urls import reverse
-from django.template import loader, Context
+from django.utils.translation import ugettext as _
+
 from .models import Setting
+
 
 class Mailer(object):
 

@@ -1,11 +1,14 @@
-from django.test import TestCase, RequestFactory
-from django.contrib.auth.models import User
+import os
 from unittest import skip
-from ..models import *
+
+from django.contrib.auth.models import User
+from django.test import RequestFactory, TestCase
+
+from ..controllers import AccountController
 from ..forms.account import *
 from ..ldap_connector import LDAPConnector
-from ..controllers import AccountController
-import os
+from ..models import *
+
 
 class AccountTestCase(TestCase):
 

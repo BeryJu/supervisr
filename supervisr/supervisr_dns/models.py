@@ -1,6 +1,8 @@
-from django.db import models
 from django.contrib.auth.models import User
-from supervisr.models import Product, Domain
+from django.db import models
+
+from supervisr.models import Domain, Product
+
 
 class DNSZone(Product):
     domain_dns = models.OneToOneField(Domain)

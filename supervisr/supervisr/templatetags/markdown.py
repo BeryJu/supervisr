@@ -1,8 +1,9 @@
-from django import template
-from django.utils.safestring import mark_safe
-from django.utils.encoding import force_text
-from markdown import markdown as markdown_render
 import markdown
+from django import template
+from django.utils.encoding import force_text
+from django.utils.safestring import mark_safe
+from markdown import markdown as markdown_render
+
 register = template.Library()
 
 # Strongly inspired by https://github.com/trentm/django-markdown-deux/blob/master/lib/markdown_deux/templatetags/markdown_deux_tags.py

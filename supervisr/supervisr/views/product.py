@@ -1,8 +1,10 @@
-from django.contrib.auth.models import User
-from django.shortcuts import render, get_list_or_404
-from django.http import Http404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.http import Http404
+from django.shortcuts import get_list_or_404, render
+
 from ..models import *
+
 
 @login_required
 def index(req):
