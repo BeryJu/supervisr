@@ -81,7 +81,7 @@ class LDAPConnector(object):
             'description'       : str('t='+str(time.time())),
             'sAMAccountName'    : str(username_trunk),
             'givenName'         : str(user.username),
-            'displayName'       : str(user.first_name),
+            'displayName'       : str(username),
             'mail'              : str(user.email),
             'userPrincipalName' : str(username+'@'+CONF['DOMAIN']),
             'objectclass'       : ['top','person','organizationalPerson', 'user'],
@@ -90,6 +90,9 @@ class LDAPConnector(object):
             self.con.add(dn, 'user', attrs)
         except LDAPOperationResult as e:
             logger.error("Failed to create user")
+            return False
+        except Exception as e:
+            logger.error(e)
             return False
         return self.change_password(user.email, raw_password)
 
@@ -111,6 +114,7 @@ class LDAPConnector(object):
 
     def change_password(self, mail, new_password):
         dn = self.lookup_user(mail)
+        logger.debug("Changing password for '%s'" % dn)
         self.con.modify(dn, {
             'unicodePwd': [(MODIFY_REPLACE, [LDAPConnector.encode_pass(new_password)])],
         })
