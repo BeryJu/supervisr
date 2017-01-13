@@ -89,7 +89,7 @@ class LDAPConnector(object):
         try:
             self.con.add(dn, 'user', attrs)
         except LDAPOperationResult as e:
-            logger.error("Failed to create user")
+            logger.error("Failed to create user (%s)" % e)
             return False
         except Exception as e:
             logger.error(e)

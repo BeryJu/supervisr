@@ -124,7 +124,7 @@ class AccountConfirmation(models.Model):
 
     def __str__(self):
         return "AccountConfirmation %s, expired: %r" % \
-            (self.user.email, self.is_expired())
+            (self.user.email, self.is_expired)
 
 class Notification(models.Model):
     notification_id = models.AutoField(primary_key=True)
