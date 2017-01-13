@@ -65,6 +65,7 @@ def signup(req):
                 name=form.cleaned_data.get('name'),
                 password=form.cleaned_data.get('password')):
                 return redirect(reverse('account-login'))
+            messages.success(req, _("Successfully signed up!"))
             logger.info("Successfully signed up %s" % \
                 form.cleaned_data.get('email'))
             return redirect(reverse('account-login'))

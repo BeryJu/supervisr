@@ -40,7 +40,7 @@ class LDAPConnector(object):
 
     @staticmethod
     def encode_pass(password):
-        return str('"{}"'.format(password).encode('utf-16-le'))
+        return '"{}"'.format(password).encode('utf-16-le')
 
     def lookup_user(self, mail, field='distinguishedName'):
         # Find out dn for user
