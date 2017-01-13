@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 PASSWORD_REGEX = '"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}"'
 
-class AuthenticationForm(forms.Form):
+class LoginForm(forms.Form):
     email = forms.EmailField(label=_('Mail'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     remember = forms.BooleanField(required=False, label=_('Remember'))

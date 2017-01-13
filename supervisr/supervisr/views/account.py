@@ -16,7 +16,7 @@ from django.utils.translation import ugettext as _
 
 from ..controllers import AccountController
 from ..decorators import anonymous_required
-from ..forms.account import AuthenticationForm, ChangePasswordForm, SignupForm
+from ..forms.account import ChangePasswordForm, LoginForm, SignupForm
 from ..ldap_connector import LDAPConnector
 from ..models import AccountConfirmation
 
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 @anonymous_required
 def login(req):
     if req.method == 'POST':
-        form = AuthenticationForm(req.POST)
+        form = LoginForm(req.POST)
         if form.is_valid():
             user = authenticate(
                 username=form.cleaned_data.get('email'),
@@ -51,7 +51,7 @@ def login(req):
                     logger.info("Failed to log in %s" % form.cleaned_data.get('email'))
                 return redirect(reverse('account-login'))
     else:
-        form = AuthenticationForm()
+        form = LoginForm()
     return render(req, 'account/login.html', { 'form': form })
 
 @anonymous_required

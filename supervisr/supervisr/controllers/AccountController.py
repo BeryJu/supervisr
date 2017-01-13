@@ -3,7 +3,7 @@ import logging
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
-from ..forms.account import AuthenticationForm, ChangePasswordForm, SignupForm
+from ..forms.account import ChangePasswordForm, LoginForm, SignupForm
 from ..ldap_connector import LDAPConnector
 from ..mailer import Mailer
 from ..models import *

@@ -46,7 +46,6 @@ class LDAPConnector(object):
                 client_strategy=MOCK_SYNC)
             json_path = os.path.join(os.path.dirname(__file__), 'tests', 'ldap_mock.json')
             self.con.strategy.entries_from_json(json_path)
-            logger.debug("Loadded Mock Fixtures from '%s'" % json_path)
             self.con.bind()
 
     # Switch so we can easily disable LDAP
