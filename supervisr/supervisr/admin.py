@@ -2,6 +2,7 @@ from django.apps import apps
 from django.contrib import admin
 from django.contrib.admin.sites import AlreadyRegistered
 
+
 def admin_autoregister(app='supervisr'):
     app_models = apps.get_app_config(app).get_models()
     for model in app_models:
@@ -10,4 +11,4 @@ def admin_autoregister(app='supervisr'):
         except AlreadyRegistered:
             pass
 
-admin_autoregister
+admin_autoregister()

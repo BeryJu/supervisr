@@ -1,8 +1,10 @@
+import logging
 import os
 import sys
-import logging
 
 from django.contrib import messages
+
+logger = logging.getLogger(__name__)
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 NOCAPTCHA = True
