@@ -14,7 +14,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from ..controllers import *
+from ..controllers import AccountController
 from ..decorators import anonymous_required
 from ..forms.account import AuthenticationForm, ChangePasswordForm, SignupForm
 from ..ldap_connector import LDAPConnector

@@ -2,6 +2,7 @@
 
 {% load supervisr_setting %}
 {% load setting %}
+{% load hostname %}
 {% load crispy_forms_tags %}
 {% load i18n %}
 {% load static %}
@@ -78,7 +79,8 @@
       {% setting 'VERSION_HASH' %} |
       <img src="https://git.beryju.org/BeryJu.org/supervisr/badges/master/build.svg" /> |
       <img src="https://git.beryju.org/BeryJu.org/supervisr/badges/master/coverage.svg" /> |
-      {% blocktrans %}Found an Issue? Report it <a href="https://git.beryju.org/BeryJu.org/supervisr/issues">here</a>{% endblocktrans %}</p>
+      {% blocktrans %}Found an Issue? Report it <a href="https://git.beryju.org/BeryJu.org/supervisr/issues">here</a>{% endblocktrans %} |
+      {% fqdn %}</p>
   </div>
 </footer>
 {% endblock %}

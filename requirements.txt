@@ -2,8 +2,7 @@ django>=1.10.0
 django-crispy-forms>=1.6.1
 django-jet
 ldap3
-#mysqlclient
+mysqlclient
 django-recaptcha
 markdown
 docutils
-coverage

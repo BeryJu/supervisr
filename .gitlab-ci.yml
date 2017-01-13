@@ -1,7 +1,7 @@
 before_script:
   - sudo apt-get update >/dev/null
   - sudo apt-get -y install python3-pip python3-dev libsasl2-dev libldap2-dev libssl-dev python3-mysqldb >/dev/null
-  - sudo python3 -m pip install -U -r requirements.txt >/dev/null
+  - sudo python3 -m pip install -U -r requirements-dev.txt >/dev/null
 stages:
   - test
 test:
@@ -9,6 +9,7 @@ test:
     - cd supervisr/
     - python3 manage.py makemigrations
     - python3 manage.py migrate
+    - isort -c -vb
     - coverage run --source='.' manage.py test --pattern=*.py
     - coverage report
   type: test
