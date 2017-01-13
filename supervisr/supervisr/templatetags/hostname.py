@@ -1,6 +1,7 @@
+import socket
+
 from django import template
 from django.conf import settings
-import socket
 
 register = template.Library()
 
