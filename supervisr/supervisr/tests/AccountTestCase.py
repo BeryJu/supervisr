@@ -35,17 +35,19 @@ class AccountTestCase(TestCase):
         self.assertTrue(AccountController.signup(
             name=self.data['name'],
             email=self.data['email'],
-            password=self.data['password']))
+            password=self.data['password'],
+            ldap=self.ldap))
 
-    def test_change_password(self):
+    def test_signup_change_password(self):
         self.assertTrue(AccountController.signup(
             name=self.data['name'],
             email=self.data['email'],
-            password=self.data['password']))
+            password=self.data['password'],
+            ldap=self.ldap))
         self.assertTrue(AccountController.change_password(
             email=self.data['email'],
-            password='b4ryju1rg'))
+            password='b4ryju1rg',
+            ldap=self.ldap))
 
-    @skip("TODO: finish LDAP Mocking for unittests")
     def test_ldap(self):
         self.assertTrue(LDAPConnector.enabled())

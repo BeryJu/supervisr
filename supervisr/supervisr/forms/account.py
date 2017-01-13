@@ -1,4 +1,5 @@
 import logging
+import re
 
 from captcha.fields import ReCaptchaField
 from django import forms
@@ -12,14 +13,16 @@ from ..models import *
 
 logger = logging.getLogger(__name__)
 
+PASSWORD_REGEX = '"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}"'
+
 class AuthenticationForm(forms.Form):
     email = forms.EmailField(label=_('Mail'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     remember = forms.BooleanField(required=False, label=_('Remember'))
     captcha = ReCaptchaField(
         required=(not settings.DEBUG),
-        private_key=Setting.get('supervisr:recaptcha:private').value,
-        public_key=Setting.get('supervisr:recaptcha:public').value)
+        private_key=Setting.get('supervisr:recaptcha:private'),
+        public_key=Setting.get('supervisr:recaptcha:public'))
 
 class SignupForm(forms.Form):
     name = forms.CharField(label=_('Name'))
@@ -28,8 +31,8 @@ class SignupForm(forms.Form):
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
     captcha = ReCaptchaField(
         required=(not settings.DEBUG),
-        private_key=Setting.get('supervisr:recaptcha:private').value,
-        public_key=Setting.get('supervisr:recaptcha:public').value)
+        private_key=Setting.get('supervisr:recaptcha:private'),
+        public_key=Setting.get('supervisr:recaptcha:public'))
     tos_accept = forms.BooleanField(required=True, label=_('I accept the Terms of service'))
     news_accept = forms.BooleanField(required=False, label=_('Subscribe to Newsletters'))
 
@@ -55,6 +58,13 @@ class SignupForm(forms.Form):
             raise forms.ValidationError(_("You must confirm your password"))
         if password_a != password_b:
             raise forms.ValidationError(_("Your passwords do not match"))
+        # Check if password is strong enough
+        if Setting.get('supervisr:password:filter') is not '':
+            if not re.match(Setting.get('supervisr:password:filter'), password_b):
+                desc = Setting.get('supervisr:password:filter:description')
+                raise forms.ValidationError(_("Password has to contain %(desc)s" % {
+                    'desc': desc
+                    }))
         return password_b
 
 class ChangePasswordForm(forms.Form):

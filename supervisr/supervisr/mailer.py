@@ -38,8 +38,8 @@ class Mailer(object):
     @staticmethod
     def send_account_confirmation(recipient, confirmation):
         # Make URL for confirmation email
-        domain = Setting.get('supervisr:domain').value
-        branding = Setting.get('supervisr:branding').value
+        domain = Setting.get('supervisr:domain')
+        branding = Setting.get('supervisr:branding')
         url = domain + reverse('account-confirm',
             kwargs={'uuid': confirmation.pk})
         return Mailer.send_message(

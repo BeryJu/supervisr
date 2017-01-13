@@ -93,10 +93,9 @@ class Setting(models.Model):
             setting, created = Setting.objects.get_or_create(
                 key=key,
                 defaults={'value': default})
-            return setting
+            return setting.value
         except OperationalError as e:
-            # Migrations have not been applied yet, just ignore it
-            return Setting(key='temp', value=default)
+            return default
 
     @staticmethod
     def set(key, value):
@@ -106,7 +105,7 @@ class Setting(models.Model):
                 defaults={'value': value })
             if created is False:
                 setting.value = value
-                setting.save
+                setting.save()
         except Exception as e:
             raise e
 

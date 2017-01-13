@@ -10,7 +10,7 @@ from ..models import *
 
 logger = logging.getLogger(__name__)
 
-def signup(email, name, password):
+def signup(email, name, password, ldap=None):
     # Create django user
     new_d_user = User.objects.create_user(
         username=email,
@@ -25,7 +25,8 @@ def signup(email, name, password):
     new_up.save()
     # Create LDAP user if LDAP is active
     if LDAPConnector.enabled():
-        ldap = LDAPConnector()
+        if ldap is None:
+            ldap = LDAPConnector()
         # Returns false if user could not be created
         if not ldap.create_user(new_d_user, password):
             # Add message what happend and return
@@ -46,14 +47,15 @@ def signup(email, name, password):
         current=False)
     return True
 
-def change_password(email, password):
+def change_password(email, password, ldap=None):
     # Change Django password
     u = User.objects.get(email=email)
     u.set_password(password)
     u.save()
     # Update ldap password if LDAP is enabled
     if LDAPConnector.enabled():
-        ldap = LDAPConnector()
-        ldap.change_password(email, password)
+        if ldap is None:
+            ldap = LDAPConnector()
+        ldap.change_password(password, mail=email)
     logger.debug("Successfully updated password for %s" % email)
     return True
