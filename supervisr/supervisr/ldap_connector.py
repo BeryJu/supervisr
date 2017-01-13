@@ -44,7 +44,7 @@ class LDAPConnector(object):
             self.con = Connection(self.server, raise_exceptions=True,
                 user='CN=mockadm,OU=customers,DC=mock,DC=beryju,DC=org', password='b3ryju0rg!',
                 client_strategy=MOCK_SYNC)
-            json_path = os.path.join(os.path.dirname(__file__), 'tests', 'ldap_mock.json')
+            json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock.json')
             self.con.strategy.entries_from_json(json_path)
             self.con.bind()
 

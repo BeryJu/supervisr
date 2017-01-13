@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 
 from django.contrib import messages
 
@@ -137,9 +138,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 sys.path.append('..')
 try:
-  from local_settings import *
+    from local_settings import *
 except ImportError as e:
-  pass
+    logger.warn("Failed to import local_settings because %s" % e)
+    pass
 
 SERVER_EMAIL = EMAIL_FROM
 
