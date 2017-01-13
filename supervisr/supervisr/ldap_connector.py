@@ -79,7 +79,7 @@ class LDAPConnector(object):
             'description'       : str('t='+str(time.time())),
             'sAMAccountName'    : str(username_trunk),
             'givenName'         : str(user.username),
-            'displayName'       : str(username),
+            'displayName'       : str(user.first_name),
             'mail'              : str(user.email),
             'userPrincipalName' : str(username+'@'+CONF['DOMAIN']),
             'objectclass'       : ['top','person','organizationalPerson', 'user'],

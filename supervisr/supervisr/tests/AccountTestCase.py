@@ -1,12 +1,13 @@
 from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import User
+from unittest import skip
 from ..models import *
 from ..forms.account import *
 from ..ldap_connector import LDAPConnector
 from ..controllers import AccountController
 import os
 
-class AccountSignupTestCase(TestCase):
+class AccountTestCase(TestCase):
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
@@ -32,3 +33,16 @@ class AccountSignupTestCase(TestCase):
             name=self.data['name'],
             email=self.data['email'],
             password=self.data['password']))
+
+    def test_change_password(self):
+        self.assertTrue(AccountController.signup(
+            name=self.data['name'],
+            email=self.data['email'],
+            password=self.data['password']))
+        self.assertTrue(AccountController.change_password(
+            email=self.data['email'],
+            password='b4ryju1rg'))
+
+    @skip("TODO: finish LDAP Mocking for unittests")
+    def test_ldap(self):
+        self.assertTrue(LDAPConnector.enabled())

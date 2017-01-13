@@ -45,7 +45,7 @@ def signup(email, name, password):
 
 def change_password(email, password):
     # Change Django password
-    u = User.objects.get(pk=email)
+    u = User.objects.get(email=email)
     u.set_password(password)
     u.save()
     # Update ldap password if LDAP is enabled

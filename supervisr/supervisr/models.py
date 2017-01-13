@@ -158,6 +158,16 @@ class UserProductRelationship(models.Model):
             'product': self.product,
             })
 
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            Event.objects.create(
+                user=self.user,
+                message=_("You gained access to %(product)s" % {
+                    'product': self.product
+                    }),
+                current=True)
+        super(UserProductRelationship, self).save(*args, **kwargs)
+
 class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
     name = models.TextField()
