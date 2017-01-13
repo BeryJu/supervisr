@@ -103,7 +103,7 @@ def confirm(req, uuid):
         if ac.confirmed:
             messages.error(req, _("Account already confirmed!"))
             return redirect(reverse('account-login'))
-        if not ac.is_expired():
+        if not ac.is_expired:
             messages.error(req, _("Confirmation expired"))
             return redirect(reverse('account-login'))
         # activate django user
