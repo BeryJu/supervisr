@@ -20,6 +20,8 @@ coverage:
   type: test
   stage: test
   script:
+    - python3 manage.py makemigrations
+    - python3 manage.py migrate
     - coverage run --source='.' manage.py test --pattern=*.py
     - coverage report
 isort:
