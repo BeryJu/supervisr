@@ -42,10 +42,11 @@ def login(req):
             else:
                 # Check if the user's account is pending
                 # and inform that, they need to check their emails
-                user = User.objects.get(username=form.cleaned_data.get('email'))
-                ac = AccountConfirmation.objects.get(user=user)
-                if not ac.confirmed:
-                    messages.error(req, _('Account not confirmed yet. Check your emails.'))
+                user = User.objects.filter(username=form.cleaned_data.get('email'))
+                if user.exists():
+                    ac = AccountConfirmation.objects.get(user=user[0])
+                    if not ac.confirmed:
+                        messages.error(req, _('Account not confirmed yet. Check your emails.'))
                 else:
                     messages.error(req, _("Invalid Login"))
                     logger.info("Failed to log in %s" % form.cleaned_data.get('email'))

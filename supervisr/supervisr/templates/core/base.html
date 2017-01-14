@@ -24,13 +24,24 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
         <li class="active"><a href="#">{% trans "Home" %} <span class="sr-only">(current)</span></a></li>
+        {% if user.is_authenticated %}
         <li><a href="#">{% trans "DNS" %}</a></li>
         <li><a href="#">{% trans "Mail" %}</a></li>
         <li><a href="#">{% trans "Server" %}</a></li>
         <li><a href="#">{% trans "Web" %}</a></li>
+        {% endif %}
       </ul>
-      {% if user.is_authenticated %}
       <ul class="nav navbar-nav navbar-right">
+        {% if user.is_superuser %}
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Admin" %} <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'admin:index' %}">{% trans "Admin Interface" %}</a></li>
+            <li><a href="{% url 'django-admindocs-docroot' %}">{% trans "Admin Docs" %}</a></li>
+          </ul>
+        </li>
+        {% endif %}
+        {% if user.is_authenticated %}
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ user.username }} <span class="caret"></span></a>
           <ul class="dropdown-menu">
@@ -39,8 +50,8 @@
             <li><a href="{% url 'account-logout' %}">{% trans "Logout" %}</a></li>
           </ul>
         </li>
+        {% endif %}
       </ul>
-      {% endif %}
       <form class="navbar-form navbar-right">
         <div class="input-group form-group">
           <input type="text" class="form-control" placeholder="Search for...">
