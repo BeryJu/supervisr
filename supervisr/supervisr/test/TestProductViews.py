@@ -10,6 +10,7 @@ from django.urls import reverse
 from ..models import Product, get_system_user
 from ..views import product
 
+
 # pylint: disable=duplicate-code
 class TestProductViews(TestCase):
     """

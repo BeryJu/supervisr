@@ -9,6 +9,7 @@ from django.test import TestCase
 
 from ..models import Product, UserProductRelationship
 
+
 # pylint: disable=duplicate-code
 class TestProduct(TestCase):
     """

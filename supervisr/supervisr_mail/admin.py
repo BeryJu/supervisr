@@ -1,7 +1,6 @@
-from django.apps import apps
-from django.contrib import admin
-from django.contrib.admin.sites import AlreadyRegistered
-
+"""
+Supervisr Mail Admin
+"""
 from supervisr.admin import admin_autoregister
 
 admin_autoregister('supervisr_mail')

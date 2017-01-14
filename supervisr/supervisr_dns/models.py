@@ -1,15 +1,23 @@
-from django.contrib.auth.models import User
+"""
+Supervisr DNS Models
+"""
 from django.db import models
 
 from supervisr.models import Domain, Product
 
 
 class DNSZone(Product):
+    """
+    Store Information about a root DNS Zone
+    """
     domain_dns = models.OneToOneField(Domain)
     zone = models.CharField(max_length=255) # 255 Bytes acording to rfc1035, 2.3.4
 
     @property
     def domain(self):
+        """
+        Get our parent domain
+        """
         return self.domain_dns
 
     @domain.setter
@@ -20,6 +28,9 @@ class DNSZone(Product):
         return "DNS Zone '%s'" % self.zone
 
 class DNSRecord(models.Model):
+    """
+    Store a particular DNS record
+    """
     zone = models.OneToOneField(DNSZone, primary_key=True, unique=True)
     type = models.CharField(max_length=10, default='A')
     ttl = models.IntegerField()

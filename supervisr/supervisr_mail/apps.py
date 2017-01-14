@@ -1,5 +1,14 @@
+"""
+Supervisr Mail app config
+"""
+
 from django.apps import AppConfig
 
 
-class MailConfig(AppConfig):
-    name = 'mail'
+class SupervisrMailConfig(AppConfig):
+    """
+    Supervisr Mail app config
+    """
+
+    name = 'supervisr_mail'
+    verbose_name = 'Supervisr Mail'

@@ -1,10 +1,17 @@
-from django.contrib.auth.models import User
+"""
+Supervisr Web Models
+"""
+
 from django.db import models
 
 from supervisr.models import Domain, Product, UserProfile
 
 
 class WebDomain(Product):
+    """
+    Stores information about a Webdomain
+    """
+
     domain_web = models.OneToOneField(Domain)
     root = models.TextField()
     profile = models.ForeignKey(UserProfile)
@@ -14,6 +21,9 @@ class WebDomain(Product):
 
     @property
     def domain(self):
+        """
+        Get our parent domain
+        """
         return self.domain_web
 
     @domain.setter

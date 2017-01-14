@@ -13,6 +13,7 @@ from ..models import get_system_user
 from ..views import account
 from .utils import test_request
 
+
 # pylint: disable=duplicate-code
 class TestAccount(TestCase):
     """

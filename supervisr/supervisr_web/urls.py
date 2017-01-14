@@ -1,3 +1,5 @@
-from django.conf.urls import url
+"""
+Supervisr Web URLs
+"""
 
 urlpatterns = []

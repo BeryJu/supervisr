@@ -1,18 +1,25 @@
-import os
-from unittest import skip
+"""
+Supervisr Server ServerModel Test
+"""
 
-from django.contrib.auth.models import AnonymousUser, User
-from django.test import RequestFactory, TestCase
+from django.test import TestCase
 
-from ..models import *
+from ..models import ServerCPU, ServerDrive
 
 
-class ServerModelTestCase(TestCase):
+class TestServerModel(TestCase):
+    """
+    Supervisr Server ServerModel Test
+    """
+
 
     def setUp(self):
         pass
 
     def test_server_cpu(self):
+        """
+        Test ServerCPU's return value
+        """
         cpu_1 = ServerCPU.objects.create(
             physical_cores=2,
             smt=True,
@@ -29,6 +36,9 @@ class ServerModelTestCase(TestCase):
         self.assertEqual(cpu_2.cores, 2)
 
     def test_server_drive(self):
+        """
+        Test ServerDrive's return value
+        """
         drive_1 = ServerDrive.objects.create(
             capacity=250,
             make='make',
