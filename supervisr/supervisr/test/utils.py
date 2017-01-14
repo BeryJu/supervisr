@@ -10,6 +10,7 @@ from ..ldap_connector import LDAPConnector
 from ..models import *
 from ..views import account
 
+
 def test_request(view,
     method='GET',
     user=AnonymousUser,
