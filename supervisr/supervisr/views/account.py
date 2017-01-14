@@ -65,6 +65,7 @@ def signup(req):
                 email=form.cleaned_data.get('email'),
                 name=form.cleaned_data.get('name'),
                 password=form.cleaned_data.get('password')):
+                messages.error(req, _("Failed to sign up."))
                 return redirect(reverse('account-login'))
             messages.success(req, _("Successfully signed up!"))
             logger.info("Successfully signed up %s" % \

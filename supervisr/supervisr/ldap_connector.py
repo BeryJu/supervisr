@@ -123,7 +123,7 @@ class LDAPConnector(object):
             'userAccountControl': [(MODIFY_REPLACE, [str(66050)])],
         })
         logger.debug("disabled account '%s'" % dn)
-        return self.con.response
+        return 'result' in self.con.result and self.con.result['result'] == 0
 
     def enable_user(self, mail=None, dn=None):
         if mail is None and dn is None:
@@ -134,7 +134,7 @@ class LDAPConnector(object):
             'userAccountControl': [(MODIFY_REPLACE, [str(66048)])],
         })
         logger.debug("enabled account '%s'" % dn)
-        return self.con.response
+        return 'result' in self.con.result and self.con.result['result'] == 0
 
     def change_password(self, new_password, mail=None, dn=None):
         if mail is None and dn is None:
@@ -146,4 +146,4 @@ class LDAPConnector(object):
         })
         self.enable_user(dn=dn)
         logger.debug("changed password for '%s'" % dn)
-        return self.con.response
+        return 'result' in self.con.result and self.con.result['result'] == 0
