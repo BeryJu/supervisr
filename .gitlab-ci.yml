@@ -29,8 +29,13 @@ isort:
   stage: test
   script:
     - isort -c -vb
-lint:
+pylint:
   type: test
   stage: test
   script:
     - pylint --load-plugins pylint_django supervisr*
+prospector:
+  type: test
+  stage: test
+  script:
+    - prospector -I migration -I settings.py

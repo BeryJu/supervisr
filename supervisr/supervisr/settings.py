@@ -32,7 +32,7 @@ CHANGELOG = '' # This gets overwritten with ../../CHANGELOG.md on launch
 VERSION_HASH = None # This gets overwritten with the current commit's hash on launch
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/static"
-SECRET_KEY = '--a*212*x(2z-#muz3(lai@l&f23da6-()m2z4^$up6_y=1%fg'
+SECRET_KEY = '_k*@6h2u2@q-dku57hhgzb7tnx*ba9wodcb^s9g0j59@=y(@_o' # Debug SECRET_KEY
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 REMEMBER_SESSION_AGE = 60 * 60 * 24 * 30 # One Month
