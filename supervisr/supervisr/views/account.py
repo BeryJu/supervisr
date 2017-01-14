@@ -166,17 +166,16 @@ def reset_password_confirm(req, uuid):
                 if pc.is_expired:
                     messages.error(req, _("Link expired!"))
                     return redirect(reverse('account-login'))
-                # reset django user
-                pc.user.set_password(password)
-                pc.user.save()
-                # reset LDAP user
-                if LDAPConnector.enabled():
-                    ldap = LDAPConnector()
-                    ldap.change_password(password, mail=pc.user.email)
-                # invalidate confirmation
-                pc.confirmed = True
-                pc.save()
-                messages.success(req, _("Account successfully reset!"))
+                if AccountController.change_password(
+                    email=pc.user.email,
+                    password=password,
+                    reset=True):
+                    # invalidate confirmation
+                    pc.confirmed = True
+                    pc.save()
+                    messages.success(req, _("Account successfully reset!"))
+                else:
+                    messages.error(req, _("Failed to reset Password. Please try again later."))
             else:
                 raise Http404
             return redirect(reverse('account-login'))

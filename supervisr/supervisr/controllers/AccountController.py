@@ -47,7 +47,7 @@ def signup(email, name, password, ldap=None):
         current=False)
     return True
 
-def change_password(email, password, ldap=None):
+def change_password(email, password, ldap=None, reset=False):
     # Change Django password
     u = User.objects.get(email=email)
     u.set_password(password)
@@ -57,5 +57,12 @@ def change_password(email, password, ldap=None):
         if ldap is None:
             ldap = LDAPConnector()
         ldap.change_password(password, mail=email)
+    # Add event
+    Event.objects.create(
+        user=u,
+        message=_("You changed your Password (%(kind)s)" % {
+            'kind': _("non-reset") if reset is False else _("reset")
+            }),
+        current=True)
     logger.debug("Successfully updated password for %s" % email)
     return True
