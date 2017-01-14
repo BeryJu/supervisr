@@ -43,11 +43,17 @@ def login(req):
             else:
                 # Check if the user's account is pending
                 # and inform that, they need to check their emails
-                user = User.objects.filter(username=form.cleaned_data.get('email'))
-                if user.exists():
-                    ac = AccountConfirmation.objects.get(user=user[0])
+                users  = User.objects.filter(username=form.cleaned_data.get('email'))
+                if users.exists():
+                    user = users[0]
+                    ac = AccountConfirmation.objects.get(user=user)
                     if not ac.confirmed:
-                        messages.error(req, _('Account not confirmed yet. Check your emails.'))
+                        # Create url to resend email
+                        url = reverse('account-confirmation_resend',
+                            kwargs={'email': user.email })
+                        messages.error(req, _('Account not confirmed yet. Check your emails. Click <a href="%(url)s">here</a> to resend the email.') % {
+                            'url': url
+                            })
                 else:
                     messages.error(req, _("Invalid Login"))
                     logger.info("Failed to log in %s" % form.cleaned_data.get('email'))
@@ -110,7 +116,9 @@ def logout(req):
 @anonymous_required
 @require_GET
 def confirm(req, uuid):
-    if AccountConfirmation.objects.filter(pk=uuid).exists():
+    if AccountConfirmation.objects.filter(
+        pk=uuid,
+        kind=ACCOUNT_CONFIRMATION_KIND_SIGN_UP).exists():
         ac = AccountConfirmation.objects.get(pk=uuid)
         if ac.confirmed:
             messages.error(req, _("Account already confirmed!"))
@@ -161,7 +169,9 @@ def reset_password_confirm(req, uuid):
         form = PasswordResetFinishForm(req.POST)
         if form.is_valid():
             password = form.cleaned_data.get('password')
-            if AccountConfirmation.objects.filter(pk=uuid).exists():
+            if AccountConfirmation.objects.filter(
+                pk=uuid,
+                kind=ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET).exists():
                 pc = AccountConfirmation.objects.get(pk=uuid)
                 if pc.confirmed:
                     messages.error(req, _("Link already used!"))
@@ -189,3 +199,17 @@ def reset_password_confirm(req, uuid):
         'title': _("Reset your Password - Step 3/3"),
         'primary_action': _("Reset your Password")
         })
+
+@anonymous_required
+@require_GET
+def confirmation_resend(req, email):
+    users = User.objects.filter(
+        email=email, is_active=False)
+    if users.exists():
+        user = users[0]
+        if AccountController.resend_confirmation(user):
+            messages.success(req, _("Successfully resent confirmation email"))
+        else:
+            messages.error(req, _("Failed to resend confirmation email"))
+        return redirect(reverse('account-login'))
+    raise Http404

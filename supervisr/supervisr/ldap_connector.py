@@ -51,7 +51,8 @@ class LDAPConnector(object):
     # Switch so we can easily disable LDAP
     @staticmethod
     def enabled():
-        return Setting.get('supervisr:ldap:enabled') or self.mock
+        return Setting.objects.get(key='supervisr:ldap:enabled').value_bool or \
+            'test' in sys.argv
 
     @staticmethod
     def encode_pass(password):

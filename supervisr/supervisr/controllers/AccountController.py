@@ -34,8 +34,7 @@ def signup(email, name, password, ldap=None):
             return False
         ldap.disable_user(new_d_user.email)
     # Send confirmation email
-    ac = AccountConfirmation(user=new_d_user)
-    ac.save()
+    ac = AccountConfirmation.objects.create(user=new_d_user)
     # Run Product auto_add
     Product.do_auto_add(new_d_user)
     # Send confirmation mail
@@ -66,3 +65,14 @@ def change_password(email, password, ldap=None, reset=False):
         current=True)
     logger.debug("Successfully updated password for %s" % email)
     return True
+
+def resend_confirmation(user):
+    # Invalidate all other links for this user
+    old_acs = AccountConfirmation.objects.filter(
+        user=user)
+    for old_ac in old_acs:
+        old_ac.confirmed = True
+        old_ac.save()
+    # Create a new Confirmation and send mail
+    new_ac = AccountConfirmation.objects.create(user=user)
+    return Mailer.send_account_confirmation(user.email, new_ac)

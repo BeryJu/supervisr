@@ -71,7 +71,7 @@
         {% for msg in messages %}
         <div class="alert alert-{{ msg.level_tag }} alert-dismissible" role="alert">
           <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <strong>{% trans msg.level_tag|capfirst %}</strong> {{ msg.message }}
+          <strong>{% trans msg.level_tag|capfirst %}</strong> {{ msg.message|safe }}
         </div>
         {% endfor %}
       {% endif %}

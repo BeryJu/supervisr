@@ -59,7 +59,7 @@ class Mailer(object):
             kwargs={'uuid': confirmation.pk})
         return Mailer.send_message(
             recipients=[recipient],
-            subject=_("Reset your Password on %(branding)s" % {
+            subject=_("Step 2/3 - Reset your Password on %(branding)s" % {
                 'branding': branding}),
             template='email/acount_password_reset.html',
             template_context={'url': url})
