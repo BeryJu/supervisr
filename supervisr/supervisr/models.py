@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import base64
 import json
+import math
 import random
 import time
 import uuid
@@ -256,7 +257,7 @@ class Event(models.Model):
         now = timezone.now()
         diff = now - self.create_date
         hours = int(diff.seconds / 3600)
-        minutes = int(diff.seconds / 60)
+        minutes = int(math.ceil(diff.seconds / 60))
         if diff.days > 0:
             return _("%(days)d days ago" % { 'days': diff.days })
         elif hours > 0:

@@ -137,11 +137,12 @@ def reset_password_init(req):
     if req.method == 'POST':
         form = PasswordResetInitForm(req.POST)
         if form.is_valid():
+            user = User.objects.get(email=form.cleaned_data.get('email'))
             pc = AccountConfirmation.objects.create(
-                user=req.user,
+                user=user,
                 kind=ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET)
             if Mailer.send_password_reset_confirmation(
-                req.user.email, pc):
+                user.email, pc):
                 messages.success(req, _('Reset Link sent successfully'))
             else:
                 message.error(req, _('Failed to send Link. Please try again later.'))
