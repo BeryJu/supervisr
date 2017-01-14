@@ -9,6 +9,7 @@ from ..forms.account import *
 from ..ldap_connector import LDAPConnector
 from ..models import *
 from ..views import account
+from .utils import test_request
 
 
 class AccountTestCase(TestCase):
@@ -53,30 +54,25 @@ class AccountTestCase(TestCase):
         self.assertTrue(LDAPConnector.enabled())
 
     def test_signup_view(self):
-        req = self.factory.get(reverse('account-signup'))
-        req.user = AnonymousUser()
-        res = account.signup(req)
+        res = test_request(account.signup)
         self.assertEqual(res.status_code, 200)
 
     def test_login_view(self):
-        req = self.factory.get(reverse('account-login'))
-        req.user = AnonymousUser()
-        res = account.login(req)
+        res = test_request(account.login)
         self.assertEqual(res.status_code, 200)
 
     def test_signup_view_auth(self):
-        req = self.factory.get(reverse('account-signup'))
-        req.user = User.objects.get(pk=get_system_user())
-        res = account.signup(req)
+        res = test_request(account.signup,
+            user=get_system_user())
         self.assertEqual(res.status_code, 302)
 
     def test_login_view_auth(self):
-        req = self.factory.get(reverse('account-login'))
-        req.user = User.objects.get(pk=get_system_user())
-        res = account.login(req)
+        res = test_request(account.login,
+            user=get_system_user())
         self.assertEqual(res.status_code, 302)
 
     def test_login_view_post(self):
+        self.test_signup_view_post()
         self.assertTrue(AccountController.signup(
             name=self.data['name'],
             email=self.data['email'],
@@ -84,15 +80,28 @@ class AccountTestCase(TestCase):
             ldap=self.ldap))
         form = LoginForm(self.data)
         self.assertTrue(form.is_valid())
-        req = self.factory.post(reverse('account-login'), form.cleaned_data)
-        req.user = AnonymousUser()
-        res = account.login(req)
+
+        res = test_request(account.login,
+            method='POST',
+            req_kwargs=form.cleaned_data)
         self.assertEqual(res.status_code, 200)
 
     def test_signup_view_post(self):
         form = SignupForm(self.data)
         self.assertTrue(form.is_valid())
-        req = self.factory.post(reverse('account-signup'), form.cleaned_data)
-        req.user = AnonymousUser()
-        res = account.signup(req)
+
+        res = test_request(account.signup,
+            method='POST',
+            req_kwargs=form.cleaned_data)
+        self.assertEqual(res.status_code, 200)
+
+    def test_change_password_init_view(self):
+        self.assertTrue(AccountController.signup(
+            name=self.data['name'],
+            email=self.data['email'],
+            password=self.data['password'],
+            ldap=self.ldap))
+
+        user = User.objects.get(email=self.data['email'])
+        res = test_request(account.reset_password_init)
         self.assertEqual(res.status_code, 200)

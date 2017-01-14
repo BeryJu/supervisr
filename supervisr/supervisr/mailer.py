@@ -32,8 +32,9 @@ class Mailer(object):
             django_text = ''
 
         # Actually send the mail
-        return send_mail(subject, django_text, django_from, \
+        sent = send_mail(subject, django_text, django_from, \
             recipients, **django_kwargs)
+        return sent == 1 # send_mail returns either 0 or 1
 
     @staticmethod
     def send_account_confirmation(recipient, confirmation):
@@ -47,4 +48,18 @@ class Mailer(object):
             subject=_("Confirm your account on %(branding)s" % {
                 'branding': branding}),
             template='email/acount_confirm.html',
+            template_context={'url': url})
+
+    @staticmethod
+    def send_password_reset_confirmation(recipient, confirmation):
+        # Make URL for confirmation email
+        domain = Setting.get('supervisr:domain')
+        branding = Setting.get('supervisr:branding')
+        url = domain + reverse('account-reset_password_confirm',
+            kwargs={'uuid': confirmation.pk})
+        return Mailer.send_message(
+            recipients=[recipient],
+            subject=_("Reset your Password on %(branding)s" % {
+                'branding': branding}),
+            template='email/acount_password_reset.html',
             template_context={'url': url})

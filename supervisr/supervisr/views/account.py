@@ -1,5 +1,4 @@
 import logging
-import time
 
 from django.conf import settings
 from django.contrib import messages
@@ -9,14 +8,15 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
+from django.views.decorators.http import require_GET
 
 from ..controllers import AccountController
 from ..decorators import anonymous_required
-from ..forms.account import ChangePasswordForm, LoginForm, SignupForm
+from ..forms.account import *
 from ..ldap_connector import LDAPConnector
 from ..models import AccountConfirmation
 
@@ -71,7 +71,11 @@ def signup(req):
             return redirect(reverse('account-login'))
     else:
         form = SignupForm()
-    return render(req, 'account/signup.html', { 'form': form })
+    return render(req, 'account/generic_account_form.html', {
+        'form': form,
+        'title': _("Signup"),
+        'primary_action': _("Signup")
+        })
 
 @login_required
 def change_password(req):
@@ -87,17 +91,22 @@ def change_password(req):
             return redirect(reverse('common-index'))
     else:
         form = ChangePasswordForm()
-    return render(req, 'account/change_password.html', { 'form': form })
+    return render(req, 'account/generic_account_form.html', {
+        'form': form,
+        'title': _("Change Password"),
+        'primary_action': _("Change Password")
+        })
 
 @login_required
+@require_GET
 def logout(req):
     django_logout(req)
     messages.success(req, _("Successfully logged out!"))
     return redirect(reverse('common-index'))
 
 @anonymous_required
+@require_GET
 def confirm(req, uuid):
-    current_time = time.time()
     if AccountConfirmation.objects.filter(pk=uuid).exists():
         ac = AccountConfirmation.objects.get(pk=uuid)
         if ac.confirmed:
@@ -118,5 +127,62 @@ def confirm(req, uuid):
         ac.save()
         messages.success(req, _("Account successfully activated!"))
     else:
-        messages.error(req, _("Confirmation not found"))
+        raise Http404
     return redirect(reverse('account-login'))
+
+@anonymous_required
+def reset_password_init(req):
+    if req.method == 'POST':
+        form = PasswordResetInitForm(req.POST)
+        if form.is_valid():
+            pc = AccountConfirmation.objects.create(
+                user=req.user,
+                kind=ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET)
+            if Mailer.send_password_reset_confirmation(
+                req.user.email, pc):
+                messages.success(req, _('Reset Link sent successfully'))
+            else:
+                message.error(req, _('Failed to send Link. Please try again later.'))
+    else:
+        form = PasswordResetInitForm()
+    return render(req, 'account/generic_account_form.html', {
+        'form': form,
+        'title': _("Reset your Password - Step 1/3"),
+        'primary_action': _("Send Confirmation Email")
+        })
+
+@anonymous_required
+def reset_password_confirm(req, uuid):
+    if req.method == 'POST':
+        form = PasswordResetFinishForm(req.POST)
+        if form.is_valid():
+            password = form.cleaned_data.get('password')
+            if AccountConfirmation.objects.filter(pk=uuid).exists():
+                pc = AccountConfirmation.objects.get(pk=uuid)
+                if pc.confirmed:
+                    messages.error(req, _("Link already used!"))
+                    return redirect(reverse('account-login'))
+                if pc.is_expired:
+                    messages.error(req, _("Link expired!"))
+                    return redirect(reverse('account-login'))
+                # reset django user
+                pc.user.set_password(password)
+                pc.user.save()
+                # reset LDAP user
+                if LDAPConnector.enabled():
+                    ldap = LDAPConnector()
+                    ldap.change_password(password, mail=pc.user.email)
+                # invalidate confirmation
+                pc.confirmed = True
+                pc.save()
+                messages.success(req, _("Account successfully reset!"))
+            else:
+                raise Http404
+            return redirect(reverse('account-login'))
+    else:
+        form = PasswordResetFinishForm()
+    return render(req, 'account/generic_account_form.html', {
+        'form': form,
+        'title': _("Reset your Password - Step 3/3"),
+        'primary_action': _("Reset your Password")
+        })

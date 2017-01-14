@@ -13,7 +13,22 @@ from ..models import *
 
 logger = logging.getLogger(__name__)
 
-PASSWORD_REGEX = '"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}"'
+def password_check(form):
+    password_a = form.cleaned_data.get('password')
+    password_b = form.cleaned_data.get('password_rep')
+    # Error if one password is empty.
+    if not password_b:
+        raise forms.ValidationError(_("You must confirm your password"))
+    if password_a != password_b:
+        raise forms.ValidationError(_("Your passwords do not match"))
+    # Check if password is strong enough
+    if Setting.get('supervisr:password:filter') is not '':
+        if not re.match(Setting.get('supervisr:password:filter'), password_b):
+            desc = Setting.get('supervisr:password:filter:description')
+            raise forms.ValidationError(_("Password has to contain %(desc)s" % {
+                'desc': desc
+                }))
+    return password_a
 
 class LoginForm(forms.Form):
     email = forms.EmailField(label=_('Mail'))
@@ -51,36 +66,25 @@ class SignupForm(forms.Form):
         return email
 
     def clean_password_rep(self):
-        password_a = self.cleaned_data.get('password')
-        password_b = self.cleaned_data.get('password_rep')
-        # Error if one password is empty.
-        if not password_b:
-            raise forms.ValidationError(_("You must confirm your password"))
-        if password_a != password_b:
-            raise forms.ValidationError(_("Your passwords do not match"))
-        # Check if password is strong enough
-        if Setting.get('supervisr:password:filter') is not '':
-            if not re.match(Setting.get('supervisr:password:filter'), password_b):
-                desc = Setting.get('supervisr:password:filter:description')
-                raise forms.ValidationError(_("Password has to contain %(desc)s" % {
-                    'desc': desc
-                    }))
-        return password_b
+        return password_check(self)
 
 class ChangePasswordForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
 
     def clean_password_rep(self):
-        password_a = self.cleaned_data.get('password')
-        password_b = self.cleaned_data.get('password_rep')
-        # Error if one password is empty.
-        if not password_b:
-            raise forms.ValidationError(_("You must confirm your password"))
-        if password_a != password_b:
-            raise forms.ValidationError(_("Your passwords do not match"))
-        return password_b
+        return password_check(self)
 
-class PasswordResetForm(forms.Form):
+class PasswordResetInitForm(forms.Form):
     email = forms.EmailField(label=_('Mail'))
-    captcha = ReCaptchaField(required=(not settings.DEBUG))
+    captcha = ReCaptchaField(
+        required=(not settings.DEBUG),
+        private_key=Setting.get('supervisr:recaptcha:private'),
+        public_key=Setting.get('supervisr:recaptcha:public'))
+
+class PasswordResetFinishForm(forms.Form):
+    password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
+    password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
+
+    def clean_password_rep(self):
+        return password_check(self)

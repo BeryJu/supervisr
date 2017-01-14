@@ -26,6 +26,14 @@
       <a href="{% url 'account-signup' %}" class="btn btn-lg btn-block btn-primary">{% trans 'Sign up here!' %}</a>
     </div>
   </div>
+  <div class="login-panel panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">{% trans "Forgot/Lost your password?" %}</h3>
+    </div>
+    <div class="panel-body">
+      <a href="{% url 'account-account-reset_password_init' %}" class="btn btn-lg btn-block btn-primary">{% trans 'Reset it here!' %}</a>
+    </div>
+  </div>
 </div>
 {% endblock %}
 
