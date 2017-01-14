@@ -18,6 +18,7 @@ from ..controllers import AccountController
 from ..decorators import anonymous_required
 from ..forms.account import *
 from ..ldap_connector import LDAPConnector
+from ..mailer import Mailer
 from ..models import AccountConfirmation
 
 logger = logging.getLogger(__name__)
