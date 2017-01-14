@@ -1,3 +1,6 @@
+"""
+Core Modules for supervisr
+"""
 from __future__ import unicode_literals
 
 import base64
@@ -9,6 +12,7 @@ import uuid
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Max
 from django.db.utils import OperationalError
@@ -37,28 +41,41 @@ ACCOUNT_CONFIRMATION_KIND_SIGN_UP = 0
 ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET = 1
 
 def expiry_date():
+    """
+    Return the default expiry for AccountConfirmations
+    """
     return time.time() + 172800 # 2 days
 
 def get_username():
+    """
+    Generate a completely random 10-char user_name (used for unix-accounts)
+    """
     # Generate a normal UUID, convert it to base64 and take the 10 first chars
-    u = uuid.uuid4()
+    uid = uuid.uuid4()
     # UUID in base64 is 25 chars, we want 10 char length
     offset = random.randint(0, 15)
     # Python3 changed the way we need to encode
-    res = base64.b64encode(u.bytes, altchars=b'_-')
+    res = base64.b64encode(uid.bytes, altchars=b'_-')
     return res[offset:offset+10]
 
 def get_userid():
+    """
+    Get the next higher unix user_id, since we can't set the start for django's AutoField
+    """
     # Custom default to set the unix_userid since we can't have an
     # AutoField as non-primary-key. Also so we can set a custom start,
     # which is settings.USER_PROFILE_ID_START
     try:
         highest = UserProfile.objects.all.aggregate(Max('unix_userid'))
         return highest + 1
-    except Exception as e:
+    except (AppRegistryNotReady, ObjectDoesNotExist, AttributeError):
         return settings.USER_PROFILE_ID_START
 
 def get_system_user():
+    """
+    Return supervisr's System User PK. This is created with the initial Migration,
+    but might not be ID 1
+    """
     system_users = User.objects.filter(username=settings.SYSTEM_USER_NAME)
     if system_users.exists():
         return system_users[0].id
@@ -66,6 +83,9 @@ def get_system_user():
         return 1 # Django starts AutoField's with 1 not 0
 
 class UserProfile(models.Model):
+    """
+    Save settings associated with user, since we don't want a custom user Model
+    """
     user = models.OneToOneField(User, primary_key=True)
     unix_username = models.CharField(max_length=10, default=get_username, editable=False)
     unix_userid = models.IntegerField(default=get_userid)
@@ -75,14 +95,23 @@ class UserProfile(models.Model):
         return "UserProfile %s" % self.user.email
 
 class Setting(models.Model):
+    """
+    Save key-value settings to db
+    """
     key = models.CharField(max_length=255, primary_key=True)
     value = models.TextField()
 
     @property
     def value_bool(self):
+        """
+        Return value converted to boolean
+        """
         return self.value.lower() == 'true'
 
     def set_bool(self, value):
+        """
+        Set value from boolean
+        """
         self.value = str(value)
 
     def __str__(self):
@@ -90,27 +119,33 @@ class Setting(models.Model):
 
     @staticmethod
     def get(key, default=''):
+        """
+        Get value, when Setting doesn't exist, it's created with default
+        """
         try:
-            setting, created = Setting.objects.get_or_create(
+            setting = Setting.objects.get_or_create(
                 key=key,
-                defaults={'value': default})
+                defaults={'value': default})[0]
             return setting.value
-        except OperationalError as e:
+        except OperationalError:
             return default
 
     @staticmethod
     def set(key, value):
-        try:
-            setting, created = Setting.objects.get_or_create(
-                key=key,
-                defaults={'value': value })
-            if created is False:
-                setting.value = value
-                setting.save()
-        except Exception as e:
-            raise e
+        """
+        Set value, when Setting doesn't exist, it's created with value
+        """
+        setting, created = Setting.objects.get_or_create(
+            key=key,
+            defaults={'value': value})
+        if created is False:
+            setting.value = value
+            setting.save()
 
 class AccountConfirmation(models.Model):
+    """
+    Save information about actions that need to be confirmed
+    """
     account_confirmation_id = models.UUIDField(primary_key=True, \
         default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User)
@@ -120,6 +155,9 @@ class AccountConfirmation(models.Model):
 
     @property
     def is_expired(self):
+        """
+        Returns whether or not the confirmation is expired or not
+        """
         return self.expires < time.time()
 
     def __str__(self):
@@ -127,6 +165,9 @@ class AccountConfirmation(models.Model):
             (self.user.email, self.is_expired)
 
 class Notification(models.Model):
+    """
+    Save notifications between 2 users
+    """
     notification_id = models.AutoField(primary_key=True)
     source_user = models.ForeignKey(User, related_name='outgoing_notifications')
     destination_user = models.ForeignKey(User, related_name='incoming_notifications')
@@ -136,11 +177,14 @@ class Notification(models.Model):
 
     def __str__(self):
         return _("Notification %(source_user)s %(destination_user)s" % {
-            'user': self.user,
-            'product': self.product,
+            'source_user': self.source_user,
+            'destination_user': self.destination_user,
             })
 
 class UserProductRelationship(models.Model):
+    """
+    Keeps track of a relationship between a User and a Product, with optional instance informations
+    """
     user_product_relationship_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User)
     product = models.ForeignKey('Product')
@@ -150,6 +194,9 @@ class UserProductRelationship(models.Model):
 
     @property
     def name(self):
+        """
+        Returns the instance_name if set, otherwise the product name
+        """
         if self.instance_name:
             return self.instance_name
         return self.product.name
@@ -171,6 +218,10 @@ class UserProductRelationship(models.Model):
         super(UserProductRelationship, self).save(*args, **kwargs)
 
 class Product(models.Model):
+    """
+    Information about the Main Product itself. This instances of this classes
+    are assumed to be managed services.
+    """
     product_id = models.AutoField(primary_key=True)
     name = models.TextField()
     slug = models.SlugField()
@@ -189,6 +240,10 @@ class Product(models.Model):
 
     @staticmethod
     def do_auto_add(user):
+        """
+        Auto-associates Product with new users. We have a separate function for
+        this since we use the default Django User Model.
+        """
         to_add = Product.objects.filter(auto_add=True)
         for product in to_add:
             UserProductRelationship.objects.create(
@@ -212,22 +267,36 @@ class Product(models.Model):
                     product=self)
 
 class Domain(Product):
+    """
+    Information about a Domain, which is used for other sub-apps.
+    This is also used for sub domains, hence the is_sub.
+    """
     domain_name = models.CharField(max_length=255)
     registrar = models.TextField()
     is_sub = models.BooleanField(default=False)
 
     @property
     def domain(self):
+        """
+        Wrapper so we can do domain.domain
+        """
         return self.domain_name
 
     @domain.setter
     def domain(self, value):
+        """
+        Wrapper so we can do domain.domain
+        """
         self.domain_name = value
 
     def __str__(self):
         return "Domain '%s'" % self.domain_name
 
 class Event(models.Model):
+    """
+    Store information about important Event's for auditing, like signing up, changing/resetting
+    your password or gaining access to a new Product
+    """
     event_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User)
     glyph = models.CharField(max_length=200, default='envelope')
@@ -242,28 +311,40 @@ class Event(models.Model):
 
     @property
     def action_parmas(self):
+        """
+        Return action's params as dict
+        """
         return json.loads(self.action_parmas_json)
 
     @action_parmas.setter
     def action_params(self, value):
+        """
+        Set action's params from a dict and saves it as json
+        """
         self.action_parmas_json = json.dumps(value)
 
     @property
     def get_url(self):
+        """
+        Returns relative url for action with params
+        """
         return reverse(self.action_view, kwargs=self.action_parmas)
 
     @property
     def get_localized_age(self):
+        """
+        Return age as a localized String
+        """
         now = timezone.now()
         diff = now - self.create_date
         hours = int(diff.seconds / 3600)
         minutes = int(math.ceil(diff.seconds / 60))
         if diff.days > 0:
-            return _("%(days)d days ago" % { 'days': diff.days })
+            return _("%(days)d day(s) ago" % {'days': diff.days})
         elif hours > 0:
-            return _("%(hours)d hours ago" % { 'hours': hours })
+            return _("%(hours)d hour(s) ago" % {'hours': hours})
         else:
-            return _("%(minutes)d minutes ago" % { 'minutes': minutes })
+            return _("%(minutes)d minute(s) ago" % {'minutes': minutes})
 
     def __str__(self):
         return "Event '%s' '%s'" % (self.user.username, self.message)

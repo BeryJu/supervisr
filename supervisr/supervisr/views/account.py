@@ -1,3 +1,7 @@
+"""
+Supervisr Core Account Views
+"""
+
 import logging
 
 from django.conf import settings
@@ -7,8 +11,7 @@ from django.contrib.auth import logout as django_logout
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.mail import send_mail
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
@@ -16,15 +19,21 @@ from django.views.decorators.http import require_GET
 
 from ..controllers import AccountController
 from ..decorators import anonymous_required
-from ..forms.account import *
+from ..forms.account import (ChangePasswordForm, LoginForm,
+                             PasswordResetFinishForm, PasswordResetInitForm,
+                             SignupForm)
 from ..ldap_connector import LDAPConnector
 from ..mailer import Mailer
-from ..models import AccountConfirmation
+from ..models import (ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET,
+                      ACCOUNT_CONFIRMATION_KIND_SIGN_UP, AccountConfirmation)
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 @anonymous_required
 def login(req):
+    """
+    View to handle Browser Logins Requests
+    """
     if req.method == 'POST':
         form = LoginForm(req.POST)
         if form.is_valid():
@@ -38,45 +47,48 @@ def login(req):
                 else:
                     req.session.set_expiry(0) # Expires when browser is closed
                 messages.success(req, _("Successfully logged in!"))
-                logger.info("Successfully logged in %s" % form.cleaned_data.get('email'))
+                LOGGER.info("Successfully logged in %s", form.cleaned_data.get('email'))
                 return redirect(reverse('common-index'))
             else:
                 # Check if the user's account is pending
                 # and inform that, they need to check their emails
-                users  = User.objects.filter(username=form.cleaned_data.get('email'))
+                users = User.objects.filter(username=form.cleaned_data.get('email'))
                 if users.exists():
                     user = users[0]
-                    ac = AccountConfirmation.objects.get(user=user)
-                    if not ac.confirmed:
+                    acc_conf = AccountConfirmation.objects.get(user=user)
+                    if not acc_conf.confirmed:
                         # Create url to resend email
                         url = reverse('account-confirmation_resend',
-                            kwargs={'email': user.email })
-                        messages.error(req, _('Account not confirmed yet. Check your emails. Click <a href="%(url)s">here</a> to resend the email.') % {
-                            'url': url
-                            })
+                                      kwargs={'email': user.email})
+                        messages.error(req, _(('Account not confirmed yet. Check your emails. '
+                                               'Click <a href="%(url)s">here</a> to resend the '
+                                               'email.')) % {'url': url})
                 else:
                     messages.error(req, _("Invalid Login"))
-                    logger.info("Failed to log in %s" % form.cleaned_data.get('email'))
+                    LOGGER.info("Failed to log in %s", form.cleaned_data.get('email'))
                 return redirect(reverse('account-login'))
     else:
         form = LoginForm()
-    return render(req, 'account/login.html', { 'form': form })
+    return render(req, 'account/login.html', {'form': form})
 
 @anonymous_required
 def signup(req):
+    """
+    View to handle Browser Signups Requests
+    """
     if req.method == 'POST':
         form = SignupForm(req.POST)
         if form.is_valid():
             # Create user
             if not AccountController.signup(
-                email=form.cleaned_data.get('email'),
-                name=form.cleaned_data.get('name'),
-                password=form.cleaned_data.get('password')):
+                    email=form.cleaned_data.get('email'),
+                    name=form.cleaned_data.get('name'),
+                    password=form.cleaned_data.get('password')):
                 messages.error(req, _("Failed to sign up."))
                 return redirect(reverse('account-login'))
             messages.success(req, _("Successfully signed up!"))
-            logger.info("Successfully signed up %s" % \
-                form.cleaned_data.get('email'))
+            LOGGER.info("Successfully signed up %s",
+                        form.cleaned_data.get('email'))
             return redirect(reverse('account-login'))
     else:
         form = SignupForm()
@@ -88,12 +100,15 @@ def signup(req):
 
 @login_required
 def change_password(req):
+    """
+    View to handle Browser change_password Requests
+    """
     if req.method == 'POST':
         form = ChangePasswordForm(req.POST)
         if form.is_valid():
             if not AccountController.change_password(
-                email=req.user.email,
-                password=form.cleaned_data.get('password')):
+                    email=req.user.email,
+                    password=form.cleaned_data.get('password')):
                 messages.error(req, _("Failed to change password"))
             else:
                 messages.success(req, _("Successfully changed password!"))
@@ -109,6 +124,9 @@ def change_password(req):
 @login_required
 @require_GET
 def logout(req):
+    """
+    View to handle Browser logout Requests
+    """
     django_logout(req)
     messages.success(req, _("Successfully logged out!"))
     return redirect(reverse('common-index'))
@@ -116,26 +134,29 @@ def logout(req):
 @anonymous_required
 @require_GET
 def confirm(req, uuid):
+    """
+    View to handle Browser account_confirm Requests
+    """
     if AccountConfirmation.objects.filter(
-        pk=uuid,
-        kind=ACCOUNT_CONFIRMATION_KIND_SIGN_UP).exists():
-        ac = AccountConfirmation.objects.get(pk=uuid)
-        if ac.confirmed:
+            pk=uuid,
+            kind=ACCOUNT_CONFIRMATION_KIND_SIGN_UP).exists():
+        acc_conf = AccountConfirmation.objects.get(pk=uuid)
+        if acc_conf.confirmed:
             messages.error(req, _("Account already confirmed!"))
             return redirect(reverse('account-login'))
-        if ac.is_expired:
+        if acc_conf.is_expired:
             messages.error(req, _("Confirmation expired"))
             return redirect(reverse('account-login'))
         # activate django user
-        ac.user.is_active = True
-        ac.user.save()
+        acc_conf.user.is_active = True
+        acc_conf.user.save()
         # activate LDAP user
         if LDAPConnector.enabled():
             ldap = LDAPConnector()
-            ldap.enable_user(ac.user.email)
+            ldap.enable_user(acc_conf.user.email)
         # invalidate confirmation
-        ac.confirmed = True
-        ac.save()
+        acc_conf.confirmed = True
+        acc_conf.save()
         messages.success(req, _("Account successfully activated!"))
     else:
         raise Http404
@@ -143,18 +164,21 @@ def confirm(req, uuid):
 
 @anonymous_required
 def reset_password_init(req):
+    """
+    View to handle Browser account password reset initiation Requests
+    """
     if req.method == 'POST':
         form = PasswordResetInitForm(req.POST)
         if form.is_valid():
             user = User.objects.get(email=form.cleaned_data.get('email'))
-            pc = AccountConfirmation.objects.create(
+            pass_conf = AccountConfirmation.objects.create(
                 user=user,
                 kind=ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET)
-            if Mailer.send_password_reset_confirmation(
-                user.email, pc):
+            if Mailer.send_password_reset_confirm(
+                    user.email, pass_conf):
                 messages.success(req, _('Reset Link sent successfully'))
             else:
-                message.error(req, _('Failed to send Link. Please try again later.'))
+                messages.error(req, _('Failed to send Link. Please try again later.'))
     else:
         form = PasswordResetInitForm()
     return render(req, 'account/generic_account_form.html', {
@@ -165,27 +189,30 @@ def reset_password_init(req):
 
 @anonymous_required
 def reset_password_confirm(req, uuid):
+    """
+    View to handle Browser account password reset confirmation Requests
+    """
     if req.method == 'POST':
         form = PasswordResetFinishForm(req.POST)
         if form.is_valid():
             password = form.cleaned_data.get('password')
             if AccountConfirmation.objects.filter(
-                pk=uuid,
-                kind=ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET).exists():
-                pc = AccountConfirmation.objects.get(pk=uuid)
-                if pc.confirmed:
+                    pk=uuid,
+                    kind=ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET).exists():
+                pass_conf = AccountConfirmation.objects.get(pk=uuid)
+                if pass_conf.confirmed:
                     messages.error(req, _("Link already used!"))
                     return redirect(reverse('account-login'))
-                if pc.is_expired:
+                if pass_conf.is_expired:
                     messages.error(req, _("Link expired!"))
                     return redirect(reverse('account-login'))
                 if AccountController.change_password(
-                    email=pc.user.email,
-                    password=password,
-                    reset=True):
+                        email=pass_conf.user.email,
+                        password=password,
+                        reset=True):
                     # invalidate confirmation
-                    pc.confirmed = True
-                    pc.save()
+                    pass_conf.confirmed = True
+                    pass_conf.save()
                     messages.success(req, _("Account successfully reset!"))
                 else:
                     messages.error(req, _("Failed to reset Password. Please try again later."))
@@ -203,6 +230,9 @@ def reset_password_confirm(req, uuid):
 @anonymous_required
 @require_GET
 def confirmation_resend(req, email):
+    """
+    View to handle Browser account confirmation resend Requests
+    """
     users = User.objects.filter(
         email=email, is_active=False)
     if users.exists():

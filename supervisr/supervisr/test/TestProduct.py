@@ -1,15 +1,19 @@
+"""
+Supervisr Core Product Test
+"""
+
 import os
 
 from django.contrib.auth.models import User
-from django.test import RequestFactory, TestCase
+from django.test import TestCase
 
-from ..controllers import AccountController
-from ..forms.account import *
-from ..ldap_connector import LDAPConnector
-from ..models import *
+from ..models import Product, UserProductRelationship
 
-
-class AccountSignupTestCase(TestCase):
+# pylint: disable=duplicate-code
+class TestProduct(TestCase):
+    """
+    Supervisr Core Product Test
+    """
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
@@ -26,6 +30,9 @@ class AccountSignupTestCase(TestCase):
         self.assertNotEqual(self.user.pk, None)
 
     def test_auto_add(self):
+        """
+        Test Product's auto_add
+        """
         Product.do_auto_add(self.user)
         rel = UserProductRelationship.objects.filter(
             product=self.product_a,
@@ -33,14 +40,17 @@ class AccountSignupTestCase(TestCase):
         self.assertTrue(rel.exists())
 
     def test_auto_add_all(self):
-        self.product_b = Product.objects.create(
+        """
+        Test Product's auto_all_add
+        """
+        product_b = Product.objects.create(
             name="Test Product B",
             slug="test-product-b",
             description="Test Product B with auto_all_add=True",
             price=0.000,
             auto_all_add=True)
-        self.assertEqual(self.product_b.pk, 2)
+        self.assertEqual(product_b.pk, 2)
         rel = UserProductRelationship.objects.filter(
-            product=self.product_b,
+            product=product_b,
             user=self.user)
         self.assertTrue(rel.exists())

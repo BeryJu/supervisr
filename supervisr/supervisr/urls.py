@@ -1,14 +1,15 @@
+"""
+supervisr core urls
+"""
+
 from django.conf.urls import include, url
 from django.contrib import admin
 
-import supervisr_dns
-import supervisr_mail
-import supervisr_server
-import supervisr_web
-
 from .views import about, account, common, product
 
+# pylint: disable=invalid-name
 handler404 = 'supervisr.views.common.uncaught_404'
+# pylint: disable=invalid-name
 handler500 = 'supervisr.views.common.uncaught_500'
 
 urlpatterns = [
@@ -17,10 +18,13 @@ urlpatterns = [
     url(r'^accounts/signup/$', account.signup, name='account-signup'),
     url(r'^accounts/logout/$', account.logout, name='account-logout'),
     url(r'^accounts/confirm/(?P<uuid>[a-z0-9\-]{36})/$', account.confirm, name='account-confirm'),
-    url(r'^accounts/confirm/resend/(?P<email>[a-zA-Z0-9@\.]*)/$', account.confirmation_resend, name='account-confirmation_resend'),
+    url(r'^accounts/confirm/resend/(?P<email>[a-zA-Z0-9@\.]*)/$',
+        account.confirmation_resend, name='account-confirmation_resend'),
     url(r'^accounts/password/change/$', account.change_password, name='account-change_password'),
-    url(r'^accounts/password/reset/$', account.reset_password_init, name='account-reset_password_init'),
-    url(r'^accounts/password/reset/(?P<uuid>[a-z0-9\-]{36})/$', account.reset_password_confirm, name='account-reset_password_confirm'),
+    url(r'^accounts/password/reset/$', account.reset_password_init,
+        name='account-reset_password_init'),
+    url(r'^accounts/password/reset/(?P<uuid>[a-z0-9\-]{36})/$',
+        account.reset_password_confirm, name='account-reset_password_confirm'),
     url(r'^products/$', product.index, name='product-index'),
     url(r'^products/(?P<slug>[a-zA-Z0-9\-]+)/$', product.view, name='product-view'),
     # url(r'^products/(?P<slug>[a-zA-Z0-9\-]+)/new/$', product.new, name='product-new'),

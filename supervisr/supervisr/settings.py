@@ -1,10 +1,12 @@
+""" Static settings for supervisr and supervisr.* """
+
 import logging
 import os
 import sys
 
 from django.contrib import messages
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 NOCAPTCHA = True
@@ -27,7 +29,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 CHANGELOG = '' # This gets overwritten with ../../CHANGELOG.md on launch
-VERSION_HASH = '' # This gets overwritten with the current commit's hash on launch
+VERSION_HASH = None # This gets overwritten with the current commit's hash on launch
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/static"
 SECRET_KEY = '--a*212*x(2z-#muz3(lai@l&f23da6-()m2z4^$up6_y=1%fg'
@@ -140,10 +142,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 sys.path.append('..')
 try:
+    # pylint: disable=wildcard-import
     from local_settings import *
-except ImportError as e:
-    logger.warn("Failed to import local_settings because %s" % e)
-    pass
+except ImportError as exception:
+    LOGGER.warning("Failed to import local_settings because %s", exception)
 
 SERVER_EMAIL = EMAIL_FROM
 
@@ -152,7 +154,8 @@ LOGGING = {
     'disable_existing_loggers': True,
     'formatters': {
         'default': {
-            'format': '[%(asctime)s] %(levelname)s [%(name)s::%(funcName)s::%(lineno)s] %(message)s',
+            'format': ('[%(asctime)s] %(levelname)s '
+                       '[%(name)s::%(funcName)s::%(lineno)s] %(message)s'),
         },
         'syslog': {
             'format': '%(asctime)s supervisr %(funcName)s: %(message)s',

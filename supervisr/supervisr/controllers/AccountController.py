@@ -1,16 +1,22 @@
+"""
+Supervisr Core Account Methods to remove logic from views
+"""
+
 import logging
 
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
-from ..forms.account import ChangePasswordForm, LoginForm, SignupForm
 from ..ldap_connector import LDAPConnector
 from ..mailer import Mailer
-from ..models import *
+from ..models import AccountConfirmation, Event, Product, UserProfile
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 def signup(email, name, password, ldap=None):
+    """
+    Creates a new Django/LDAP user from email, name and password.
+    """
     # Create django user
     new_d_user = User.objects.create_user(
         username=email,
@@ -34,11 +40,11 @@ def signup(email, name, password, ldap=None):
             return False
         ldap.disable_user(new_d_user.email)
     # Send confirmation email
-    ac = AccountConfirmation.objects.create(user=new_d_user)
+    acc_conf = AccountConfirmation.objects.create(user=new_d_user)
     # Run Product auto_add
     Product.do_auto_add(new_d_user)
     # Send confirmation mail
-    Mailer.send_account_confirmation(new_d_user.email, ac)
+    Mailer.send_account_confirm(new_d_user.email, acc_conf)
     # Add event for user
     Event.objects.create(
         user=new_d_user,
@@ -47,10 +53,13 @@ def signup(email, name, password, ldap=None):
     return True
 
 def change_password(email, password, ldap=None, reset=False):
+    """
+    Reset Password for a Django/LDAP user
+    """
     # Change Django password
-    u = User.objects.get(email=email)
-    u.set_password(password)
-    u.save()
+    user = User.objects.get(email=email)
+    user.set_password(password)
+    user.save()
     # Update ldap password if LDAP is enabled
     if LDAPConnector.enabled():
         if ldap is None:
@@ -58,15 +67,18 @@ def change_password(email, password, ldap=None, reset=False):
         ldap.change_password(password, mail=email)
     # Add event
     Event.objects.create(
-        user=u,
+        user=user,
         message=_("You changed your Password (%(kind)s)" % {
             'kind': _("non-reset") if reset is False else _("reset")
             }),
         current=True)
-    logger.debug("Successfully updated password for %s" % email)
+    LOGGER.debug("Successfully updated password for %s", email)
     return True
 
 def resend_confirmation(user):
+    """
+    Resend confirmation email after invalidating all existing links
+    """
     # Invalidate all other links for this user
     old_acs = AccountConfirmation.objects.filter(
         user=user)
@@ -75,4 +87,4 @@ def resend_confirmation(user):
         old_ac.save()
     # Create a new Confirmation and send mail
     new_ac = AccountConfirmation.objects.create(user=user)
-    return Mailer.send_account_confirmation(user.email, new_ac)
+    return Mailer.send_account_confirm(user.email, new_ac)

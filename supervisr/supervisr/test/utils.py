@@ -1,21 +1,25 @@
-import os
-from unittest import skip
+"""
+Supervisr Core test utils
+"""
 
 from django.contrib.auth.models import AnonymousUser, User
-from django.test import RequestFactory, TestCase
-
-from ..controllers import AccountController
-from ..forms.account import *
-from ..ldap_connector import LDAPConnector
-from ..models import *
-from ..views import account
+from django.test import RequestFactory
+from django.urls import reverse
 
 
 def test_request(view,
-    method='GET',
-    user=AnonymousUser,
-    url_kwargs={},
-    req_kwargs={}):
+                 method='GET',
+                 user=AnonymousUser,
+                 url_kwargs=None,
+                 req_kwargs=None):
+    """
+    Wrapper to make test requests easier
+    """
+
+    if url_kwargs is None:
+        url_kwargs = {}
+    if req_kwargs is None:
+        req_kwargs = {}
 
     factory = RequestFactory()
     if method == 'GET':

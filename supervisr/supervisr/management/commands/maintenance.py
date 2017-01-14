@@ -1,12 +1,20 @@
+"""
+Supervisr Core Maintenance ManagementCommand
+"""
+
 import logging
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
-from ...models import *
+from ...models import Setting
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class Command(BaseCommand):
+    """
+    Turns maintenance Mode on or off via manage.py
+    """
+
     help = 'Turns maintenance Mode on or off'
 
     def add_arguments(self, parser):
@@ -15,10 +23,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         value = options['state'].lower() in ('on', 'true', 'yes')
 
-        setting, created = Setting.objects.get_or_create(
+        setting = Setting.objects.get_or_create(
             key='supervisr:maintenancemode',
-            defaults= {'value': 'False'})
+            defaults={'value': 'False'})[0]
         setting.set_bool(value)
         setting.save()
         word = 'Enabled' if value is True else 'Disabled'
-        logger.info("%s maintenance mode." % word)
+        LOGGER.info("%s maintenance mode.", word)

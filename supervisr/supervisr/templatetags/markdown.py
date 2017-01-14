@@ -1,36 +1,44 @@
-import markdown
+"""
+Supervisr Core Markdown Templatettags
+"""
+import logging
+
 from django import template
-from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from markdown import markdown as markdown_render
 
-register = template.Library()
+REGISTER = template.Library()
 
-# Strongly inspired by https://github.com/trentm/django-markdown-deux/blob/master/lib/markdown_deux/templatetags/markdown_deux_tags.py
+LOGGER = logging.getLogger(__name__)
 
-@register.tag(name="blockmarkdown")
+@REGISTER.tag(name="blockmarkdown")
+# pylint: disable=unused-argument
 def markdown_tag(parser, token):
+    """
+    Render markdown between blockmarkdown and endblockmarkdown with MarkdownNode
+    """
     nodelist = parser.parse(('endblockmarkdown',))
-    bits = token.split_contents()
     parser.delete_first_token() # consume '{% endblockmarkdown %}'
     return MarkdownNode(nodelist)
 
 class MarkdownNode(template.Node):
+    """
+    Render markdown between blockmarkdown and endblockmarkdown
+    """
 
     def __init__(self, nodelist):
         self.nodelist = nodelist
 
     def render(self, context):
+        """
+        Render markdown between blockmarkdown and endblockmarkdown
+        """
         value = self.nodelist.render(context)
-        try:
-            return mark_safe(markdown_render(value))
-        except ImportError:
-            if settings.DEBUG:
-                raise template.TemplateSyntaxError("Error in `blockmarkdown` tag: "
-                    "The python-markdown2 library isn't installed.")
-            return force_text(value)
+        return mark_safe(markdown_render(value))
 
-
-@register.simple_tag
+@REGISTER.simple_tag
 def markdown(mdwn):
+    """
+    Simple tag to render markdown from a variable
+    """
     return mark_safe(markdown_render(mdwn))
