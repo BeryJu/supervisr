@@ -5,6 +5,7 @@ before_script:
   - cd supervisr/
 stages:
   - test
+  - deploy
 migrations:
   type: test
   stage: test
@@ -39,3 +40,13 @@ prospector:
   stage: test
   script:
     - prospector -I migration -I settings.py
+deploy:
+  type: deploy
+  stage: deploy
+  only:
+    - prod
+  script:
+    - "eval $(ssh-agent -s)"
+    - "mkdir ~/.ssh -p"
+    - "ssh-add <(echo \"CI_SSH_PRIVATE\")"
+    - ssh beryjuorg@prd-web01.prs.fr.beryju.org "./update_supervisr.sh"
