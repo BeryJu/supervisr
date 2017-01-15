@@ -48,5 +48,5 @@ deploy:
   script:
     - "eval $(ssh-agent -s)"
     - "mkdir ~/.ssh -p"
-    - "echo "${CI_SSH_PRIVATE}" | ssh-add -"
+    - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
     - ssh beryjuorg@prd-web01.prs.fr.beryju.org "./update_supervisr.sh"
