@@ -1,6 +1,11 @@
 {% extends "core/base.html" %}
 
+{% load supervisr_title %}
 {% load i18n %}
+
+{% block title %}
+{% supervisr_title "Maintenance" %}
+{% endblock %}
 
 {% block content %}
 <h1>{% trans "Maintenance Mode" %}</h1>

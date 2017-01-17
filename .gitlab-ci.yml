@@ -50,3 +50,6 @@ deploy:
     - "mkdir ~/.ssh -p"
     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
     - ssh -o 'StrictHostKeyChecking=no' beryjuorg@prd-web01.prs.fr.beryju.org "./update_supervisr.sh"
+  environment:
+    name: production
+    url: https://my.beryju.org
