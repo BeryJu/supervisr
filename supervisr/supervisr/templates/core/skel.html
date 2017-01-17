@@ -1,6 +1,3 @@
-{% load supervisr_setting %}
-{% load crispy_forms_tags %}
-{% load i18n %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +8,6 @@
     <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
     <link rel="stylesheet" href="{% static "css/sticky-footer.css" %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'img/logo_64.png' %}"/>
-    <title>{% supervisr_setting 'branding' %}</title>
     {% block header %}
     {% endblock %}
   </head>

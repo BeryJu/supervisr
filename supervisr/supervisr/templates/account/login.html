@@ -1,8 +1,12 @@
 {% extends "core/base.html" %}
 
+{% load supervisr_title %}
 {% load crispy_forms_tags %}
 {% load i18n %}
-{% load static %}
+
+{% block title %}
+  {% supervisr_title "Login" %}
+{% endblock %}
 
 {% block content %}
 <div class="col-md-4 col-md-offset-4">

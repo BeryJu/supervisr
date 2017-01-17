@@ -1,6 +1,11 @@
 {% extends "core/base.html" %}
 
+{% load supervisr_title %}
 {% load i18n %}
+
+{% block title %}
+{% supervisr_title "Index" %}
+{% endblock %}
 
 {% block content %}
 <div class="row">
