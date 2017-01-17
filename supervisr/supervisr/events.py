@@ -14,7 +14,7 @@ from .signals import (SIG_USER_CHANGED_PASS,
 
 @receiver(SIG_USER_SIGNED_UP)
 # pylint: disable=unused-argument
-def event_handle_user_signed_up(sender, signal, user):
+def event_handle_user_signed_up(sender, signal, user, **kwargs):
     """
     Create an Event when a user signed up
     """
@@ -25,7 +25,7 @@ def event_handle_user_signed_up(sender, signal, user):
 
 @receiver(SIG_USER_CHANGED_PASS)
 # pylint: disable=unused-argument
-def event_handle_user_changed_pass(signal, user, was_reset):
+def event_handle_user_changed_pass(signal, user, was_reset, **kwargs):
     """
     Create an Event when a user changes their password
     """
@@ -38,7 +38,7 @@ def event_handle_user_changed_pass(signal, user, was_reset):
 
 @receiver(SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
 # pylint: disable=unused-argument
-def event_handle_upr_created(sender, signal, upr):
+def event_handle_upr_created(sender, signal, upr, **kwargs):
     """
     Create an Event when a UserProductRelationship was created
     """

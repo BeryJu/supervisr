@@ -221,7 +221,7 @@ class LDAPConnector(object):
 
 @receiver(SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
 # pylint: disable=unused-argument
-def ldap_handle_upr_created(sender, signal, upr):
+def ldap_handle_upr_created(sender, signal, upr, **kwargs):
     """
     Handle creation of user_product_relationship, add to ldap group if needed
     """
@@ -233,7 +233,7 @@ def ldap_handle_upr_created(sender, signal, upr):
 
 @receiver(SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
 # pylint: disable=unused-argument
-def ldap_handle_upr_deleted(sender, signal, upr):
+def ldap_handle_upr_deleted(sender, signal, upr, **kwargs):
     """
     Handle deletion of user_product_relationship, remove from group if needed
     """
