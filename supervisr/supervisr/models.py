@@ -20,6 +20,9 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 
+from .signals import (SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
+                      SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
+
 NOTIFICATION_IMPORTANCE = (
     (40, _('Urgent')),
     (30, _('Important')),
@@ -209,13 +212,26 @@ class UserProductRelationship(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk is None:
-            Event.objects.create(
-                user=self.user,
-                message=_("You gained access to %(product)s" % {
-                    'product': self.product
-                    }),
-                current=True)
+            # Trigger event that we were saved
+            SIG_USER_PRODUCT_RELATIONSHIP_CREATED.send(
+                sender=UserProductRelationship,
+                upr=self)
         super(UserProductRelationship, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # Send signal to we are going to be deleted
+        SIG_USER_PRODUCT_RELATIONSHIP_DELETED.send(
+            sender=UserProductRelationship,
+            upr=self)
+        # Set all other events from us to current=False
+        events = Event.objects.filter(
+            product=self.product,
+            user=self.user)
+        if events.exists():
+            for event in events:
+                event.current = False
+                event.save()
+        super(UserProductRelationship, self).delete(*args, **kwargs)
 
 class Product(models.Model):
     """
@@ -234,6 +250,10 @@ class Product(models.Model):
     revision = models.IntegerField(default=1)
     managed = models.BooleanField(default=True)
     management_url = models.URLField(max_length=1000, blank=True, null=True)
+    ldap_group = models.TextField(blank=True, help_text=('This is an optional field for a LDAP '
+                                                         'Group DN, to which the user is added once'
+                                                         ' they have a relationship with '
+                                                         'the Product.'))
 
     def __str__(self):
         return "Product %s" % self.name

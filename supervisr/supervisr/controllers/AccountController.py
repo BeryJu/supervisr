@@ -5,11 +5,11 @@ Supervisr Core Account Methods to remove logic from views
 import logging
 
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext as _
 
 from ..ldap_connector import LDAPConnector
 from ..mailer import Mailer
-from ..models import AccountConfirmation, Event, Product, UserProfile
+from ..models import AccountConfirmation, Product, UserProfile
+from ..signals import SIG_USER_CHANGED_PASS, SIG_USER_SIGNED_UP
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,38 +18,37 @@ def signup(email, name, password, ldap=None):
     Creates a new Django/LDAP user from email, name and password.
     """
     # Create django user
-    new_d_user = User.objects.create_user(
+    new_user = User.objects.create_user(
         username=email,
         email=email,
         first_name=name)
-    new_d_user.save()
-    new_d_user.is_active = False
-    new_d_user.set_password(password)
-    new_d_user.save()
+    new_user.save()
+    new_user.is_active = False
+    new_user.set_password(password)
+    new_user.save()
     # Create user profile
-    new_up = UserProfile(user=new_d_user)
+    new_up = UserProfile(user=new_user)
     new_up.save()
     # Create LDAP user if LDAP is active
     if LDAPConnector.enabled():
         if ldap is None:
             ldap = LDAPConnector()
         # Returns false if user could not be created
-        if not ldap.create_user(new_d_user, password):
+        if not ldap.create_user(new_user, password):
             # Add message what happend and return
-            new_d_user.delete()
+            new_user.delete()
             return False
-        ldap.disable_user(new_d_user.email)
+        ldap.disable_user(new_user.email)
     # Send confirmation email
-    acc_conf = AccountConfirmation.objects.create(user=new_d_user)
+    acc_conf = AccountConfirmation.objects.create(user=new_user)
     # Run Product auto_add
-    Product.do_auto_add(new_d_user)
+    Product.do_auto_add(new_user)
     # Send confirmation mail
-    Mailer.send_account_confirm(new_d_user.email, acc_conf)
-    # Add event for user
-    Event.objects.create(
-        user=new_d_user,
-        message=_("You Signed up"),
-        current=False)
+    Mailer.send_account_confirm(new_user.email, acc_conf)
+    # Send event for user creation
+    SIG_USER_SIGNED_UP.send(
+        sender=None,
+        user=new_user)
     return True
 
 def change_password(email, password, ldap=None, reset=False):
@@ -65,13 +64,11 @@ def change_password(email, password, ldap=None, reset=False):
         if ldap is None:
             ldap = LDAPConnector()
         ldap.change_password(password, mail=email)
-    # Add event
-    Event.objects.create(
+    # Trigger Event
+    SIG_USER_CHANGED_PASS.send(
+        sender=None,
         user=user,
-        message=_("You changed your Password (%(kind)s)" % {
-            'kind': _("non-reset") if reset is False else _("reset")
-            }),
-        current=True)
+        was_reset=reset)
     LOGGER.debug("Successfully updated password for %s", email)
     return True
 

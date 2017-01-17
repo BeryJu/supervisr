@@ -6,11 +6,14 @@ import os
 import sys
 import time
 
-from ldap3 import (MOCK_SYNC, MODIFY_REPLACE, OFFLINE_AD_2012_R2, Connection,
-                   Server)
+from django.dispatch import receiver
+from ldap3 import (MOCK_SYNC, MODIFY_ADD, MODIFY_DELETE, MODIFY_REPLACE,
+                   OFFLINE_AD_2012_R2, Connection, Server)
 from ldap3.core.exceptions import LDAPException, LDAPInvalidCredentialsResult
 
 from .models import Setting
+from .signals import (SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
+                      SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -185,3 +188,57 @@ class LDAPConnector(object):
         self.enable_user(user_dn=user_dn)
         LOGGER.debug("changed password for '%s'", user_dn)
         return 'result' in self.con.result and self.con.result['result'] == 0
+
+    def add_to_group(self, group_dn, mail=None, user_dn=None):
+        """
+        Adds mail or user_dn to group_dn
+        Returns True on success, otherwise False
+        """
+        if mail is None and user_dn is None:
+            return False
+        if user_dn is None and mail is not None:
+            user_dn = self.mail_to_dn(mail)
+        self.con.modify(group_dn, {
+            'member': [(MODIFY_ADD), [user_dn]]
+        })
+        LOGGER.debug("added %s to group %s", user_dn, group_dn)
+        return 'result' in self.con.result and self.con.result['result'] == 0
+
+    def remove_from_group(self, group_dn, mail=None, user_dn=None):
+        """
+        Removes mail or user_dn from group_dn
+        Returns True on success, otherwise False
+        """
+        if mail is None and user_dn is None:
+            return False
+        if user_dn is None and mail is not None:
+            user_dn = self.mail_to_dn(mail)
+        self.con.modify(group_dn, {
+            'member': [(MODIFY_DELETE), [user_dn]]
+        })
+        LOGGER.debug("removed %s from group %s", user_dn, group_dn)
+        return 'result' in self.con.result and self.con.result['result'] == 0
+
+@receiver(SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
+# pylint: disable=unused-argument
+def ldap_handle_upr_created(sender, signal, upr):
+    """
+    Handle creation of user_product_relationship, add to ldap group if needed
+    """
+    if LDAPConnector.enabled() and upr.product.ldap_group:
+        ldap = LDAPConnector()
+        ldap.add_to_group(
+            group_dn=upr.product.ldap_group,
+            mail=upr.user.email)
+
+@receiver(SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
+# pylint: disable=unused-argument
+def ldap_handle_upr_deleted(sender, signal, upr):
+    """
+    Handle deletion of user_product_relationship, remove from group if needed
+    """
+    if LDAPConnector.enabled() and upr.product.ldap_group:
+        ldap = LDAPConnector()
+        ldap.remove_from_group(
+            group_dn=upr.product.ldap_group,
+            mail=upr.user.email)
