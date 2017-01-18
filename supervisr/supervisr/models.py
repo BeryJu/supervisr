@@ -167,23 +167,6 @@ class AccountConfirmation(models.Model):
         return "AccountConfirmation %s, expired: %r" % \
             (self.user.email, self.is_expired)
 
-class Notification(models.Model):
-    """
-    Save notifications between 2 users
-    """
-    notification_id = models.AutoField(primary_key=True)
-    source_user = models.ForeignKey(User, related_name='outgoing_notifications')
-    destination_user = models.ForeignKey(User, related_name='incoming_notifications')
-    destination_link = models.TextField()
-    importance = models.IntegerField(choices=NOTIFICATION_IMPORTANCE, default=0)
-    read = models.BooleanField(default=False)
-
-    def __str__(self):
-        return _("Notification %(source_user)s %(destination_user)s" % {
-            'source_user': self.source_user,
-            'destination_user': self.destination_user,
-            })
-
 class UserProductRelationship(models.Model):
     """
     Keeps track of a relationship between a User and a Product, with optional instance informations
@@ -328,6 +311,10 @@ class Event(models.Model):
     create_date = models.DateTimeField(auto_now_add=True)
     closed_date = models.DateTimeField(auto_now=True)
     invoker = models.ForeignKey(User, default=get_system_user, related_name='events_invoked')
+    hidden = models.BooleanField(default=False)
+    send_notification = models.BooleanField(default=False)
+    remote_ip = models.GenericIPAddressField(default='0.0.0.0')
+    remote_ip_rdns = models.TextField(default='')
 
     @property
     def action_parmas(self):

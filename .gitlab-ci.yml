@@ -39,7 +39,7 @@ prospector:
   type: test
   stage: test
   script:
-    - prospector -I migration -I settings.py
+    - prospector -I migration
 deploy:
   type: deploy
   stage: deploy

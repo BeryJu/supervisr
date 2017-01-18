@@ -36,3 +36,6 @@ class SupervisrCoreConfig(AppConfig):
             settings.VERSION_HASH = current_hash
         except (OSError, IOError):
             settings.VERSION_HASH = b'dev'
+        # Import events so they get registered
+        # pylint: disable=unused-variable
+        import supervisr.events # noqa

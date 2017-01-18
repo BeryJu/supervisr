@@ -27,8 +27,6 @@ urlpatterns = [
         account.reset_password_confirm, name='account-reset_password_confirm'),
     url(r'^products/$', product.index, name='product-index'),
     url(r'^products/(?P<slug>[a-zA-Z0-9\-]+)/$', product.view, name='product-view'),
-    # url(r'^products/(?P<slug>[a-zA-Z0-9\-]+)/new/$', product.new, name='product-new'),
-    # url(r'^products/(?P<slug>[a-zA-Z0-9\-]+)/edit/$', product.edit, name='product-edit'),
     url(r'^dns/', include('supervisr_dns.urls')),
     url(r'^mail/', include('supervisr_mail.urls')),
     url(r'^server/', include('supervisr_server.urls')),
@@ -37,5 +35,6 @@ urlpatterns = [
     url(r'^admin/django/jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin.site.urls),
+    url(r'^about/info/', about.info, name='about-info'),
     url(r'^about/changelog/$', about.changelog, name='about-changelog'),
 ]

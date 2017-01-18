@@ -2,6 +2,7 @@
 
 {% load supervisr_title %}
 {% load supervisr_setting %}
+{% load is_active %}
 {% load setting %}
 {% load hostname %}
 {% load crispy_forms_tags %}
@@ -32,12 +33,12 @@
     </div>
     <div class="collapse navbar-collapse" id="navbar-collapse">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="#">{% trans "Home" %} <span class="sr-only">(current)</span></a></li>
+        <li class="{% is_active 'account' 'common' %}"><a href="#">{% trans "Home" %} <span class="sr-only">(current)</span></a></li>
         {% if user.is_authenticated %}
-        <li><a href="#">{% trans "DNS" %}</a></li>
-        <li><a href="#">{% trans "Mail" %}</a></li>
-        <li><a href="#">{% trans "Server" %}</a></li>
-        <li><a href="#">{% trans "Web" %}</a></li>
+        <li class="{% is_active 'dns' %}"><a href="#">{% trans "DNS" %}</a></li>
+        <li class="{% is_active 'mail' %}"><a href="#">{% trans "Mail" %}</a></li>
+        <li class="{% is_active 'server' %}"><a href="#">{% trans "Server" %}</a></li>
+        <li class="{% is_active 'web' %}"><a href="#">{% trans "Web" %}</a></li>
         {% endif %}
       </ul>
       <ul class="nav navbar-nav navbar-right">
