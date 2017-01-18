@@ -8,12 +8,11 @@ import sys
 
 from django import get_version
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
 
 from ..ldap_connector import LDAPConnector
 
-from django.contrib.auth.decorators import user_passes_test
 
 def changelog(req):
     """
