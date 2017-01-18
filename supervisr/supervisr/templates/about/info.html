@@ -16,11 +16,16 @@
     </tr>
   </thead>
   <tbody>
-    {% for k, v in data.items %}
+    {% for cat, cat_data in info.items %}
+      <tr>
+        <td colspan="100%"><strong>{{ cat }}</strong></td>
+      </tr>
+      {% for k, v in cat_data.items %}
       <tr>
         <td>{{ k }}</td>
         <td>{{ v }}</td>
       </tr>
+      {% endfor %}
     {% endfor %}
   </tbody>
 </table>
