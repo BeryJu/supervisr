@@ -87,7 +87,8 @@ def signup(req):
             if not AccountController.signup(
                     email=form.cleaned_data.get('email'),
                     name=form.cleaned_data.get('name'),
-                    password=form.cleaned_data.get('password')):
+                    password=form.cleaned_data.get('password'),
+                    request=req):
                 messages.error(req, _("Failed to sign up."))
                 return redirect(reverse('account-login'))
             messages.success(req, _("Successfully signed up!"))
@@ -112,7 +113,8 @@ def change_password(req):
         if form.is_valid():
             if not AccountController.change_password(
                     email=req.user.email,
-                    password=form.cleaned_data.get('password')):
+                    password=form.cleaned_data.get('password'),
+                    request=req):
                 messages.error(req, _("Failed to change password"))
             else:
                 messages.success(req, _("Successfully changed password!"))

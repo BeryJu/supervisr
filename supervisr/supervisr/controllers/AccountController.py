@@ -13,7 +13,7 @@ from ..signals import SIG_USER_CHANGED_PASS, SIG_USER_SIGNED_UP
 
 LOGGER = logging.getLogger(__name__)
 
-def signup(email, name, password, ldap=None):
+def signup(email, name, password, ldap=None, request=None):
     """
     Creates a new Django/LDAP user from email, name and password.
     """
@@ -48,10 +48,11 @@ def signup(email, name, password, ldap=None):
     # Send event for user creation
     SIG_USER_SIGNED_UP.send(
         sender=None,
-        user=new_user)
+        user=new_user,
+        req=request)
     return True
 
-def change_password(email, password, ldap=None, reset=False):
+def change_password(email, password, ldap=None, reset=False, request=None):
     """
     Reset Password for a Django/LDAP user
     """
@@ -68,7 +69,8 @@ def change_password(email, password, ldap=None, reset=False):
     SIG_USER_CHANGED_PASS.send(
         sender=None,
         user=user,
-        was_reset=reset)
+        was_reset=reset,
+        req=request)
     LOGGER.debug("Successfully updated password for %s", email)
     return True
 
