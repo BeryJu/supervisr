@@ -16,7 +16,8 @@ def index(req):
     user_products = UserProductRelationship.objects.filter(user=req.user)
     hosted_applications = UserProductRelationship\
         .objects.filter(user=req.user, product__managed=True)
-    events = Event.objects.filter(user=req.user)\
+    events = Event.objects.filter(
+        user=req.user, hidden=False) \
         .order_by('-create_date')[:15]
     return render(req, 'common/index.html', {
         'uprs': user_products,

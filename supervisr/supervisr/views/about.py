@@ -36,5 +36,7 @@ def info(req):
         'commit': settings.VERSION_HASH,
         'django': get_version(),
         'LDAPConnector': LDAPConnector.enabled,
+        'REMOTE_ADDR': req.META.get('REMOTE_ADDR'),
+        'X-Forwarded-for': req.META.get('HTTP_X_FORWARDED_FOR')
     }
     return render(req, 'about/info.html', {'data': data})

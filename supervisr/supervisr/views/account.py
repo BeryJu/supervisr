@@ -26,6 +26,7 @@ from ..ldap_connector import LDAPConnector
 from ..mailer import Mailer
 from ..models import (ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET,
                       ACCOUNT_CONFIRMATION_KIND_SIGN_UP, AccountConfirmation)
+from ..signals import SIG_USER_LOGIN, SIG_USER_LOGOUT
 
 LOGGER = logging.getLogger(__name__)
 
@@ -47,6 +48,9 @@ def login(req):
                 else:
                     req.session.set_expiry(0) # Expires when browser is closed
                 messages.success(req, _("Successfully logged in!"))
+                # Send event that we're logged in now
+                SIG_USER_LOGIN.send(
+                    sender=login, user=user, req=req)
                 LOGGER.info("Successfully logged in %s", form.cleaned_data.get('email'))
                 return redirect(reverse('common-index'))
             else:
@@ -127,6 +131,9 @@ def logout(req):
     """
     View to handle Browser logout Requests
     """
+    # Send event first because we still have the user
+    SIG_USER_LOGOUT.send(
+        sender=logout, user=req.user, req=req)
     django_logout(req)
     messages.success(req, _("Successfully logged out!"))
     return redirect(reverse('common-index'))

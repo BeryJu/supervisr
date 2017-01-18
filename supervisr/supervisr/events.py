@@ -6,7 +6,7 @@ from django.dispatch import receiver
 from django.utils.translation import ugettext as _
 
 from .models import Event
-from .signals import (SIG_USER_CHANGED_PASS,
+from .signals import (SIG_USER_CHANGED_PASS, SIG_USER_LOGIN, SIG_USER_LOGOUT,
                       SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
                       SIG_USER_PRODUCT_RELATIONSHIP_DELETED,
                       SIG_USER_SIGNED_UP)
@@ -14,7 +14,7 @@ from .signals import (SIG_USER_CHANGED_PASS,
 
 @receiver(SIG_USER_SIGNED_UP)
 # pylint: disable=unused-argument
-def event_handle_user_signed_up(sender, signal, user, **kwargs):
+def event_handle_user_signed_up(sender, signal, user, req, **kwargs):
     """
     Create an Event when a user signed up
     """
@@ -25,7 +25,7 @@ def event_handle_user_signed_up(sender, signal, user, **kwargs):
 
 @receiver(SIG_USER_CHANGED_PASS)
 # pylint: disable=unused-argument
-def event_handle_user_changed_pass(signal, user, was_reset, **kwargs):
+def event_handle_user_changed_pass(signal, user, req, was_reset, **kwargs):
     """
     Create an Event when a user changes their password
     """
@@ -51,7 +51,7 @@ def event_handle_upr_created(sender, signal, upr, **kwargs):
 
 @receiver(SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
 # pylint: disable=unused-argument
-def event_handle_upr_deleted(sender, signal, upr):
+def event_handle_upr_deleted(sender, signal, upr, **kwargs):
     """
     Create an Event to let users know that they lost access to a Product
     """
@@ -61,3 +61,19 @@ def event_handle_upr_deleted(sender, signal, upr):
             'product': upr.product
             }),
         current=True)
+
+@receiver(SIG_USER_LOGIN)
+# pylint: disable=unused-argument
+def event_handler_user_login(sender, signal, user, req, **kwargs):
+    """
+    Create a hidden event when a user logs in
+    """
+    pass
+
+@receiver(SIG_USER_LOGOUT)
+# pylint: disable=unused-argument
+def event_handler_user_logout(sender, signal, user, req, **kwargs):
+    """
+    Create a hidden event when a user logs out
+    """
+    pass
