@@ -6,10 +6,11 @@ import platform
 import socket
 import sys
 
-from django import get_version
+from django import get_version as django_version
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
+from ldap3 import version as ldap3_version
 
 from ..ldap_connector import LDAPConnector
 
@@ -24,19 +25,29 @@ def changelog(req):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
+# pylint:disable=redefined-outer-name
 def info(req):
     """
     Show system information
     """
-    data = {
-        'Python Version': sys.version_info.__repr__(),
-        'uname': platform.uname().__repr__(),
-        'FQDN': socket.getfqdn(),
-        'url_name': req.resolver_match.url_name,
-        'commit': settings.VERSION_HASH,
-        'django': get_version(),
-        'LDAPConnector': LDAPConnector.enabled,
-        'REMOTE_ADDR': req.META.get('REMOTE_ADDR'),
-        'X-Forwarded-for': req.META.get('HTTP_X_FORWARDED_FOR')
+    info = {
+        'Version': {
+            'Python Version': sys.version_info.__repr__(),
+            'Django Version': django_version(),
+            'LDAP3 Version': ldap3_version.__version__,
+            'Supervisr Commit': settings.VERSION_HASH,
+        },
+        'System': {
+            'uname': platform.uname().__repr__(),
+            'FQDN': socket.getfqdn(),
+        },
+        'Request': {
+            'url_name': req.resolver_match.url_name,
+            'REMOTE_ADDR': req.META.get('REMOTE_ADDR'),
+            'X-Forwarded-for': req.META.get('HTTP_X_FORWARDED_FOR')
+        },
+        'Settings': {
+            'LDAP Enabled': LDAPConnector.enabled,
+        }
     }
-    return render(req, 'about/info.html', {'data': data})
+    return render(req, 'about/info.html', {'info': info})
