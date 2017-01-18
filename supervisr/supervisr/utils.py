@@ -26,5 +26,5 @@ def get_reverse_dns(dev_ip):
             return rev[0][0]
         else:
             return ''
-    except socket.herror as e:
+    except socket.herror:
         return ''
