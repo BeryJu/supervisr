@@ -38,4 +38,4 @@ class SupervisrCoreConfig(AppConfig):
             settings.VERSION_HASH = b'dev'
         # Import events so they get registered
         # pylint: disable=unused-variable
-        import supervisr.events
+        import supervisr.events # noqa
