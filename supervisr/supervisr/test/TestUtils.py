@@ -2,6 +2,7 @@
 Supervisr Core Utils Test
 """
 
+import platform
 import socket
 
 from django.test import RequestFactory, TestCase
@@ -31,4 +32,8 @@ class TestUtils(TestCase):
         """
         Test get_reverse_dns
         """
-        self.assertEqual(get_reverse_dns('127.0.0.1'), socket.getfqdn())
+        reverse = get_reverse_dns('127.0.0.1')
+        if platform.system() == 'Linux':
+            self.assertEqual(reverse, 'localhost')
+        elif platform.system() == 'Windows':
+            self.assertEqual(reverse, socket.getfqdn())
