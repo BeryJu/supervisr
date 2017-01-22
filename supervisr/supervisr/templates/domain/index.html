@@ -1,0 +1,33 @@
+{% extends "core/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+
+{% block title %}
+{% supervisr_title "Domains" %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="container">
+    {% for domain in domains %}
+    <div class="col-3">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">{{ domain.name }}</h3>
+        </div>
+        <div class="panel-body">
+          {{ domain.description }}
+          {% if domain.management_url %}
+            <a target="_blank" href="{{ domain.management_url }}" class="btn btn-lg btn-main">{% trans 'Open' %}</a>
+          {% else %}
+            <a target="_blank" href="" class="btn btn-lg btn-main">{% trans 'Open' %}</a>
+          {% endif %}
+        </div>
+      </div>
+      <h1></h1>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

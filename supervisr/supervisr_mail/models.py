@@ -21,6 +21,10 @@ class MailDomain(Product):
         """
         return self.domain_mail
 
+    @domain.setter
+    def domain(self, value):
+        self.domain_mail = value
+
     def __str__(self):
         return "MailDomain %s" % self.domain
 

@@ -40,10 +40,9 @@ def info(req):
         },
         'System': {
             'uname': platform.uname().__repr__(),
-            'FQDN': socket.getfqdn(),
         },
         'Request': {
-            'url_name': req.resolver_match.url_name,
+            'url_name': req.resolver_match.url_name if req.resolver_match is not None else '',
             'REMOTE_ADDR': req.META.get('REMOTE_ADDR'),
             'REMOTE_ADDR PTR': get_reverse_dns(req.META.get('REMOTE_ADDR')),
             'X-Forwarded-for': req.META.get('HTTP_X_FORWARDED_FOR'),

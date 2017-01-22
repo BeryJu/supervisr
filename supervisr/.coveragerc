@@ -3,7 +3,7 @@ source = .
 
 [report]
 sort = Cover
-skip_covered = True
+#skip_covered = True
 exclude_lines =
   pragma: no cover
 
@@ -24,6 +24,7 @@ exclude_lines =
 omit =
     manage.py
     supervisr/settings.py
+    supervisr/wsgi.py
     supervisr*/migrations/*
     supervisr*/apps.py
 
