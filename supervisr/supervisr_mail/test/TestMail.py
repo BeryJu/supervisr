@@ -3,9 +3,11 @@ Supervisr Mail Test
 """
 
 from django.test import TestCase
+
 from supervisr.models import Domain
 
-from ..models import MailDomain, MailAccount
+from ..models import MailAccount, MailDomain
+
 
 class TestMail(TestCase):
     """

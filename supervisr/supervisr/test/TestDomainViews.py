@@ -2,6 +2,7 @@
 Supervisr Core DomainView Test
 """
 
+# pylint: disable=duplicate-code
 import os
 
 from django.contrib.auth.models import AnonymousUser, User

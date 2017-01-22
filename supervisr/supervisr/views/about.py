@@ -3,7 +3,6 @@ Supervisr Core About Views
 """
 
 import platform
-import socket
 import sys
 
 from django import get_version as django_version

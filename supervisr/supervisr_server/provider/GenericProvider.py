@@ -2,10 +2,7 @@
 Supervisr Server Generic Provider
 """
 
-import json
-from abc import ABCMeta, abstractmethod
-
-import request
+from abc import ABCMeta
 
 
 class GenericProvider(object):

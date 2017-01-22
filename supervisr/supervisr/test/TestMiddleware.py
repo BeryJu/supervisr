@@ -4,13 +4,14 @@ Supervisr Core Middleware Test
 
 import os
 
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
-from ..models import get_system_user, Setting
-from ..views import account
 from ..middleware.MaintenanceMode import maintenance_mode
+from ..models import Setting
+from ..views import account
+
 
 # pylint: disable=duplicate-code
 class TestMiddleware(TestCase):
@@ -29,7 +30,7 @@ class TestMiddleware(TestCase):
         Setting.set('supervisr:maintenancemode', True)
         req = self.factory.get(reverse('account-login'))
         req.user = AnonymousUser()
-        res = maintenance_mode(lambda req: account.login(req))(req)
+        res = maintenance_mode(account.login)(req)
         self.assertEqual(res.status_code, 200)
 
     def test_maintenance_mode_on(self):
@@ -39,5 +40,5 @@ class TestMiddleware(TestCase):
         Setting.set('supervisr:maintenancemode', False)
         req = self.factory.get(reverse('account-login'))
         req.user = AnonymousUser()
-        res = maintenance_mode(lambda req: account.login(req))(req)
+        res = maintenance_mode(account.login)(req)
         self.assertEqual(res.status_code, 200)

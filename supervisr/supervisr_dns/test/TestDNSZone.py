@@ -3,9 +3,11 @@ Supervisr DNS DNSZone Test
 """
 
 from django.test import TestCase
+
 from supervisr.models import Domain
 
 from ..models import DNSZone
+
 
 class TestDNSZone(TestCase):
     """
