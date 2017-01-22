@@ -13,6 +13,7 @@ from django.shortcuts import render
 from ldap3 import version as ldap3_version
 
 from ..ldap_connector import LDAPConnector
+from ..utils import get_reverse_dns
 
 
 def changelog(req):
@@ -44,10 +45,13 @@ def info(req):
         'Request': {
             'url_name': req.resolver_match.url_name,
             'REMOTE_ADDR': req.META.get('REMOTE_ADDR'),
-            'X-Forwarded-for': req.META.get('HTTP_X_FORWARDED_FOR')
+            'REMOTE_ADDR PTR': get_reverse_dns(req.META.get('REMOTE_ADDR')),
+            'X-Forwarded-for': req.META.get('HTTP_X_FORWARDED_FOR'),
+            'X-Forwarded-for PTR': get_reverse_dns(req.META.get('HTTP_X_FORWARDED_FOR')),
         },
         'Settings': {
             'LDAP Enabled': LDAPConnector.enabled,
+            'Debug Enabled': settings.DEBUG,
         }
     }
     return render(req, 'about/info.html', {'info': info})
