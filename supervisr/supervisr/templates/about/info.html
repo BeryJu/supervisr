@@ -2,6 +2,8 @@
 
 {% load supervisr_title %}
 {% load i18n %}
+{% load hostname %}
+{% load setting %}
 
 {% block title %}
 {% supervisr_title "System Info" %}
@@ -27,6 +29,28 @@
       </tr>
       {% endfor %}
     {% endfor %}
+    <tr>
+      <td colspan="100%"><strong>Templatetags</strong></td>
+    </tr>
+    <tr>
+      <td>hostname.hostname</td>
+      <td>{% hostname %}</td>
+    </tr>
+    <tr>
+      <td>hostname.fqdn</td>
+      <td>{% fqdn %}</td>
+    </tr>
+    <tr>
+      <td colspan="100%"><strong>settings.py</strong></td>
+    </tr>
+    <tr>
+      <td>DEBUG</td>
+      <td>{% setting 'DEBUG' %}</td>
+    </tr>
+    <tr>
+      <td>SECRET_KEY</td>
+      <td>{% setting 'SECRET_KEY' 'BLOCKED' %}</td>
+    </tr>
   </tbody>
 </table>
 {% endblock %}

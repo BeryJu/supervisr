@@ -192,3 +192,6 @@ LOGGING = {
         },
     }
 }
+
+if 'test' in sys.argv:
+    LOGGING = None

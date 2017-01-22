@@ -12,7 +12,6 @@ class TestServerModel(TestCase):
     Supervisr Server ServerModel Test
     """
 
-
     def setUp(self):
         pass
 

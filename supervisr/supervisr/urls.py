@@ -5,7 +5,7 @@ supervisr core urls
 from django.conf.urls import include, url
 from django.contrib import admin
 
-from .views import about, account, common, product
+from .views import about, account, common, domain, product
 
 # pylint: disable=invalid-name
 handler404 = 'supervisr.views.common.uncaught_404'
@@ -27,6 +27,7 @@ urlpatterns = [
         account.reset_password_confirm, name='account-reset_password_confirm'),
     url(r'^products/$', product.index, name='product-index'),
     url(r'^products/(?P<slug>[a-zA-Z0-9\-]+)/$', product.view, name='product-view'),
+    url(r'^domain/$', domain.index, name='domain-index'),
     url(r'^dns/', include('supervisr_dns.urls')),
     url(r'^mail/', include('supervisr_mail.urls')),
     url(r'^server/', include('supervisr_server.urls')),

@@ -4,6 +4,7 @@ Supervisr Core Account Test
 
 import os
 
+from django.contrib.auth.models import User
 from django.test import TestCase
 
 from ..controllers import AccountController
@@ -149,3 +150,16 @@ class TestAccount(TestCase):
         # user = User.objects.get(email=self.signup_data['email'])
         res = test_request(account.reset_password_init)
         self.assertEqual(res.status_code, 200)
+
+    def test_resend_confirmation(self):
+        """
+        Test AccountController.resend_confirmation
+        """
+        self.assertTrue(AccountController.signup(
+            name=self.signup_data['name'],
+            email=self.signup_data['email'],
+            password=self.signup_data['password'],
+            ldap=self.ldap))
+
+        user = User.objects.get(email=self.signup_data['email'])
+        self.assertTrue(AccountController.resend_confirmation(user))

@@ -274,7 +274,6 @@ class Domain(Product):
     Information about a Domain, which is used for other sub-apps.
     This is also used for sub domains, hence the is_sub.
     """
-    domain_name = models.CharField(max_length=255)
     registrar = models.TextField()
     is_sub = models.BooleanField(default=False)
 
@@ -283,14 +282,14 @@ class Domain(Product):
         """
         Wrapper so we can do domain.domain
         """
-        return self.domain_name
+        return self.name
 
     @domain.setter
     def domain(self, value):
         """
         Wrapper so we can do domain.domain
         """
-        self.domain_name = value
+        self.name = value
 
     def __str__(self):
         return "Domain '%s'" % self.domain_name

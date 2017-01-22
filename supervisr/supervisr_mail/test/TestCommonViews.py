@@ -1,22 +1,22 @@
 """
-Supervisr Core CommonView Test
+Supervisr Mail CommonView Test
 """
 
-# pylint: disable=duplicate-code
 import os
 
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
-from ..models import get_system_user
+from supervisr.models import get_system_user
+
 from ..views import common
 
 
 # pylint: disable=duplicate-code
 class TestCommonViews(TestCase):
     """
-    Supervisr Core CommonView Test
+    Supervisr Mail CommonView Test
     """
 
     def setUp(self):
@@ -27,7 +27,7 @@ class TestCommonViews(TestCase):
         """
         Test Index View (Anonymous)
         """
-        req = self.factory.get(reverse('common-index'))
+        req = self.factory.get(reverse('mail-index'))
         req.user = AnonymousUser()
         res = common.index(req)
         self.assertEqual(res.status_code, 302)
@@ -36,7 +36,7 @@ class TestCommonViews(TestCase):
         """
         Test Index View (Authenticated)
         """
-        req = self.factory.get(reverse('common-index'))
+        req = self.factory.get(reverse('mail-index'))
         req.user = User.objects.get(pk=get_system_user())
         res = common.index(req)
         self.assertEqual(res.status_code, 200)
