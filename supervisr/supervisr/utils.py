@@ -23,7 +23,7 @@ def get_reverse_dns(dev_ip):
     try:
         rev = socket.gethostbyaddr(dev_ip)
         if len(rev) > 0:
-            return rev[0][0]
+            return rev[0]
         else:
             return ''
     except (socket.herror, TypeError):
