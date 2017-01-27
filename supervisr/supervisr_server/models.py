@@ -4,7 +4,7 @@ Superviser Server Models
 from django.db import models
 from django.utils.translation import ugettext as _
 
-from supervisr.models import Product
+from supervisr.models import CreatedUpdatedModel, Product
 
 
 class Server(Product):
@@ -21,7 +21,7 @@ class Server(Product):
     def __str__(self):
         return self.name
 
-class ServerCPU(models.Model):
+class ServerCPU(CreatedUpdatedModel):
     """
     Store information about a CPU Model
     """
@@ -47,7 +47,7 @@ class ServerCPU(models.Model):
             'cores': self.cores
             })
 
-class ServerDrive(models.Model):
+class ServerDrive(CreatedUpdatedModel):
     """
     Store information about a Drive Model
     """
@@ -73,7 +73,7 @@ class ServerDrive(models.Model):
             'is_flash': self.is_flash
             })
 
-class ServerNIC(models.Model):
+class ServerNIC(CreatedUpdatedModel):
     """
     Store information about a Server NIC
     """
@@ -86,7 +86,7 @@ class ServerNIC(models.Model):
             'speed': self.speed
             })
 
-class IPAddress(models.Model):
+class IPAddress(CreatedUpdatedModel):
     """
     Store Information about an IP
     """

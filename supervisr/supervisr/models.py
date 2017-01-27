@@ -23,25 +23,25 @@ from django.utils.translation import ugettext as _
 from .signals import (SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
                       SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
 
-NOTIFICATION_IMPORTANCE = (
-    (40, _('Urgent')),
-    (30, _('Important')),
-    (20, _('Medium')),
-    (10, _('Notice')),
-    (0, _('Information'))
-)
 NOTIFICATION_IMPORTANCE_URGENT = 40
 NOTIFICATION_IMPORTANCE_IMPORTANT = 30
 NOTIFICATION_IMPORTANCE_MEDIUM = 20
 NOTIFICATION_IMPORTANCE_NOTICE = 10
 NOTIFICATION_IMPORTANCE_INFORMATION = 0
-
-ACCOUNT_CONFIRMATION_KIND = (
-    (0, _('Sign up')),
-    (1, _('Password Reset')),
+NOTIFICATION_IMPORTANCE = (
+    (NOTIFICATION_IMPORTANCE_URGENT, _('Urgent')),
+    (NOTIFICATION_IMPORTANCE_IMPORTANT, _('Important')),
+    (NOTIFICATION_IMPORTANCE_MEDIUM, _('Medium')),
+    (NOTIFICATION_IMPORTANCE_NOTICE, _('Notice')),
+    (NOTIFICATION_IMPORTANCE_INFORMATION, _('Information'))
 )
+
 ACCOUNT_CONFIRMATION_KIND_SIGN_UP = 0
 ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET = 1
+ACCOUNT_CONFIRMATION_KIND = (
+    (ACCOUNT_CONFIRMATION_KIND_SIGN_UP, _('Sign up')),
+    (ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET, _('Password Reset')),
+)
 
 def expiry_date():
     """
@@ -85,7 +85,17 @@ def get_system_user():
     else:
         return 1 # Django starts AutoField's with 1 not 0
 
-class UserProfile(models.Model):
+class CreatedUpdatedModel(models.Model):
+    """
+    Base Abstract Model to save created and update
+    """
+    created = models.DateField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+class UserProfile(CreatedUpdatedModel):
     """
     Save settings associated with user, since we don't want a custom user Model
     """
@@ -97,7 +107,7 @@ class UserProfile(models.Model):
     def __str__(self):
         return "UserProfile %s" % self.user.email
 
-class Setting(models.Model):
+class Setting(CreatedUpdatedModel):
     """
     Save key-value settings to db
     """
@@ -145,7 +155,7 @@ class Setting(models.Model):
             setting.value = value
             setting.save()
 
-class AccountConfirmation(models.Model):
+class AccountConfirmation(CreatedUpdatedModel):
     """
     Save information about actions that need to be confirmed
     """
@@ -167,7 +177,7 @@ class AccountConfirmation(models.Model):
         return "AccountConfirmation %s, expired: %r" % \
             (self.user.email, self.is_expired)
 
-class UserProductRelationship(models.Model):
+class UserProductRelationship(CreatedUpdatedModel):
     """
     Keeps track of a relationship between a User and a Product, with optional instance informations
     """
@@ -216,7 +226,7 @@ class UserProductRelationship(models.Model):
                 event.save()
         super(UserProductRelationship, self).delete(*args, **kwargs)
 
-class Product(models.Model):
+class Product(CreatedUpdatedModel):
     """
     Information about the Main Product itself. This instances of this classes
     are assumed to be managed services.
@@ -294,7 +304,7 @@ class Domain(Product):
     def __str__(self):
         return "Domain '%s'" % self.domain_name
 
-class Event(models.Model):
+class Event(CreatedUpdatedModel):
     """
     Store information about important Event's for auditing, like signing up, changing/resetting
     your password or gaining access to a new Product
@@ -354,3 +364,17 @@ class Event(models.Model):
 
     def __str__(self):
         return "Event '%s' '%s'" % (self.user.username, self.message)
+
+class ProviderInstance(CreatedUpdatedModel):
+    """
+    Save an instance of a Provider
+    """
+    provider_instance_id = models.AutoField(primary_key=True)
+    provider_app = models.CharField(max_length=255)
+    provider_module = models.CharField(max_length=255)
+    provider_class = models.CharField(max_length=255)
+    provider_name = models.TextField()
+    is_managed = models.BooleanField(max_length=255)
+    user_id = models.TextField()
+    user_password = models.TextField()
+    salt = models.CharField(max_length=128)

@@ -25,4 +25,4 @@ def get_reverse_dns(dev_ip):
         if len(rev) > 0:
             return rev[0]
     except (socket.herror, TypeError, IndexError):
-        return None
+        return ''
