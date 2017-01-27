@@ -3,7 +3,7 @@ Supervisr DNS Models
 """
 from django.db import models
 
-from supervisr.models import Domain, Product
+from supervisr.models import CreatedUpdatedModel, Domain, Product
 
 
 class DNSZone(Product):
@@ -27,7 +27,7 @@ class DNSZone(Product):
     def __str__(self):
         return "DNS Zone '%s'" % self.zone
 
-class DNSRecord(models.Model):
+class DNSRecord(CreatedUpdatedModel):
     """
     Store a particular DNS record
     """

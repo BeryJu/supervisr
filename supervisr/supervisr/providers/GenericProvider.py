@@ -1,5 +1,5 @@
 """
-Supervisr Server Generic Provider
+Supervisr Core Generic Provider
 """
 
 from abc import ABCMeta
