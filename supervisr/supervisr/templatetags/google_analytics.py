@@ -3,6 +3,7 @@ Supervisr Core Google Analytics Templatetag
 """
 
 from django import template
+from django.utils.safestring import mark_safe
 
 from ..models import Setting
 
@@ -25,7 +26,7 @@ def google_analytics(context, tracking_id=''):
     req = context['request']
     if req.user.is_authenticated:
         user_id = req.user.pk
-    return """
+    return mark_safe("""
     <script>
     window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
     ga('create', {
@@ -39,4 +40,4 @@ def google_analytics(context, tracking_id=''):
     """ % {
         'tracking_id': tracking_id,
         'user_id': user_id if user_id else 'Anonymous'
-    }
+    })
