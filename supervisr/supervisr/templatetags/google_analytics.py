@@ -26,6 +26,8 @@ def google_analytics(context, tracking_id=''):
     req = context['request']
     if req.user.is_authenticated:
         user_id = req.user.pk
+    else:
+        user_id = 'Anonymous'
     return mark_safe("""
     <script>
     window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
@@ -39,5 +41,5 @@ def google_analytics(context, tracking_id=''):
     <script async src='https://www.google-analytics.com/analytics.js'></script>
     """ % {
         'tracking_id': tracking_id,
-        'user_id': user_id if user_id else 'Anonymous'
+        'user_id': user_id
     })

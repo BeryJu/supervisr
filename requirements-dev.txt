@@ -3,3 +3,4 @@ coverage
 isort
 pylint-django
 prospector
+django-debug-toolbar
