@@ -71,6 +71,8 @@ INSTALLED_APPS = [
     'supervisr_mail',
 ]
 
+INTERNAL_IPS = ['127.0.0.1']
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -195,3 +197,7 @@ LOGGING = {
 
 if 'test' in sys.argv:
     LOGGING = None
+
+if DEBUG is True:
+    INSTALLED_APPS.append('debug_toolbar')
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
