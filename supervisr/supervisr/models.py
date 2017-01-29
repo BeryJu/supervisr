@@ -23,25 +23,6 @@ from django.utils.translation import ugettext as _
 from .signals import (SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
                       SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
 
-NOTIFICATION_IMPORTANCE_URGENT = 40
-NOTIFICATION_IMPORTANCE_IMPORTANT = 30
-NOTIFICATION_IMPORTANCE_MEDIUM = 20
-NOTIFICATION_IMPORTANCE_NOTICE = 10
-NOTIFICATION_IMPORTANCE_INFORMATION = 0
-NOTIFICATION_IMPORTANCE = (
-    (NOTIFICATION_IMPORTANCE_URGENT, _('Urgent')),
-    (NOTIFICATION_IMPORTANCE_IMPORTANT, _('Important')),
-    (NOTIFICATION_IMPORTANCE_MEDIUM, _('Medium')),
-    (NOTIFICATION_IMPORTANCE_NOTICE, _('Notice')),
-    (NOTIFICATION_IMPORTANCE_INFORMATION, _('Information'))
-)
-
-ACCOUNT_CONFIRMATION_KIND_SIGN_UP = 0
-ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET = 1
-ACCOUNT_CONFIRMATION_KIND = (
-    (ACCOUNT_CONFIRMATION_KIND_SIGN_UP, _('Sign up')),
-    (ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET, _('Password Reset')),
-)
 
 def expiry_date():
     """
@@ -159,6 +140,14 @@ class AccountConfirmation(CreatedUpdatedModel):
     """
     Save information about actions that need to be confirmed
     """
+
+    KIND_SIGN_UP = 0
+    KIND_PASSWORD_RESET = 1
+    ACCOUNT_CONFIRMATION_KIND = (
+        (KIND_SIGN_UP, _('Sign up')),
+        (KIND_PASSWORD_RESET, _('Password Reset')),
+    )
+
     account_confirmation_id = models.UUIDField(primary_key=True, \
         default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User)
@@ -309,6 +298,20 @@ class Event(CreatedUpdatedModel):
     Store information about important Event's for auditing, like signing up, changing/resetting
     your password or gaining access to a new Product
     """
+
+    EVENT_IMPORTANCE_URGENT = 40
+    EVENT_IMPORTANCE_IMPORTANT = 30
+    EVENT_IMPORTANCE_MEDIUM = 20
+    EVENT_IMPORTANCE_NOTICE = 10
+    EVENT_IMPORTANCE_INFORMATION = 0
+    EVENT_IMPORTANCE = (
+        (EVENT_IMPORTANCE_URGENT, _('Urgent')),
+        (EVENT_IMPORTANCE_IMPORTANT, _('Important')),
+        (EVENT_IMPORTANCE_MEDIUM, _('Medium')),
+        (EVENT_IMPORTANCE_NOTICE, _('Notice')),
+        (EVENT_IMPORTANCE_INFORMATION, _('Information'))
+    )
+
     event_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User)
     glyph = models.CharField(max_length=200, default='envelope')

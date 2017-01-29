@@ -31,10 +31,8 @@ def google_analytics(context, tracking_id=''):
     return mark_safe("""
     <script>
     window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-    ga('create', {
-      trackingId: '%(tracking_id)s',
-      cookieDomain: 'auto',
-      userId: '%(user_id)s'
+    ga('create', '%(tracking_id)s', 'auto', {
+      userId: '%(user_id)s',
     });
     ga('send', 'pageview');
     </script>

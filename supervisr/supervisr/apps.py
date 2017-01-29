@@ -39,3 +39,5 @@ class SupervisrCoreConfig(AppConfig):
         # Import events so they get registered
         # pylint: disable=unused-variable
         import supervisr.events # noqa
+        # pylint: disable=unused-variable
+        import supervisr.mailer # noqa

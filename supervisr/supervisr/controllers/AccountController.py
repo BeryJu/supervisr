@@ -7,9 +7,9 @@ import logging
 from django.contrib.auth.models import User
 
 from ..ldap_connector import LDAPConnector
-from ..mailer import Mailer
 from ..models import AccountConfirmation, Product, UserProfile
-from ..signals import SIG_USER_CHANGED_PASS, SIG_USER_SIGNED_UP
+from ..signals import (SIG_USER_CHANGED_PASS, SIG_USER_RESEND_CONFIRM,
+                       SIG_USER_SIGNED_UP)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -39,12 +39,10 @@ def signup(email, name, password, ldap=None, request=None):
             new_user.delete()
             return False
         ldap.disable_user(new_user.email)
-    # Send confirmation email
-    acc_conf = AccountConfirmation.objects.create(user=new_user)
+    # Create Account Confirmation UUID
+    AccountConfirmation.objects.create(user=new_user)
     # Run Product auto_add
     Product.do_auto_add(new_user)
-    # Send confirmation mail
-    Mailer.send_account_confirm(new_user.email, acc_conf)
     # Send event for user creation
     SIG_USER_SIGNED_UP.send(
         sender=None,
@@ -74,7 +72,7 @@ def change_password(email, password, ldap=None, reset=False, request=None):
     LOGGER.debug("Successfully updated password for %s", email)
     return True
 
-def resend_confirmation(user):
+def resend_confirmation(user, request=None):
     """
     Resend confirmation email after invalidating all existing links
     """
@@ -84,6 +82,10 @@ def resend_confirmation(user):
     for old_ac in old_acs:
         old_ac.confirmed = True
         old_ac.save()
-    # Create a new Confirmation and send mail
-    new_ac = AccountConfirmation.objects.create(user=user)
-    return Mailer.send_account_confirm(user.email, new_ac)
+    # Create Account Confirmation UUID
+    AccountConfirmation.objects.create(user=user)
+    SIG_USER_RESEND_CONFIRM.send(
+        sender=None,
+        user=user,
+        req=request)
+    return True
