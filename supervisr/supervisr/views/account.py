@@ -23,10 +23,8 @@ from ..forms.account import (ChangePasswordForm, LoginForm,
                              PasswordResetFinishForm, PasswordResetInitForm,
                              SignupForm)
 from ..ldap_connector import LDAPConnector
-from ..mailer import Mailer
-from ..models import (ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET,
-                      ACCOUNT_CONFIRMATION_KIND_SIGN_UP, AccountConfirmation)
-from ..signals import SIG_USER_LOGIN, SIG_USER_LOGOUT
+from ..models import AccountConfirmation
+from ..signals import SIG_USER_LOGIN, SIG_USER_LOGOUT, SIG_USER_PASS_RESET_INIT
 
 LOGGER = logging.getLogger(__name__)
 
@@ -148,7 +146,7 @@ def confirm(req, uuid):
     """
     if AccountConfirmation.objects.filter(
             pk=uuid,
-            kind=ACCOUNT_CONFIRMATION_KIND_SIGN_UP).exists():
+            kind=AccountConfirmation.KIND_SIGN_UP).exists():
         acc_conf = AccountConfirmation.objects.get(pk=uuid)
         if acc_conf.confirmed:
             messages.error(req, _("Account already confirmed!"))
@@ -180,14 +178,12 @@ def reset_password_init(req):
         form = PasswordResetInitForm(req.POST)
         if form.is_valid():
             user = User.objects.get(email=form.cleaned_data.get('email'))
-            pass_conf = AccountConfirmation.objects.create(
+            AccountConfirmation.objects.create(
                 user=user,
-                kind=ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET)
-            if Mailer.send_password_reset_confirm(
-                    user.email, pass_conf):
-                messages.success(req, _('Reset Link sent successfully'))
-            else:
-                messages.error(req, _('Failed to send Link. Please try again later.'))
+                kind=AccountConfirmation.KIND_PASSWORD_RESET)
+            SIG_USER_PASS_RESET_INIT.send(
+                sender=reset_password_init, user=user)
+            messages.success(req, _('Reset Link sent successfully'))
     else:
         form = PasswordResetInitForm()
     return render(req, 'account/generic_account_form.html', {
@@ -207,7 +203,7 @@ def reset_password_confirm(req, uuid):
             password = form.cleaned_data.get('password')
             if AccountConfirmation.objects.filter(
                     pk=uuid,
-                    kind=ACCOUNT_CONFIRMATION_KIND_PASSWORD_RESET).exists():
+                    kind=AccountConfirmation.KIND_PASSWORD_RESET).exists():
                 pass_conf = AccountConfirmation.objects.get(pk=uuid)
                 if pass_conf.confirmed:
                     messages.error(req, _("Link already used!"))
@@ -246,7 +242,7 @@ def confirmation_resend(req, email):
         email=email, is_active=False)
     if users.exists():
         user = users[0]
-        if AccountController.resend_confirmation(user):
+        if AccountController.resend_confirmation(user, request=req):
             messages.success(req, _("Successfully resent confirmation email"))
         else:
             messages.error(req, _("Failed to resend confirmation email"))
