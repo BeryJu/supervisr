@@ -16,6 +16,7 @@ from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Max
 from django.db.utils import OperationalError
+from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -222,10 +223,10 @@ class Product(CreatedUpdatedModel):
     """
     product_id = models.AutoField(primary_key=True)
     name = models.TextField()
-    slug = models.SlugField()
-    description = models.TextField()
+    slug = models.SlugField(blank=True)
+    description = models.TextField(blank=True)
     price = models.DecimalField(decimal_places=3, max_digits=65)
-    invite_only = models.BooleanField(default=False)
+    invite_only = models.BooleanField(default=True)
     auto_add = models.BooleanField(default=False)
     auto_all_add = models.BooleanField(default=False)
     users = models.ManyToManyField(User, through='UserProductRelationship')
@@ -253,6 +254,10 @@ class Product(CreatedUpdatedModel):
                 product=product)
 
     def save(self, *args, **kwargs):
+        # Auto generate slug
+        if not self.pk:
+            self.slug = slugify(self.name)
+
         super(Product, self).save(*args, **kwargs)
         if self.auto_all_add is True:
             # Since there is no better way to do the query other way roundd
