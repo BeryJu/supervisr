@@ -1,3 +1,0 @@
-"""
-Supervisr Mail Views
-"""

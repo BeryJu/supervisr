@@ -10,7 +10,7 @@ from django.urls import reverse
 
 from supervisr.models import get_system_user
 
-from ..views import common
+from ..views import mail
 
 
 # pylint: disable=duplicate-code
@@ -29,7 +29,7 @@ class TestCommonViews(TestCase):
         """
         req = self.factory.get(reverse('mail-index'))
         req.user = AnonymousUser()
-        res = common.index(req)
+        res = mail.index(req)
         self.assertEqual(res.status_code, 302)
 
     def test_index_view_auth(self):
@@ -38,5 +38,5 @@ class TestCommonViews(TestCase):
         """
         req = self.factory.get(reverse('mail-index'))
         req.user = User.objects.get(pk=get_system_user())
-        res = common.index(req)
+        res = mail.index(req)
         self.assertEqual(res.status_code, 200)
