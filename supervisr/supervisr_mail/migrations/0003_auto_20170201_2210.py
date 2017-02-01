@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
+
 def update_raw(apps, schema_editor):
     MailDomain = apps.get_model('supervisr_mail', 'MailDomain')
     MailAccount = apps.get_model('supervisr_mail', 'MailAccount')
