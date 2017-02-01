@@ -291,7 +291,7 @@ class Domain(Product):
         self.name = value
 
     def __str__(self):
-        return "Domain '%s'" % self.domain_name
+        return "Domain '%s'" % self.domain
 
 class Event(CreatedUpdatedModel):
     """
