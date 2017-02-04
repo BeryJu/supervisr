@@ -6,3 +6,4 @@ mysqlclient
 django-recaptcha
 markdown
 docutils
+passlib

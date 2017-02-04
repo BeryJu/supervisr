@@ -31,17 +31,17 @@ def expiry_date():
     """
     return time.time() + 172800 # 2 days
 
-def get_username():
+def get_random_string(length=10):
     """
     Generate a completely random 10-char user_name (used for unix-accounts)
     """
     # Generate a normal UUID, convert it to base64 and take the 10 first chars
     uid = uuid.uuid4()
     # UUID in base64 is 25 chars, we want 10 char length
-    offset = random.randint(0, 15)
+    offset = random.randint(0, 25-length)
     # Python3 changed the way we need to encode
     res = base64.b64encode(uid.bytes, altchars=b'_-')
-    return res[offset:offset+10]
+    return res[offset:offset+length]
 
 def get_userid():
     """
@@ -82,7 +82,7 @@ class UserProfile(CreatedUpdatedModel):
     Save settings associated with user, since we don't want a custom user Model
     """
     user = models.OneToOneField(User, primary_key=True)
-    unix_username = models.CharField(max_length=10, default=get_username, editable=False)
+    unix_username = models.CharField(max_length=10, default=get_random_string, editable=False)
     unix_userid = models.IntegerField(default=get_userid)
     locale = models.CharField(max_length=5, default='en-US')
 

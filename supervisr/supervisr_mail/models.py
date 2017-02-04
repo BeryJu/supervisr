@@ -1,11 +1,15 @@
 """
 Supervisr Web Models
 """
+import logging
 
 from django.db import models
 from django.utils.translation import ugettext as _
+from passlib.hash import sha512_crypt
 
 from supervisr.models import Domain, Product
+
+LOGGER = logging.getLogger(__name__)
 
 
 class MailDomain(Product):
@@ -48,6 +52,7 @@ class MailAccount(Product):
     domain_mail = models.ForeignKey(MailDomain)
     quota = models.BigIntegerField(default=0) # account quota in MB. 0 == unlimited
     can_send = models.BooleanField(default=True)
+    can_receive = models.BooleanField(default=True)
     password = models.CharField(max_length=128)
     is_catchall = models.BooleanField(default=False)
 
@@ -66,6 +71,21 @@ class MailAccount(Product):
     @domain.setter
     def domain(self, value):
         self.domain_mail = value
+
+    @property
+    def email(self):
+        """
+        Get our full address
+        """
+        return self.email_raw
+
+    def set_password(self, new_password):
+        """
+        Sets a new password with a new salt
+        """
+        self.password = sha512_crypt(new_password)
+        LOGGER.info("Updated Password MailAccount %s" % self.email)
+        self.save()
 
     def save(self, *args, **kwargs):
         """

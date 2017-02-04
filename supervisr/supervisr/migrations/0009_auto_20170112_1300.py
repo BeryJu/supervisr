@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='userprofile',
             name='unix_username',
-            field=models.CharField(default=supervisr.models.get_username, editable=False, max_length=10),
+            field=models.CharField(default=supervisr.models.get_random_string, editable=False, max_length=10),
         ),
         migrations.AlterField(
             model_name='product',
