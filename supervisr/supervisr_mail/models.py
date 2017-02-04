@@ -79,11 +79,11 @@ class MailAccount(Product):
         """
         return self.email_raw
 
-    def set_password(self, new_password):
+    def set_password(self, new_password, salt=None):
         """
         Sets a new password with a new salt
         """
-        self.password = sha512_crypt(new_password)
+        self.password = sha512_crypt.hash(new_password, salt=salt)
         LOGGER.info("Updated Password MailAccount %s", self.email)
         self.save()
 
@@ -98,4 +98,4 @@ class MailAccount(Product):
         super(MailAccount, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "MailAccount %s@%s" % (self.address, self.domain_mail)
+        return "MailAccount %s %s" % (self.address, self.domain_mail)
