@@ -84,7 +84,7 @@ class MailAccount(Product):
         Sets a new password with a new salt
         """
         self.password = sha512_crypt(new_password)
-        LOGGER.info("Updated Password MailAccount %s" % self.email)
+        LOGGER.info("Updated Password MailAccount %s", self.email)
         self.save()
 
     def save(self, *args, **kwargs):
