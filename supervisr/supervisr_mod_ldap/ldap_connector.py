@@ -234,17 +234,25 @@ class LDAPConnector(object):
         Adds mail or user_dn to group_dn
         Returns True on success, otherwise False
         """
+        if mail is None and user_dn is None:
+            return False
+        if user_dn is None and mail is not None:
+            user_dn = self.mail_to_dn(mail)
         diff = {
             'member': [(MODIFY_ADD), [user_dn]]
         }
-        return self._do_modify(diff, dn=group_dn, user_dn=user_dn)
+        return self._do_modify(diff, user_dn=group_dn)
 
     def remove_from_group(self, group_dn, mail=None, user_dn=None):
         """
         Removes mail or user_dn from group_dn
         Returns True on success, otherwise False
         """
+        if mail is None and user_dn is None:
+            return False
+        if user_dn is None and mail is not None:
+            user_dn = self.mail_to_dn(mail)
         diff = {
             'member': [(MODIFY_DELETE), [user_dn]]
         }
-        return self._do_modify(diff, dn=group_dn, user_dn=user_dn)
+        return self._do_modify(diff, user_dn=group_dn)
