@@ -12,8 +12,8 @@ from django.contrib.auth.models import User
 from django.forms import ValidationError
 from django.utils.translation import ugettext as _
 
-from ..ldap_connector import LDAPConnector
 from ..models import Setting
+from ..signals import SIG_CHECK_USER_EXISTS
 
 LOGGER = logging.getLogger(__name__)
 
@@ -73,11 +73,12 @@ class SignupForm(forms.Form):
         if len(User.objects.filter(email=email)) > 0:
             LOGGER.debug("email %s exists in django", email)
             raise ValidationError(_("Email already exists"))
-        # Test if user exists in LDAP
-        if LDAPConnector.enabled():
-            ldap = LDAPConnector()
-            if ldap.is_email_used(email):
-                LOGGER.debug("email %s exists in ldap", email)
+        results = SIG_CHECK_USER_EXISTS.send(
+            sender=SignupForm,
+            email=email)
+        for handler, result in results:
+            if result is not False:
+                LOGGER.debug("email %s exists in %s", email, handler.__name__)
                 raise ValidationError(_("Email already exists"))
         return email
 

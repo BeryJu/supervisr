@@ -9,9 +9,8 @@ from django import get_version as django_version
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
-from ldap3 import version as ldap3_version
 
-from ..ldap_connector import LDAPConnector
+from ..signals import SIG_GET_MOD_INFO
 from ..utils import get_reverse_dns
 
 
@@ -34,7 +33,6 @@ def info(req):
         'Version': {
             'Python Version': sys.version_info.__repr__(),
             'Django Version': django_version(),
-            'LDAP3 Version': ldap3_version.__version__,
             'Supervisr Commit': settings.VERSION_HASH,
         },
         'System': {
@@ -48,8 +46,10 @@ def info(req):
             'X-Forwarded-for PTR': get_reverse_dns(req.META.get('HTTP_X_FORWARDED_FOR')),
         },
         'Settings': {
-            'LDAP Enabled': LDAPConnector.enabled,
             'Debug Enabled': settings.DEBUG,
         }
     }
+    results = SIG_GET_MOD_INFO.send(sender=None)
+    for handler, info in results:
+        info[handler] = info
     return render(req, 'about/info.html', {'info': info})

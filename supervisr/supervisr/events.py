@@ -6,14 +6,14 @@ from django.dispatch import receiver
 from django.utils.translation import ugettext as _
 
 from .models import Event
-from .signals import (SIG_USER_CHANGED_PASS, SIG_USER_LOGIN, SIG_USER_LOGOUT,
+from .signals import (SIG_USER_LOGIN, SIG_USER_LOGOUT,
+                      SIG_USER_POST_CHANGE_PASS, SIG_USER_POST_SIGN_UP,
                       SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
-                      SIG_USER_PRODUCT_RELATIONSHIP_DELETED,
-                      SIG_USER_SIGNED_UP)
+                      SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
 from .utils import get_remote_ip, get_reverse_dns
 
 
-@receiver(SIG_USER_SIGNED_UP)
+@receiver(SIG_USER_POST_SIGN_UP)
 # pylint: disable=unused-argument
 def event_handle_user_signed_up(sender, signal, user, req, **kwargs):
     """
@@ -28,7 +28,7 @@ def event_handle_user_signed_up(sender, signal, user, req, **kwargs):
         remote_ip=remote_ip,
         remote_ip_rdns=rdns)
 
-@receiver(SIG_USER_CHANGED_PASS)
+@receiver(SIG_USER_POST_CHANGE_PASS)
 # pylint: disable=unused-argument
 def event_handle_user_changed_pass(signal, user, req, was_reset, **kwargs):
     """

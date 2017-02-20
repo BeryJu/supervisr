@@ -7,21 +7,24 @@ import os
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from ..controllers import AccountController
-from ..forms.account import LoginForm, SignupForm
-from ..models import get_system_user
-from ..views import account
-from .utils import test_request
+from supervisr.controllers import AccountController
+from supervisr.forms.account import LoginForm, SignupForm
+from supervisr.models import get_system_user
+from supervisr.utils import test_request
+from supervisr.views import account
+
+from ..ldap_connector import LDAPConnector
 
 
 # pylint: disable=duplicate-code
-class TestAccount(TestCase):
+class TestAccountLDAP(TestCase):
     """
     Supervisr Core Account Test
     """
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
+        self.ldap = LDAPConnector(mock=True)
         self.signup_data = {
             'email': 'test@test.test',
             'name': 'Test user',
@@ -58,7 +61,8 @@ class TestAccount(TestCase):
         self.assertTrue(AccountController.signup(
             name=self.signup_data['name'],
             email=self.signup_data['email'],
-            password=self.signup_data['password']))
+            password=self.signup_data['password'],
+            ldap=self.ldap))
 
     def test_signup_change_password(self):
         """
@@ -67,10 +71,12 @@ class TestAccount(TestCase):
         self.assertTrue(AccountController.signup(
             name=self.signup_data['name'],
             email=self.signup_data['email'],
-            password=self.signup_data['password']))
+            password=self.signup_data['password'],
+            ldap=self.ldap))
         self.assertTrue(AccountController.change_password(
             email=self.signup_data['email'],
-            password='b4ryju1rg'))
+            password='b4ryju1rg',
+            ldap=self.ldap))
 
     def test_signup_view(self):
         """
@@ -110,7 +116,8 @@ class TestAccount(TestCase):
         self.assertTrue(AccountController.signup(
             name=self.signup_data['name'],
             email=self.signup_data['email'],
-            password=self.signup_data['password']))
+            password=self.signup_data['password'],
+            ldap=self.ldap))
         form = LoginForm(self.login_data)
         self.assertTrue(form.is_valid())
 
@@ -138,7 +145,8 @@ class TestAccount(TestCase):
         self.assertTrue(AccountController.signup(
             name=self.signup_data['name'],
             email=self.signup_data['email'],
-            password=self.signup_data['password']))
+            password=self.signup_data['password'],
+            ldap=self.ldap))
 
         # user = User.objects.get(email=self.signup_data['email'])
         res = test_request(account.reset_password_init)
@@ -151,7 +159,8 @@ class TestAccount(TestCase):
         self.assertTrue(AccountController.signup(
             name=self.signup_data['name'],
             email=self.signup_data['email'],
-            password=self.signup_data['password']))
+            password=self.signup_data['password'],
+            ldap=self.ldap))
 
         user = User.objects.get(email=self.signup_data['email'])
         self.assertTrue(AccountController.resend_confirmation(user))

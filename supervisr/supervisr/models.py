@@ -77,6 +77,28 @@ class CreatedUpdatedModel(models.Model):
     class Meta:
         abstract = True
 
+class PurgeableModel(models.Model):
+    """
+    Abstract model which not instantly deleted
+    """
+    _purgeable = models.BooleanField(default=False)
+
+    # pylint: disable=unused-argument
+    def delete(self, *args, **kwargs):
+        # Don't actually delete it, just set _purgeable
+        self._purgeable = True
+        self.save()
+
+    def purge(self):
+        """
+        Actually delete instances
+        """
+        if self._purgeable is True:
+            super(PurgeableModel, self).delete()
+
+    class Meta:
+        abstract = True
+
 class UserProfile(CreatedUpdatedModel):
     """
     Save settings associated with user, since we don't want a custom user Model

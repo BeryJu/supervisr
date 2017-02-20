@@ -22,11 +22,12 @@ from ..decorators import anonymous_required
 from ..forms.account import (ChangePasswordForm, LoginForm,
                              PasswordResetFinishForm, PasswordResetInitForm,
                              SignupForm)
-from ..ldap_connector import LDAPConnector
 from ..models import AccountConfirmation
-from ..signals import SIG_USER_LOGIN, SIG_USER_LOGOUT, SIG_USER_PASS_RESET_INIT
+from ..signals import (SIG_USER_CONFIRM, SIG_USER_LOGIN, SIG_USER_LOGOUT,
+                       SIG_USER_PASS_RESET_INIT)
 
 LOGGER = logging.getLogger(__name__)
+
 
 @anonymous_required
 def login(req):
@@ -50,18 +51,21 @@ def login(req):
                 SIG_USER_LOGIN.send(
                     sender=login, user=user, req=req)
                 LOGGER.info("Successfully logged in %s", form.cleaned_data.get('email'))
+                # Check if there is a next GET parameter and redirect to that
+                if 'next' in req.GET:
+                    return redirect(req.GET.get('next'))
+                # Otherwise just index
                 return redirect(reverse('common-index'))
             else:
                 # Check if the user's account is pending
                 # and inform that, they need to check their emails
                 users = User.objects.filter(username=form.cleaned_data.get('email'))
                 if users.exists():
-                    user = users[0]
-                    acc_conf = AccountConfirmation.objects.get(user=user)
-                    if not acc_conf.confirmed:
+                    acc_confs = AccountConfirmation.objects.filter(user=users.first())
+                    if acc_confs.exists() and not acc_confs.first().confirmed:
                         # Create url to resend email
                         url = reverse('account-confirmation_resend',
-                                      kwargs={'email': user.email})
+                                      kwargs={'email': users.first().email})
                         messages.error(req, _(('Account not confirmed yet. Check your emails. '
                                                'Click <a href="%(url)s">here</a> to resend the '
                                                'email.')) % {'url': url})
@@ -157,10 +161,11 @@ def confirm(req, uuid):
         # activate django user
         acc_conf.user.is_active = True
         acc_conf.user.save()
-        # activate LDAP user
-        if LDAPConnector.enabled():
-            ldap = LDAPConnector()
-            ldap.enable_user(acc_conf.user.email)
+        # Send signal to other auth sources
+        SIG_USER_CONFIRM.send(
+            sender=None,
+            user=acc_conf.user,
+            req=req)
         # invalidate confirmation
         acc_conf.confirmed = True
         acc_conf.save()

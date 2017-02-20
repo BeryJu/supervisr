@@ -2,13 +2,16 @@
 Supervisr Server app config
 """
 
-from django.apps import AppConfig
+from supervisr.apps import SupervisrAppConfig
 
 
-class SupervisrServerConfig(AppConfig):
+class SupervisrServerConfig(SupervisrAppConfig):
     """
     Supervisr Server app config
     """
 
     name = 'supervisr_server'
     verbose_name = 'Supervisr Server'
+
+    def ready(self):
+        super(SupervisrServerConfig, self).ready()
