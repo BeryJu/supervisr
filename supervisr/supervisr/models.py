@@ -83,13 +83,6 @@ class PurgeableModel(models.Model):
     """
     _purgeable = models.BooleanField(default=False)
 
-    @property
-    def is_purgeable(self):
-        """
-        Return whether this Model should be used or not
-        """
-        return this._purgeable
-
     # pylint: disable=unused-argument
     def delete(self, *args, **kwargs):
         # Don't actually delete it, just set _purgeable

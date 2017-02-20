@@ -48,7 +48,7 @@ def send_admin_mail(exception, message):
     """
     emails = [x.email for x in User.objects.filter(superuser=True)]
     return send_message(
-        recipients=[user.email],
+        recipients=emails,
         subject=_("Supervisr Error %(exception)s" % {
             'exception': exception}),
         template='email/admin_mail.html',
