@@ -51,5 +51,6 @@ def info(req):
     }
     results = SIG_GET_MOD_INFO.send(sender=None)
     for handler, mod_info in results:
+        # Get the handler's root module
         info[handler.__module__.split('.')[0]] = mod_info
     return render(req, 'about/info.html', {'info': info})

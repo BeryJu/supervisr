@@ -12,6 +12,8 @@ from ldap3.core.exceptions import LDAPException, LDAPInvalidCredentialsResult
 
 from supervisr.models import Setting
 
+from .models import LDAPModification
+
 LOGGER = logging.getLogger(__name__)
 
 class LDAPConnector(object):
@@ -51,6 +53,29 @@ class LDAPConnector(object):
             json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock.json')
             self.con.strategy.entries_from_json(json_path)
             self.con.bind()
+        # Apply LDAPModification's from DB
+        self.apply_db()
+
+    def apply_db(self):
+        """
+        Check if any unapplied LDAPModification's are left
+        """
+        to_apply = LDAPModification.objects.filter(_purgeable=False)
+        for obj in to_apply:
+            if obj.action == LDAPModification.ACTION_ADD:
+                self.con.add(obj.dn, obj.data)
+            elif obj.action == LDAPModification.ACTION_MODIFY:
+                self.con.modify(obj.dn, obj.data)
+        LOGGER.info("Recovered %s Modifications from DB.", len(to_apply))
+
+    def handle_ldap_error(self, object_dn, action, data):
+        """
+        Custom Handler for LDAP methods to write LDIF to DB
+        """
+        LDAPModification.objects.create(
+            dn=object_dn,
+            action=action,
+            data=data)
 
     # Switch so we can easily disable LDAP
     @staticmethod
@@ -141,85 +166,75 @@ class LDAPConnector(object):
             'objectclass'       : ['top', 'person', 'organizationalPerson', 'user'],
         }
         try:
-            self.con.add(user_dn, 'user', attrs)
+            self.con.add(user_dn, attributes=attrs)
         except LDAPException as exception:
-            LOGGER.error("Failed to create user ('%s')", exception)
-            return False
+            LOGGER.error("Failed to create user ('%s'), saved to DB", exception)
+            self.handle_ldap_error(user_dn, LDAPModification.ADD, attrs)
         LOGGER.info("Signed up user %s", user.email)
         return self.change_password(raw_password, mail=user.email)
+
+    def _do_modify(self, diff, mail=None, user_dn=None):
+        """
+        Do the LDAP modification itself
+        """
+        if mail is None and user_dn is None:
+            return False
+        if user_dn is None and mail is not None:
+            user_dn = self.mail_to_dn(mail)
+        try:
+            self.con.modify(user_dn, diff)
+        except LDAPException as exception:
+            LOGGER.error("Failed to modify %s ('%s'), saved to DB", user_dn, exception)
+            self.handle_ldap_error(user_dn, LDAPModification.MODIFY, diff)
+        LOGGER.debug("disabled account '%s'", user_dn)
+        return 'result' in self.con.result and self.con.result['result'] == 0
 
     def disable_user(self, mail=None, user_dn=None):
         """
         Disables LDAP user based on mail or user_dn.
         Returns True on success, otherwise False
         """
-        if mail is None and user_dn is None:
-            return False
-        if user_dn is None and mail is not None:
-            user_dn = self.mail_to_dn(mail)
-        self.con.modify(user_dn, {
+        diff = {
             'userAccountControl': [(MODIFY_REPLACE, [str(66050)])],
-        })
-        LOGGER.debug("disabled account '%s'", user_dn)
-        return 'result' in self.con.result and self.con.result['result'] == 0
+        }
+        return self._do_modify(diff, mail=mail, user_dn=user_dn)
 
     def enable_user(self, mail=None, user_dn=None):
         """
         Enables LDAP user based on mail or user_dn.
         Returns True on success, otherwise False
         """
-        if mail is None and user_dn is None:
-            return False
-        if user_dn is None and mail is not None:
-            user_dn = self.mail_to_dn(mail)
-        self.con.modify(user_dn, {
+        diff = {
             'userAccountControl': [(MODIFY_REPLACE, [str(66048)])],
-        })
-        LOGGER.debug("enabled account '%s'", user_dn)
-        return 'result' in self.con.result and self.con.result['result'] == 0
+        }
+        return self._do_modify(diff, mail=mail, user_dn=user_dn)
 
     def change_password(self, new_password, mail=None, user_dn=None):
         """
         Changes LDAP user's password based on mail or user_dn.
         Returns True on success, otherwise False
         """
-        if mail is None and user_dn is None:
-            return False
-        if user_dn is None and mail is not None:
-            user_dn = self.mail_to_dn(mail)
-        self.con.modify(user_dn, {
+        diff = {
             'unicodePwd': [(MODIFY_REPLACE, [LDAPConnector.encode_pass(new_password)])],
-        })
-        self.enable_user(user_dn=user_dn)
-        LOGGER.debug("changed password for '%s'", user_dn)
-        return 'result' in self.con.result and self.con.result['result'] == 0
+        }
+        return self._do_modify(diff, mail=mail, user_dn=user_dn)
 
     def add_to_group(self, group_dn, mail=None, user_dn=None):
         """
         Adds mail or user_dn to group_dn
         Returns True on success, otherwise False
         """
-        if mail is None and user_dn is None:
-            return False
-        if user_dn is None and mail is not None:
-            user_dn = self.mail_to_dn(mail)
-        self.con.modify(group_dn, {
+        diff = {
             'member': [(MODIFY_ADD), [user_dn]]
-        })
-        LOGGER.debug("added %s to group %s", user_dn, group_dn)
-        return 'result' in self.con.result and self.con.result['result'] == 0
+        }
+        return self._do_modify(diff, mail=mail, user_dn=user_dn)
 
     def remove_from_group(self, group_dn, mail=None, user_dn=None):
         """
         Removes mail or user_dn from group_dn
         Returns True on success, otherwise False
         """
-        if mail is None and user_dn is None:
-            return False
-        if user_dn is None and mail is not None:
-            user_dn = self.mail_to_dn(mail)
-        self.con.modify(group_dn, {
+        diff = {
             'member': [(MODIFY_DELETE), [user_dn]]
-        })
-        LOGGER.debug("removed %s from group %s", user_dn, group_dn)
-        return 'result' in self.con.result and self.con.result['result'] == 0
+        }
+        return self._do_modify(diff, mail=mail, user_dn=user_dn)
