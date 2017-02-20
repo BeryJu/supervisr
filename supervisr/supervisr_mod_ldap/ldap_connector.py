@@ -145,6 +145,7 @@ class LDAPConnector(object):
         except LDAPException as exception:
             LOGGER.error("Failed to create user ('%s')", exception)
             return False
+        LOGGER.info("Signed up user %s", user.email)
         return self.change_password(raw_password, mail=user.email)
 
     def disable_user(self, mail=None, user_dn=None):

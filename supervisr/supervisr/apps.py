@@ -4,6 +4,7 @@ Supervisr core app config
 
 from __future__ import unicode_literals
 
+import importlib
 import logging
 import os
 import subprocess
@@ -19,7 +20,15 @@ class SupervisrAppConfig(AppConfig):
     Base AppConfig Class that logs when it's loaded
     """
 
+    init_modules = ['signals']
+
     def ready(self):
+        for module in self.init_modules:
+            try:
+                importlib.import_module("%s.%s" % (self.name, module))
+                LOGGER.info("Loaded %s.%s", self.name, module)
+            except ImportError:
+                pass # ignore non-existant modules
         LOGGER.info("Loaded %s", self.name)
 
 class SupervisrCoreConfig(SupervisrAppConfig):
@@ -28,6 +37,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr'
+    init_modules = ['signal', 'events', 'mailer']
 
     def ready(self):
         # Looks ugly, but just goes two dirs up and gets CHANGELOG.md
@@ -47,9 +57,4 @@ class SupervisrCoreConfig(SupervisrAppConfig):
             settings.VERSION_HASH = current_hash
         except (OSError, IOError):
             settings.VERSION_HASH = b'dev'
-        # Import events so they get registered
-        # pylint: disable=unused-variable
-        import supervisr.events # noqa
-        # pylint: disable=unused-variable
-        import supervisr.mailer # noqa
         super(SupervisrCoreConfig, self).ready()
