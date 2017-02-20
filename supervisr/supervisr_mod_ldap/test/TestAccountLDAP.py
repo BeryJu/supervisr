@@ -7,12 +7,6 @@ import os
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from supervisr.controllers import AccountController
-from supervisr.forms.account import LoginForm, SignupForm
-from supervisr.models import get_system_user
-from supervisr.utils import test_request
-from supervisr.views import account
-
 from ..ldap_connector import LDAPConnector
 
 
@@ -25,142 +19,48 @@ class TestAccountLDAP(TestCase):
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
         self.ldap = LDAPConnector(mock=True)
-        self.signup_data = {
-            'email': 'test@test.test',
-            'name': 'Test user',
-            'password': 'b3ryju0rg!',
-            'password_rep': 'b3ryju0rg!',
-            'tos_accept': True,
-            'news_accept': False,
-            'g-recaptcha-response': "PASSED"
-        }
-        self.login_data = {
-            'email': 'test@test.test',
-            'password': 'b3ryju0rg!',
-            'g-recaptcha-response': 'PASSED',
-        }
+        self.password = 'b3ryju0rg!'
+        self.user = User.objects.create_user(
+            username='test@test.test',
+            email='test@test.test',
+            first_name='Test user')
+        self.user.save()
+        self.user.is_active = False
+        self.user.set_password(self.password)
+        self.user.save()
 
-    def test_signup_form(self):
+    def test_new_user(self):
         """
-        Test SignupForm's validation
+        Test new new ldap user
         """
-        form = SignupForm(data=self.signup_data)
-        self.assertTrue(form.is_valid())
+        self.assertTrue(self.ldap.create_user(self.user, self.password))
 
-    def test_login_form(self):
+    def test_change_password(self):
         """
-        Test LoginForm's validation
+        Test ldap change_password
         """
-        form = LoginForm(data=self.login_data)
-        self.assertTrue(form.is_valid())
+        self.assertTrue(self.ldap.create_user(self.user, self.password))
+        self.assertTrue(self.ldap.change_password('b4ryju1rg!', mail=self.user.email))
+        self.assertTrue(self.ldap.change_password('b3ryju0rg!', mail=self.user.email))
 
-    def test_signup(self):
+    def test_disable_enable(self):
         """
-        Test AccountController's signup
+        Test ldap enable and disable
         """
-        self.assertTrue(AccountController.signup(
-            name=self.signup_data['name'],
-            email=self.signup_data['email'],
-            password=self.signup_data['password'],
-            ldap=self.ldap))
+        self.assertTrue(self.ldap.create_user(self.user, self.password))
+        self.assertTrue(self.ldap.disable_user(mail=self.user.email))
+        self.assertTrue(self.ldap.enable_user(mail=self.user.email))
 
-    def test_signup_change_password(self):
+    def test_email_used(self):
         """
-        Test AccountController's change_password
+        Test ldap is_email_used
         """
-        self.assertTrue(AccountController.signup(
-            name=self.signup_data['name'],
-            email=self.signup_data['email'],
-            password=self.signup_data['password'],
-            ldap=self.ldap))
-        self.assertTrue(AccountController.change_password(
-            email=self.signup_data['email'],
-            password='b4ryju1rg',
-            ldap=self.ldap))
+        self.assertTrue(self.ldap.create_user(self.user, self.password))
+        self.assertTrue(self.ldap.is_email_used(self.user.email))
 
-    def test_signup_view(self):
+    def test_auth(self):
         """
-        Test account.signup view (Anonymous)
+        Test ldap auth
         """
-        res = test_request(account.signup)
-        self.assertEqual(res.status_code, 200)
-
-    def test_login_view(self):
-        """
-        Test account.login view (Anonymous)
-        """
-        res = test_request(account.login)
-        self.assertEqual(res.status_code, 200)
-
-    def test_signup_view_auth(self):
-        """
-        Test account.signup view (Authenticated)
-        """
-        res = test_request(account.signup,
-                           user=get_system_user())
-        self.assertEqual(res.status_code, 302)
-
-    def test_login_view_auth(self):
-        """
-        Test account.login view (Authenticated)
-        """
-        res = test_request(account.login,
-                           user=get_system_user())
-        self.assertEqual(res.status_code, 302)
-
-    def test_login_view_post(self):
-        """
-        Test account.login view POST (Anonymous)
-        """
-        self.test_signup_view_post()
-        self.assertTrue(AccountController.signup(
-            name=self.signup_data['name'],
-            email=self.signup_data['email'],
-            password=self.signup_data['password'],
-            ldap=self.ldap))
-        form = LoginForm(self.login_data)
-        self.assertTrue(form.is_valid())
-
-        res = test_request(account.login,
-                           method='POST',
-                           req_kwargs=form.cleaned_data)
-        self.assertEqual(res.status_code, 200)
-
-    def test_signup_view_post(self):
-        """
-        Test account.signup view POST (Anonymous)
-        """
-        form = SignupForm(self.signup_data)
-        self.assertTrue(form.is_valid())
-
-        res = test_request(account.signup,
-                           method='POST',
-                           req_kwargs=form.cleaned_data)
-        self.assertEqual(res.status_code, 200)
-
-    def test_change_password_init_view(self):
-        """
-        Test account.reset_password_init view POST (Anonymous)
-        """
-        self.assertTrue(AccountController.signup(
-            name=self.signup_data['name'],
-            email=self.signup_data['email'],
-            password=self.signup_data['password'],
-            ldap=self.ldap))
-
-        # user = User.objects.get(email=self.signup_data['email'])
-        res = test_request(account.reset_password_init)
-        self.assertEqual(res.status_code, 200)
-
-    def test_resend_confirmation(self):
-        """
-        Test AccountController.resend_confirmation
-        """
-        self.assertTrue(AccountController.signup(
-            name=self.signup_data['name'],
-            email=self.signup_data['email'],
-            password=self.signup_data['password'],
-            ldap=self.ldap))
-
-        user = User.objects.get(email=self.signup_data['email'])
-        self.assertTrue(AccountController.resend_confirmation(user))
+        self.assertTrue(self.ldap.create_user(self.user, self.password))
+        # self.assertTrue(self.ldap.auth_user(self.password, mail=self.user.email))
