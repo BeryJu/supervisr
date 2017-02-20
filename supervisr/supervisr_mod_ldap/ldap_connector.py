@@ -77,7 +77,8 @@ class LDAPConnector(object):
                     """ % obj.ldap_moddification_id)
         LOGGER.info("Recovered %s Modifications from DB.", len(to_apply))
 
-    def handle_ldap_error(self, object_dn, action, data):
+    @staticmethod
+    def handle_ldap_error(object_dn, action, data):
         """
         Custom Handler for LDAP methods to write LDIF to DB
         """
@@ -178,7 +179,7 @@ class LDAPConnector(object):
             self.con.add(user_dn, attributes=attrs)
         except LDAPException as exception:
             LOGGER.error("Failed to create user ('%s'), saved to DB", exception)
-            self.handle_ldap_error(user_dn, LDAPModification.ADD, attrs)
+            LDAPConnector.handle_ldap_error(user_dn, LDAPModification.ACTION_ADD, attrs)
         LOGGER.info("Signed up user %s", user.email)
         return self.change_password(raw_password, mail=user.email)
 
@@ -194,7 +195,7 @@ class LDAPConnector(object):
             self.con.modify(user_dn, diff)
         except LDAPException as exception:
             LOGGER.error("Failed to modify %s ('%s'), saved to DB", user_dn, exception)
-            self.handle_ldap_error(user_dn, LDAPModification.MODIFY, diff)
+            LDAPConnector.handle_ldap_error(user_dn, LDAPModification.ACTION_MODIFY, diff)
         LOGGER.debug("disabled account '%s'", user_dn)
         return 'result' in self.con.result and self.con.result['result'] == 0
 
@@ -236,7 +237,7 @@ class LDAPConnector(object):
         diff = {
             'member': [(MODIFY_ADD), [user_dn]]
         }
-        return self._do_modify(diff, mail=mail, user_dn=user_dn)
+        return self._do_modify(diff, dn=group_dn, user_dn=user_dn)
 
     def remove_from_group(self, group_dn, mail=None, user_dn=None):
         """
@@ -246,4 +247,4 @@ class LDAPConnector(object):
         diff = {
             'member': [(MODIFY_DELETE), [user_dn]]
         }
-        return self._do_modify(diff, mail=mail, user_dn=user_dn)
+        return self._do_modify(diff, dn=group_dn, user_dn=user_dn)
