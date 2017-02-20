@@ -93,6 +93,6 @@ def ldap_handle_get_mod_info(sender, signal, **kwargs):
     """
     return {
         'LDAP3 Version': ldap3_version.__version__,
-        'LDAP Enabled': LDAPConnector.enabled,
-        'LDAP Server': LDAPConnector.get_server,
+        'LDAP Enabled': LDAPConnector.enabled(),
+        'LDAP Server': LDAPConnector.get_server(),
     }
