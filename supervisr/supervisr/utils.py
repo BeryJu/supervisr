@@ -38,3 +38,9 @@ def do_404(req, message=None):
         'code': 404,
         'message': _('message') if message is not None else None
     }, status=404)
+
+def send_admin_mail(exception, message):
+    """
+    Send Email to all superusers
+    """
+    pass

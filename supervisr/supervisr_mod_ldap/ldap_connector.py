@@ -11,6 +11,7 @@ from ldap3 import (MOCK_SYNC, MODIFY_ADD, MODIFY_DELETE, MODIFY_REPLACE,
 from ldap3.core.exceptions import LDAPException, LDAPInvalidCredentialsResult
 
 from supervisr.models import Setting
+from supervisr.utils import send_admin_mail
 
 from .models import LDAPModification
 
@@ -62,10 +63,18 @@ class LDAPConnector(object):
         """
         to_apply = LDAPModification.objects.filter(_purgeable=False)
         for obj in to_apply:
-            if obj.action == LDAPModification.ACTION_ADD:
-                self.con.add(obj.dn, obj.data)
-            elif obj.action == LDAPModification.ACTION_MODIFY:
-                self.con.modify(obj.dn, obj.data)
+            try:
+                if obj.action == LDAPModification.ACTION_ADD:
+                    self.con.add(obj.dn, obj.data)
+                elif obj.action == LDAPModification.ACTION_MODIFY:
+                    self.con.modify(obj.dn, obj.data)
+
+                # Object has been successfully applied to LDAP
+                obj.delete()
+            except LDAPException as exc:
+                send_admin_mail(exc, """
+                    Failed to apply LDAPModification#%s
+                    """ % obj.ldap_moddification_id)
         LOGGER.info("Recovered %s Modifications from DB.", len(to_apply))
 
     def handle_ldap_error(self, object_dn, action, data):
