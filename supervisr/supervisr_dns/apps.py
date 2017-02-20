@@ -2,13 +2,16 @@
 Supervisr DNS app config
 """
 
-from django.apps import AppConfig
+from supervisr.apps import SupervisrAppConfig
 
 
-class SupervisrDNSConfig(AppConfig):
+class SupervisrDNSConfig(SupervisrAppConfig):
     """
     Supervisr DNS app config
     """
 
     name = 'supervisr_dns'
     verbose_name = 'Supervisr DNS'
+
+    def ready(self):
+        super(SupervisrDNSConfig, self).ready()

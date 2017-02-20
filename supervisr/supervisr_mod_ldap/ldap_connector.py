@@ -6,14 +6,11 @@ import os
 import sys
 import time
 
-from django.dispatch import receiver
 from ldap3 import (MOCK_SYNC, MODIFY_ADD, MODIFY_DELETE, MODIFY_REPLACE,
                    OFFLINE_AD_2012_R2, Connection, Server)
 from ldap3.core.exceptions import LDAPException, LDAPInvalidCredentialsResult
 
-from .models import Setting
-from .signals import (SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
-                      SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
+from supervisr.models import Setting
 
 LOGGER = logging.getLogger(__name__)
 
@@ -63,6 +60,13 @@ class LDAPConnector(object):
         """
         return Setting.objects.get(key='supervisr:ldap:enabled').value_bool or \
             'test' in sys.argv
+
+    @staticmethod
+    def get_server():
+        """
+        Return the saved LDAP Server
+        """
+        return Setting.objects.get(key='supervisr:ldap:server')
 
     @staticmethod
     def encode_pass(password):
@@ -218,27 +222,3 @@ class LDAPConnector(object):
         })
         LOGGER.debug("removed %s from group %s", user_dn, group_dn)
         return 'result' in self.con.result and self.con.result['result'] == 0
-
-@receiver(SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
-# pylint: disable=unused-argument
-def ldap_handle_upr_created(sender, signal, upr, **kwargs):
-    """
-    Handle creation of user_product_relationship, add to ldap group if needed
-    """
-    if LDAPConnector.enabled() and upr.product.ldap_group:
-        ldap = LDAPConnector()
-        ldap.add_to_group(
-            group_dn=upr.product.ldap_group,
-            mail=upr.user.email)
-
-@receiver(SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
-# pylint: disable=unused-argument
-def ldap_handle_upr_deleted(sender, signal, upr, **kwargs):
-    """
-    Handle deletion of user_product_relationship, remove from group if needed
-    """
-    if LDAPConnector.enabled() and upr.product.ldap_group:
-        ldap = LDAPConnector()
-        ldap.remove_from_group(
-            group_dn=upr.product.ldap_group,
-            mail=upr.user.email)

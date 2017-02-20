@@ -10,8 +10,8 @@ from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from .models import AccountConfirmation, Setting
-from .signals import (SIG_USER_PASS_RESET_INIT, SIG_USER_RESEND_CONFIRM,
-                      SIG_USER_SIGNED_UP)
+from .signals import (SIG_USER_PASS_RESET_INIT, SIG_USER_POST_SIGN_UP,
+                      SIG_USER_RESEND_CONFIRM)
 
 
 def send_message(recipients, subject, **kwargs):
@@ -47,7 +47,7 @@ def send_message(recipients, subject, **kwargs):
         recipients, **django_kwargs)
     return sent == 1 # send_mail returns either 0 or 1
 
-@receiver(SIG_USER_SIGNED_UP)
+@receiver(SIG_USER_POST_SIGN_UP)
 # pylint: disable=unused-argument
 def mail_handle_user_signed_up(sender, signal, user, req, **kwargs):
     """

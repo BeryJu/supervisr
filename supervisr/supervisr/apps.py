@@ -4,14 +4,25 @@ Supervisr core app config
 
 from __future__ import unicode_literals
 
+import logging
 import os
 import subprocess
 
 from django.apps import AppConfig
 from django.conf import settings
 
+LOGGER = logging.getLogger(__name__)
 
-class SupervisrCoreConfig(AppConfig):
+
+class SupervisrAppConfig(AppConfig):
+    """
+    Base AppConfig Class that logs when it's loaded
+    """
+
+    def ready(self):
+        LOGGER.info("Loaded %s", self.name)
+
+class SupervisrCoreConfig(SupervisrAppConfig):
     """
     Supervisr core app config
     """
@@ -41,3 +52,4 @@ class SupervisrCoreConfig(AppConfig):
         import supervisr.events # noqa
         # pylint: disable=unused-variable
         import supervisr.mailer # noqa
+        super(SupervisrCoreConfig, self).ready()

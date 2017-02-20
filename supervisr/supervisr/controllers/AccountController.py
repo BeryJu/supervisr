@@ -6,14 +6,14 @@ import logging
 
 from django.contrib.auth.models import User
 
-from ..ldap_connector import LDAPConnector
 from ..models import AccountConfirmation, Product, UserProfile
-from ..signals import (SIG_USER_CHANGED_PASS, SIG_USER_RESEND_CONFIRM,
-                       SIG_USER_SIGNED_UP)
+from ..signals import (SIG_USER_CHANGE_PASS, SIG_USER_POST_CHANGE_PASS,
+                       SIG_USER_POST_SIGN_UP, SIG_USER_RESEND_CONFIRM,
+                       SIG_USER_SIGN_UP)
 
 LOGGER = logging.getLogger(__name__)
 
-def signup(email, name, password, ldap=None, request=None):
+def signup(email, name, password, request=None):
     """
     Creates a new Django/LDAP user from email, name and password.
     """
@@ -29,28 +29,24 @@ def signup(email, name, password, ldap=None, request=None):
     # Create user profile
     new_up = UserProfile(user=new_user)
     new_up.save()
-    # Create LDAP user if LDAP is active
-    if LDAPConnector.enabled():
-        if ldap is None:
-            ldap = LDAPConnector()
-        # Returns false if user could not be created
-        if not ldap.create_user(new_user, password):
-            # Add message what happend and return
-            new_user.delete()
-            return False
-        ldap.disable_user(new_user.email)
+    # Send signal for other auth sources
+    SIG_USER_SIGN_UP.send(
+        sender=None,
+        user=new_user,
+        req=request,
+        password=password)
     # Create Account Confirmation UUID
     AccountConfirmation.objects.create(user=new_user)
     # Run Product auto_add
     Product.do_auto_add(new_user)
     # Send event for user creation
-    SIG_USER_SIGNED_UP.send(
+    SIG_USER_POST_SIGN_UP.send(
         sender=None,
         user=new_user,
         req=request)
     return True
 
-def change_password(email, password, ldap=None, reset=False, request=None):
+def change_password(email, password, reset=False, request=None):
     """
     Reset Password for a Django/LDAP user
     """
@@ -58,13 +54,14 @@ def change_password(email, password, ldap=None, reset=False, request=None):
     user = User.objects.get(email=email)
     user.set_password(password)
     user.save()
-    # Update ldap password if LDAP is enabled
-    if LDAPConnector.enabled():
-        if ldap is None:
-            ldap = LDAPConnector()
-        ldap.change_password(password, mail=email)
+    # Send signal for other auth sources
+    SIG_USER_CHANGE_PASS.send(
+        sender=None,
+        user=user,
+        req=request,
+        password=password)
     # Trigger Event
-    SIG_USER_CHANGED_PASS.send(
+    SIG_USER_POST_CHANGE_PASS.send(
         sender=None,
         user=user,
         was_reset=reset,

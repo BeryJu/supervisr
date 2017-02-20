@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'supervisr_server',
     'supervisr_web',
     'supervisr_mail',
+    'supervisr_mod_ldap'
 ]
 
 INTERNAL_IPS = ['127.0.0.1']
