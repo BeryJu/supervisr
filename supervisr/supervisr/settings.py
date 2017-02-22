@@ -8,7 +8,6 @@ from django.contrib import messages
 
 LOGGER = logging.getLogger(__name__)
 
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
 NOCAPTCHA = True
 
 SYSLOG_HOST = '127.0.0.1'

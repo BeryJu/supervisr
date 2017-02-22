@@ -1,0 +1,28 @@
+{% extends "core/skel.html" %}
+
+{% load supervisr_title %}
+{% load supervisr_setting %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block header %}
+<title>{% supervisr_title title %}</title>
+{% endblock %}
+
+{% block body %}
+<div class="login-wrapper">
+  <form class="login" method="POST">
+    <label class="title">
+      {% supervisr_title title %}
+    </label>
+    <div class="login-group">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <button type="submit" class="btn btn-primary">{{ primary_action }}</button>
+      <a href="{% url 'account-signup' %}" class="signup">{% trans 'Sign up for an account' %}</a>
+      <a href="{% url 'account-reset_password_init' %}" class="signup">{% trans 'Reset your password' %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
