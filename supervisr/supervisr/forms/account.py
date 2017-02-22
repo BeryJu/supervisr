@@ -12,9 +12,9 @@ from django.contrib.auth.models import User
 from django.forms import ValidationError
 from django.utils.translation import ugettext as _
 
-from .core import InlineForm
 from ..models import Setting
 from ..signals import SIG_CHECK_USER_EXISTS
+from .core import InlineForm
 
 LOGGER = logging.getLogger(__name__)
 
@@ -42,6 +42,7 @@ class LoginForm(InlineForm):
     """
     Form to handle logins
     """
+    order = ['email', 'password', 'remember', 'captcha']
     email = forms.EmailField(label=_('Mail'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     remember = forms.BooleanField(required=False, label=_('Remember'))
@@ -54,6 +55,7 @@ class SignupForm(InlineForm):
     """
     Form to handle signups
     """
+    order = ['name', 'email', 'password', 'password_rep', 'captcha', 'tos_accept', 'news_accept']
     name = forms.CharField(label=_('Name'))
     email = forms.EmailField(label=_('Mail'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
@@ -93,6 +95,7 @@ class ChangePasswordForm(InlineForm):
     """
     Form to handle password changes
     """
+    order = ['password', 'password_rep']
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
 
@@ -106,6 +109,7 @@ class PasswordResetInitForm(InlineForm):
     """
     Form to initiate password resets
     """
+    order = ['email', 'captcha']
     email = forms.EmailField(label=_('Mail'))
     captcha = ReCaptchaField(
         required=(not settings.DEBUG),
@@ -116,6 +120,7 @@ class PasswordResetFinishForm(InlineForm):
     """
     Form to finish password resets
     """
+    order = ['password', 'password_rep']
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
 

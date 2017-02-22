@@ -22,7 +22,7 @@ from ..decorators import anonymous_required
 from ..forms.account import (ChangePasswordForm, LoginForm,
                              PasswordResetFinishForm, PasswordResetInitForm,
                              SignupForm)
-from ..models import AccountConfirmation, Setting
+from ..models import AccountConfirmation
 from ..signals import (SIG_USER_CONFIRM, SIG_USER_LOGIN, SIG_USER_LOGOUT,
                        SIG_USER_PASS_RESET_INIT)
 
