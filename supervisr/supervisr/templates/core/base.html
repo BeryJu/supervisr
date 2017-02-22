@@ -29,27 +29,27 @@
   {% endblock %}
   <header class="header header-6">
     <div class="branding">
-      <a class="logo-and-title" href="/">
+      <a class="logo-and-title" href="{% url 'common-index' %}">
         <span class="clr-icon clarity-logo"></span>
         <span class="title">{% supervisr_setting 'branding' %}</span>
       </a>
     </div>
     <div class="divider"></div>
     <div class="header-nav clr-nav-level-1">
-      <a class="nav-link {% is_active 'account' 'common' %}" href="#">
+      <a class="nav-link {% is_active 'account' 'common' %}" href="{% url 'common-index' %}">
         <span class="nav-text">{% trans "Home" %}</span> <span class="sr-only">(current)</span>
       </a>
       {% if user.is_authenticated %}
-      <a class="nav-link {% is_active 'dns' %}" href="{% url 'supervisr_dns:index' %}">
+      <a class="nav-link {% is_active 'dns' %}" href="{% url 'supervisr_dns:dns-index' %}">
         <span class="nav-text">{% trans "DNS" %}</span>
       </a>
-      <a class="nav-link {% is_active 'mail' %}" href="{% url 'supervisr_mail:index' %}">
+      <a class="nav-link {% is_active 'mail' %}" href="{% url 'supervisr_mail:mail-index' %}">
         <span class="nav-text">{% trans "Mail" %}</span>
       </a>
-      <a class="nav-link {% is_active 'server' %}" href="{% url 'supervisr_server:index' %}">
+      <a class="nav-link {% is_active 'server' %}" href="{% url 'supervisr_server:server-index' %}">
         <span class="nav-text">{% trans "Server" %}</span>
       </a>
-      <a class="nav-link {% is_active 'web' %}" href="{% url 'supervisr_web:index' %}">
+      <a class="nav-link {% is_active 'web' %}" href="{% url 'supervisr_web:web-index' %}">
         <span class="nav-text">{% trans "Web" %}</span>
       </a>
       {% endif %}

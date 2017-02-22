@@ -1,5 +1,11 @@
 """
-Supervisr Mail URLs
+Supervisr DNS URLs
 """
 
-urlpatterns = []
+from django.conf.urls import url
+
+from .views import dns
+
+urlpatterns = [
+    url(r'^$', dns.index, name='dns-index'),
+]

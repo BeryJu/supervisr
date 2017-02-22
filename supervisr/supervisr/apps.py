@@ -26,10 +26,10 @@ class SupervisrAppConfig(AppConfig):
         for module in self.init_modules:
             try:
                 importlib.import_module("%s.%s" % (self.name, module))
-                LOGGER.info("Loaded %s.%s", self.name, module)
+                LOGGER.info("Loaded '%s.%s'", self.name, module)
             except ImportError:
                 pass # ignore non-existant modules
-        LOGGER.info("Loaded %s", self.name)
+        LOGGER.info("Loaded '%s'", self.name)
 
 class SupervisrCoreConfig(SupervisrAppConfig):
     """
