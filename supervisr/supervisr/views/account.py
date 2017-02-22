@@ -22,7 +22,7 @@ from ..decorators import anonymous_required
 from ..forms.account import (ChangePasswordForm, LoginForm,
                              PasswordResetFinishForm, PasswordResetInitForm,
                              SignupForm)
-from ..models import AccountConfirmation
+from ..models import AccountConfirmation, Setting
 from ..signals import (SIG_USER_CONFIRM, SIG_USER_LOGIN, SIG_USER_LOGOUT,
                        SIG_USER_PASS_RESET_INIT)
 
@@ -75,7 +75,17 @@ def login(req):
                 return redirect(reverse('account-login'))
     else:
         form = LoginForm()
-    return render(req, 'core/generic_form_login.html', {'form': form})
+    return render(req, 'core/generic_form_login.html', {
+        'form': form,
+        'title': _("Login to %(branding)s" % {
+            'branding': Setting.get('supervisr:branding')
+            }),
+        'primary_action': _("Login"),
+        'extra_links': {
+            'account-signup': 'Sign up for an account',
+            'account-reset_password_init': 'Reset your password'
+        }
+        })
 
 @anonymous_required
 def signup(req):

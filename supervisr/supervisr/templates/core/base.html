@@ -14,16 +14,16 @@
   {% block messages %}
   {% if messages %}
   {% for msg in messages %}
-    <div class="alert alert-app-level alert-{{ msg.level_tag }}">
-      <button type="button" class="close" aria-label="Close">
-        <clr-icon aria-hidden="true" shape="close"></clr-icon>
-      </button>
-      <div class="alert-item">
-        <div class="alert-text">
-          {% trans msg.level_tag|capfirst %}</strong> {{ msg.message|safe }}
-        </div>
+  <div class="alert alert-app-level alert-{{ msg.level_tag }}">
+    <button type="button" class="close" aria-label="Close" clrAlert>
+      <clr-icon aria-hidden="true" shape="close"></clr-icon>
+    </button>
+    <div class="alert-item">
+      <div class="alert-text">
+        {% trans msg.level_tag|capfirst %}</strong> {{ msg.message|safe }}
       </div>
     </div>
+  </div>
   {% endfor %}
   {% endif %}
   {% endblock %}
@@ -62,28 +62,27 @@
     </form>
     <div class="settings">
       {% if user.is_superuser %}
-      <div class="dropdown">
-        <button class="dropdown-toggle btn btn-link">
+      <div class="dropdown bottom-right">
+        <button class="dropdown-toggle btn btn-link" clrDropdown>
           {% trans "Admin" %}
           <clr-icon shape="caret down"></clr-icon>
         </button>
         <div class="dropdown-menu">
-          <a clrDropdownItem href="{% url 'admin:index' %}">{% trans "Admin Interface" %}</a>
-          <a clrDropdownItem href="{% url 'django-admindocs-docroot' %}">{% trans "Admin Docs" %}</a>
+          <a class="dropdown-item" href="{% url 'admin:index' %}">{% trans "Admin Interface" %}</a>
+          <a class="dropdown-item" href="{% url 'django-admindocs-docroot' %}">{% trans "Admin Docs" %}</a>
         </div>
       </div>
       {% endif %}
       {% if user.is_authenticated %}
-      <div class="dropdown">
-        <button class="dropdown-toggle btn btn-primary">
+      <div class="dropdown bottom-right">
+        <button class="dropdown-toggle btn btn-primary" clrDropdown>
           {{ user.email }}
           <clr-icon shape="caret down"></clr-icon>
         </button>
         <div class="dropdown-menu">
-          <label class="dropdown-header">Dropdown header</label>
-          <a clrDropdownItem href="{% url 'account-change_password' %}">{% trans "Change Password" %}</a>
+          <a class="dropdown-item" href="{% url 'account-change_password' %}">{% trans "Change Password" %}</a>
           <div class="dropdown-divider"></div>
-          <a clrDropdownItem href="{% url 'account-logout' %}">{% trans "Logout" %}</a>
+          <a class="dropdown-item" href="{% url 'account-logout' %}">{% trans "Logout" %}</a>
         </div>
       </div>
       {% endif %}
@@ -97,16 +96,5 @@
       </div>
     </div>
   </div>
-  <footer class="footer">
-    <div class="container">
-      <p class="text-muted text-center">
-        {% supervisr_setting 'branding' %} |
-        {% setting 'VERSION_HASH' %} |
-        <img src="https://git.beryju.org/BeryJu.org/supervisr/badges/master/build.svg" /> |
-        <img src="https://git.beryju.org/BeryJu.org/supervisr/badges/master/coverage.svg" /> |
-        {% blocktrans %}Found an Issue? Report it <a href="https://git.beryju.org/BeryJu.org/supervisr/issues">here</a>{% endblocktrans %} |
-        {% fqdn %}</p>
-    </div>
-  </footer>
 </div>
 {% endblock %}

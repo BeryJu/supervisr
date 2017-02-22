@@ -13,16 +13,27 @@
 <div class="login-wrapper">
   <form class="login" method="POST">
     <label class="title">
-      {% supervisr_title title %}
+      {{ title }}
     </label>
     <div class="login-group">
       {% csrf_token %}
       {{ form|crispy }}
+      {% block messages %}
+      {% if messages %}
+      {% for msg in messages %}
+        <div class="error {{ msg.level_tag }} active">
+        {{ msg.message|safe }}
+        </div>
+      {% endfor %}
+      {% endif %}
+      {% endblock %}
       <button type="submit" class="btn btn-primary">{{ primary_action }}</button>
-      <a href="{% url 'account-signup' %}" class="signup">{% trans 'Sign up for an account' %}</a>
-      <a href="{% url 'account-reset_password_init' %}" class="signup">{% trans 'Reset your password' %}</a>
+      {% if extra_links %}
+      {% for link, name in extra_links.items %}
+      <a href="{% url link %}" class="signup">{% trans name %}</a>
+      {% endfor %}
+      {% endif %}
     </div>
   </form>
 </div>
 {% endblock %}
-

@@ -7,8 +7,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <link rel="stylesheet" href="{% static 'clarity-icons/clarity-icons.min.css' %}">
-    <link rel="stylesheet" href="{% static 'clarity-ui/clarity-ui.min.css' %}">
+    <link rel="stylesheet" href="{% static 'node_modules/clarity-icons/clarity-icons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'node_modules/clarity-ui/clarity-ui.min.css' %}">
     <link rel="stylesheet" href="{% static 'supervisr.css' %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'img/logo_64.png' %}"/>
     {% block header %}
@@ -22,8 +22,9 @@
   <body>
     {% block body %}
     {% endblock %}
-    <script src="{% static '@webcomponents/custom-elements/custom-elements.min.js' %}"></script>
-    <script src="{% static 'clarity-icons/clarity-icons.min.js' %}"></script>
+    <script src="{% static 'node_modules/clarity-icons/clarity-icons.min.js' %}"></script>
+    <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+    <script src="{% static 'js/clarity-js.js' %}"></script>
     {% google_analytics %}
   </body>
 </html>
