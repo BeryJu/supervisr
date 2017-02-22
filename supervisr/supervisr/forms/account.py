@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from django.forms import ValidationError
 from django.utils.translation import ugettext as _
 
+from .core import InlineForm
 from ..models import Setting
 from ..signals import SIG_CHECK_USER_EXISTS
 
@@ -37,7 +38,7 @@ def password_check(form):
                 }))
     return password_a
 
-class LoginForm(forms.Form):
+class LoginForm(InlineForm):
     """
     Form to handle logins
     """
@@ -49,7 +50,7 @@ class LoginForm(forms.Form):
         private_key=Setting.get('supervisr:recaptcha:private'),
         public_key=Setting.get('supervisr:recaptcha:public'))
 
-class SignupForm(forms.Form):
+class SignupForm(InlineForm):
     """
     Form to handle signups
     """
@@ -88,7 +89,7 @@ class SignupForm(forms.Form):
         """
         return password_check(self)
 
-class ChangePasswordForm(forms.Form):
+class ChangePasswordForm(InlineForm):
     """
     Form to handle password changes
     """
@@ -101,7 +102,7 @@ class ChangePasswordForm(forms.Form):
         """
         return password_check(self)
 
-class PasswordResetInitForm(forms.Form):
+class PasswordResetInitForm(InlineForm):
     """
     Form to initiate password resets
     """
@@ -111,7 +112,7 @@ class PasswordResetInitForm(forms.Form):
         private_key=Setting.get('supervisr:recaptcha:private'),
         public_key=Setting.get('supervisr:recaptcha:public'))
 
-class PasswordResetFinishForm(forms.Form):
+class PasswordResetFinishForm(InlineForm):
     """
     Form to finish password resets
     """

@@ -77,9 +77,7 @@ def login(req):
         form = LoginForm()
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("Login to %(branding)s" % {
-            'branding': Setting.get('supervisr:branding')
-            }),
+        'title': _("Login"),
         'primary_action': _("Login"),
         'extra_links': {
             'account-signup': 'Sign up for an account',

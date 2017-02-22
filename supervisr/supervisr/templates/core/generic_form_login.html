@@ -13,11 +13,13 @@
 <div class="login-wrapper">
   <form class="login" method="POST">
     <label class="title">
+      {% supervisr_setting 'branding' %}
+    </label>
+    <label class="subtitle">
       {{ title }}
     </label>
     <div class="login-group">
-      {% csrf_token %}
-      {{ form|crispy }}
+      {% crispy form %}
       {% block messages %}
       {% if messages %}
       {% for msg in messages %}

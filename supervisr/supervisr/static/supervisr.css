@@ -30,3 +30,12 @@ input[type=text], input[type=password], input[type=number], input[type=email], i
 .login-wrapper .login .login-group .warning {
   background: #EFD603;
 }
+
+.form-group {
+  padding-left: 0 !important;
+}
+
+.checkbox input[type=checkbox] {
+    opacity: 1;
+    margin-top: 0 !important;
+}
