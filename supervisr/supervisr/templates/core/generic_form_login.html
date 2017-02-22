@@ -1,0 +1,41 @@
+{% extends "core/skel.html" %}
+
+{% load supervisr_title %}
+{% load supervisr_setting %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block header %}
+<title>{% supervisr_title title %}</title>
+{% endblock %}
+
+{% block body %}
+<div class="login-wrapper">
+  <form class="login" method="POST">
+    <label class="title">
+      {% supervisr_setting 'branding' %}
+    </label>
+    <label class="subtitle">
+      {{ title }}
+    </label>
+    <div class="login-group">
+      {% crispy form %}
+      {% block messages %}
+      {% if messages %}
+      {% for msg in messages %}
+        <div class="error {{ msg.level_tag }} active">
+        {{ msg.message|safe }}
+        </div>
+      {% endfor %}
+      {% endif %}
+      {% endblock %}
+      <button type="submit" class="btn btn-primary">{{ primary_action }}</button>
+      {% if extra_links %}
+      {% for link, name in extra_links.items %}
+      <a href="{% url link %}" class="signup">{% trans name %}</a>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </form>
+</div>
+{% endblock %}

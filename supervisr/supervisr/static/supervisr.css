@@ -1,0 +1,41 @@
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #f5f5f5;
+}
+
+.footer > .container {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.footer .container .text-muted {
+  margin: 20px 0;
+}
+
+.card-block > .table-card {
+  margin: 0;
+}
+
+input[type=text], input[type=password], input[type=number], input[type=email], input[type=url], input[type=tel], input[type=date] {
+  width: 100% !important;
+}
+
+.login-wrapper .login .login-group .success {
+  background: #266900;
+}
+
+.login-wrapper .login .login-group .warning {
+  background: #EFD603;
+}
+
+.form-group {
+  padding-left: 0 !important;
+}
+
+.checkbox input[type=checkbox] {
+    opacity: 1;
+    margin-top: 0 !important;
+}

@@ -14,6 +14,7 @@ from django.utils.translation import ugettext as _
 
 from ..models import Setting
 from ..signals import SIG_CHECK_USER_EXISTS
+from .core import InlineForm
 
 LOGGER = logging.getLogger(__name__)
 
@@ -37,10 +38,11 @@ def password_check(form):
                 }))
     return password_a
 
-class LoginForm(forms.Form):
+class LoginForm(InlineForm):
     """
     Form to handle logins
     """
+    order = ['email', 'password', 'remember', 'captcha']
     email = forms.EmailField(label=_('Mail'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     remember = forms.BooleanField(required=False, label=_('Remember'))
@@ -49,10 +51,11 @@ class LoginForm(forms.Form):
         private_key=Setting.get('supervisr:recaptcha:private'),
         public_key=Setting.get('supervisr:recaptcha:public'))
 
-class SignupForm(forms.Form):
+class SignupForm(InlineForm):
     """
     Form to handle signups
     """
+    order = ['name', 'email', 'password', 'password_rep', 'captcha', 'tos_accept', 'news_accept']
     name = forms.CharField(label=_('Name'))
     email = forms.EmailField(label=_('Mail'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
@@ -88,10 +91,11 @@ class SignupForm(forms.Form):
         """
         return password_check(self)
 
-class ChangePasswordForm(forms.Form):
+class ChangePasswordForm(InlineForm):
     """
     Form to handle password changes
     """
+    order = ['password', 'password_rep']
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
 
@@ -101,20 +105,22 @@ class ChangePasswordForm(forms.Form):
         """
         return password_check(self)
 
-class PasswordResetInitForm(forms.Form):
+class PasswordResetInitForm(InlineForm):
     """
     Form to initiate password resets
     """
+    order = ['email', 'captcha']
     email = forms.EmailField(label=_('Mail'))
     captcha = ReCaptchaField(
         required=(not settings.DEBUG),
         private_key=Setting.get('supervisr:recaptcha:private'),
         public_key=Setting.get('supervisr:recaptcha:public'))
 
-class PasswordResetFinishForm(forms.Form):
+class PasswordResetFinishForm(InlineForm):
     """
     Form to finish password resets
     """
+    order = ['password', 'password_rep']
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
 
