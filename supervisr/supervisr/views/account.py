@@ -75,7 +75,15 @@ def login(req):
                 return redirect(reverse('account-login'))
     else:
         form = LoginForm()
-    return render(req, 'account/login.html', {'form': form})
+    return render(req, 'core/generic_form_login.html', {
+        'form': form,
+        'title': _("Login"),
+        'primary_action': _("Login"),
+        'extra_links': {
+            'account-signup': 'Sign up for an account',
+            'account-reset_password_init': 'Reset your password'
+        }
+        })
 
 @anonymous_required
 def signup(req):
@@ -99,7 +107,7 @@ def signup(req):
             return redirect(reverse('account-login'))
     else:
         form = SignupForm()
-    return render(req, 'core/generic_form.html', {
+    return render(req, 'core/generic_form_login.html', {
         'form': form,
         'title': _("Signup"),
         'primary_action': _("Signup")
@@ -123,7 +131,7 @@ def change_password(req):
             return redirect(reverse('common-index'))
     else:
         form = ChangePasswordForm()
-    return render(req, 'core/generic_form.html', {
+    return render(req, 'core/generic_form_login.html', {
         'form': form,
         'title': _("Change Password"),
         'primary_action': _("Change Password")
@@ -191,7 +199,7 @@ def reset_password_init(req):
             messages.success(req, _('Reset Link sent successfully'))
     else:
         form = PasswordResetInitForm()
-    return render(req, 'core/generic_form.html', {
+    return render(req, 'core/generic_form_login.html', {
         'form': form,
         'title': _("Reset your Password - Step 1/3"),
         'primary_action': _("Send Confirmation Email")
@@ -231,7 +239,7 @@ def reset_password_confirm(req, uuid):
             return redirect(reverse('account-login'))
     else:
         form = PasswordResetFinishForm()
-    return render(req, 'core/generic_form.html', {
+    return render(req, 'core/generic_form_login.html', {
         'form': form,
         'title': _("Reset your Password - Step 3/3"),
         'primary_action': _("Reset your Password")
