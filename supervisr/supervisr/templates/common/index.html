@@ -56,7 +56,7 @@
               {% for app in hosted_applications %}
               <tr>
                 <td>{{ app.name }}</td>
-                <td><a href="{{ app.product.management_url }}" class="btn btn-primary btn-xs">{% trans "Open" %}</a></td>
+                <td><a href="{{ app.product.management_url }}" class="btn btn-primary btn-sm">{% trans "Open" %}</a></td>
                 <td><span class="label label-success">{% trans "OK" %}</span></td>
               </tr>
               {% endfor %}

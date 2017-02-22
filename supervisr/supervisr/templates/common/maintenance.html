@@ -1,14 +1,26 @@
-{% extends "core/base.html" %}
+{% extends "core/skel.html" %}
 
 {% load supervisr_title %}
+{% load supervisr_setting %}
+{% load crispy_forms_tags %}
 {% load i18n %}
 
-{% block title %}
-{% supervisr_title "Maintenance" %}
+{% block header %}
+<title>{% supervisr_title title %}</title>
 {% endblock %}
 
-{% block content %}
-<h1>{% trans "Maintenance Mode" %}</h1>
-<p>{% blocktrans %}We're currently upgrading supervisr. Try again in a few minutes or shoot us an email at <a href="mailto:support@beryju.org">support@beryju.org</a>.{% endblocktrans %}</p>
-<small>Error Code: 503</small>
+{% block body %}
+<div class="login-wrapper">
+  <form class="login" method="POST">
+    <label class="title">
+      {% supervisr_setting 'branding' %}
+    </label>
+    <label class="subtitle">
+      {% trans "Maintenance Mode" %}
+    </label>
+    <div class="login-group">
+      <p>{% blocktrans %}We're currently upgrading supervisr. Try again in a few minutes or shoot us an email at <a href="mailto:support@beryju.org">support@beryju.org</a>.{% endblocktrans %}</p>
+    </div>
+  </form>
+</div>
 {% endblock %}

@@ -1,3 +1,0 @@
-"""
-Supervisr Web Views
-"""
