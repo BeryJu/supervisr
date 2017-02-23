@@ -1,11 +1,31 @@
-{% extends "core/base.html" %}
+{% extends "core/skel.html" %}
 
-{% block content %}
-    <h1>Error</h1>
-    {% if message %}
-    <p>{{ message }}</p>
-    {% else %}
-    <p>Well, that wasn't supposed to happen. Tell <a href="https://twitter.com/BeryJu">@BeryJu</a> he fucked up.</p>
-    {% endif %}
-    <small>Error Code: {{ code }}</small>
+{% load supervisr_title %}
+{% load supervisr_setting %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block header %}
+<title>{% supervisr_title code %}</title>
+{% endblock %}
+
+{% block body %}
+<div class="login-wrapper">
+  <form class="login" method="POST">
+    <label class="title">
+      {% supervisr_setting 'branding' %}
+    </label>
+    <label class="subtitle">
+      {% trans "Whops" %}
+    </label>
+    <div class="login-group">
+      {% if message %}
+      <p>{{ message }}</p>
+      {% else %}
+      <p>Well, that wasn't supposed to happen. Tell <a href="https://twitter.com/BeryJu">@BeryJu</a> he fucked up.</p>
+      {% endif %}
+      <small>Error Code: {{ code }}</small>
+    </div>
+  </form>
+</div>
 {% endblock %}

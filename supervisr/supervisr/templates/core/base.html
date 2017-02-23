@@ -27,7 +27,7 @@
   {% endfor %}
   {% endif %}
   {% endblock %}
-  <header class="header header-6">
+  <header class="header header-2">
     <div class="branding">
       <a class="logo-and-title" href="{% url 'common-index' %}">
         <span class="clr-icon clarity-logo"></span>
@@ -36,7 +36,7 @@
     </div>
     <div class="divider"></div>
     <div class="header-nav clr-nav-level-1">
-      <a class="nav-link {% is_active 'account' 'common' %}" href="{% url 'common-index' %}">
+      <a class="nav-link {% is_active 'account' 'common' 'domain' %}" href="{% url 'common-index' %}">
         <span class="nav-text">{% trans "Home" %}</span> <span class="sr-only">(current)</span>
       </a>
       {% if user.is_authenticated %}
@@ -95,6 +95,8 @@
         {% endblock %}
       </div>
     </div>
+    {% block sidenav %}
+    {% endblock %}
   </div>
 </div>
 {% endblock %}
