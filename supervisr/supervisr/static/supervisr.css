@@ -39,3 +39,7 @@ input[type=text], input[type=password], input[type=number], input[type=email], i
     opacity: 1;
     margin-top: 0 !important;
 }
+
+.login-wrapper .login .login-group .error.active {
+    display: block !important;
+}
