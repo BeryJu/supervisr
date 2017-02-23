@@ -36,10 +36,14 @@ input[type=text], input[type=password], input[type=number], input[type=email], i
 }
 
 .checkbox input[type=checkbox] {
-    opacity: 1;
-    margin-top: 0 !important;
+  opacity: 1;
+  margin-top: 0 !important;
 }
 
 .login-wrapper .login .login-group .error.active {
-    display: block !important;
+   display: block !important;
+}
+
+div.main-container.hidden {
+  display: none;
 }

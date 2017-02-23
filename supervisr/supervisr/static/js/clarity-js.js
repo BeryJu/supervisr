@@ -57,7 +57,7 @@ var clrWizard = function (containerId, initialPage) {
 
     // Do cancel (x and Cancel button)
     $(containerId + ' [clrWizCancel]').on('click', function (e) {
-        $(e.target).parents(containerId).hide();
+        $(e.target).parents(containerId).addClass('hidden');
     });
 
     $(containerId + ' [clrWizBack]').on('click', function (e) {
@@ -83,17 +83,17 @@ var clrWizard = function (containerId, initialPage) {
     // Show by button click
     $('[clrWizLauncher][data-id="'+containerId+'"]').on('click', function (e) {
         reset();
-        $(containerId).show();
+        $(containerId).removeClass('hidden');
     })
 
     reset();
 
-    $(containerId).hide();
+    $(containerId).addClass('hidden');
 
     return {
         'reset': reset,
         'launch': function () {
-            $(containerId).show();
+            $(containerId).removeClass('hidden');
         }
     };
 };
