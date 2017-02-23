@@ -7,7 +7,7 @@ $('[clrAlert]').on('click', function (e) {
 });
 
 var clrWizard = function (containerId, initialPage) {
-    var containerId = '#my-wizard';
+    var containerId = '#' + containerId;
     var currentPage = 0;
     var maxStepForward = 1;
     var maxStepBackward = 99999;
