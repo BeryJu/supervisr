@@ -21,13 +21,22 @@
     <div class="login-group">
       {% crispy form %}
       {% block messages %}
-      {% if messages %}
-      {% for msg in messages %}
-        <div class="error {{ msg.level_tag }} active">
-        {{ msg.message|safe }}
-        </div>
-      {% endfor %}
-      {% endif %}
+        {% if messages %}
+          {% for msg in messages %}
+            <div class="error {{ msg.level_tag }} active">
+            {{ msg.message|safe }}
+            </div>
+          {% endfor %}
+        {% endif %}
+        {% for field in form %}
+          {% if field.errors %}
+            {% for error in field.errors %}
+              <div class="error active">
+              {{ error|escape }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
       {% endblock %}
       <button type="submit" class="btn btn-primary">{{ primary_action }}</button>
       {% if extra_links %}
