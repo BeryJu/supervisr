@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}
+
+{% load i18n %}
+{% load is_active %}
+
+{% block sidenav %}
+<nav class="sidenav">
+  <section class="sidenav-content">
+    <a href="{% url 'common-index' %}" class="nav-link {% is_active 'common' %}">
+    {% trans "Overview" %}
+    </a>
+    <a href="{% url 'domain-index' %}" class="nav-link {% is_active 'domain' %}">
+    {% trans "Domains" %}
+    </a>
+  </section>
+</nav>
+{% endblock %}

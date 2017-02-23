@@ -1,4 +1,4 @@
-{% extends "core/base.html" %}
+{% extends "common/base.html" %}
 
 {% load supervisr_title %}
 {% load i18n %}
@@ -8,7 +8,6 @@
 {% endblock %}
 
 {% block content %}
-<button class="btn btn-primary" clrWizLauncher data-id="#my-wizard">Open Wizard</button>
 <div class="clr-wizard main-container" id="my-wizard">
   <div class="modal">
     <div class="modal-dialog modal-xl" role="dialog" aria-hidden="true">
@@ -104,6 +103,6 @@
 
 {% block scripts %}
 <script>
-clrWizard('#my-wizard');
+clrWizard('#my-wizard').launch();
 </script>
 {% endblock %}
