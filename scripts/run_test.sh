@@ -18,3 +18,4 @@ coverage report
 isort -c -vb
 pylint --load-plugins pylint_django supervisr*
 prospector -I migration -I settings.py
+cd ..

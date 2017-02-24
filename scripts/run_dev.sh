@@ -14,3 +14,4 @@ cd supervisr/
 "$PY" manage.py makemigrations
 "$PY" manage.py migrate
 "$PY" manage.py runserver 0.0.0.0:8080
+cd ..

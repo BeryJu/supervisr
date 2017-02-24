@@ -47,7 +47,7 @@ class LoginForm(InlineForm):
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     remember = forms.BooleanField(required=False, label=_('Remember'))
     captcha = ReCaptchaField(
-        required=(not settings.DEBUG),
+        required=(not settings.DEBUG and not settings.TEST),
         private_key=Setting.get('supervisr:recaptcha:private'),
         public_key=Setting.get('supervisr:recaptcha:public'))
 
@@ -61,7 +61,7 @@ class SignupForm(InlineForm):
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
     captcha = ReCaptchaField(
-        required=(not settings.DEBUG),
+        required=(not settings.DEBUG and not settings.TEST),
         private_key=Setting.get('supervisr:recaptcha:private'),
         public_key=Setting.get('supervisr:recaptcha:public'))
     tos_accept = forms.BooleanField(required=True, label=_('I accept the Terms of service'))

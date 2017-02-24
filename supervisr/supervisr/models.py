@@ -16,12 +16,14 @@ from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Max
 from django.db.utils import OperationalError
+from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 
-from .signals import (SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
+from .signals import (SIG_USER_POST_SIGN_UP,
+                      SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
                       SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
 
 
@@ -263,18 +265,6 @@ class Product(CreatedUpdatedModel):
     def __str__(self):
         return "Product %s" % self.name
 
-    @staticmethod
-    def do_auto_add(user):
-        """
-        Auto-associates Product with new users. We have a separate function for
-        this since we use the default Django User Model.
-        """
-        to_add = Product.objects.filter(auto_add=True)
-        for product in to_add:
-            UserProductRelationship.objects.create(
-                user=user,
-                product=product)
-
     def save(self, *args, **kwargs):
         # Auto generate slug
         if not self.pk:
@@ -408,3 +398,17 @@ class ProviderInstance(CreatedUpdatedModel):
     user_id = models.TextField()
     user_password = models.TextField()
     salt = models.CharField(max_length=128)
+
+
+@receiver(SIG_USER_POST_SIGN_UP)
+# pylint: disable=unused-argument
+def product_handle_post_signup(sender, signal, user, **kwargs):
+    """
+    Auto-associates Product with new users. We have a separate function for
+    this since we use the default Django User Model.
+    """
+    to_add = Product.objects.filter(auto_add=True)
+    for product in to_add:
+        UserProductRelationship.objects.create(
+            user=user,
+            product=product)

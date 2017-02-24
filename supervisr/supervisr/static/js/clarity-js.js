@@ -14,19 +14,24 @@ var clrWizard = function (containerId, initialPage) {
     var totalPages = $(containerId + ' .clr-nav-content').length - 1; // - 1 because we're 0 based
 
     var updateCurrent = function (page, lastPage) {
-        console.log('page: ' + page + ', lastPage: ' + lastPage);
         // Update main container
         $(containerId + ' div.clr-nav-content:eq('+lastPage+')').attr('data-hidden', true);
         $(containerId + ' div.clr-nav-content:eq('+page+')').attr('data-hidden', false);
+
+        for (var i = lastPage; i > page; i--) {
+            $(containerId + ' li.clr-nav-link:eq('+i+')').removeClass('complete active');
+        }
+
+        $(containerId + ' li.clr-nav-link:eq('+lastPage+')').removeClass('complete active');
+        $(containerId + ' li.clr-nav-link:eq('+page+')').removeClass('complete');
         // Update sidebar
-        $(containerId + ' li.clr-nav-link:eq('+lastPage+')').removeClass('active');
         $(containerId + ' li.clr-nav-link:eq('+page+')').addClass('active');
         // Update sidebar complete class
         if (page > lastPage) {
           // only add complete class when we go forward
           $(containerId + ' li.clr-nav-link:eq('+lastPage+')').addClass('complete');
         }
-        $(containerId + ' li.clr-nav-link:eq('+page+')').removeClass('complete');
+
 
         // Disable/enable buttons
 
@@ -50,7 +55,7 @@ var clrWizard = function (containerId, initialPage) {
     var reset = function () {
         currentPage = 0;
         // Remove all active's and complete's
-        $(containerId + ' li.clr-nav-link').removeClass('active').removeClass('complete');
+        $(containerId + ' li.clr-nav-link').removeClass('active complete');
 
         updateCurrent(0, 0);
     };
@@ -75,7 +80,7 @@ var clrWizard = function (containerId, initialPage) {
         var parent = $(e.target).parents('li.clr-nav-link');
         var listChildren = $(e.target).parents('ol.navList').children();
         var idx = listChildren.index(parent);
-        if ((idx > currentPage + maxStepForward) || (idx < currentPage - maxStepForward)) { return; }
+        if ((idx > currentPage + maxStepForward) || (idx < currentPage - maxStepBackward)) return;
         updateCurrent(idx, currentPage);
         currentPage = idx;
     });
@@ -84,7 +89,7 @@ var clrWizard = function (containerId, initialPage) {
     $('[clrWizLauncher][data-id="'+containerId+'"]').on('click', function (e) {
         reset();
         $(containerId).removeClass('hidden');
-    })
+    });
 
     reset();
 

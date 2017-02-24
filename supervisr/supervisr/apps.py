@@ -30,6 +30,7 @@ class SupervisrAppConfig(AppConfig):
             except ImportError:
                 pass # ignore non-existant modules
         LOGGER.info("Loaded '%s'", self.name)
+        super(SupervisrAppConfig, self).ready()
 
 class SupervisrCoreConfig(SupervisrAppConfig):
     """
@@ -37,7 +38,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr'
-    init_modules = ['signal', 'events', 'mailer']
+    init_modules = ['signals.core_signals', 'events', 'mailer', 'models']
 
     def ready(self):
         # Looks ugly, but just goes two dirs up and gets CHANGELOG.md

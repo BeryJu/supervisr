@@ -196,8 +196,10 @@ LOGGING = {
     }
 }
 
+TEST = False
 if 'test' in sys.argv:
     LOGGING = None
+    TEST = True
 
 if DEBUG is True:
     INSTALLED_APPS.append('debug_toolbar')
