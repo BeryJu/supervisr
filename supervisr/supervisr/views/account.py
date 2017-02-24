@@ -17,14 +17,16 @@ from django.urls import reverse
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_GET
 
-from ..controllers import AccountController
 from ..decorators import anonymous_required
 from ..forms.account import (ChangePasswordForm, LoginForm,
                              PasswordResetFinishForm, PasswordResetInitForm,
                              SignupForm)
-from ..models import AccountConfirmation
-from ..signals import (SIG_USER_CONFIRM, SIG_USER_LOGIN, SIG_USER_LOGOUT,
-                       SIG_USER_PASS_RESET_INIT)
+from ..models import AccountConfirmation, UserProfile
+from ..signals import (SIG_USER_CHANGE_PASS, SIG_USER_CONFIRM, SIG_USER_LOGIN,
+                       SIG_USER_LOGOUT, SIG_USER_PASS_RESET_INIT,
+                       SIG_USER_POST_CHANGE_PASS, SIG_USER_POST_SIGN_UP,
+                       SIG_USER_RESEND_CONFIRM, SIG_USER_SIGN_UP,
+                       SignalException)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -94,11 +96,34 @@ def signup(req):
         form = SignupForm(req.POST)
         if form.is_valid():
             # Create user
-            if not AccountController.signup(
-                    email=form.cleaned_data.get('email'),
-                    name=form.cleaned_data.get('name'),
-                    password=form.cleaned_data.get('password'),
-                    request=req):
+            new_user = User.objects.create_user(
+                username=form.cleaned_data.get('email'),
+                email=form.cleaned_data.get('email'),
+                first_name=form.cleaned_data.get('name'))
+            new_user.save()
+            new_user.is_active = False
+            new_user.set_password(form.cleaned_data.get('password'))
+            new_user.save()
+            # Create user profile
+            new_up = UserProfile(user=new_user)
+            new_up.save()
+            # Send signal for other auth sources
+            try:
+                SIG_USER_SIGN_UP.send(
+                    sender=None,
+                    user=new_user,
+                    req=req,
+                    password=form.cleaned_data.get('password'))
+                # Create Account Confirmation UUID
+                AccountConfirmation.objects.create(user=new_user)
+                # Send event for user creation
+                SIG_USER_POST_SIGN_UP.send(
+                    sender=None,
+                    user=new_user,
+                    req=req)
+            except SignalException as exception:
+                LOGGER.error("Failed to sign up user %s", exception)
+                new_user.delete()
                 messages.error(req, _("Failed to sign up."))
                 return redirect(reverse('account-login'))
             messages.success(req, _("Successfully signed up!"))
@@ -121,13 +146,27 @@ def change_password(req):
     if req.method == 'POST':
         form = ChangePasswordForm(req.POST)
         if form.is_valid():
-            if not AccountController.change_password(
-                    email=req.user.email,
-                    password=form.cleaned_data.get('password'),
-                    request=req):
-                messages.error(req, _("Failed to change password"))
-            else:
+            # Change Django password
+            req.user.set_password(form.cleaned_data.get('password'))
+            req.user.save()
+            try:
+                # Send signal for other auth sources
+                SIG_USER_CHANGE_PASS.send(
+                    sender=None,
+                    user=req.user,
+                    req=req,
+                    password=form.cleaned_data.get('password'))
+                # Trigger Event
+                SIG_USER_POST_CHANGE_PASS.send(
+                    sender=None,
+                    user=req.user,
+                    was_reset=False,
+                    req=req)
+                LOGGER.debug("Successfully updated password for %s", req.user.email)
                 messages.success(req, _("Successfully changed password!"))
+            except SignalException as exception:
+                messages.error(req, _("Failed to change password"))
+                LOGGER.error(exception)
             return redirect(reverse('common-index'))
     else:
         form = ChangePasswordForm()
@@ -224,15 +263,29 @@ def reset_password_confirm(req, uuid):
                 if pass_conf.is_expired:
                     messages.error(req, _("Link expired!"))
                     return redirect(reverse('account-login'))
-                if AccountController.change_password(
-                        email=pass_conf.user.email,
-                        password=password,
-                        reset=True):
+                # Change Django password
+                pass_conf.user.set_password(password)
+                pass_conf.user.save()
+                try:
+                    # Send signal for other auth sources
+                    SIG_USER_CHANGE_PASS.send(
+                        sender=None,
+                        user=pass_conf.user,
+                        req=req,
+                        password=password)
+                    # Trigger Event
+                    SIG_USER_POST_CHANGE_PASS.send(
+                        sender=None,
+                        user=pass_conf.user,
+                        was_reset=True,
+                        req=req)
+                    LOGGER.debug("Successfully updated password for %s", req.user.email)
+                    messages.success(req, _("Account successfully reset!"))
                     # invalidate confirmation
                     pass_conf.confirmed = True
                     pass_conf.save()
-                    messages.success(req, _("Account successfully reset!"))
-                else:
+                except SignalException as exception:
+                    LOGGER.error(exception)
                     messages.error(req, _("Failed to reset Password. Please try again later."))
             else:
                 raise Http404
@@ -251,13 +304,20 @@ def confirmation_resend(req, email):
     """
     View to handle Browser account confirmation resend Requests
     """
-    users = User.objects.filter(
-        email=email, is_active=False)
+    users = User.objects.filter(email=email, is_active=False)
     if users.exists():
-        user = users[0]
-        if AccountController.resend_confirmation(user, request=req):
-            messages.success(req, _("Successfully resent confirmation email"))
-        else:
-            messages.error(req, _("Failed to resend confirmation email"))
+        # Invalidate all other links for this user
+        old_acs = AccountConfirmation.objects.filter(
+            user=users.first())
+        for old_ac in old_acs:
+            old_ac.confirmed = True
+            old_ac.save()
+        # Create Account Confirmation UUID
+        AccountConfirmation.objects.create(user=users.first())
+        SIG_USER_RESEND_CONFIRM.send(
+            sender=None,
+            user=users.first(),
+            req=req)
+        messages.success(req, _("Successfully resent confirmation email"))
         return redirect(reverse('account-login'))
     raise Http404

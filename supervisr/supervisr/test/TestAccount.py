@@ -7,9 +7,9 @@ import os
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from ..controllers import AccountController
 from ..forms.account import LoginForm, SignupForm
-from ..models import get_system_user
+from ..models import AccountConfirmation, get_system_user
+from ..signals import SIG_USER_RESEND_CONFIRM
 from ..views import account
 from .utils import test_request
 
@@ -29,12 +29,14 @@ class TestAccount(TestCase):
             'password_rep': 'b3ryju0rg!',
             'tos_accept': True,
             'news_accept': False,
-            'g-recaptcha-response': "PASSED"
+            'g-recaptcha-response': 'PASSED',
+            'captcha': 'PASSED',
         }
         self.login_data = {
             'email': 'test@test.test',
             'password': 'b3ryju0rg!',
             'g-recaptcha-response': 'PASSED',
+            'captcha': 'PASSED',
         }
 
     def test_signup_form(self):
@@ -50,27 +52,6 @@ class TestAccount(TestCase):
         """
         form = LoginForm(data=self.login_data)
         self.assertTrue(form.is_valid())
-
-    def test_signup(self):
-        """
-        Test AccountController's signup
-        """
-        self.assertTrue(AccountController.signup(
-            name=self.signup_data['name'],
-            email=self.signup_data['email'],
-            password=self.signup_data['password']))
-
-    def test_signup_change_password(self):
-        """
-        Test AccountController's change_password
-        """
-        self.assertTrue(AccountController.signup(
-            name=self.signup_data['name'],
-            email=self.signup_data['email'],
-            password=self.signup_data['password']))
-        # self.assertTrue(AccountController.change_password(
-        #     email=self.signup_data['email'],
-        #     password='b4ryju1rg'))
 
     def test_signup_view(self):
         """
@@ -106,18 +87,21 @@ class TestAccount(TestCase):
         """
         Test account.login view POST (Anonymous)
         """
-        self.test_signup_view_post()
-        self.assertTrue(AccountController.signup(
-            name=self.signup_data['name'],
-            email=self.signup_data['email'],
-            password=self.signup_data['password']))
-        form = LoginForm(self.login_data)
-        self.assertTrue(form.is_valid())
+        signup_form = SignupForm(self.signup_data)
+        self.assertTrue(signup_form.is_valid())
+
+        res = test_request(account.signup,
+                           method='POST',
+                           req_kwargs=signup_form.cleaned_data)
+        self.assertEqual(res.status_code, 302)
+
+        login_form = LoginForm(self.login_data)
+        self.assertTrue(login_form.is_valid())
 
         res = test_request(account.login,
                            method='POST',
-                           req_kwargs=form.cleaned_data)
-        self.assertEqual(res.status_code, 200)
+                           req_kwargs=login_form.cleaned_data)
+        self.assertEqual(res.status_code, 302)
 
     def test_signup_view_post(self):
         """
@@ -129,18 +113,20 @@ class TestAccount(TestCase):
         res = test_request(account.signup,
                            method='POST',
                            req_kwargs=form.cleaned_data)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 302)
 
     def test_change_password_init_view(self):
         """
         Test account.reset_password_init view POST (Anonymous)
         """
-        self.assertTrue(AccountController.signup(
-            name=self.signup_data['name'],
-            email=self.signup_data['email'],
-            password=self.signup_data['password']))
+        form = SignupForm(self.signup_data)
+        self.assertTrue(form.is_valid())
 
-        # user = User.objects.get(email=self.signup_data['email'])
+        res = test_request(account.signup,
+                           method='POST',
+                           req_kwargs=form.cleaned_data)
+        self.assertEqual(res.status_code, 302)
+
         res = test_request(account.reset_password_init)
         self.assertEqual(res.status_code, 200)
 
@@ -148,10 +134,24 @@ class TestAccount(TestCase):
         """
         Test AccountController.resend_confirmation
         """
-        self.assertTrue(AccountController.signup(
-            name=self.signup_data['name'],
-            email=self.signup_data['email'],
-            password=self.signup_data['password']))
+        form = SignupForm(self.signup_data)
+        self.assertTrue(form.is_valid())
+
+        res = test_request(account.signup,
+                           method='POST',
+                           req_kwargs=form.cleaned_data)
+        self.assertEqual(res.status_code, 302)
 
         user = User.objects.get(email=self.signup_data['email'])
-        self.assertTrue(AccountController.resend_confirmation(user))
+        # Invalidate all other links for this user
+        old_acs = AccountConfirmation.objects.filter(
+            user=user)
+        for old_ac in old_acs:
+            old_ac.confirmed = True
+            old_ac.save()
+        # Create Account Confirmation UUID
+        AccountConfirmation.objects.create(user=user)
+        SIG_USER_RESEND_CONFIRM.send(
+            sender=None,
+            user=user,
+            req=None)

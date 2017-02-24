@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from ..models import Product, UserProductRelationship
+from ..signals import SIG_USER_POST_SIGN_UP
 
 
 # pylint: disable=duplicate-code
@@ -34,7 +35,10 @@ class TestProduct(TestCase):
         """
         Test Product's auto_add
         """
-        Product.do_auto_add(self.user)
+        SIG_USER_POST_SIGN_UP.send(
+            sender=None,
+            user=self.user,
+            req=None)
         rel = UserProductRelationship.objects.filter(
             product=self.product_a,
             user=self.user)

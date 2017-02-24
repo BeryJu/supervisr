@@ -32,7 +32,7 @@
           {% if field.errors %}
             {% for error in field.errors %}
               <div class="error active">
-              {{ error|escape }}
+              {{ field.label }}: {{ error|escape }}
               </div>
             {% endfor %}
           {% endif %}
