@@ -3,9 +3,11 @@ Supervisr Mail MailAccount Forms
 """
 
 from django import forms
-from form_utils.forms import BetterForm
 from django.utils.translation import ugettext as _
+from form_utils.forms import BetterForm
+
 from ..models import MailDomain
+
 
 class MailAccountForm(BetterForm):
     """
@@ -44,5 +46,3 @@ class MailAccountForm(BetterForm):
                                    'legend': _('Step 2'),
                                    'description': _('Forwarder Destination'),
                                    'classes': ['optional-kind-only=1']})]
-
-
