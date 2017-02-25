@@ -19,7 +19,11 @@
   margin: 0;
 }
 
-input[type=text], input[type=password], input[type=number], input[type=email], input[type=url], input[type=tel], input[type=date] {
+.login-wrapper .form-group {
+  padding-left: 0 !important;
+}
+
+.login-group .form-group input[type=text], input[type=password], input[type=number], input[type=email], input[type=url], input[type=tel], input[type=date] {
   width: 100% !important;
 }
 
@@ -35,10 +39,6 @@ input[type=text], input[type=password], input[type=number], input[type=email], i
   background: #007cbb;
 }
 
-.form-group {
-  padding-left: 0 !important;
-}
-
 .checkbox input[type=checkbox] {
   opacity: 1;
   margin-top: 0 !important;
@@ -50,4 +50,8 @@ input[type=text], input[type=password], input[type=number], input[type=email], i
 
 div.main-container.hidden {
   display: none;
+}
+
+.clr-wizard .modal-dialog .modal-content .modal-body .content-area {
+    overflow-y: none;
 }

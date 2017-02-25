@@ -8,7 +8,7 @@ from django.shortcuts import render
 from supervisr.models import UserProductRelationship
 from supervisr.utils import do_404
 
-# from ..forms.mail_account import NewMailAccountStep1Form
+from ..forms.mail_account import MailAccountForm
 from ..models import MailAccount, MailDomain
 
 
@@ -17,7 +17,8 @@ def index(req):
     """
     Mail index
     """
-    return render(req, 'mail/index.html')
+    domains = MailDomain.objects.filter(users__in=[req.user])
+    return render(req, 'mail/index.html', {'domains': domains})
 
 @login_required
 def view(req, domain, account):
@@ -41,6 +42,17 @@ def view(req, domain, account):
     if m_upr.exists() is False:
         return do_404(req, message='Account not found')
     return render(req, 'mail/view.html', {'account': m_account})
+
+@login_required
+def accounts(req):
+    """
+    werqw
+    """
+
+    domains = MailDomain.objects.filter(users__in=[req.user])
+    form = MailAccountForm(initial={'kind': MailAccountForm.KIND_NORMAL})
+    form.fields['domain'].queryset = domains
+    return render(req, 'mail/accounts.html', {'form': form})
 
 # New Mail Account - Data to be gathered
 #  - Check if they have a MailDomain yet, otherwise redirect back
