@@ -29,10 +29,10 @@ def accounts(req):
     Mail Account Index
     """
     domains = MailDomain.objects.filter(users__in=[req.user])
-    accounts = MailAccount.objects \
+    mail_accounts = MailAccount.objects \
         .filter(domain_mail__in=domains, users__in=[req.user]) \
         .order_by('domain_mail')
-    return render(req, 'mail/account-index.html', {'accounts': accounts})
+    return render(req, 'mail/account-index.html', {'accounts': mail_accounts})
 
 @login_required
 def accounts_view(req, domain, account):
@@ -59,10 +59,17 @@ def accounts_view(req, domain, account):
 
 @staticmethod
 def check_cred_form(wizard):
+    """
+    if can_send is true, ask for creds
+    """
     cleaned_data = wizard.get_cleaned_data_for_step('0') or {}
     return cleaned_data.get('can_send', True)
 
+# pylint: disable=too-many-ancestors
 class AccountNewView(BaseWizardView):
+    """
+    Wizard to create a Mail Account
+    """
 
     title = _('New Mail Account')
     form_list = [MailAccountForm, MailAccountFormCredentials, MailAccountFormForwarder]
@@ -75,10 +82,11 @@ class AccountNewView(BaseWizardView):
         if step is None:
             step = self.steps.current
         if step == '0':
-            form.fields['domain'].queryset = MailDomain.objects.filter(users__in=[self.request.user])
+            form.fields['domain'].queryset = \
+                MailDomain.objects.filter(users__in=[self.request.user])
         return form
 
-    def done(self, form_list, form_dict, **kwargs):
+    def done(self, form_dict, **kwargs):
         m_acc = MailAccount.objects.create(
             address=form_dict['0'].cleaned_data.get('address'),
             domain_mail=form_dict['0'].cleaned_data.get('domain'),
