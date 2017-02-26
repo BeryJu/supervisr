@@ -4,45 +4,36 @@ Supervisr Mail MailAccount Forms
 
 from django import forms
 from django.utils.translation import ugettext as _
-from form_utils.forms import BetterForm
 
-from ..models import MailDomain
+from supervisr.forms.account import check_password
 
 
-class MailAccountForm(BetterForm):
+class MailAccountForm(forms.Form):
     """
     Initial MailAccount Creation Form
     """
+    title = _('General Information')
 
-    KIND_NORMAL = 0
-    KIND_FORWARDER = 1
-    KIND_SEND_ONLY = 2
-    KIND_RECEIVE_ONLY = 3
-    KIND = (
-        (KIND_NORMAL, _('Normal Account')),
-        (KIND_FORWARDER, _('Forwarder')),
-        (KIND_SEND_ONLY, _('Send Only')),
-        (KIND_RECEIVE_ONLY, _('Receive Only')),
-    )
     domain = forms.ModelChoiceField(queryset=None, required=True,
                                     to_field_name='name', label=_('Domain'))
     address = forms.CharField(max_length=64, label=_('Address'))
-    kind = forms.ChoiceField(widget=forms.RadioSelect, choices=KIND, label=_('Kind'))
+    can_send = forms.BooleanField(required=False, initial=True, label=_('Can Send Emails'))
+    can_receive = forms.BooleanField(required=False, initial=True, label=_('Can Receive Emails'))
+    is_catchall = forms.BooleanField(required=False, initial=False, label=_('Mark as Catch-all Account'))
 
+class MailAccountFormCredentials(forms.Form):
+
+    title = _('Credentials')
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
 
-    forwarder_dest = forms.EmailField(label=_('Forwarder Destination'))
+    def clean_password_rep(self):
+        """
+        Check if Password adheres to filter and if passwords matche
+        """
+        return check_password(self)
 
-    class Meta:
-        fieldsets = [('step-1', {'fields': ['domain', 'address', 'kind'],
-                                   'legend': _('Step 1'),
-                                   'description': _('General Informaion')}),
-                     ('step-2', {'fields': ['password', 'password_rep'],
-                                   'legend': _('Step 2'),
-                                   'description': _('Credentials for this Mail Account'),
-                                   'classes': ['optional-kind-not=1']}),
-                     ('step-2', {'fields': ['forwarder_dest'],
-                                   'legend': _('Step 2'),
-                                   'description': _('Forwarder Destination'),
-                                   'classes': ['optional-kind-only=1']})]
+class MailAccountFormForwarder(forms.Form):
+
+    title = _('Forwarder Destination')
+    forwarder_dest = forms.EmailField(label=_('Forwarder Destination'))

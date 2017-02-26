@@ -39,7 +39,7 @@
   background: #007cbb;
 }
 
-.checkbox input[type=checkbox] {
+.login-group .checkbox input[type=checkbox] {
   opacity: 1;
   margin-top: 0 !important;
 }
@@ -53,5 +53,19 @@ div.main-container.hidden {
 }
 
 .clr-wizard .modal-dialog .modal-content .modal-body .content-area {
-    overflow-y: none;
+  overflow-y: hidden;
+}
+
+.clr-wizard .clr-nav-content {
+  overflow-y: hidden;
+}
+
+.modal-content form,
+.modal-content .form {
+  padding-top: 0;
+}
+
+.form-group input,
+.form-group .select {
+  width: 100%;
 }

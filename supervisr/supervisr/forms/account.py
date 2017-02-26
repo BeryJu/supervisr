@@ -18,7 +18,7 @@ from .core import InlineForm
 
 LOGGER = logging.getLogger(__name__)
 
-def password_check(form):
+def check_password(form):
     """
     Check if Password adheres to filter and if passwords matche
     """
@@ -89,7 +89,7 @@ class SignupForm(InlineForm):
         """
         Check if Password adheres to filter and if passwords matche
         """
-        return password_check(self)
+        return check_password(self)
 
 class ChangePasswordForm(InlineForm):
     """
@@ -103,7 +103,7 @@ class ChangePasswordForm(InlineForm):
         """
         Check if Password adheres to filter and if passwords matche
         """
-        return password_check(self)
+        return check_password(self)
 
 class PasswordResetInitForm(InlineForm):
     """
@@ -128,4 +128,4 @@ class PasswordResetFinishForm(InlineForm):
         """
         Check if Password adheres to filter and if passwords matche
         """
-        return password_check(self)
+        return check_password(self)

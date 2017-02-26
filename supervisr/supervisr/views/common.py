@@ -15,7 +15,7 @@ def index(req):
     """
     user_products = UserProductRelationship.objects.filter(user=req.user)
     hosted_applications = UserProductRelationship\
-        .objects.filter(user=req.user, product__managed=True)
+        .objects.filter(user=req.user, product__managed=True, product__management_url__isnull=True)
     events = Event.objects.filter(
         user=req.user, hidden=False) \
         .order_by('-create_date')[:15]
