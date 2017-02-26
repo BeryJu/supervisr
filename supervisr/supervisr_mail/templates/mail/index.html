@@ -1,4 +1,4 @@
-{% extends "core/base.html" %}
+{% extends "mail/base.html" %}
 
 {% load supervisr_title %}
 {% load i18n %}
@@ -11,8 +11,15 @@
 <table class="table">
   <thead>
     <tr>
-      <th>Domain</th>
+      <th>Domains</th>
     </tr>
   </thead>
+  <tbody>
+    {% for domain in domains %}
+      <tr>
+        <td>{{ domain.domain.domain }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
 </table>
 {% endblock %}

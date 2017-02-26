@@ -263,7 +263,7 @@ class Product(CreatedUpdatedModel):
                                                          'the Product.'))
 
     def __str__(self):
-        return "Product %s" % self.name
+        return "%s %s" % (self.__class__.__name__, self.name)
 
     def save(self, *args, **kwargs):
         # Auto generate slug
@@ -308,7 +308,7 @@ class Domain(Product):
         self.name = value
 
     def __str__(self):
-        return "Domain '%s'" % self.domain
+        return self.name
 
 class Event(CreatedUpdatedModel):
     """
