@@ -16,14 +16,14 @@ unittest:
   type: test
   stage: test
   script:
-    - python3 manage.py test
+    - python3 manage.py test --pattern=Test*.py
 coverage:
   type: test
   stage: test
   script:
     - python3 manage.py makemigrations
     - python3 manage.py migrate
-    - coverage run --source='.' manage.py test  --pattern=Test*.py
+    - coverage run --source='.' manage.py test --pattern=Test*.py
     - coverage report
 isort:
   type: test

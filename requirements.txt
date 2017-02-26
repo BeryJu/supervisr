@@ -1,6 +1,6 @@
 django>=1.10.0
 django-crispy-forms>=1.6.1
-django-form-utils
+django-formtools
 django-jet
 django-recaptcha
 ldap3
