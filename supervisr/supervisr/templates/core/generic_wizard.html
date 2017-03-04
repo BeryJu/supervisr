@@ -29,7 +29,7 @@
                 <ol class="nav navList" role="tablist">
                   {% for step in wizard.steps.all %}
                   <li class="clr-nav-link {% if step < wizard.steps.current %} complete {% endif %} {% if step == wizard.steps.current %} active {% endif %}" role="presentation">
-                    <button type="submit" name="wizard_goto_step" value="{{ step }}" class="btn btn-link nav-link" type="button" formnovalidate>
+                    <button type="submit" name="wizard_goto_step" value="{{ step }}" class="btn btn-link nav-link" type="button" {% if step < wizard.steps.current %} formnovalidate {% endif %}>
                     Step {{ step|add:1 }}
                     </button>
                   </li>

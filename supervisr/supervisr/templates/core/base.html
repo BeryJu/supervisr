@@ -52,6 +52,11 @@
       <a class="nav-link {% is_active 'web' %}" href="{% url 'supervisr_web:web-index' %}">
         <span class="nav-text">{% trans "Web" %}</span>
       </a>
+      {% if user.is_superuser %}
+      <a class="nav-link {% is_active 'admin' %}" href="{% url 'admin-index' %}">
+        <span class="nav-text">{% trans "Admin" %}</span>
+      </a>
+      {% endif %}
       {% endif %}
     </div>
     <div class="divider"></div>
@@ -61,18 +66,6 @@
       </label>
     </form>
     <div class="settings">
-      {% if user.is_superuser %}
-      <div class="dropdown bottom-right">
-        <button class="dropdown-toggle btn btn-link" clrDropdown>
-          {% trans "Admin" %}
-          <clr-icon shape="caret down"></clr-icon>
-        </button>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" href="{% url 'admin:index' %}">{% trans "Admin Interface" %}</a>
-          <a class="dropdown-item" href="{% url 'django-admindocs-docroot' %}">{% trans "Admin Docs" %}</a>
-        </div>
-      </div>
-      {% endif %}
       {% if user.is_authenticated %}
       <div class="dropdown bottom-right">
         <button class="dropdown-toggle btn btn-primary" clrDropdown>

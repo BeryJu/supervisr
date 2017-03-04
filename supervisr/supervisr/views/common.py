@@ -14,8 +14,10 @@ def index(req):
     Show index view with hosted_applications quicklaunch and recent events
     """
     user_products = UserProductRelationship.objects.filter(user=req.user)
-    hosted_applications = UserProductRelationship\
-        .objects.filter(user=req.user, product__managed=True, product__management_url__isnull=True)
+    hosted_applications = UserProductRelationship \
+        .objects.filter(user=req.user, product__managed=True) \
+        .exclude(product__management_url__isnull=False) \
+        .exclude(product__management_url__exact=None)
     events = Event.objects.filter(
         user=req.user, hidden=False) \
         .order_by('-create_date')[:15]

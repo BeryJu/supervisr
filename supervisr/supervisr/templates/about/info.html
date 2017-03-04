@@ -4,6 +4,7 @@
 {% load i18n %}
 {% load hostname %}
 {% load setting %}
+{% load fieldtype %}
 
 {% block title %}
 {% supervisr_title "System Info" %}
@@ -39,6 +40,10 @@
     <tr>
       <td class="left">hostname.fqdn</td>
       <td class="left">{% fqdn %}</td>
+    </tr>
+    <tr>
+      <td class="left">Fieldtype of user</td>
+      <td class="left">{{ user|fieldtype }}</td>
     </tr>
     <tr>
       <td class="left" colspan="100%"><strong>settings.py</strong></td>

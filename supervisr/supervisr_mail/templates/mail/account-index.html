@@ -16,6 +16,9 @@
     <tr>
       <th>{% trans 'Full Address' %}</th>
       <th>{% trans 'Domain' %}</th>
+      <th>{% trans 'Owner' %}</th>
+      <th>{% trans 'Usage' %}</th>
+      <th>{% trans 'Forwarder Destination' %}</th>
     </tr>
   </thead>
   <tbody>
@@ -23,6 +26,18 @@
       <tr>
         <td>{{ account.address }}@{{ account.domain.domain }}</td>
         <td>{{ account.domain.domain }}</td>
+        <td>{{ account.users.all|join:"," }}</td>
+        <td>
+          {% if account.quota > 0 %}
+            <div class="progress labeled">
+              <progress max="{{ account.quota }}" value="{{ account.size }}"></progress>
+              <span></span>
+            </div>
+          {% else %}
+            {{ account.size }}
+          {% endif %}
+        </td>
+        <td>-</td>
       </tr>
     {% endfor %}
   </tbody>

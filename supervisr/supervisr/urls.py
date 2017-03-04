@@ -4,9 +4,9 @@ supervisr core urls
 
 from django.conf import settings
 from django.conf.urls import include, url
-from django.contrib import admin
+from django.contrib import admin as admin_django
 
-from .views import about, account, common, domain, product
+from .views import about, account, admin, common, domain, product
 
 # pylint: disable=invalid-name
 handler404 = 'supervisr.views.common.uncaught_404'
@@ -33,12 +33,15 @@ urlpatterns = [
     url(r'^mail/', include('supervisr_mail.urls', 'supervisr_mail')),
     url(r'^server/', include('supervisr_server.urls', 'supervisr_server')),
     url(r'^web/', include('supervisr_web.urls', 'supervisr_web')),
+    url(r'^admin/$', admin.index, name='admin-index'),
+    url(r'^admin/settings/', admin.settings, name='admin-settings'),
+    url(r'^about/info/', about.info, name='about-info'),
+    url(r'^about/changelog/$', about.changelog, name='about-changelog'),
+    # Include django-admin and jet
     url(r'^admin/django/jet/', include('jet.urls', 'jet')),
     url(r'^admin/django/jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
-    url(r'^admin/django/', admin.site.urls),
-    url(r'^about/info/', about.info, name='about-info'),
-    url(r'^about/changelog/$', about.changelog, name='about-changelog'),
+    url(r'^admin/django/', admin_django.site.urls),
 ]
 
 if settings.DEBUG:
