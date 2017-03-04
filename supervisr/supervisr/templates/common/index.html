@@ -2,6 +2,7 @@
 
 {% load supervisr_title %}
 {% load i18n %}
+{% load gravatar %}
 
 {% block title %}
 {% supervisr_title "Overview" %}
@@ -9,7 +10,19 @@
 
 {% block content %}
 <div class="row">
-  <div class="col-md-4">
+  <div class="col-md-2">
+    <div class="card">
+      <div class="card-img">
+        <img src="{% gravatar user.email %}" class="card-media-image">
+      </div>
+      <div class="card-block">
+        <div class="card-text">
+          {% blocktrans with name=user.first_name %}Hey, {{ name }}{% endblocktrans %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-2">
     <div class="card">
       <div class="card-header">
         {% trans "Overall Status" %}
