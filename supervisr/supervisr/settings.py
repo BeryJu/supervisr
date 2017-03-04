@@ -53,10 +53,6 @@ LDAP = {
 }
 
 INSTALLED_APPS = [
-    'jet.dashboard',
-    'jet',
-    'django.contrib.admin',
-    'django.contrib.admindocs',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -71,6 +67,8 @@ INSTALLED_APPS = [
     'supervisr_mail',
     'supervisr_mod_ldap',
     'formtools',
+    'django.contrib.admin',
+    'django.contrib.admindocs',
 ]
 
 INTERNAL_IPS = ['127.0.0.1']

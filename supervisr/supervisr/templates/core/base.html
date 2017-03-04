@@ -87,8 +87,12 @@
   </header>
   <div class="content-container">
     <div class="content-area">
+      {% block content_area %}
+      {% endblock %}
       <div class="container">
+        {% block _content %}
         {% block content %}
+        {% endblock %}
         {% endblock %}
       </div>
     </div>

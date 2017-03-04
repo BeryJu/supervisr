@@ -37,9 +37,7 @@ urlpatterns = [
     url(r'^admin/settings/', admin.settings, name='admin-settings'),
     url(r'^about/info/', about.info, name='about-info'),
     url(r'^about/changelog/$', about.changelog, name='about-changelog'),
-    # Include django-admin and jet
-    url(r'^admin/django/jet/', include('jet.urls', 'jet')),
-    url(r'^admin/django/jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),
+    # Include django-admin and
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),
 ]

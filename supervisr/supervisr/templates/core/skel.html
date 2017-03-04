@@ -11,12 +11,12 @@
     <link rel="stylesheet" href="{% static 'node_modules/clarity-ui/clarity-ui.min.css' %}">
     <link rel="stylesheet" href="{% static 'supervisr.css' %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'img/logo_64.png' %}"/>
-    {% block header %}
     <title>
       {% block title %}
       {% supervisr_title title %}
       {% endblock %}
     </title>
+    {% block header %}
     {% endblock %}
   </head>
   <body>

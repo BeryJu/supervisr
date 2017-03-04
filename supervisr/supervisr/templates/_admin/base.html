@@ -12,10 +12,10 @@
     <a href="{% url 'admin-settings' %}" class="nav-link {% is_active 'admin-settings' %}">
       {% trans "Settings" %}
     </a>
-    <a href="{% url 'admin:index' %}" class="nav-link">
+    <a href="{% url 'admin:index' %}" class="nav-link {% is_active 'index' %}">
       {% trans "Admin Interface" %}
     </a>
-    <a href="{% url 'django-admindocs-docroot' %}" class="nav-link">
+    <a href="{% url 'django-admindocs-docroot' %}" class="nav-link {% is_active 'django-admindocs' %}">
       {% trans "Admin Docs" %}
     </a>
   </section>
