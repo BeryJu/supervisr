@@ -15,6 +15,11 @@
   margin: 20px 0;
 }
 
+.nav-link img.branding {
+    min-width: initial;
+    padding: 0 !important;
+}
+
 .card-block > .table-card {
   margin: 0;
 }
