@@ -21,6 +21,7 @@ class SignalException(Exception):
     """
     Exception which is used as a base for all Exceptions in Signals
     """
+    pass
 
 SIG_USER_PRODUCT_RELATIONSHIP_CREATED = RobustSignal(providing_args=['upr'])
 SIG_USER_PRODUCT_RELATIONSHIP_DELETED = RobustSignal(providing_args=['upr'])

@@ -7,7 +7,7 @@ from django.contrib import messages
 from ..models import Setting
 
 
-def permanent_message_middleware(get_response):
+def permanent_message(get_response):
     """
     Middleware Permenently add a message
     """

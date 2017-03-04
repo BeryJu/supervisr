@@ -85,7 +85,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
     'supervisr.middleware.MaintenanceMode.maintenance_mode',
-    'supervisr.middleware.PermanentMessageMiddleware.permanent_message_middleware',
+    'supervisr.middleware.PermanentMessage.permanent_message',
 ]
 
 # Message Tag fix for bootstrap CSS Classes
