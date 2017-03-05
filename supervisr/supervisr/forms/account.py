@@ -69,7 +69,7 @@ class SignupForm(InlineForm):
 
     def clean_email(self):
         """
-        Check if email is already used in django or in LDAP
+        Check if email is already used in django or other auth sources
         """
         email = self.cleaned_data.get('email')
         # Check if user exists already, error early
