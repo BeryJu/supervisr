@@ -21,15 +21,16 @@ class SupervisrAppConfig(AppConfig):
     """
 
     init_modules = ['signals']
+    admin_url_name = 'admin-mod_default'
 
     def ready(self):
+        LOGGER.info("Loaded %s", self.name)
         for module in self.init_modules:
             try:
                 importlib.import_module("%s.%s" % (self.name, module))
-                LOGGER.info("Loaded --%s.%s", self.name, module)
+                LOGGER.info("Loaded %s.%s", self.name, module)
             except ImportError:
                 pass # ignore non-existant modules
-        LOGGER.info("Loaded %s", self.name)
         super(SupervisrAppConfig, self).ready()
 
 class SupervisrCoreConfig(SupervisrAppConfig):
@@ -38,7 +39,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr'
-    init_modules = ['signals.core_signals', 'events', 'mailer', 'models']
+    init_modules = ['signals', 'events', 'mailer', 'models']
 
     def ready(self):
         # Looks ugly, but just goes two dirs up and gets CHANGELOG.md
