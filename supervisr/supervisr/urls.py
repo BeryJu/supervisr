@@ -1,12 +1,17 @@
 """
 supervisr core urls
 """
+import importlib
+import logging
 
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin as admin_django
 
+from .utils import get_apps
 from .views import about, account, admin, common, domain, product
+
+LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=invalid-name
 handler404 = 'supervisr.views.common.uncaught_404'
@@ -29,18 +34,27 @@ urlpatterns = [
     url(r'^products/$', product.index, name='product-index'),
     url(r'^products/(?P<slug>[a-zA-Z0-9\-]+)/$', product.view, name='product-view'),
     url(r'^domain/$', domain.index, name='domain-index'),
-    url(r'^dns/', include('supervisr_dns.urls', 'supervisr_dns')),
-    url(r'^mail/', include('supervisr_mail.urls', 'supervisr_mail')),
-    url(r'^server/', include('supervisr_server.urls', 'supervisr_server')),
-    url(r'^web/', include('supervisr_web.urls', 'supervisr_web')),
     url(r'^admin/$', admin.index, name='admin-index'),
     url(r'^admin/settings/', admin.settings, name='admin-settings'),
-    url(r'^about/info/', about.info, name='about-info'),
+    url(r'^admin/mod/default/', admin.mod_default, name='admin-mod_default'),
+    url(r'^admin/info/', admin.info, name='admin-info'),
     url(r'^about/changelog/$', about.changelog, name='about-changelog'),
     # Include django-admin and
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),
 ]
+
+# Load Urls for all sub apps
+for app in get_apps():
+    short_name = app.replace('supervisr_', '')
+    url_module = "%s.urls" % app
+    # Only add if module could be loaded
+    if importlib.util.find_spec(url_module) is not None:
+        urlpatterns += [
+            url(r"^app/%s/" % short_name, include(url_module, app)),
+        ]
+        LOGGER.info("Loaded %s", url_module)
+
 
 if settings.DEBUG:
     import debug_toolbar

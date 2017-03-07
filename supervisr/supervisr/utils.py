@@ -4,7 +4,7 @@ Supervisr Core utils
 
 import socket
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
 
@@ -46,6 +46,7 @@ def send_admin_mail(exception, message):
     """
     Send Email to all superusers
     """
+    from django.contrib.auth.models import User
     emails = [x.email for x in User.objects.filter(superuser=True)]
     return send_message(
         recipients=emails,
@@ -53,3 +54,17 @@ def send_admin_mail(exception, message):
             'exception': exception}),
         template='email/admin_mail.html',
         template_context={'exception': exception, 'message': message})
+
+def get_apps(mod_only=False):
+    """
+    Get a list of all installed apps
+    """
+    app_list = []
+    for app in settings.INSTALLED_APPS:
+        if app.startswith('supervisr') and app is not 'supervisr':
+            if mod_only is True:
+                if app.startswith('supervisr_mod'):
+                    app_list.append(app)
+            else:
+                app_list.append(app)
+    return app_list

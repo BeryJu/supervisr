@@ -7,7 +7,7 @@ from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
 from ..models import get_system_user
-from ..views import about
+from ..views import about, admin
 
 
 # pylint: disable=duplicate-code
@@ -23,9 +23,9 @@ class TestAboutViews(TestCase):
         """
         Test Info View
         """
-        req = self.factory.get(reverse('about-info'))
+        req = self.factory.get(reverse('admin-info'))
         req.user = User.objects.get(pk=get_system_user())
-        res = about.info(req)
+        res = admin.info(req)
         self.assertEqual(res.status_code, 200)
 
     def test_changelog_view(self):

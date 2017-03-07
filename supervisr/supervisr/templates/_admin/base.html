@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load is_active %}
+{% load supervisr_modlist %}
 
 {% block sidenav %}
 <nav class="sidenav">
@@ -17,6 +18,19 @@
     </a>
     <a href="{% url 'django-admindocs-docroot' %}" class="nav-link {% is_active 'django-admindocs' %}">
       {% trans "Admin Docs" %}
+    </a>
+    <section class="nav-group collapsible">
+      <input id="admin_modules" type="checkbox">
+      <label for="admin_modules">{% trans "Module Settings" %}</label>
+      <ul class="nav-list">
+        {% supervisr_modlist as apps %}
+        {% for app in apps %}
+        <li><a href="{% url app.url %}" class="nav-link">{{ app.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </section>
+    <a href="{% url 'admin-info' %}" class="nav-link {% is_active 'admin-info' %}">
+      {% trans "System Information" %}
     </a>
   </section>
 </nav>

@@ -21,6 +21,7 @@ class SupervisrAppConfig(AppConfig):
     """
 
     init_modules = ['signals']
+    admin_url_name = 'admin-mod_default'
 
     def ready(self):
         LOGGER.info("Loaded %s", self.name)
