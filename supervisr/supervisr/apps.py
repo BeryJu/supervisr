@@ -22,8 +22,21 @@ class SupervisrAppConfig(AppConfig):
 
     init_modules = ['signals']
     admin_url_name = 'admin-mod_default'
+    inject_middleware = []
+
+    def __init__(self, *args, **kwargs):
+        settings.MIDDLEWARE.extend(self.inject_middleware)
+        super(SupervisrAppConfig, self).__init__(*args, **kwargs)
 
     def ready(self):
+        self.load_init()
+        self.merge_settings()
+        super(SupervisrAppConfig, self).ready()
+
+    def load_init(self):
+        """
+        Load initial modules for decorators
+        """
         LOGGER.info("Loaded %s", self.name)
         for module in self.init_modules:
             try:
@@ -31,7 +44,25 @@ class SupervisrAppConfig(AppConfig):
                 LOGGER.info("Loaded %s.%s", self.name, module)
             except ImportError:
                 pass # ignore non-existant modules
-        super(SupervisrAppConfig, self).ready()
+
+    def merge_settings(self, overwrite=False):
+        """
+        Load settings file and add/overwrite
+        """
+        try:
+            counter = 0
+            sub_settings = importlib.import_module("%s.settings" % self.name)
+            for key in dir(sub_settings):
+                if not key.startswith('__') and not key.endswith('__'):
+                    # Only overwrite if set
+                    if overwrite is True or hasattr(settings, key) is False:
+                        value = getattr(sub_settings, key)
+                        setattr(settings, key, value)
+                        counter += 1
+            LOGGER.info("Overwrote %s settings for %s", counter, self.name)
+        except ImportError:
+            pass # ignore non-existant modules
+
 
 class SupervisrCoreConfig(SupervisrAppConfig):
     """

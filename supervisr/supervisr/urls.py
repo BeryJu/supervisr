@@ -36,7 +36,7 @@ urlpatterns = [
     url(r'^domain/$', domain.index, name='domain-index'),
     url(r'^admin/$', admin.index, name='admin-index'),
     url(r'^admin/settings/', admin.settings, name='admin-settings'),
-    url(r'^admin/mod/default/', admin.mod_default, name='admin-mod_default'),
+    url(r'^admin/mod/default/(?P<mod>[a-zA-Z0-9]+)/$', admin.mod_default, name='admin-mod_default'),
     url(r'^admin/info/', admin.info, name='admin-info'),
     url(r'^about/changelog/$', about.changelog, name='about-changelog'),
     # Include django-admin and
@@ -46,7 +46,11 @@ urlpatterns = [
 
 # Load Urls for all sub apps
 for app in get_apps():
-    short_name = app.replace('supervisr_', '')
+    short_name = app.replace('supervisr_', '').replace('_', '/')
+    # Check if it's only a module or a full path
+    if '.' in app:
+        app = app.split('.')[0]
+        short_name = short_name.split('.')[0]
     url_module = "%s.urls" % app
     # Only add if module could be loaded
     if importlib.util.find_spec(url_module) is not None:

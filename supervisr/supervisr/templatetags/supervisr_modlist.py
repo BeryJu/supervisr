@@ -18,8 +18,14 @@ def supervisr_modlist():
     mod_list = get_apps(mod_only=True)
     view_list = []
     for mod in mod_list:
+        if '.' in mod:
+            name = mod.split('.')[-1]
+            mod = mod.split('.')[0]
+        else:
+            name = mod
         view_list.append({
             'url': apps.get_app_config(mod).admin_url_name,
-            'name': mod,
+            'name': name,
             })
-    return view_list
+
+    return sorted(view_list, key=lambda x: x['name'])

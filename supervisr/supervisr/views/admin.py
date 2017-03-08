@@ -38,11 +38,13 @@ def settings(req):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def mod_default(req):
+def mod_default(req, mod):
     """
     Default view for modules without admin view
     """
-    return render(req, '_admin/mod_default.html')
+    return render(req, '_admin/mod_default.html', {
+        'mod': mod
+        })
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
