@@ -2,6 +2,7 @@ django>=1.10.0
 django-crispy-forms>=1.6.1
 django-formtools
 django-recaptcha
+django-two-factor-auth
 ldap3
 mysqlclient
 markdown
