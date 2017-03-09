@@ -110,13 +110,19 @@ def run(ctx, port=8080):
 
 @task
 # pylint: disable=unused-argument
-def lint(ctx):
+def lint(ctx, modules=None):
     """
     Run PyLint
     """
+    if modules is None:
+        modules = ['tasks.py']
+        modules.extend(glob('supervisr*'))
+    elif isinstance(modules, str):
+        modules = [modules]
+
     from pylint.lint import Run
-    args = ['--load-plugins', 'pylint_django', 'tasks.py']
-    args.extend(glob('supervisr*'))
+    args = ['--load-plugins', 'pylint_django']
+    args.extend(modules)
     Run(args)
 
 @task
