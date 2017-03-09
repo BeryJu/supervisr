@@ -8,12 +8,22 @@ try:
 except ImportError:
      print("Could not import pyinvoke. Please install by running 'sudo pip3 install invoke'")
 
+import sys
 from glob import glob
 
 if WINDOWS:
     PYTHON_EXEC = 'python'
 else:
     PYTHON_EXEC = 'python3'
+
+def _sudo(ctx, *args, **kwargs):
+    """
+    Use .run if there's no tty (CI Build) or .sudo if there is one
+    """
+    if sys.stdout.isatty():
+        return ctx.sudo(*args, **kwargs)
+    else:
+        return ctx.run(*args, **kwargs)
 
 
 @task
@@ -24,7 +34,7 @@ def install(ctx, dev=False):
     files = glob("*/requirements.txt")
     if dev:
         files.extend(glob("*/requirements-dev.txt"))
-    ctx.sudo("pip3 install -r %s" % ' -r '.join(files))
+    _sudo(ctx, "pip3 install -r %s" % ' -r '.join(files))
 
 @task
 def deploy(ctx, user=None, fqdn=None):
