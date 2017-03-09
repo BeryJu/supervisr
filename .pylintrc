@@ -6,3 +6,4 @@ disable=E0611
 
 # Minimum lines number of a similarity.
 min-similarity-lines=20
+

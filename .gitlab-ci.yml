@@ -1,8 +1,8 @@
 before_script:
   - sudo apt-get update >/dev/null
   - sudo apt-get -y install python3-pip python3-dev libsasl2-dev libldap2-dev libssl-dev python3-mysqldb libmysqlclient-dev >/dev/null
-  - sudo python3 -m pip install -U -r requirements-dev.txt >/dev/null
-  - cd supervisr/
+  - sudo python3 -m pip install -U invoke
+  - sudo inv install --dev
 stages:
   - test
   - deploy
@@ -10,36 +10,32 @@ migrations:
   type: test
   stage: test
   script:
-    - python3 manage.py makemigrations
-    - python3 manage.py migrate
+    - inv migrate
 unittest:
   type: test
   stage: test
   script:
-    - python3 manage.py test --pattern=Test*.py
+    - inv unittest
 coverage:
   type: test
   stage: test
   script:
-    - python3 manage.py makemigrations
-    - python3 manage.py migrate
-    - coverage run --source='.' manage.py test --pattern=Test*.py
-    - coverage report
+    - inv coverage
 isort:
   type: test
   stage: test
   script:
-    - isort -c -vb
+    - inv isort
 pylint:
   type: test
   stage: test
   script:
-    - pylint --load-plugins pylint_django supervisr*
+    - inv lint
 prospector:
   type: test
   stage: test
   script:
-    - prospector -I migration
+    - inv prospector
 deploy:
   type: deploy
   stage: deploy
@@ -49,7 +45,7 @@ deploy:
     - "eval $(ssh-agent -s)"
     - "mkdir ~/.ssh -p"
     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
-    - ssh -o 'StrictHostKeyChecking=no' beryjuorg@prd-web01.prs.fr.beryju.org "./update_supervisr.sh"
+    - inv deploy
   environment:
     name: production
     url: https://my.beryju.org
