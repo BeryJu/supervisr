@@ -5,7 +5,7 @@ Supervisr mod_ldap app config
 from supervisr.apps import SupervisrAppConfig
 
 
-class SupervisrModLdapConfig(SupervisrAppConfig):
+class SupervisrModLDAPConfig(SupervisrAppConfig):
     """
     Supervisr mod_ldap app config
     """
@@ -13,4 +13,4 @@ class SupervisrModLdapConfig(SupervisrAppConfig):
     name = 'supervisr_mod_ldap'
 
     def ready(self):
-        super(SupervisrModLdapConfig, self).ready()
+        super(SupervisrModLDAPConfig, self).ready()

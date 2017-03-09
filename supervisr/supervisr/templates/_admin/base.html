@@ -25,7 +25,7 @@
       <ul class="nav-list">
         {% supervisr_modlist as apps %}
         {% for app in apps %}
-        <li><a href="{% url app.url %}" class="nav-link">{{ app.name }}</a></li>
+        <li><a href="{% url app.url app.name %}" class="nav-link">{{ app.name }}</a></li>
         {% endfor %}
       </ul>
     </section>
