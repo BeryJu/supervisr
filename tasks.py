@@ -8,6 +8,7 @@ try:
 except ImportError:
      print("Could not import pyinvoke. Please install by running 'sudo pip3 install invoke'")
 
+import os
 import sys
 from glob import glob
 
@@ -25,6 +26,15 @@ def _sudo(ctx, *args, **kwargs):
     else:
         return ctx.run(*args, **kwargs)
 
+@task
+def clean(ctx):
+    """
+    Clean Python cached files
+    """
+    files = glob("**/**/**/*.pyc", recursive=True)
+    for file in files:
+        os.remove(file)
+    print("Removed %i files" % len(files))
 
 @task
 def install(ctx, dev=False):
@@ -44,12 +54,24 @@ def deploy(ctx, user=None, fqdn=None):
     ctx.run("ssh -o 'StrictHostKeyChecking=no' %s@%s \"./update_supervisr.sh\"" % (user, fqdn))
 
 @task
-def run_dev(ctx, port=8080):
+def dj_make_migrations(ctx):
     """
-    Create & apply migrations and run a dev server on
+    Create migrations
     """
     ctx.run("%s manage.py makemigrations" % PYTHON_EXEC)
+
+@task(pre=[dj_make_migrations])
+def dj_migrate(ctx):
+    """
+    Apply  migrations
+    """
     ctx.run("%s manage.py migrate" % PYTHON_EXEC)
+
+@task(pre=[dj_migrate])
+def dj_run(ctx, port=8080):
+    """
+    Starts a development server
+    """
     ctx.run("%s manage.py runserver 0.0.0.0:%s" % (PYTHON_EXEC, port))
 
 @task
