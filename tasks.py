@@ -8,6 +8,8 @@ try:
 except ImportError:
      print("Could not import pyinvoke. Please install by running 'sudo pip3 install invoke'")
 
+from glob import glob
+
 if WINDOWS:
     PYTHON_EXEC = 'PYTHON_EXEC'
 else:
@@ -18,7 +20,10 @@ def install(ctx, dev=False):
     """
     Install requirements for supervisr and all modules
     """
-    pass
+    files = glob("*/requirements.txt")
+    if dev:
+        files.extend(glob("*/requirements-dev.txt"))
+    ctx.sudo("pip3 install -r %s" % ' -r '.join(files))
 
 @task
 def deploy(ctx, user=None, fqdn=None):
