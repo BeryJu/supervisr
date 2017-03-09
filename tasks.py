@@ -11,9 +11,10 @@ except ImportError:
 from glob import glob
 
 if WINDOWS:
-    PYTHON_EXEC = 'PYTHON_EXEC'
+    PYTHON_EXEC = 'python'
 else:
-    PYTHON_EXEC = 'PYTHON_EXEC3'
+    PYTHON_EXEC = 'python3'
+
 
 @task
 def install(ctx, dev=False):
