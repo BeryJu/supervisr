@@ -1,0 +1,9 @@
+[MASTER]
+
+disable=E0611
+
+[SIMILARITIES]
+
+# Minimum lines number of a similarity.
+min-similarity-lines=20
+

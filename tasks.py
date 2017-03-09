@@ -51,3 +51,10 @@ def run_dev(ctx, port=8080):
     ctx.run("%s manage.py makemigrations" % PYTHON_EXEC)
     ctx.run("%s manage.py migrate" % PYTHON_EXEC)
     ctx.run("%s manage.py runserver 0.0.0.0:%s" % (PYTHON_EXEC, port))
+
+@task
+def lint(ctx):
+    """
+    Run PyLint
+    """
+    ctx.run("pylint --load-plugins pylint_django supervisr*")
