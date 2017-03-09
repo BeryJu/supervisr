@@ -61,7 +61,7 @@ def clean(ctx):
     """
     Clean Python cached files
     """
-    files = glob("**/**/**/*.pyc", recursive=True)
+    files = glob("**/**/**/*.pyc")
     for file in files:
         os.remove(file)
     print("Removed %i files" % len(files))
