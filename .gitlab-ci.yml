@@ -4,7 +4,7 @@ before_script:
   - sudo python3 -m pip install -U invoke
   - sudo inv install --dev
 variables:
-  - INVOKE_SUDO_PASSWORD: ''
+  INVOKE_SUDO_PASSWORD: ''
 stages:
   - test
   - deploy
