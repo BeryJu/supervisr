@@ -10,36 +10,32 @@ migrations:
   type: test
   stage: test
   script:
-    - python3 manage.py makemigrations
-    - python3 manage.py migrate
+    - inv migrate
 unittest:
   type: test
   stage: test
   script:
-    - python3 manage.py test --pattern=Test*.py
+    - inv unittest
 coverage:
   type: test
   stage: test
   script:
-    - python3 manage.py makemigrations
-    - python3 manage.py migrate
-    - coverage run --source='.' manage.py test --pattern=Test*.py
-    - coverage report
+    - inv coverage
 isort:
   type: test
   stage: test
   script:
-    - isort -c -vb
+    - inv isort
 pylint:
   type: test
   stage: test
   script:
-    - pylint --load-plugins pylint_django supervisr*
+    - inv lint
 prospector:
   type: test
   stage: test
   script:
-    - prospector -I migration
+    - inv prospector
 deploy:
   type: deploy
   stage: deploy
