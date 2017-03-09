@@ -1,9 +1,12 @@
-#!/usr/bin/which python3
+#!/usr/bin/python3
 """
 Supervisr Invoke Tasks
 """
-from invoke import task
-from invoke.platform import WINDOWS
+try:
+    from invoke import task
+    from invoke.platform import WINDOWS
+except ImportError:
+     print("Could not import pyinvoke. Please install by running 'sudo pip3 install invoke'")
 
 if WINDOWS:
     PYTHON_EXEC = 'PYTHON_EXEC'
@@ -11,10 +14,11 @@ else:
     PYTHON_EXEC = 'PYTHON_EXEC3'
 
 @task
-def clean(ctx):
-    patterns = ['build']
-    for pattern in patterns:
-        ctx.run("rm -rf %s" % pattern)
+def install(ctx, dev=False):
+    """
+    Install requirements for supervisr and all modules
+    """
+    pass
 
 @task
 def deploy(ctx, user=None, fqdn=None):
@@ -25,12 +29,9 @@ def deploy(ctx, user=None, fqdn=None):
 
 @task
 def run_dev(ctx, port=8080):
+    """
+    Create & apply migrations and run a dev server on
+    """
     ctx.run("%s manage.py makemigrations" % PYTHON_EXEC)
     ctx.run("%s manage.py migrate" % PYTHON_EXEC)
     ctx.run("%s manage.py runserver 0.0.0.0:%s" % (PYTHON_EXEC, port))
-
-@task
-def build(ctx, docs=False):
-    ctx.run("PYTHON_EXEC setup.py build")
-    if docs:
-        ctx.run("sphinx-build docs docs/_build")
