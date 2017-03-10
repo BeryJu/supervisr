@@ -3,3 +3,5 @@ isort
 pylint-django
 prospector
 django-debug-toolbar
+sphinx
+sphinx_rtd_theme
