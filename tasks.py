@@ -138,7 +138,6 @@ def isort(ctx):
 
 @task(pre=[migrate])
 @shell
-@hide
 def coverage(ctx):
     """
     Run Unittests and get coverage
