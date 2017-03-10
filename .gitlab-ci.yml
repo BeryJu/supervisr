@@ -45,7 +45,7 @@ deploy:
     - "eval $(ssh-agent -s)"
     - "mkdir ~/.ssh -p"
     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
-    - inv deploy
+    - inv deploy --user=beryjuorg --fqdn=prd-web01.prs.fr.beryju.org
   environment:
     name: production
     url: https://my.beryju.org

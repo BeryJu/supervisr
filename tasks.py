@@ -9,6 +9,7 @@ except ImportError:
     print("Could not import pyinvoke. Please install by running 'sudo pip3 install invoke'")
 
 import os
+import shutil
 import sys
 from functools import wraps
 from glob import glob
@@ -144,7 +145,6 @@ def isort(ctx):
 
 @task(pre=[migrate])
 @shell
-@hide
 def coverage(ctx):
     """
     Run Unittests and get coverage
@@ -169,3 +169,13 @@ def test(ctx):
     Run all tests
     """
     pass
+
+@task
+@shell
+def docs(ctx):
+    """
+    Build sphinx docs
+    """
+    shutil.rmtree('docs/build', ignore_errors=True)
+    ctx.run('sphinx-apidoc -o docs/source '+' '.join(glob('supervisr*')))
+    ctx.run('sphinx-build -b html docs/source docs/build')
