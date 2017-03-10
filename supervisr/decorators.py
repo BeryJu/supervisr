@@ -4,25 +4,52 @@ supervisr view decorators
 
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.http import urlencode
+
+from .utils import uuid
 
 
 def anonymous_required(view_function):
     """
-    Wrapper for class-based AnonymousRequired
-    """
-    return AnonymousRequired(view_function)
-
-# pylint: disable=too-few-public-methods
-class AnonymousRequired(object):
-    """
     Decorator to only allow a view for anonymous users
     """
-
-    def __init__(self, view_function):
-        self.view_function = view_function
-
-    def __call__(self, *args, **kwargs):
+    def wrap(*args, **kwargs):
+        """
+        Check if request's user is authenticated and route back to index
+        """
         req = args[0] if len(args) > 0 else None
         if req and req.user is not None and req.user.is_authenticated():
             return redirect(reverse('common-index'))
-        return self.view_function(*args, **kwargs)
+        return view_function(*args, **kwargs)
+
+    wrap.__doc__ = view_function.__doc__
+    wrap.__name__ = view_function.__name__
+    return wrap
+
+def reauth_required(view_function):
+    """
+    Decorator to force a re-authentication before continuing
+    """
+    def wrap(*args, **kwargs):
+        """
+        check if user just authenticated or not
+        """
+        req = args[0] if len(args) > 0 else None
+        # Check if user is authenticated at all
+        if not req or not req.user or not req.user.is_authenticated():
+            return redirect(reverse('account-login'))
+        if 'supervisr_require_reauth_done' in req.session and \
+            req.session[req.GET.get('nonce')] == req.path:
+            ret = view_function(*args, **kwargs)
+            # Clean up before we redirect further
+            del req.session['supervisr_require_reauth_done']
+            return ret
+        else:
+            nonce = uuid()
+            req.session[nonce] = req.path
+            return redirect(reverse('account-reauth')+'?'+
+                            urlencode({'next': req.path, 'nonce': nonce}))
+
+    wrap.__doc__ = view_function.__doc__
+    wrap.__name__ = view_function.__name__
+    return wrap

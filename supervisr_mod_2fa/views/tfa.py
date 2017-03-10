@@ -9,6 +9,8 @@ from django.utils.translation import ugettext as _
 from django_otp import match_token, user_has_device
 from django_otp.decorators import otp_required
 
+from supervisr.decorators import reauth_required
+
 from ..forms.tfa import TFAVerifyForm
 
 
@@ -46,4 +48,14 @@ def verify(req):
         'form': form,
         'title': _("Two-factor authentication code"),
         'primary_action': _("Verify"),
+        })
+
+@login_required
+@reauth_required
+def setup(req):
+    """
+    Wizard to set up 2FA
+    """
+    return render(req, 'core/generic.html', {
+        'text': 'Test re-auth'
         })
