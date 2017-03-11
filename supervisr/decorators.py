@@ -2,6 +2,8 @@
 supervisr view decorators
 """
 
+import time
+
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.http import urlencode
@@ -38,17 +40,20 @@ def reauth_required(view_function):
         # Check if user is authenticated at all
         if not req or not req.user or not req.user.is_authenticated():
             return redirect(reverse('account-login'))
+
+        now = time.time()
+
         if 'supervisr_require_reauth_done' in req.session and \
-            req.session[req.GET.get('nonce')] == req.path:
-            ret = view_function(*args, **kwargs)
-            # Clean up before we redirect further
+            req.session['supervisr_require_reauth_done'] > (now + 300):
             del req.session['supervisr_require_reauth_done']
-            return ret
-        else:
-            nonce = uuid()
-            req.session[nonce] = req.path
+
+        if not 'supervisr_require_reauth_done' in req.session:
             return redirect(reverse('account-reauth')+'?'+
-                            urlencode({'next': req.path, 'nonce': nonce}))
+                            urlencode({'next': req.path}))
+
+        if 'supervisr_require_reauth_done' in req.session and \
+            req.session['supervisr_require_reauth_done'] <= (now + 300):
+            return view_function(*args, **kwargs)
 
     wrap.__doc__ = view_function.__doc__
     wrap.__name__ = view_function.__name__

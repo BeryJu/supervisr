@@ -3,6 +3,7 @@ Supervisr Core Account Views
 """
 
 import logging
+import time
 
 from django.conf import settings
 from django.contrib import messages
@@ -333,12 +334,11 @@ def reauth(req):
             user = authenticate(
                 username=req.user.email,
                 password=form.cleaned_data.get('password'))
-            if user == req.user and req.session[req.GET.get('nonce')] == req.GET.get('next'):
+            if user == req.user:
                 messages.success(req, _('Successfully Re-Authenticated'))
-                req.session['supervisr_require_reauth_done'] = True
+                req.session['supervisr_require_reauth_done'] = time.time()
                 # Check if there is a next GET parameter and redirect to that
-                if 'next' in req.GET and 'nonce' in req.GET:
-                    del req.session[req.GET.get('nonce')]
+                if 'next' in req.GET:
                     return redirect(req.GET.get('next'))
                 # Otherwise just index
                 return redirect(reverse('common-index'))
