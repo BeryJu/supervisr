@@ -15,7 +15,11 @@ def tfa_force_verify(get_response):
         """
         Middleware to force 2FA Verification
         """
-        if user_has_device(req.user) and not req.user.is_verified:
+
+        if req.user.is_authenticated and \
+            user_has_device(req.user) and \
+            not req.user.is_verified() and \
+            req.path != reverse('supervisr_mod_2fa:tfa-verify'):
             # User has 2FA set up but is not verified
             return redirect(reverse('supervisr_mod_2fa:tfa-verify'))
 

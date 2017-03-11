@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
-from django_otp import match_token, user_has_device
+from django_otp import login, match_token, user_has_device
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from qrcode import make as qr_make
 from qrcode.image.svg import SvgPathImage
@@ -45,15 +45,17 @@ def verify(req):
     if req.method == 'POST':
         form = TFAVerifyForm(req.POST)
         if form.is_valid():
-            dev = match_token(req.user, form.cleaned_data.get('code'))
-            if dev:
+            device = match_token(req.user, form.cleaned_data.get('code'))
+            if device:
+                login(req, device)
+                messages.success(req, _('Successfully validated 2FA Token.'))
                 # Check if there is a next GET parameter and redirect to that
                 if 'next' in req.GET:
                     return redirect(req.GET.get('next'))
                 # Otherwise just index
                 return redirect(reverse('common-index'))
             else:
-                messages.error(req, _('Failed to verify 2-Factor Token'))
+                messages.error(req, _('Invalid 2-Factor Token.'))
     else:
         form = TFAVerifyForm()
 
@@ -76,26 +78,39 @@ class TFASetupView(BaseWizardView):
     totp_device = None
 
     def handle_request(self, req):
-        if not self.totp_device:
+        # Check if user has 2FA setup already
+        final_devices = TOTPDevice.objects.filter(user=req.user, confirmed=True)
+        if final_devices.exists():
+            messages.error(req, _('You already have 2FA enabled!'))
+            return redirect(reverse('common-index'))
+        # Check if there's an unconfirmed device left to set up
+        devices = TOTPDevice.objects.filter(user=req.user, confirmed=False)
+        if not devices.exists():
             # Create new TOTPDevice and save it, but not confirm it
             self.totp_device = TOTPDevice(user=req.user, confirmed=False)
             self.totp_device.save()
-            # Somehow convert the generated key to base32 for the QR code
-            rawkey = unhexlify(self.totp_device.key.encode('ascii'))
-            req.session['supervisr_mod_2fa_key'] = b32encode(rawkey).decode("utf-8")
+        else:
+            self.totp_device = devices.first()
+
+        # Somehow convert the generated key to base32 for the QR code
+        rawkey = unhexlify(self.totp_device.key.encode('ascii'))
+        req.session['supervisr_mod_2fa_key'] = b32encode(rawkey).decode("utf-8")
 
     def get_form(self, step=None, data=None, files=None):
         form = super(TFASetupView, self).get_form(step, data, files)
         if step is None:
             step = self.steps.current
         if step == '0':
+            form.user = self.request.user
             form.fields['qr_code'].initial = reverse('supervisr_mod_2fa:tfa-qr')
         return form
 
-    # def done(self, form_dict, **kwargs):
-    #     return render(self.request, 'core/generic.html', {
-    #         'text': 'Test 2FA passed'
-    #         })
+    # pylint: disable=unused-argument
+    def done(self, final_forms, **kwargs):
+        # Save device as confirmed
+        self.totp_device.confirmed = True
+        self.totp_device.save()
+        return redirect(reverse('supervisr_mod_2fa:tfa-index'))
 
 @never_cache
 @login_required
