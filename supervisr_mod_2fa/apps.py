@@ -12,7 +12,3 @@ class SupervisrMod2FaConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr_mod_2fa'
-    inject_middleware = [
-        'django_otp.middleware.OTPMiddleware',
-        'supervisr_mod_2fa.middleware.tfa_force_verify'
-    ]

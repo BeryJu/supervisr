@@ -8,8 +8,6 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.http import urlencode
 
-from .utils import uuid
-
 
 def anonymous_required(view_function):
     """
