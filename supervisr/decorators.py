@@ -45,7 +45,7 @@ def reauth_required(view_function):
             req.session['supervisr_require_reauth_done'] > (now + 300):
             del req.session['supervisr_require_reauth_done']
 
-        if not 'supervisr_require_reauth_done' in req.session:
+        if 'supervisr_require_reauth_done' not in req.session:
             return redirect(reverse('account-reauth')+'?'+
                             urlencode({'next': req.path}))
 
