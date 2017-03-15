@@ -21,6 +21,8 @@ EMAIL_FROM = 'BeryJu.org Beta <my@beryju.org>'
 SYSTEM_USER_NAME = 'System'
 USER_PROFILE_ID_START = 5000
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -69,6 +71,8 @@ INSTALLED_APPS = [
     'formtools',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'oauth2_provider',
+    'corsheaders',
 ]
 
 INTERNAL_IPS = ['127.0.0.1']
@@ -82,6 +86,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'supervisr.middleware.MaintenanceMode.maintenance_mode',
     'supervisr.middleware.PermanentMessage.permanent_message',
 ]

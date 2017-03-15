@@ -9,7 +9,7 @@ from django.conf.urls import include, url
 from django.contrib import admin as admin_django
 
 from .utils import get_apps
-from .views import about, account, admin, common, domain, product
+from .views import about, account, admin, api, common, domain, product
 
 LOGGER = logging.getLogger(__name__)
 
@@ -39,9 +39,11 @@ urlpatterns = [
     url(r'^admin/mod/default/(?P<mod>[a-zA-Z0-9]+)/$', admin.mod_default, name='admin-mod_default'),
     url(r'^admin/info/', admin.info, name='admin-info'),
     url(r'^about/changelog/$', about.changelog, name='about-changelog'),
-    # Include django-admin and
+    # Include django-admin
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),
+    url(r'^api/oauth2/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    url(r'^api/v1/account/me.json', api.account_me, name='api-account_me'),
 ]
 
 # Load Urls for all sub apps
