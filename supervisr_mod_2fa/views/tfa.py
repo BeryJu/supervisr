@@ -109,7 +109,8 @@ class TFASetupView(BaseWizardView):
             self.static_device = StaticDevice(user=req.user, confirmed=False)
             self.static_device.save()
             # Create 9 tokens and save them
-            for _ in range(0, 9):
+            # pylint: disable=unused-variable
+            for counter in range(0, 9):
                 token = StaticToken(device=self.static_device, token=StaticToken.random_token())
                 token.save()
         else:
