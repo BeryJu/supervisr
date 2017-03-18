@@ -131,7 +131,7 @@ def isort(ctx):
     """
     Run isort
     """
-    ctx.run("isort -c -vb")
+    ctx.run("isort -c -vb -sg env")
 
 @task(pre=[migrate])
 @shell
