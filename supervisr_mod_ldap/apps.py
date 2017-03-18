@@ -11,6 +11,3 @@ class SupervisrModLDAPConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr_mod_ldap'
-
-    def ready(self):
-        super(SupervisrModLDAPConfig, self).ready()

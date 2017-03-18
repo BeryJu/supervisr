@@ -10,7 +10,6 @@ except ImportError:
 
 import os
 import shutil
-import sys
 from functools import wraps
 from glob import glob
 
@@ -18,15 +17,6 @@ if WINDOWS:
     PYTHON_EXEC = 'python'
 else:
     PYTHON_EXEC = 'python3'
-
-def _sudo(ctx, *args, **kwargs):
-    """
-    Use .run if there's no tty (CI Build) or .sudo if there is one
-    """
-    if sys.stdout.isatty():
-        return ctx.sudo(*args, **kwargs)
-    else:
-        return ctx.run(*args, **kwargs)
 
 def shell(func):
     """
@@ -75,7 +65,7 @@ def install(ctx, dev=False):
     files = glob("*/requirements.txt")
     if dev:
         files.extend(glob("*/requirements-dev.txt"))
-    _sudo(ctx, "pip3 install -r %s" % ' -r '.join(files))
+    ctx.run("pip3 install -r %s" % ' -r '.join(files))
 
 @task
 def deploy(ctx, user=None, fqdn=None):
@@ -111,13 +101,19 @@ def run(ctx, port=8080):
 
 @task
 # pylint: disable=unused-argument
-def lint(ctx):
+def lint(ctx, modules=None):
     """
     Run PyLint
     """
+    if modules is None:
+        modules = ['tasks.py']
+        modules.extend(glob('supervisr*'))
+    elif isinstance(modules, str):
+        modules = [modules]
+
     from pylint.lint import Run
-    args = ['--load-plugins', 'pylint_django', 'tasks.py']
-    args.extend(glob('supervisr*'))
+    args = ['--load-plugins', 'pylint_django']
+    args.extend(modules)
     Run(args)
 
 @task
@@ -135,7 +131,7 @@ def isort(ctx):
     """
     Run isort
     """
-    ctx.run("isort -c -vb")
+    ctx.run("isort -c -vb -sg env")
 
 @task(pre=[migrate])
 @shell

@@ -25,6 +25,7 @@ from django.utils.translation import ugettext as _
 from .signals import (SIG_USER_POST_SIGN_UP,
                       SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
                       SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
+from .utils import get_remote_ip, get_reverse_dns
 
 
 def expiry_date():
@@ -381,6 +382,18 @@ class Event(CreatedUpdatedModel):
             return _("%(hours)d hour(s) ago" % {'hours': hours})
         else:
             return _("%(minutes)d minute(s) ago" % {'minutes': minutes})
+
+    @staticmethod
+    def create(**kwargs):
+        """
+        Create an event and set reverse DNS and remote IP
+        """
+        if 'req' in kwargs or 'request' in kwargs:
+            req = kwargs['req' if 'req' in kwargs else 'request']
+            kwargs['remote_ip'] = get_remote_ip(req)
+            kwargs['remote_ip_rdns'] = get_reverse_dns(kwargs['remote_ip'])
+            del kwargs['req' if 'req' in kwargs else 'request']
+        return Event.objects.create(**kwargs)
 
     def __str__(self):
         return "Event '%s' '%s'" % (self.user.username, self.message)

@@ -3,12 +3,11 @@ Supervisr Core utils
 """
 
 import socket
+from uuid import uuid4
 
 from django.conf import settings
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
-
-from .mailer import send_message
 
 
 def get_remote_ip(req):
@@ -21,6 +20,12 @@ def get_remote_ip(req):
         return req.META.get('HTTP_X_FORWARDED_FOR')
     else:
         return req.META.get('REMOTE_ADDR')
+
+def uuid():
+    """
+    Return a UUID as string with just alphanumeric-chars
+    """
+    return str(uuid4()).replace('-', '').upper()
 
 def get_reverse_dns(dev_ip):
     """
@@ -47,6 +52,7 @@ def send_admin_mail(exception, message):
     Send Email to all superusers
     """
     from django.contrib.auth.models import User
+    from .mailer import send_message
     emails = [x.email for x in User.objects.filter(superuser=True)]
     return send_message(
         recipients=emails,

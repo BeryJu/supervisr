@@ -22,10 +22,8 @@ class SupervisrAppConfig(AppConfig):
 
     init_modules = ['signals']
     admin_url_name = 'admin-mod_default'
-    inject_middleware = []
 
     def __init__(self, *args, **kwargs):
-        settings.MIDDLEWARE.extend(self.inject_middleware)
         super(SupervisrAppConfig, self).__init__(*args, **kwargs)
 
     def ready(self):
@@ -49,13 +47,16 @@ class SupervisrAppConfig(AppConfig):
         """
         Load settings file and add/overwrite
         """
+        blacklist = ['INSTALLED_APPS', 'MIDDLEWARE', 'SECRET_KEY']
         try:
             counter = 0
             sub_settings = importlib.import_module("%s.settings" % self.name)
             for key in dir(sub_settings):
                 if not key.startswith('__') and not key.endswith('__'):
                     # Only overwrite if set
-                    if overwrite is True or hasattr(settings, key) is False:
+                    if overwrite is True or \
+                        hasattr(settings, key) is False and \
+                        key not in blacklist:
                         value = getattr(sub_settings, key)
                         setattr(settings, key, value)
                         counter += 1
