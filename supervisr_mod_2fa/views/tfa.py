@@ -19,6 +19,7 @@ from qrcode import make as qr_make
 from qrcode.image.svg import SvgPathImage
 
 from supervisr.decorators import reauth_required
+from supervisr.models import Event
 from supervisr.views.wizard import BaseWizardView
 
 from ..forms.tfa import TFASetupInitForm, TFASetupStaticForm, TFAVerifyForm
@@ -145,6 +146,13 @@ class TFASetupView(BaseWizardView):
         self.totp_device.save()
         self.static_device.confirmed = True
         self.static_device.save()
+        # Create event with email notification
+        Event.create(
+            user=self.request.user,
+            message=_('You activated 2FA.'),
+            current=True,
+            request=self.request,
+            send_notification=True)
         return redirect(reverse('supervisr_mod_2fa:tfa-index'))
 
 @never_cache

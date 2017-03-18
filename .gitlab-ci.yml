@@ -1,8 +1,10 @@
 before_script:
   - sudo apt-get update >/dev/null
   - sudo apt-get -y install python3-pip python3-dev libsasl2-dev libldap2-dev libssl-dev python3-mysqldb libmysqlclient-dev >/dev/null
-  - sudo python3 -m pip install -U invoke
-  - sudo inv install --dev
+  - sudo python3 -m pip install -U invoke virtualenv
+  - virtualenv env
+  - source env/bin/activate
+  - inv install --dev
 stages:
   - test
   - deploy
