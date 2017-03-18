@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.03
+
+ - Move LDAP into submodule
+ - Add submodule for 2FA
+ - Move to clairty from vmware for UI
+ - More modularization
+
 ## Version 0.02
 
  - Split up into sub-apps

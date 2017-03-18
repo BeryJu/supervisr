@@ -9,8 +9,6 @@ from django.conf import settings
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
 
-from .mailer import send_message
-
 
 def get_remote_ip(req):
     """
@@ -54,6 +52,7 @@ def send_admin_mail(exception, message):
     Send Email to all superusers
     """
     from django.contrib.auth.models import User
+    from .mailer import send_message
     emails = [x.email for x in User.objects.filter(superuser=True)]
     return send_message(
         recipients=emails,
