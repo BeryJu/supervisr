@@ -50,4 +50,3 @@ class TFASetupStaticForm(forms.Form):
     Static form to show generated static tokens
     """
     tokens = forms.MultipleChoiceField(disabled=True, required=False)
-    # _dummy = forms.BooleanField(default=True, required=True)
