@@ -57,7 +57,7 @@ class SignupForm(InlineForm):
     """
     order = ['name', 'email', 'password', 'password_rep', 'captcha', 'tos_accept', 'news_accept']
     name = forms.CharField(label=_('Name'))
-    email = forms.EmailField(label=_('Mail'))
+    email = forms.EmailField(label=_('Email'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
     captcha = ReCaptchaField(
@@ -129,3 +129,11 @@ class PasswordResetFinishForm(InlineForm):
         Check if Password adheres to filter and if passwords matche
         """
         return check_password(self)
+
+class ReauthForm(InlineForm):
+    """
+    Form to reauthenticate users
+    """
+    order = ['email', 'password']
+    email = forms.CharField(disabled=True, label=_('Email'), required=False)
+    password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))

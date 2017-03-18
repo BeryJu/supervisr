@@ -1,5 +1,6 @@
 """ Static settings for supervisr and supervisr.* """
 
+import importlib
 import logging
 import os
 import sys
@@ -65,6 +66,7 @@ INSTALLED_APPS = [
     'supervisr_server.apps.SupervisrServerConfig',
     'supervisr_web.apps.SupervisrWebConfig',
     'supervisr_mail.apps.SupervisrMailConfig',
+    'supervisr_mod_2fa.apps.SupervisrMod2FaConfig',
     'supervisr_mod_ldap.apps.SupervisrModLDAPConfig',
     'formtools',
     'django.contrib.admin',
@@ -204,3 +206,16 @@ if 'test' in sys.argv:
 if DEBUG is True:
     INSTALLED_APPS.append('debug_toolbar')
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+
+# Load subapps's INSTALLED_APPS
+for app in INSTALLED_APPS:
+    if app.startswith('supervisr') and \
+        app is not 'supervisr' and \
+        not app.startswith('supervisr.'):
+        app_package = app.split('.')[0]
+        try:
+            app_settings = importlib.import_module("%s.settings" % app_package)
+            INSTALLED_APPS.extend(getattr(app_settings, 'INSTALLED_APPS', []))
+            MIDDLEWARE.extend(getattr(app_settings, 'MIDDLEWARE', []))
+        except ImportError:
+            pass

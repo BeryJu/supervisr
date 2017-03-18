@@ -29,7 +29,7 @@
                 <ol class="nav navList" role="tablist">
                   {% for step in wizard.steps.all %}
                   <li class="clr-nav-link {% if step < wizard.steps.current %} complete {% endif %} {% if step == wizard.steps.current %} active {% endif %}" role="presentation">
-                    <button type="submit" name="wizard_goto_step" value="{{ step }}" class="btn btn-link nav-link" type="button" {% if step < wizard.steps.current %} formnovalidate {% endif %}>
+                    <button type="submit" value="{{ step }}" class="btn btn-link nav-link" type="button" {% if step < wizard.steps.current %} formnovalidate {% endif %}>
                     Step {{ step|add:1 }}
                     </button>
                   </li>
@@ -47,6 +47,7 @@
                       <div class="form">
                         <section class="form-block">
                           {{ wizard.management_form }}
+                          {% block form %}
                           {% for field in wizard.form %}
                           {% for error in field.errors %}
                           <div class="alert alert-danger">
@@ -82,6 +83,7 @@
                             {% endif %}
                           </div>
                           {% endfor %}
+                          {% endblock %}
                         </section>
                       </div>
                     </div>
@@ -94,11 +96,7 @@
             {% if wizard.steps.prev %}
             <button name="wizard_goto_step" type="submit" class="btn btn-primary" value="{{ wizard.steps.prev }}" formnovalidate>{% trans "Back" %}</button>
             {% endif %}
-            {% if wizard.steps.next %}
-            <button type="submit" class="btn btn-primary">{% trans "Next" %}</button>
-            {% else %}
-            <input type="submit" class="btn btn-primary" value="{% trans "Submit" %}"></input>
-            {% endif %}
+            <input type="submit" name="submit" class="btn btn-primary" value="{% trans "Next" %}"></input>
           </div>
         </form>
       </div>
