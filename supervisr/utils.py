@@ -3,6 +3,7 @@ Supervisr Core utils
 """
 
 import socket
+from uuid import uuid4
 
 from django.conf import settings
 from django.shortcuts import render
@@ -21,6 +22,12 @@ def get_remote_ip(req):
         return req.META.get('HTTP_X_FORWARDED_FOR')
     else:
         return req.META.get('REMOTE_ADDR')
+
+def uuid():
+    """
+    Return a UUID as string with just alphanumeric-chars
+    """
+    return str(uuid4()).replace('-', '').upper()
 
 def get_reverse_dns(dev_ip):
     """

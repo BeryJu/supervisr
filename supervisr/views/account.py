@@ -3,6 +3,7 @@ Supervisr Core Account Views
 """
 
 import logging
+import time
 
 from django.conf import settings
 from django.contrib import messages
@@ -20,7 +21,7 @@ from django.views.decorators.http import require_GET
 from ..decorators import anonymous_required
 from ..forms.account import (ChangePasswordForm, LoginForm,
                              PasswordResetFinishForm, PasswordResetInitForm,
-                             SignupForm)
+                             ReauthForm, SignupForm)
 from ..models import AccountConfirmation, UserProfile
 from ..signals import (SIG_USER_CHANGE_PASS, SIG_USER_CONFIRM, SIG_USER_LOGIN,
                        SIG_USER_LOGOUT, SIG_USER_PASS_RESET_INIT,
@@ -321,3 +322,32 @@ def confirmation_resend(req, email):
         messages.success(req, _("Successfully resent confirmation email"))
         return redirect(reverse('account-login'))
     raise Http404
+
+@login_required
+def reauth(req):
+    """
+    Re-authenticate user before important actions
+    """
+    if req.method == 'POST':
+        form = ReauthForm(req.POST)
+        if form.is_valid():
+            user = authenticate(
+                username=req.user.email,
+                password=form.cleaned_data.get('password'))
+            if user == req.user:
+                messages.success(req, _('Successfully Re-Authenticated'))
+                req.session['supervisr_require_reauth_done'] = time.time()
+                # Check if there is a next GET parameter and redirect to that
+                if 'next' in req.GET:
+                    return redirect(req.GET.get('next'))
+                # Otherwise just index
+                return redirect(reverse('common-index'))
+        messages.error(req, _('Failed to Re-Authenticate'))
+    else:
+        form = ReauthForm(initial={'email': req.user.email})
+
+    return render(req, 'core/generic_form_login.html', {
+        'form': form,
+        'title': _("Re-Authenticate"),
+        'primary_action': _("Login"),
+        })

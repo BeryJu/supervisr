@@ -12,10 +12,6 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
-
-sys.path.insert(0, os.path.abspath('../..'))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.settings")
-# documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -24,6 +20,11 @@ import sys
 
 import django
 import sphinx_rtd_theme
+
+sys.path.insert(0, os.path.abspath('../..'))
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.settings")
+# documentation root, use os.path.abspath to make it absolute, like shown here.
+
 
 django.setup()
 
