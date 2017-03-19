@@ -18,8 +18,8 @@ def tfa_force_verify(get_response):
 
         # Check if it's an oauth2 request, if so skip
         if req.META.get('HTTP_AUTHORIZATION', '').startswith('Bearer') or \
-            (hasattr(req.user, 'is_verified') and req.user.is_verified()) or \
-            not user_has_device(req.user):
+            not user_has_device(req.user) or \
+            (hasattr(req.user, 'is_verified') and req.user.is_verified()):
             # Just continue
             response = get_response(req)
             return response
