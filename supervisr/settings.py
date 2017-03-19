@@ -22,7 +22,7 @@ EMAIL_FROM = 'BeryJu.org Beta <my@beryju.org>'
 SYSTEM_USER_NAME = 'System'
 USER_PROFILE_ID_START = 5000
 
-# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = True
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'

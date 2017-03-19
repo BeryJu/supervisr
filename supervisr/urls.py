@@ -45,6 +45,7 @@ urlpatterns = [
     url(r'^admin/django/', admin_django.site.urls),
     url(r'^api/oauth2/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^api/v1/account/me.json', api.account_me, name='api-account_me'),
+    url(r'^api/v1/openid/userinfo', api.openid_userinfo, name='api-openid_userinfo'),
 ]
 
 # Load Urls for all sub apps
