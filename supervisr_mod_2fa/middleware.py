@@ -20,7 +20,7 @@ def tfa_force_verify(get_response):
             user_has_device(req.user) and \
             not req.user.is_verified() and \
             req.path != reverse('supervisr_mod_2fa:tfa-verify') and \
-            req.META.get('HTTP_AUTHORIZATION', '').startswith('Bearer'):
+            not req.META.get('HTTP_AUTHORIZATION', '').startswith('Bearer'):
             # User has 2FA set up but is not verified
             return redirect(reverse('supervisr_mod_2fa:tfa-verify'))
 
