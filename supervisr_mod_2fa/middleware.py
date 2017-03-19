@@ -20,6 +20,7 @@ def tfa_force_verify(get_response):
         if req.META.get('HTTP_AUTHORIZATION', '').startswith('Bearer') or \
             (hasattr(req.user, 'is_verified') and req.user.is_verified()) or \
             not user_has_device(req.user):
+            # Just continue
             response = get_response(req)
             return response
 
