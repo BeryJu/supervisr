@@ -38,6 +38,9 @@
           {% endif %}
         {% endfor %}
       {% endblock %}
+      {% if next %}
+      <input type="hidden" name="next" value="{{ next }}" />
+      {% endif %}
       <button type="submit" class="btn btn-primary">{{ primary_action }}</button>
       {% if extra_links %}
       {% for link, name in extra_links.items %}
