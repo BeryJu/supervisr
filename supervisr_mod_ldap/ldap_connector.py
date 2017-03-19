@@ -55,7 +55,7 @@ class LDAPConnector(object):
             self.con.strategy.entries_from_json(json_path)
             self.con.bind()
         # Apply LDAPModification's from DB
-        self.apply_db()
+        # self.apply_db()
 
     def apply_db(self):
         """
@@ -162,6 +162,8 @@ class LDAPConnector(object):
         # sAMAccountName is limited to 20 chars
         # https://msdn.microsoft.com/en-us/library/ms679635.aspx
         username_trunk = username[:20] if len(username) > 20 else username
+        # AD doesn't like sAMAccountName's with . at the end
+        username_trunk = username_trunk[:-1] if username_trunk[-1] == '.' else username_trunk
         user_dn = 'cn='+username+','+self.base_dn
         LOGGER.info('New DN: '+user_dn)
         attrs = {
