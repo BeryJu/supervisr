@@ -180,6 +180,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+EMAIL_FROM = 'Supervisr <supervisr@localhost>'
+
 sys.path.append('..')
 try:
     # pylint: disable=wildcard-import
