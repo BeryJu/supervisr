@@ -1,20 +1,20 @@
-.. supervisr documentation master file, created by
-   sphinx-quickstart on Fri Mar 10 18:46:21 2017.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to supervisr's documentation!
 =====================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+    :maxdepth: 2
 
+    installation
+    code
 
+Installation
+--------
 
-Indices and tables
-==================
+ - :doc:`installation/supervisr`
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+Code
+----
+
+ - :ref:`genindex`
+ - :ref:`modindex`
+ - :ref:`search`

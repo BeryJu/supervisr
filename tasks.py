@@ -166,6 +166,11 @@ def docs(ctx):
     """
     Build sphinx docs
     """
+    for gen in glob('docs/source/supervisr**'):
+        os.remove(gen)
+    os.remove('docs/source/modules.rst')
     shutil.rmtree('docs/build', ignore_errors=True)
-    ctx.run('sphinx-apidoc -o docs/source '+' '.join(glob('supervisr*')))
+    print("Cleaned!")
+    for module in glob('supervisr*'):
+        ctx.run('sphinx-apidoc -o docs/source %s' % module)
     ctx.run('sphinx-build -b html docs/source docs/build')

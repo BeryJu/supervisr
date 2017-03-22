@@ -28,6 +28,14 @@ supervisr.views.admin module
     :undoc-members:
     :show-inheritance:
 
+supervisr.views.api module
+--------------------------
+
+.. automodule:: supervisr.views.api
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 supervisr.views.common module
 -----------------------------
 
