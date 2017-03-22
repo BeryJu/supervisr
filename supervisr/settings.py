@@ -1,4 +1,45 @@
 """ Static settings for supervisr and supervisr.* """
+####################################################################################################
+####################################################################################################
+###
+### You should not edit this file. These settings are the defaults. To Override Values, copy them
+### to ../local_settings.py and modify them there.
+###
+####################################################################################################
+####################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import importlib
 import logging
@@ -6,55 +47,24 @@ import os
 import sys
 
 from django.contrib import messages
-
-LOGGER = logging.getLogger(__name__)
-
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
-NOCAPTCHA = True
-
 SYSLOG_HOST = '127.0.0.1'
 SYSLOG_PORT = 514
-EMAIL_HOST = 'prd-mail01.prs.fr.beryju.org'
-EMAIL_FROM = 'BeryJu.org Beta <my@beryju.org>'
+
 # WARNING!
 # This can only be changed before the first `migrate` is run
 # If you change this afterwards, it may cause serious damage!
 SYSTEM_USER_NAME = 'System'
 USER_PROFILE_ID_START = 5000
 
-CORS_ORIGIN_ALLOW_ALL = True
-REQUEST_APPROVAL_PROMPT = 'auto'
-
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_L10N = True
-USE_TZ = True
-STATIC_URL = '/static/'
-
-CHANGELOG = '' # This gets overwritten with ../../CHANGELOG.md on launch
-VERSION_HASH = None # This gets overwritten with the current commit's hash on launch
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/static"
-SECRET_KEY = '_k*@6h2u2@q-dku57hhgzb7tnx*ba9wodcb^s9g0j59@=y(@_o' # noqa Debug SECRET_KEY
-DEBUG = True
-ALLOWED_HOSTS = ['*']
 REMEMBER_SESSION_AGE = 60 * 60 * 24 * 30 # One Month
 
-# Settings are taken from DB, these are needed for django-recaptcha to work
-RECAPTCHA_PUBLIC_KEY = ''
-RECAPTCHA_PRIVATE_KEY = ''
+LOGGER = logging.getLogger(__name__)
 
-LDAP_ENABLED = False
-LDAP = {
-    'SERVERS': '',
-    'BASE': '',
-    'CREATE_BASE': '',
-    'BIND_USER': '',
-    'BIND_PASS': '',
-    'DOMAIN': '',
-    'PORT': 389,
-}
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+NOCAPTCHA = True
+
+CORS_ORIGIN_ALLOW_ALL = True
+REQUEST_APPROVAL_PROMPT = 'auto'
 
 INSTALLED_APPS = [
     'django.contrib.auth',
@@ -77,6 +87,25 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'corsheaders',
 ]
+
+CHANGELOG = '' # This gets overwritten with ../../CHANGELOG.md on launch
+VERSION_HASH = None # This gets overwritten with the current commit's hash on launch
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/static"
+SECRET_KEY = '_k*@6h2u2@q-dku57hhgzb7tnx*ba9wodcb^s9g0j59@=y(@_o' # noqa Debug SECRET_KEY
+DEBUG = True
+ALLOWED_HOSTS = ['*']
+
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+STATIC_URL = '/static/'
+
+# Settings are taken from DB, these are needed for django-recaptcha to work
+RECAPTCHA_PUBLIC_KEY = ''
+RECAPTCHA_PRIVATE_KEY = ''
 
 INTERNAL_IPS = ['127.0.0.1']
 
@@ -129,18 +158,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'supervisr.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': '_dev.db',
     }
 }
-
-# Password validation
-# https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
