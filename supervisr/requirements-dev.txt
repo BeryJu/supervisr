@@ -5,3 +5,4 @@ prospector
 django-debug-toolbar
 sphinx
 sphinx_rtd_theme
+recommonmark
