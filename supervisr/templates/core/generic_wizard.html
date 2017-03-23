@@ -3,6 +3,7 @@
 {% load supervisr_title %}
 {% load crispy_forms_tags %}
 {% load fieldtype %}
+{% load back %}
 {% load i18n %}
 
 {% block title %}
@@ -37,9 +38,9 @@
                 </ol>
               </nav>
               <main class="content-area">
-                <button aria-label="Close" class="close" type="button">
+                <a aria-label="Close" class="close btn btn-link" type="button" href="{% back %}">
                   <clr-icon aria-hidden="true" shape="close"></clr-icon>
-                </button>
+                </a>
                 <div class="clr-nav-content" role="tabpanel">
                   <section>
                     <label class="text-light">{{ wizard.form.title }}</label>

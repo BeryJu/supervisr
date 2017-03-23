@@ -114,6 +114,15 @@ class UserProfile(CreatedUpdatedModel):
     def __str__(self):
         return "UserProfile %s" % self.user.email
 
+# class GroupProfile(CreatedUpdatedModel):
+#     """
+#     Save extended information about Groups
+#     """
+#     group = models.OneToOneField(Group, primary_key=True)
+#     name = models.TextField()
+#     deletable = models.BooleanField(default=True, editable=False)
+#     organization = models.ForeignKey(Organization)
+
 class Setting(CreatedUpdatedModel):
     """
     Save key-value settings to db
@@ -250,7 +259,7 @@ class Product(CreatedUpdatedModel):
     name = models.TextField()
     slug = models.SlugField(blank=True)
     description = models.TextField(blank=True)
-    price = models.DecimalField(decimal_places=3, max_digits=65)
+    price = models.DecimalField(decimal_places=3, max_digits=65, default=0.00)
     invite_only = models.BooleanField(default=True)
     auto_add = models.BooleanField(default=False)
     auto_all_add = models.BooleanField(default=False)
