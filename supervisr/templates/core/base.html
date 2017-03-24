@@ -1,6 +1,7 @@
 {% extends "core/skel.html" %}
 
 {% load supervisr_title %}
+{% load supervisr_navapps %}
 {% load supervisr_setting %}
 {% load is_active %}
 {% load setting %}
@@ -41,18 +42,12 @@
         <span class="nav-text">{% trans "Home" %}</span> <span class="sr-only">(current)</span>
       </a>
       {% if user.is_authenticated %}
-      <a class="nav-link {% is_active 'dns' %}" href="{% url 'supervisr_dns:dns-index' %}">
-        <span class="nav-text">{% trans "DNS" %}</span>
+      {% supervisr_navapps as installed_apps %}
+      {% for app in installed_apps %}
+      <a class="nav-link {% is_active app.short %}" href="{% url app.index %}">
+        <span class="nav-text">{% trans app.title %}</span>
       </a>
-      <a class="nav-link {% is_active 'mail' %}" href="{% url 'supervisr_mail:mail-index' %}">
-        <span class="nav-text">{% trans "Mail" %}</span>
-      </a>
-      <a class="nav-link {% is_active 'server' %}" href="{% url 'supervisr_server:server-index' %}">
-        <span class="nav-text">{% trans "Server" %}</span>
-      </a>
-      <a class="nav-link {% is_active 'web' %}" href="{% url 'supervisr_web:web-index' %}">
-        <span class="nav-text">{% trans "Web" %}</span>
-      </a>
+      {% endfor %}
       {% if user.is_superuser %}
       <a class="nav-link {% is_active 'admin' %}" href="{% url 'admin-index' %}">
         <span class="nav-text">{% trans "Admin" %}</span>
