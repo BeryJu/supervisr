@@ -22,6 +22,7 @@ class SupervisrAppConfig(AppConfig):
 
     init_modules = ['signals']
     admin_url_name = 'admin-mod_default'
+    navbar_title = None
 
     def __init__(self, *args, **kwargs):
         super(SupervisrAppConfig, self).__init__(*args, **kwargs)

@@ -7,7 +7,7 @@ from django.db import models
 from django.utils.translation import ugettext as _
 from passlib.hash import sha512_crypt
 
-from supervisr.models import Domain, Product
+from supervisr.models import CreatedUpdatedModel, Domain, Product
 
 LOGGER = logging.getLogger(__name__)
 
@@ -43,6 +43,12 @@ class MailDomain(Product):
 
     def __str__(self):
         return "MailDomain %s" % self.domain
+
+    def has_catchall(self):
+        """
+        Return true if this domain has a catch all account
+        """
+        return self.mailaccount_set.filter(is_catchall=True).exists()
 
 class MailAccount(Product):
     """
@@ -100,3 +106,14 @@ class MailAccount(Product):
 
     def __str__(self):
         return "MailAccount %s %s" % (self.address, self.domain_mail)
+
+class MailForwarder(CreatedUpdatedModel):
+    """
+    Record to save destinations to forward mail to
+    """
+
+    account = models.ForeignKey(MailAccount)
+    destination = models.EmailField()
+
+    def __str__(self):
+        return "MailForwarder %s => %s" % (self.account.address, self.destination)

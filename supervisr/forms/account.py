@@ -3,7 +3,6 @@ Supervisr Core Account Forms
 """
 
 import logging
-import re
 
 from captcha.fields import ReCaptchaField
 from django import forms
@@ -14,29 +13,9 @@ from django.utils.translation import ugettext as _
 
 from ..models import Setting
 from ..signals import SIG_CHECK_USER_EXISTS
-from .core import InlineForm
+from .core import InlineForm, check_password
 
 LOGGER = logging.getLogger(__name__)
-
-def check_password(form):
-    """
-    Check if Password adheres to filter and if passwords matche
-    """
-    password_a = form.cleaned_data.get('password')
-    password_b = form.cleaned_data.get('password_rep')
-    # Error if one password is empty.
-    if not password_b:
-        raise forms.ValidationError(_("You must confirm your password"))
-    if password_a != password_b:
-        raise forms.ValidationError(_("Your passwords do not match"))
-    # Check if password is strong enough
-    if Setting.get('supervisr:password:filter') is not '':
-        if not re.match(Setting.get('supervisr:password:filter'), password_b):
-            desc = Setting.get('supervisr:password:filter:description')
-            raise forms.ValidationError(_("Password has to contain %(desc)s" % {
-                'desc': desc
-                }))
-    return password_a
 
 class LoginForm(InlineForm):
     """

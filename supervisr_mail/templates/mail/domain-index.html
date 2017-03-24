@@ -1,0 +1,38 @@
+{% extends "mail/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+
+{% block title %}
+{% supervisr_title "Mail" %}
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'supervisr_mail:mail-domain-new' %}" class="btn btn-sm">
+  {% trans "New Domain" %}
+</a>
+<table class="table">
+  <thead>
+    <tr>
+      <th>{% trans 'Domain' %}</th>
+      <th>{% trans 'Account Count' %}</th>
+      <th>{% trans 'Has Catchall?' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for domain in domains %}
+      <tr>
+        <td>{{ domain.domain.domain }}</td>
+        <td>{{ domain.mailaccount_set.count }}</td>
+        <td>
+          {% if domain.has_catchall %}
+          <clr-icon shape="check"></clr-icon>
+          {% else %}
+          <clr-icon shape="times"></clr-icon>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

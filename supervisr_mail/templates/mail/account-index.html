@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-<a href="{% url 'supervisr_mail:mail-account-new' %}" class="btn btn-primary">
+<a href="{% url 'supervisr_mail:mail-account-new' %}" class="btn btn-sm">
   {% trans "New Account" %}
 </a>
 <table class="table">
@@ -19,6 +19,7 @@
       <th>{% trans 'Owner' %}</th>
       <th>{% trans 'Usage' %}</th>
       <th>{% trans 'Forwarder Destination' %}</th>
+      <th>{% trans 'Is Catchall?' %}</th>
     </tr>
   </thead>
   <tbody>
@@ -37,7 +38,20 @@
             {{ account.size }}
           {% endif %}
         </td>
-        <td>-</td>
+        <td>
+          {% if account.mailforwarder_set.exists %}
+          <clr-icon shape="check"></clr-icon>
+          {% else %}
+          <clr-icon shape="times"></clr-icon>
+          {% endif %}
+        </td>
+        <td>
+          {% if account.is_catchall %}
+          <clr-icon shape="check"></clr-icon>
+          {% else %}
+          <clr-icon shape="times"></clr-icon>
+          {% endif %}
+        </td>
       </tr>
     {% endfor %}
   </tbody>

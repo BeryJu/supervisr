@@ -5,17 +5,17 @@ Supervisr Mail MailAccount Forms
 from django import forms
 from django.utils.translation import ugettext as _
 
-from supervisr.forms.account import check_password
+from supervisr.forms.core import check_password
 
 
 class MailAccountForm(forms.Form):
     """
     Initial MailAccount Creation Form
     """
-    title = _('General Information')
 
+    title = 'General Information'
     domain = forms.ModelChoiceField(queryset=None, required=True,
-                                    to_field_name='name', label=_('Domain'))
+                                    label=_('Domain'))
     address = forms.CharField(max_length=64, label=_('Address'))
     can_send = forms.BooleanField(required=False, initial=True,
                                   label=_('Can Send Emails'))
@@ -29,9 +29,13 @@ class MailAccountFormCredentials(forms.Form):
     Step 2 for Mail Account Creation
     """
 
-    title = _('Credentials')
-    password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
-    password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
+    title = 'Credentials'
+    help_text = ("Credentials are optional, but if they are left empty, "
+                 "no one can sign into this account.")
+    password = forms.CharField(required=False, widget=forms.PasswordInput,
+                               label=_('Password'))
+    password_rep = forms.CharField(required=False, widget=forms.PasswordInput,
+                                   label=_('Repeat Password'))
 
     def clean_password_rep(self):
         """
@@ -44,5 +48,6 @@ class MailAccountFormForwarder(forms.Form):
     Step 3 for Mail Account Creation
     """
 
-    title = _('Forwarder Destination')
-    forwarder_dest = forms.EmailField(label=_('Forwarder Destination'))
+    title = 'Forwarder Destination'
+    help_text = 'This can be used to forward every email to this address. Optional.'
+    forwarder_dest = forms.EmailField(required=False, label=_('Forwarder Destination (optional)'))
