@@ -32,6 +32,9 @@
     <a href="{% url 'admin-info' %}" class="nav-link {% is_active 'admin-info' %}">
       {% trans "System Information" %}
     </a>
+    <a href="{% url 'admin-events' %}" class="nav-link {% is_active 'admin-events' %}">
+      {% trans "Events" %}
+    </a>
   </section>
 </nav>
 {% endblock %}

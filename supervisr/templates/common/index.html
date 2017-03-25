@@ -104,11 +104,11 @@
               <td>{% trans event.message %}</td>
               <td>{{ event.get_localized_age }}</td>
               <td>
-              {% if event.action_required %}
-              <a class="btn btn-primary btn-xs" href="{{ event.get_url }}"><clr-icon shape="pop-out"></clr-icon></a>
-              {% else %}
-              <clr-icon shape="times"></clr-icon>
-              {% endif %}
+                {% if event.action_required %}
+                <a class="btn btn-primary btn-xs" href="{{ event.get_url }}"><clr-icon shape="pop-out"></clr-icon></a>
+                {% else %}
+                <clr-icon shape="times"></clr-icon>
+                {% endif %}
               </td>
             </tr>
             {% endfor %}

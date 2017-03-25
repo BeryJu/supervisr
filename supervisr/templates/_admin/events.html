@@ -1,0 +1,57 @@
+{% extends "_admin/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+{% load hostname %}
+{% load setting %}
+{% load fieldtype %}
+
+{% block title %}
+{% supervisr_title "Events" %}
+{% endblock %}
+
+{% block content_area %}
+<table class="table table-striped table-bordered table-hover table-condensed">
+  <thead>
+    <th>{% trans "User" %}</th>
+    <th>{% trans "Invoker" %}</th>
+    <th>{% trans "Description" %}</th>
+    <th>{% trans "Age" %}</th>
+    <th>{% trans "Action" %}</th>
+    <th>{% trans "Remote IP" %}</th>
+  </thead>
+  <tbody>
+    {% for event in events %}
+    <tr>
+      <td>{{ event.user }}</td>
+      <td>{{ event.invoker }}</td>
+      <td>{% trans event.message %}</td>
+      <td>{{ event.get_localized_age }}</td>
+      <td>
+        {% if event.action_required %}
+        <a class="btn btn-primary btn-xs" href="{{ event.get_url }}"><clr-icon shape="pop-out"></clr-icon></a>
+        {% else %}
+        <clr-icon shape="times"></clr-icon>
+        {% endif %}
+      </td>
+      <td>{{ event.remote_ip}} ({{ event.remote_ip_rdns }})</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<div>
+  <span class="step-links">
+  {% if events.has_previous %}
+    <a class="btn" href="?page={{ events.previous_page_number }}">{% trans 'Previous' %}</a>
+  {% endif %}
+  {% if events.has_next %}
+    <a class="btn" href="?page={{ events.next_page_number }}">{% trans 'Next' %}</a>
+  {% endif %}
+  </span>
+  <span class="current">
+    {% blocktrans with total=events.paginator.num_pages current=events.number %}
+    Page {{ current }} of {{ total }}
+    {% endblocktrans %}
+  </span>
+</div>
+{% endblock %}
