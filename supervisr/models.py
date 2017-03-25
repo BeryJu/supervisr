@@ -55,7 +55,7 @@ def get_userid():
     # AutoField as non-primary-key. Also so we can set a custom start,
     # which is settings.USER_PROFILE_ID_START
     try:
-        highest = UserProfile.objects.all.aggregate(Max('unix_userid'))
+        highest = UserProfile.objects.all().aggregate(Max('unix_userid'))['unix_userid__max']
         return highest + 1
     except (AppRegistryNotReady, ObjectDoesNotExist, AttributeError):
         return settings.USER_PROFILE_ID_START
