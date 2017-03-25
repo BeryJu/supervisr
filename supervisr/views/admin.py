@@ -7,10 +7,10 @@ import platform
 import sys
 
 from django import get_version as django_version
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings as django_settings
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
 
 from ..models import Event
@@ -91,10 +91,10 @@ def events(req):
 
     page = req.GET.get('page')
     try:
-        events = paginator.page(page)
+        event_page = paginator.page(page)
     except PageNotAnInteger:
-        events = paginator.page(1)
+        event_page = paginator.page(1)
     except EmptyPage:
-        events = paginator.page(paginator.num_pages)
+        event_page = paginator.page(paginator.num_pages)
 
-    return render(req, '_admin/events.html', {'events': events})
+    return render(req, '_admin/events.html', {'events': event_page})
