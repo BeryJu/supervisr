@@ -64,6 +64,8 @@ LOGGER = logging.getLogger(__name__)
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 NOCAPTCHA = True
 
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'
+
 CORS_ORIGIN_ALLOW_ALL = True
 REQUEST_APPROVAL_PROMPT = 'auto'
 

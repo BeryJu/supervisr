@@ -25,6 +25,8 @@
     <script src="{% static 'node_modules/clarit-icons/clarit-icons.min.js' %}"></script>
     <script src="{% static 'node_modules/jquery/dist/jquery.min.js' %}"></script>
     <script src="{% static 'js/clarit-js.js' %}"></script>
+    <script src="{% static 'js/jquery.tablesorter.min.js' %}"></script>
+    <script>$(document).ready(function() { $("table").tablesorter(); } );</script>
     {% google_analytics %}
     {% block scripts %}
     {% endblock %}

@@ -8,43 +8,31 @@
 {% endblock %}
 
 {% block content %}
-<div class="row">
-  <div class="container">
-    <button clrWizLauncher data-id="#modal_domain_new" class="btn btn-primary">
-      {% trans "New Domain" %}
-    </button>
+<a href="{% url 'domain-new' %}" class="btn btn-sm">
+  {% trans "New Domain" %}
+</a>
+<table class="table">
+  <thead>
+    <tr>
+      <th>{% trans 'Domain' %}</th>
+      <th>{% trans 'Registrar' %}</th>
+      <th>{% trans 'Is Managed?' %}</th>
+    </tr>
+  </thead>
+  <tbody>
     {% for domain in domains %}
-    <div class="col-md-4">
-      <div class="card">
-        <div class="card-header">
-          {{ domain.name }}
-        </div>
-        <div class="card-block">
-          <div class="card-text">
-            {{ domain.description }}
-          </div>
-        </div>
-        <div class="card-footer">
-          {% if domain.management_url %}
-          <a target="_blank" href="{{ domain.management_url }}" class="btn btn-sm btn-link">
-            {% trans 'Open' %}
-          </a>
+      <tr>
+        <td>{{ domain }}</td>
+        <td>{{ domain.registrar }}</td>
+        <td>
+          {% if domain.managed %}
+          <clr-icon shape="check"></clr-icon>
           {% else %}
-          <a target="_blank" href="" class="btn btn-sm btn-link">
-            {% trans 'Open' %}
-          </a>
+          <clr-icon shape="times"></clr-icon>
           {% endif %}
-        </div>
-      </div>
-    </div>
+        </td>
+      </tr>
     {% endfor %}
-  </div>
-</div>
-{% include "domain/modal_domain_new.html" %}
-{% endblock %}
-
-{% block scripts %}
-<script>
-clrWizard('modal_domain_new');
-</script>
+  </tbody>
+</table>
 {% endblock %}

@@ -7,7 +7,7 @@ from django.conf import settings
 
 register = template.Library()
 
-BLOCKED_SETTINGS = ['SECRET_KEY', 'LDAP', 'DATABASES']
+BLOCKED_SETTINGS = ['SECRET_KEY', 'DATABASES']
 
 @register.simple_tag
 def setting(key, default=''):

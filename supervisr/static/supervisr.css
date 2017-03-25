@@ -107,3 +107,12 @@ input::-webkit-inner-spin-button {
 input[type='number'] {
     -moz-appearance: textfield;
 }
+
+/* fix tablesorter css */
+th.header {
+    display: table-cell !important;
+    height: inherit !important;
+    color: inherit !important;
+    flex: initial !important;
+    white-space: initial !important;
+}

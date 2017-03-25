@@ -5,7 +5,8 @@ Supervisr mod_ldap Models
 from django.db import models
 
 from supervisr.fields import JSONField
-from supervisr.models import CreatedUpdatedModel, PurgeableModel
+from supervisr.models import (CreatedUpdatedModel, ProductExtension,
+                              PurgeableModel)
 
 
 class LDAPModification(CreatedUpdatedModel, PurgeableModel):
@@ -24,3 +25,10 @@ class LDAPModification(CreatedUpdatedModel, PurgeableModel):
     dn = models.CharField(max_length=255) # pylint: disable=invalid-name
     action = models.CharField(max_length=17, choices=ACTIONS, default=ACTION_MODIFY)
     data = JSONField()
+
+class ProductExtensionLDAP(ProductExtension):
+    """
+    Save LDAP group to a product
+    """
+
+    ldap_group = models.TextField(blank=True)
