@@ -15,6 +15,8 @@ def is_active(context, *args):
     if not req.resolver_match:
         return ''
     for url in args:
-        if req.resolver_match.url_name.startswith(url):
+        short_url = url.split(':')[1] if ':' in url else url
+        if req.resolver_match.url_name.startswith(url) or \
+            req.resolver_match.url_name.startswith(short_url):
             return 'active'
     return ''

@@ -13,6 +13,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
 from django_otp import login, match_token, user_has_device
+from django_otp.decorators import otp_required
 from django_otp.plugins.otp_static.models import StaticDevice, StaticToken
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from qrcode import make as qr_make
@@ -67,6 +68,39 @@ def verify(req):
         'title': _("Two-factor authentication code"),
         'primary_action': _("Verify"),
         })
+
+@login_required
+def user_settings(req):
+    """
+    View for user settings to control 2FA
+    """
+    static = StaticDevice.objects.filter(user=req.user, confirmed=True)
+    static_tokens = StaticToken.objects.filter(device=static).order_by('token')
+    finished_totp_devices = TOTPDevice.objects.filter(user=req.user, confirmed=True)
+    finished_static_devices = StaticDevice.objects.filter(user=req.user, confirmed=True)
+    state = finished_totp_devices.exists() and finished_static_devices.exists()
+    return render(req, 'tfa/user_settings.html', {
+        'static_tokens': static_tokens,
+        'state': state,
+        })
+
+@login_required
+@reauth_required
+@otp_required
+def disable(req):
+    """
+    Disable 2FA for user
+    """
+    # Delete all the devices for user
+    static = StaticDevice.objects.filter(user=req.user, confirmed=True)
+    static_tokens = StaticToken.objects.filter(device=static).order_by('token')
+    totp = TOTPDevice.objects.filter(user=req.user, confirmed=True)
+    static.delete()
+    totp.delete()
+    for token in static_tokens:
+        token.delete()
+    messages.success(req, 'Successfully disabled 2FA')
+    return redirect(reverse('commin-index'))
 
 # pylint: disable=too-many-ancestors
 @method_decorator([login_required, reauth_required], name="dispatch")

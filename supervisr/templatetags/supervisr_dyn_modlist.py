@@ -11,7 +11,7 @@ register = template.Library()
 VIEW_LIST = []
 
 @register.simple_tag
-def supervisr_modlist():
+def supervisr_dyn_modlist():
     """
     Get a list of all modules and their admin page
     """

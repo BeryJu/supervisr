@@ -2,11 +2,13 @@
 Supervisr Core User Views
 """
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
 
-from ..models import Event, UserProductRelationship
+from ..forms.user import EditUserForm
+from ..models import Event
 
 
 @login_required
@@ -14,21 +16,25 @@ def index(req):
     """
     Show index view User informations
     """
-    user_products = UserProductRelationship.objects.filter(user=req.user)
-    hosted_applications = UserProductRelationship \
-        .objects.filter(user=req.user, product__managed=True) \
-        .exclude(product__management_url__isnull=True) \
-        .exclude(product__management_url__exact='')
-    event_list = Event.objects.filter(
-        user=req.user, hidden=False) \
-        .order_by('-create_date')[:15]
-    # domains = Domain.objects.filter(users__in=[req.user])
-    return render(req, 'user/index.html', {
-        'uprs': user_products,
-        'hosted_applications': hosted_applications,
-        'events': event_list,
-        # 'domains': domains,
-    })
+    initial_data = {
+        'name': req.user.first_name,
+        'email': req.user.email,
+        'unix_username': req.user.userprofile.unix_username,
+        'unix_userid': req.user.userprofile.unix_userid,
+        'news_accept': req.user.userprofile.news_subscribe,
+    }
+    if req.method == 'POST':
+        form = EditUserForm(req.POST, initial=initial_data)
+        if form.is_valid():
+            req.user.first_name = form.cleaned_data.get('name')
+            req.user.save()
+            print(form.cleaned_data.get('news_accept'))
+            req.user.userprofile.news_subscribe = form.cleaned_data.get('news_accept')
+            req.user.userprofile.save()
+            messages.success(req, 'User updated successfully')
+    else:
+        form = EditUserForm(initial=initial_data)
+    return render(req, 'user/index.html', {'form': form})
 
 @login_required
 def events(req):

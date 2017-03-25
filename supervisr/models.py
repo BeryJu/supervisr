@@ -111,6 +111,7 @@ class UserProfile(CreatedUpdatedModel):
     unix_username = models.CharField(max_length=10, default=get_random_string, editable=False)
     unix_userid = models.IntegerField(default=get_userid)
     locale = models.CharField(max_length=5, default='en-US')
+    news_subscribe = models.BooleanField(default=False)
 
     def __str__(self):
         return "UserProfile %s" % self.user.email
