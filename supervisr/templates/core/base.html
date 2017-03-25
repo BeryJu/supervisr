@@ -58,7 +58,7 @@
     <div class="divider"></div>
     <form class="search" method="POST">
       <label for="search_input">
-        <input id="search_input" placeholder="Search for keywords..." type="text">
+        <input id="search_input" placeholder="{% trans 'Search for keywords...' %}" type="text">
       </label>
     </form>
     <div class="settings">
@@ -72,6 +72,7 @@
           <clr-icon shape="caret down"></clr-icon>
         </button>
         <div class="dropdown-menu">
+          <a class="dropdown-item" href="{% url 'user-index' %}">{% trans "Profile" %}</a>
           <a class="dropdown-item" href="{% url 'account-change_password' %}">{% trans "Change Password" %}</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="{% url 'account-logout' %}">{% trans "Logout" %}</a>

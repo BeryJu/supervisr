@@ -9,7 +9,7 @@ from django.conf.urls import include, url
 from django.contrib import admin as admin_django
 
 from .utils import get_apps
-from .views import about, account, admin, api, common, domain, product
+from .views import about, account, admin, api, common, domain, product, user
 
 LOGGER = logging.getLogger(__name__)
 
@@ -19,6 +19,7 @@ handler404 = 'supervisr.views.common.uncaught_404'
 handler500 = 'supervisr.views.common.uncaught_500'
 
 urlpatterns = [
+    # Account views
     url(r'^$', common.index, name='common-index'),
     url(r'^accounts/login/$', account.login, name='account-login'),
     url(r'^accounts/login/reauth/$', account.reauth, name='account-reauth'),
@@ -32,10 +33,16 @@ urlpatterns = [
         name='account-reset_password_init'),
     url(r'^accounts/password/reset/(?P<uuid>[a-z0-9\-]{36})/$',
         account.reset_password_confirm, name='account-reset_password_confirm'),
+    # Product views
     url(r'^products/$', product.index, name='product-index'),
     url(r'^products/(?P<slug>[a-zA-Z0-9\-]+)/$', product.view, name='product-view'),
+    # Domain views
     url(r'^domains/$', domain.index, name='domain-index'),
     url(r'^domains/new/$', domain.DomainNewView.as_view(), name='domain-new'),
+    # User views
+    url(r'^user/$', user.index, name='user-index'),
+    url(r'^user/events/$', user.events, name='user-events'),
+    # Admin views
     url(r'^admin/$', admin.index, name='admin-index'),
     url(r'^admin/settings/$', admin.settings, name='admin-settings'),
     url(r'^admin/mod/default/(?P<mod>[a-zA-Z0-9]+)/$', admin.mod_default, name='admin-mod_default'),
