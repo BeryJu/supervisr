@@ -4,7 +4,9 @@ Supervisr Core User Forms
 
 
 from django import forms
+
 from .core import InlineForm
+
 
 class EditUserForm(InlineForm):
     """
