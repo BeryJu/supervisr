@@ -103,11 +103,13 @@
               <td><span class="glyphicon glyphicon-{{ event.glyph }}" aria-hidden="true"></span></td>
               <td>{% trans event.message %}</td>
               <td>{{ event.get_localized_age }}</td>
+              <td>
               {% if event.action_required %}
-              <td><a class="btn btn-primary btn-xs" href="{{ event.get_url }}">{% trans "Act" %}</button></td>
+              <a class="btn btn-primary btn-xs" href="{{ event.get_url }}"><clr-icon shape="pop-out"></clr-icon></a>
               {% else %}
-              <td></td>
+              <clr-icon shape="times"></clr-icon>
               {% endif %}
+              </td>
             </tr>
             {% endfor %}
           </tbody>

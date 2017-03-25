@@ -21,6 +21,7 @@ from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+from oauth2_provider.models import Application
 
 from .signals import (SIG_USER_POST_SIGN_UP,
                       SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
@@ -250,6 +251,23 @@ class UserProductRelationship(CreatedUpdatedModel):
                 event.save()
         super(UserProductRelationship, self).delete(*args, **kwargs)
 
+class ProductExtension(CreatedUpdatedModel):
+    """
+    This class can be used by extension to associate Data with a Product
+    """
+
+    product_extension_id = models.AutoField(primary_key=True)
+
+    def __str__(self):
+        return "ProductExtension %s" % self.__class__.__name__
+
+class ProductExtensionOAuth2(ProductExtension):
+    """
+    Associate an OAuth2 Application with a Product
+    """
+
+    application = models.ForeignKey(Application)
+
 class Product(CreatedUpdatedModel):
     """
     Information about the Main Product itself. This instances of this classes
@@ -267,10 +285,7 @@ class Product(CreatedUpdatedModel):
     revision = models.IntegerField(default=1)
     managed = models.BooleanField(default=True)
     management_url = models.URLField(max_length=1000, blank=True, null=True)
-    ldap_group = models.TextField(blank=True, help_text=('This is an optional field for a LDAP '
-                                                         'Group DN, to which the user is added once'
-                                                         ' they have a relationship with '
-                                                         'the Product.'))
+    extensions = models.ManyToManyField(ProductExtension)
 
     def __str__(self):
         return "%s %s" % (self.__class__.__name__, self.name)

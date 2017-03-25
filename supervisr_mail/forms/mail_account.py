@@ -7,6 +7,8 @@ from django.utils.translation import ugettext as _
 
 from supervisr.forms.core import check_password
 
+from ..models import MailAccount
+
 
 class MailAccountForm(forms.Form):
     """
@@ -23,6 +25,19 @@ class MailAccountForm(forms.Form):
                                      label=_('Can Receive Emails'))
     is_catchall = forms.BooleanField(required=False, initial=False,
                                      label=_('Mark as Catch-all Account'))
+
+    def clean_address(self):
+        """
+        Check if address is already taken
+        """
+        domain = self.cleaned_data.get('domain')
+        address = self.cleaned_data.get('address')
+        accounts = MailAccount.objects.filter(domain_mail=domain, address=address)
+        if accounts.exists():
+            raise forms.ValidationError("Address '%s' exists already" % accounts.first().email)
+
+        return address
+
 
 class MailAccountFormCredentials(forms.Form):
     """
