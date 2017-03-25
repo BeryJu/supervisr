@@ -10,8 +10,10 @@ from django import get_version as django_version
 from django.conf import settings as django_settings
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
 
+from ..models import Event
 from ..signals import SIG_GET_MOD_INFO
 from ..utils import get_reverse_dns
 
@@ -48,12 +50,11 @@ def mod_default(req, mod):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-# pylint:disable=redefined-outer-name
 def info(req):
     """
     Show system information
     """
-    info = {
+    info_data = {
         'Version': {
             'Python Version': sys.version_info.__repr__(),
             'Django Version': django_version(),
@@ -76,5 +77,24 @@ def info(req):
     results = SIG_GET_MOD_INFO.send(sender=None)
     for handler, mod_info in results:
         # Get the handler's root module
-        info[handler.__module__.split('.')[0]] = mod_info
-    return render(req, '_admin/info.html', {'info': info})
+        info_data[handler.__module__.split('.')[0]] = mod_info
+    return render(req, '_admin/info.html', {'info': info_data})
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def events(req):
+    """
+    Show paginated list of all events
+    """
+    event_list = Event.objects.all().order_by('-create_date')
+    paginator = Paginator(event_list, 25)
+
+    page = req.GET.get('page')
+    try:
+        event_page = paginator.page(page)
+    except PageNotAnInteger:
+        event_page = paginator.page(1)
+    except EmptyPage:
+        event_page = paginator.page(paginator.num_pages)
+
+    return render(req, '_admin/events.html', {'events': event_page})

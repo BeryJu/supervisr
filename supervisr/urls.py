@@ -37,16 +37,17 @@ urlpatterns = [
     url(r'^domains/$', domain.index, name='domain-index'),
     url(r'^domains/new/$', domain.DomainNewView.as_view(), name='domain-new'),
     url(r'^admin/$', admin.index, name='admin-index'),
-    url(r'^admin/settings/', admin.settings, name='admin-settings'),
+    url(r'^admin/settings/$', admin.settings, name='admin-settings'),
     url(r'^admin/mod/default/(?P<mod>[a-zA-Z0-9]+)/$', admin.mod_default, name='admin-mod_default'),
-    url(r'^admin/info/', admin.info, name='admin-info'),
+    url(r'^admin/info/$', admin.info, name='admin-info'),
+    url(r'^admin/events/$', admin.events, name='admin-events'),
     url(r'^about/changelog/$', about.changelog, name='about-changelog'),
     # Include django-admin
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),
     url(r'^api/oauth2/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    url(r'^api/v1/account/me.json', api.account_me, name='api-account_me'),
-    url(r'^api/v1/openid/userinfo', api.openid_userinfo, name='api-openid_userinfo'),
+    url(r'^api/v1/account/me.json$', api.account_me, name='api-account_me'),
+    url(r'^api/v1/openid/userinfo$', api.openid_userinfo, name='api-openid_userinfo'),
 ]
 
 # Load Urls for all sub apps
