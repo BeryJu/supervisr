@@ -106,7 +106,9 @@ def signup(req):
             new_user.set_password(form.cleaned_data.get('password'))
             new_user.save()
             # Create user profile
-            new_up = UserProfile(user=new_user)
+            new_up = UserProfile(
+                user=new_user,
+                news_subscribe=form.cleaned_data.get('news_accept'))
             new_up.save()
             # Send signal for other auth sources
             try:

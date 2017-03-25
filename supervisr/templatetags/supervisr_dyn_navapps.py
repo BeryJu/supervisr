@@ -12,7 +12,7 @@ register = template.Library()
 APP_LIST = []
 
 @register.simple_tag
-def supervisr_navapps():
+def supervisr_dyn_navapps():
     """
     Get a list of subapps for the navbar
     """

@@ -1,0 +1,48 @@
+{% extends "user/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+{% load hostname %}
+{% load setting %}
+{% load fieldtype %}
+
+{% block title %}
+{% supervisr_title "2FA Settings" %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        {% blocktrans with state=state|yesno:"Enabled,Disabled" %}
+        2-Factor Authentication is {{ state }}
+        {% endblocktrans %}
+        {% if state %}
+        <clr-icon shape="check" size="32" class="is-success"></clr-icon>
+        {% else %}
+        <clr-icon shape="times" size="32" class="is-error"></clr-icon>
+        {% endif %}
+      </div>
+      <div class="card-footer">
+        {% if not state %}
+        <a href="{% url 'supervisr_mod_2fa:tfa-enable' %}" class="btn btn-success btn-sm">{% trans "Enable 2FA" %}</a>
+        {% else %}
+        <a href="{% url 'supervisr_mod_2fa:tfa-disable' %}" class="btn btn-danger btn-sm">{% trans "Disable 2FA" %}</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+      {% trans "Your Backup tokens:" %}
+      </div>
+      <div class="card-block">
+        <pre>{% for token in static_tokens %}{{ token.token }}
+{% endfor %}</pre>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

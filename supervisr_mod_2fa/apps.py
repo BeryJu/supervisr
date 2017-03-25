@@ -12,3 +12,4 @@ class SupervisrMod2FaConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr_mod_2fa'
+    view_user_settings = 'tfa-user_settings'
