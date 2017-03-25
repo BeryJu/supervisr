@@ -141,7 +141,7 @@ class AccountNewView(BaseWizardView):
             product=m_acc,
             user=self.request.user
             )
-        if form_dict['2'].cleaned_data.get('forwarder_dest', None) is not None:
+        if form_dict['2'].cleaned_data.get('forwarder_dest') != '':
             MailForwarder.objects.create(
                 account=m_acc,
                 destination=form_dict['2'].cleaned_data.get('forwarder_dest')
