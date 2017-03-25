@@ -60,7 +60,7 @@ class MailAccount(Product):
     size = models.BigIntegerField(default=0)
     can_send = models.BooleanField(default=True)
     can_receive = models.BooleanField(default=True)
-    password = models.CharField(max_length=128)
+    password = models.CharField(max_length=128, blank=True)
     is_catchall = models.BooleanField(default=False)
 
     domain_raw = models.TextField(blank=True, help_text=_('This field is automatically generated'

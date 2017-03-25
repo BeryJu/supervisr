@@ -135,13 +135,13 @@ class AccountNewView(BaseWizardView):
             can_send=form_dict['0'].cleaned_data.get('can_send'),
             can_receive=form_dict['0'].cleaned_data.get('can_receive'),
             is_catchall=form_dict['0'].cleaned_data.get('is_catchall'),
-            password=form_dict['1'].cleaned_data.get('password'),
             )
+        m_acc.set_password(form_dict['1'].cleaned_data.get('password'))
         UserProductRelationship.objects.create(
             product=m_acc,
             user=self.request.user
             )
-        if form_dict['2'].cleaned_data.get('forwarder_dest', None) is not None:
+        if form_dict['2'].cleaned_data.get('forwarder_dest') != '':
             MailForwarder.objects.create(
                 account=m_acc,
                 destination=form_dict['2'].cleaned_data.get('forwarder_dest')
