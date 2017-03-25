@@ -16,8 +16,11 @@
     <div class="row">
       <div class="col-md-6">
         <div class="card">
-          <div class="card-block">
-            <form role="form" method="POST">
+          <div class="card-header">
+            {% trans "General Information" %}
+          </div>
+          <form role="form" method="POST">
+            <div class="card-block">
               {% csrf_token %}
               <section class="form-block">
                 {% for field in form %}
@@ -45,9 +48,11 @@
                     {{ field }}
                   </div>
                   {% elif field.field.widget|fieldtype == 'CheckboxInput' %}
-                  <div class="checkbox">
+                  {{ field.label_tag }}
+                  <div class="toggle-switch">
                     {{ field }}
-                    {{ field.label_tag }}
+                    <label for="id_{{ field.name }}"></label>
+                    {# {{ field.label_tag }} #}
                   </div>
                   {% else %}
                   {{ field.label_tag }}
@@ -56,16 +61,11 @@
                 </div>
                 {% endfor %}
               </section>
-              <button type="submit" class="btn btn-lg btn-block btn-primary">{% trans 'Update' %}</button>
-            </form>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card">
-          <div class="card-img">
-            <img src="{% gravatar user.email %}">
-          </div>
+            </div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-sm btn-link">{% trans 'Update' %}</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
