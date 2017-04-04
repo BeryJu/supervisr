@@ -5,7 +5,7 @@ Supervisr Core Mail helper
 from django.conf import settings
 from django.core.mail import send_mail
 from django.dispatch import receiver
-from django.template import Context, loader
+from django.template import loader
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
@@ -27,9 +27,9 @@ def send_message(recipients, subject, **kwargs):
     if 'template' in kwargs:
         template = loader.get_template(kwargs['template'])
         if 'template_context' in kwargs:
-            ctx = Context(kwargs['template_context'])
+            ctx = kwargs['template_context']
         else:
-            ctx = Context()
+            ctx = {}
         django_kwargs['html_message'] = template.render(ctx)
     # Handle custom 'From: ' Addresses
     if 'from' in kwargs:
