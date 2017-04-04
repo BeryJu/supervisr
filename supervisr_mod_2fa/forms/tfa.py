@@ -14,7 +14,8 @@ class PictureWidget(forms.widgets.Widget):
     Widget to render value as img-tag
     """
 
-    def render(self, name, value, attrs=None):
+    # pylint: disable=unused-argument
+    def render(self, name, value, **kwargs):
         return mark_safe("<img src=\"%s\" />" % value)
 
 class TFAVerifyForm(InlineForm):
@@ -23,6 +24,11 @@ class TFAVerifyForm(InlineForm):
     """
     order = ['code']
     code = forms.IntegerField(label=_('Code'))
+
+    def __init__(self, *args, **kwargs):
+        super(TFAVerifyForm, InlineForm).__init__(*args, **kwargs)
+        # This is a little helper so the field is focused by default
+        self.fields['code'].widget.attrs.update({'autofocus': 'autofocus'})
 
 class TFASetupInitForm(forms.Form):
     """

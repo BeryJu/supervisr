@@ -269,6 +269,9 @@ class ProductExtensionOAuth2(ProductExtension):
 
     application = models.ForeignKey(Application)
 
+    def __str__(self):
+        return "ProductExtenstion OAuth %s" % self.application.name
+
 class Product(CreatedUpdatedModel):
     """
     Information about the Main Product itself. This instances of this classes
