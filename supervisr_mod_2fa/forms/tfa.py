@@ -26,7 +26,7 @@ class TFAVerifyForm(InlineForm):
     code = forms.IntegerField(label=_('Code'))
 
     def __init__(self, *args, **kwargs):
-        super(TFAVerifyForm, InlineForm).__init__(*args, **kwargs)
+        super(TFAVerifyForm, self).__init__(*args, **kwargs)
         # This is a little helper so the field is focused by default
         self.fields['code'].widget.attrs.update({'autofocus': 'autofocus'})
 
