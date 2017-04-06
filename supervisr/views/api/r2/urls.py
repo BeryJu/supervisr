@@ -2,7 +2,7 @@
 Supervisr Core r2 API Urls
 """
 
-from django.conf.urls import include, url
+from django.conf.urls import url
 
 from .user import account_me
 

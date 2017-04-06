@@ -2,7 +2,6 @@
 Supervisr Core APIv1
 """
 
-from django.http import JsonResponse
 from oauth2_provider.decorators import protected_resource
 
 from ..utils import api_response

@@ -2,7 +2,7 @@
 Supervisr Core r1 API Urls
 """
 
-from django.conf.urls import include, url
+from django.conf.urls import url
 
 from .user import account_me, openid_userinfo
 

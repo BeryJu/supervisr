@@ -13,7 +13,7 @@ def api_response(req, data):
         if key in req.GET:
             format = req.GET.get(key)
 
-    handler = getattr(GLOBALS, 'api_response_%s' % format, None)
+    handler = getattr(globals(), 'api_response_%s' % format, None)
     if handler is not None:
         return handler(data)
 
