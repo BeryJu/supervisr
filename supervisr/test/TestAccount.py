@@ -141,7 +141,6 @@ class TestAccount(TestCase):
                            method='POST',
                            req_kwargs=form.cleaned_data)
         self.assertEqual(res.status_code, 302)
-        print(res.content)
 
         self.assertEqual(len(User.objects.all()), 2)
         user = User.objects.get(email=self.signup_data['email'])

@@ -1,5 +1,5 @@
 """
-Supervisr Core APIv1
+Supervisr Core r1 User API
 """
 
 from django.http import JsonResponse
