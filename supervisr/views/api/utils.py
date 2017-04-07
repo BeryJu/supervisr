@@ -2,7 +2,8 @@
 Supervisr Core API Utils
 """
 
-from django.http import JsonResponse
+import yaml
+from django.http import HttpResponse, JsonResponse
 
 
 def api_response(req, data):
@@ -42,5 +43,7 @@ def api_response_openid(data):
     return api_response_json(data)
 
 def api_response_yaml(data):
-    return JsonResponse({'error': 'not implemented yet'})
-    # TODO: Implement yaml handler
+    """
+    Return data as yaml dict
+    """
+    return HttpResponse(yaml.dump(data), content_type='text/x-yaml')
