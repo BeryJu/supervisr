@@ -9,7 +9,7 @@ from django.conf.urls import include, url
 from django.contrib import admin as admin_django
 
 from .utils import get_apps
-from .views import about, account, admin, api, common, domain, product, user
+from .views import about, account, admin, common, domain, product, user
 
 LOGGER = logging.getLogger(__name__)
 
@@ -53,8 +53,7 @@ urlpatterns = [
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),
     url(r'^api/oauth2/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    url(r'^api/v1/account/me.json$', api.account_me, name='api-account_me'),
-    url(r'^api/v1/openid/userinfo$', api.openid_userinfo, name='api-openid_userinfo'),
+    url(r'^api/', include('supervisr.views.api.urls')),
 ]
 
 # Load Urls for all sub apps
