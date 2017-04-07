@@ -13,9 +13,13 @@ def api_response(req, data):
         if key in req.GET:
             format = req.GET.get(key)
 
-    handler = getattr(globals(), 'api_response_%s' % format, None)
+    _globals = globals()
+    handler_name = 'api_response_%s' % format
+    handler = _globals[handler_name] if handler_name in _globals else None
     if handler is not None:
         return handler(data)
+    else:
+        return JsonResponse({'error': 'type "%s" not found' % format})
 
 def api_response_json(data):
     """
