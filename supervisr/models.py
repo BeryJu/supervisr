@@ -103,7 +103,7 @@ class PurgeableModel(models.Model):
     class Meta:
         abstract = True
 
-class UserProfile(CreatedUpdatedModel):
+class UserProfile(CreatedUpdatedModel, PurgeableModel):
     """
     Save settings associated with user, since we don't want a custom user Model
     """
@@ -440,6 +440,14 @@ class ProviderInstance(CreatedUpdatedModel):
     user_password = models.TextField()
     salt = models.CharField(max_length=128)
 
+# class Service(CreatedUpdatedModel):
+#     """
+#     Base class for managed services.
+#     This saves Connection details and host information
+#     """
+#     service_id = models.AutoField(primary_key=True)
+#     hostname = models.TextField()
+#     fqdn = models.TextField()
 
 @receiver(SIG_USER_POST_SIGN_UP)
 # pylint: disable=unused-argument
