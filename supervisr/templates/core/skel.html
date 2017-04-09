@@ -7,9 +7,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <link rel="stylesheet" href="{% static 'node_modules/clarit-icons/clarit-icons.min.css' %}">
-    <link rel="stylesheet" href="{% static 'node_modules/clarit-ui/clarit-ui.min.css' %}">
-    <link rel="stylesheet" href="{% static 'supervisr.css' %}">
+    <link rel="stylesheet" href="{% static 'build/app.min.css' %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'img/logo_64.png' %}"/>
     <title>
       {% block title %}
@@ -22,11 +20,7 @@
   <body>
     {% block body %}
     {% endblock %}
-    <script src="{% static 'node_modules/clarit-icons/clarit-icons.min.js' %}"></script>
-    <script src="{% static 'node_modules/jquery/dist/jquery.min.js' %}"></script>
-    <script src="{% static 'js/clarit-js.js' %}"></script>
-    <script src="{% static 'js/jquery.tablesorter.min.js' %}"></script>
-    <script>$(document).ready(function() { $("table").tablesorter(); } );</script>
+    <script src="{% static 'build/app.min.js' %}"></script>
     {% google_analytics %}
     {% block scripts %}
     {% endblock %}
