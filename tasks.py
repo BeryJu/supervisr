@@ -64,7 +64,7 @@ def install(ctx, dev=False):
     files = glob("*/requirements.txt")
     if dev:
         files.extend(glob("*/requirements-dev.txt"))
-    ctx.run("pip3 install -r %s" % ' -r '.join(files))
+    ctx.run("pip3 install -U -r %s" % ' -r '.join(files))
 
 @task
 def deploy(ctx, user=None, fqdn=None):
