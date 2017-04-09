@@ -103,5 +103,41 @@ var clrWizard = function (containerId, initialPage) {
     };
 };
 
+var clrTabs = function () {
+    var currentTab = '';
 
-console.log(ClarityIcons.get('edit'));
+    var unseletTab = function (id) {
+        if (id == '') return;
+        $('section#'+id).attr('aria-hidden', true);
+        var btn = $('ul[role="tablist"] button[aria-controls="' + id + '"]');
+        btn.removeClass('active');
+        btn.attr('aria-selected', false);
+    };
+    var selectTab = function (id) {
+        if (id == '') return;
+        $('section#'+id).attr('aria-hidden', false);
+        var btn = $('ul[role="tablist"] button[aria-controls="' + id + '"]');
+        btn.addClass('active');
+        btn.attr('aria-selected', true);
+        currentTab = id;
+        window.location.hash = 'clr_tab=' + id;
+    };
+
+    var hash = window.location.hash.substr(1);
+    if (hash.startsWith('clr_tab')) {
+        selectTab(hash.replace('clr_tab=', ''));
+    } else {
+        var first = $('ul[role="tablist"] li button').first().attr('aria-controls');
+        selectTab(first);
+    }
+
+    $('ul[role="tablist"] li button').on('click', function (e) {
+        unseletTab(currentTab);
+        selectTab($(e.target).attr('aria-controls'));
+    });
+
+    return {
+        'unseletTab': unseletTab,
+        'selectTab': selectTab,
+    };
+};

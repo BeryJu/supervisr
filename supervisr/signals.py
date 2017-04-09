@@ -37,6 +37,8 @@ SIG_USER_LOGIN = RobustSignal(providing_args=['user, req'])
 SIG_USER_LOGOUT = RobustSignal(providing_args=['user, req'])
 SIG_USER_RESEND_CONFIRM = RobustSignal(providing_args=['user', 'req'])
 
+SIG_DOMAIN_CREATED = RobustSignal(providing_args=['domain'])
+
 # SIG_CHECK_* Signals return a boolean
 
 # Return wether user with `email` exists
