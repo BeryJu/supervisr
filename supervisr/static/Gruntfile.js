@@ -4,8 +4,8 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     'npm-command': {
-      update: {
-        cmd: 'update',
+      install: {
+        cmd: 'install',
       },
     },
     uglify: {
@@ -14,14 +14,12 @@ module.exports = function(grunt) {
       },
       supervisr: {
         src: [
-            'node_modules/@webcomponents/custom-elements/custom-elements.min.js',
-            'node_modules/mutationobserver-shim/dist/mutationobserver.min.js',
-            'node_modules/jquery/dist/jquery.js',
             'node_modules/clarity-icons/clarity-icons.min.js',
+            'node_modules/jquery/dist/jquery.js',
             'js/*.js',
         ],
         dest: 'build/app.min.js',
-      }
+      },
     },
     cssmin: {
       supervisr: {

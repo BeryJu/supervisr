@@ -102,3 +102,6 @@ var clrWizard = function (containerId, initialPage) {
         }
     };
 };
+
+
+console.log(ClarityIcons.get('edit'));

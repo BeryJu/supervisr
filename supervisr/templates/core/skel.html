@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <link rel="stylesheet" href="{% static 'build/app.min.css' %}">
+    <script src="{% static 'build/app.min.js' %}"></script>
     <link rel="shortcut icon" type="image/png" href="{% static 'img/logo_64.png' %}"/>
     <title>
       {% block title %}
@@ -20,7 +21,6 @@
   <body>
     {% block body %}
     {% endblock %}
-    <script src="{% static 'build/app.min.js' %}"></script>
     {% google_analytics %}
     {% block scripts %}
     {% endblock %}
