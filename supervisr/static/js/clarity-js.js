@@ -30,7 +30,7 @@ var clrWizard = function (containerId, initialPage) {
         if (page > lastPage) {
           // only add complete class when we go forward
           $(containerId + ' li.clr-nav-link:eq('+lastPage+')').addClass('complete');
-        }
+      }
 
 
         // Disable/enable buttons
@@ -140,4 +140,21 @@ var clrTabs = function () {
         'unseletTab': unseletTab,
         'selectTab': selectTab,
     };
+};
+
+var clrTableSelect = function() {
+    $('[data-ctx-name]').addClass('disabled');
+    $('tr[data-selectable]').on('click', function (e) {
+        var tr = $(e.target).parent('tr');
+        tr.addClass('selected');
+        tr.siblings().removeClass('selected');
+        for (var k in tr.data()) {
+            if (k.startsWith('ctx')) {
+                var key = k.replace('ctx', '').toLowerCase();
+                var url = tr.data(k);
+                $('[data-ctx-name="'+ key +'"]').attr('href', url);
+                $('[data-ctx-name]').removeClass('disabled');
+            }
+        }
+    });
 };

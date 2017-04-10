@@ -4,10 +4,14 @@ Supervisr Web Models
 import logging
 
 from django.db import models
+from django.dispatch import receiver
 from django.utils.translation import ugettext as _
 from passlib.hash import sha512_crypt
 
-from supervisr.models import CreatedUpdatedModel, Domain, Product
+from supervisr.models import (CreatedUpdatedModel, Domain, Product,
+                              UserProductRelationship)
+from supervisr.signals import (SIG_DOMAIN_CREATED,
+                               SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -21,6 +25,7 @@ class MailDomain(Product):
 
     domain_raw = models.TextField(blank=True, help_text=_('This field is automatically generated'
                                                           'by Django to make queries easier.'))
+    enabled = models.BooleanField(default=True)
 
     @property
     def domain(self):
@@ -118,3 +123,26 @@ class MailForwarder(CreatedUpdatedModel):
 
     def __str__(self):
         return "MailForwarder %s => %s" % (self.account.address, self.destination)
+
+@receiver(SIG_DOMAIN_CREATED)
+# pylint: disable=unused-argument
+def mail_handle_domain_created(sender, signal, domain, **kwargs):
+    """
+    Create a MailDomain when a Domain is created
+    """
+    MailDomain.objects.create(
+        name=domain.name,
+        description='MailDomain %s' % domain.name,
+        domain_mail=domain)
+
+@receiver(SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
+# pylint: disable=unused-argument
+def mail_handle_upr_created(sender, signal, upr, **kwargs):
+    """
+    Create upr's when UPR from domains are created
+    """
+    if upr.product.__class__ == Domain:
+        # Only create UPR if it's from a domain
+        UserProductRelationship.objects.create(
+            product=MailDomain.objects.get(domain_mail=upr.product),
+            user=upr.user)

@@ -15,6 +15,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Max
+from django.db.models.signals import pre_delete
 from django.db.utils import OperationalError
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
@@ -81,29 +82,7 @@ class CreatedUpdatedModel(models.Model):
     class Meta:
         abstract = True
 
-class PurgeableModel(models.Model):
-    """
-    Abstract model which not instantly deleted
-    """
-    _purgeable = models.BooleanField(default=False)
-
-    # pylint: disable=unused-argument
-    def delete(self, *args, **kwargs):
-        # Don't actually delete it, just set _purgeable
-        self._purgeable = True
-        self.save()
-
-    def purge(self):
-        """
-        Actually delete instances
-        """
-        if self._purgeable is True:
-            super(PurgeableModel, self).delete()
-
-    class Meta:
-        abstract = True
-
-class UserProfile(CreatedUpdatedModel, PurgeableModel):
+class UserProfile(CreatedUpdatedModel):
     """
     Save settings associated with user, since we don't want a custom user Model
     """
@@ -237,20 +216,17 @@ class UserProductRelationship(CreatedUpdatedModel):
                 upr=self)
         super(UserProductRelationship, self).save(*args, **kwargs)
 
-    def delete(self, *args, **kwargs):
+@receiver(pre_delete)
+# pylint: disable=unused-argument
+def upr_pre_delete(sender, instance, **kwargs):
+    """
+    Send signal when UPR is deleted
+    """
+    if sender == UserProductRelationship:
         # Send signal to we are going to be deleted
         SIG_USER_PRODUCT_RELATIONSHIP_DELETED.send(
             sender=UserProductRelationship,
-            upr=self)
-        # Set all other events from us to current=False
-        events = Event.objects.filter(
-            product=self.product,
-            user=self.user)
-        if events.exists():
-            for event in events:
-                event.current = False
-                event.save()
-        super(UserProductRelationship, self).delete(*args, **kwargs)
+            upr=instance)
 
 class ProductExtension(CreatedUpdatedModel):
     """
@@ -292,7 +268,7 @@ class Product(CreatedUpdatedModel):
     extensions = models.ManyToManyField(ProductExtension)
 
     def __str__(self):
-        return "%s %s" % (self.__class__.__name__, self.name)
+        return "%s %s (%s)" % (self.__class__.__name__, self.name, self.description)
 
     def save(self, *args, **kwargs):
         # Auto generate slug
@@ -340,12 +316,13 @@ class Domain(Product):
         return self.name
 
     def save(self, *args, **kwargs):
-        if self.pk is None:
+        _first = True if self.pk is None else False
+        super(Domain, self).save(*args, **kwargs)
+        if _first:
             # Trigger event that we were saved
             SIG_DOMAIN_CREATED.send(
                 sender=Domain,
                 domain=self)
-        super(Domain, self).save(*args, **kwargs)
 
 class Event(CreatedUpdatedModel):
     """

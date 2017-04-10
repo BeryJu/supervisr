@@ -25,9 +25,7 @@ class TestMail(TestCase):
             name='beryjuorgtesting.xyz',
             invite_only=True,
             price=0)
-        mx_domain = MailDomain.objects.create(
-            domain=domain,
-            price=0)
+        mx_domain = MailDomain.objects.get(domain_mail=domain)
         self.assertEqual(mx_domain.domain, domain)
         mx_domain.domain = domain
         mx_domain.save()
@@ -41,9 +39,7 @@ class TestMail(TestCase):
             name='beryjuorgtesting.xyz',
             invite_only=True,
             price=0)
-        mx_domain = MailDomain.objects.create(
-            domain=domain,
-            price=0)
+        mx_domain = MailDomain.objects.get(domain_mail=domain)
         self.assertEqual(mx_domain.domain, domain)
         mx_account = MailAccount.objects.create(
             address='info',
@@ -59,9 +55,7 @@ class TestMail(TestCase):
             name='beryjuorgtesting.xyz',
             invite_only=True,
             price=0)
-        mx_domain = MailDomain.objects.create(
-            domain=domain,
-            price=0)
+        mx_domain = MailDomain.objects.get(domain_mail=domain)
         self.assertEqual(mx_domain.domain, domain)
         mx_account = MailAccount.objects.create(
             address='info',

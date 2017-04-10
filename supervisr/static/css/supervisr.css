@@ -116,3 +116,13 @@ th.header {
     flex: initial !important;
     white-space: initial !important;
 }
+
+/* tr selected */
+tr.selected {
+    background-color: #E1F1F6 !important;
+}
+
+.btn-group {
+    margin-top: 24px !important;
+    margin-bottom: -12px !important;
+}
