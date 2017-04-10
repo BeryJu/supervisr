@@ -48,7 +48,7 @@ def search(req):
         """
         results = {}
         for model in app.get_models():
-            if getattr(model._meta, 'sv_searchable_fields', None) != None:
+            if getattr(model._meta, 'sv_searchable_fields', None) is not None:
                 m_query = Q()
                 for field in model._meta.sv_searchable_fields:
                     m_query = m_query | Q(**{
