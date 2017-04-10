@@ -64,7 +64,7 @@ def install(ctx, dev=False):
     files = glob("*/requirements.txt")
     if dev:
         files.extend(glob("*/requirements-dev.txt"))
-    ctx.run("pip3 install -r %s" % ' -r '.join(files))
+    ctx.run("pip3 install -U -r %s" % ' -r '.join(files))
 
 @task
 def deploy(ctx, user=None, fqdn=None):
@@ -151,7 +151,7 @@ def unittest(ctx):
     ctx.run("%s manage.py test --pattern=Test*.py" % PYTHON_EXEC)
 
 # Some tasks to make full testing easier
-@task(pre=[migrate, unittest, coverage, isort, lint, prospector])
+@task(pre=[migrate, coverage, isort, lint, prospector])
 # pylint: disable=unused-argument
 def test(ctx):
     """

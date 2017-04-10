@@ -54,6 +54,7 @@ class DomainNewView(BaseWizardView):
         m_dom = Domain.objects.create(
             name=form_dict['0'].cleaned_data.get('domain'),
             registrar=form_dict['0'].cleaned_data.get('registrar'),
+            description='Domain %s' % form_dict['0'].cleaned_data.get('domain'),
             )
         UserProductRelationship.objects.create(
             product=m_dom,

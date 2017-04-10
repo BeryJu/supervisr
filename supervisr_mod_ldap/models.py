@@ -5,11 +5,10 @@ Supervisr mod_ldap Models
 from django.db import models
 
 from supervisr.fields import JSONField
-from supervisr.models import (CreatedUpdatedModel, ProductExtension,
-                              PurgeableModel)
+from supervisr.models import CreatedUpdatedModel, ProductExtension
 
 
-class LDAPModification(CreatedUpdatedModel, PurgeableModel):
+class LDAPModification(CreatedUpdatedModel):
     """
     Store LDAP Data in DB if LDAP Server is unavailable
     """

@@ -27,7 +27,7 @@ omit =
     supervisr/wsgi.py
     supervisr*/migrations/*
     supervisr*/apps.py
-    env/
+    *env/
     docs/
 
 show_missing = True

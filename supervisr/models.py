@@ -15,6 +15,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Max
+from django.db.models.signals import pre_delete
 from django.db.utils import OperationalError
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
@@ -23,7 +24,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from oauth2_provider.models import Application
 
-from .signals import (SIG_USER_POST_SIGN_UP,
+from .signals import (SIG_DOMAIN_CREATED, SIG_USER_POST_SIGN_UP,
                       SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
                       SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
 from .utils import get_remote_ip, get_reverse_dns
@@ -77,28 +78,6 @@ class CreatedUpdatedModel(models.Model):
     """
     created = models.DateField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        abstract = True
-
-class PurgeableModel(models.Model):
-    """
-    Abstract model which not instantly deleted
-    """
-    _purgeable = models.BooleanField(default=False)
-
-    # pylint: disable=unused-argument
-    def delete(self, *args, **kwargs):
-        # Don't actually delete it, just set _purgeable
-        self._purgeable = True
-        self.save()
-
-    def purge(self):
-        """
-        Actually delete instances
-        """
-        if self._purgeable is True:
-            super(PurgeableModel, self).delete()
 
     class Meta:
         abstract = True
@@ -237,20 +216,17 @@ class UserProductRelationship(CreatedUpdatedModel):
                 upr=self)
         super(UserProductRelationship, self).save(*args, **kwargs)
 
-    def delete(self, *args, **kwargs):
+@receiver(pre_delete)
+# pylint: disable=unused-argument
+def upr_pre_delete(sender, instance, **kwargs):
+    """
+    Send signal when UPR is deleted
+    """
+    if sender == UserProductRelationship:
         # Send signal to we are going to be deleted
         SIG_USER_PRODUCT_RELATIONSHIP_DELETED.send(
             sender=UserProductRelationship,
-            upr=self)
-        # Set all other events from us to current=False
-        events = Event.objects.filter(
-            product=self.product,
-            user=self.user)
-        if events.exists():
-            for event in events:
-                event.current = False
-                event.save()
-        super(UserProductRelationship, self).delete(*args, **kwargs)
+            upr=instance)
 
 class ProductExtension(CreatedUpdatedModel):
     """
@@ -292,7 +268,7 @@ class Product(CreatedUpdatedModel):
     extensions = models.ManyToManyField(ProductExtension)
 
     def __str__(self):
-        return "%s %s" % (self.__class__.__name__, self.name)
+        return "%s %s (%s)" % (self.__class__.__name__, self.name, self.description)
 
     def save(self, *args, **kwargs):
         # Auto generate slug
@@ -338,6 +314,15 @@ class Domain(Product):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        _first = True if self.pk is None else False
+        super(Domain, self).save(*args, **kwargs)
+        if _first:
+            # Trigger event that we were saved
+            SIG_DOMAIN_CREATED.send(
+                sender=Domain,
+                domain=self)
 
 class Event(CreatedUpdatedModel):
     """
@@ -440,6 +425,14 @@ class ProviderInstance(CreatedUpdatedModel):
     user_password = models.TextField()
     salt = models.CharField(max_length=128)
 
+# class Service(CreatedUpdatedModel):
+#     """
+#     Base class for managed services.
+#     This saves Connection details and host information
+#     """
+#     service_id = models.AutoField(primary_key=True)
+#     hostname = models.TextField()
+#     fqdn = models.TextField()
 
 @receiver(SIG_USER_POST_SIGN_UP)
 # pylint: disable=unused-argument

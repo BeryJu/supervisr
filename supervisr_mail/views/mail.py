@@ -23,7 +23,11 @@ def index(req):
     Mail Domain Index
     """
     domains = MailDomain.objects.filter(users__in=[req.user])
-    return render(req, 'mail/domain-index.html', {'domains': domains})
+    mail_accounts = MailAccount.objects \
+        .filter(domain_mail__in=domains, users__in=[req.user]) \
+        .order_by('domain_mail')
+
+    return render(req, 'mail/recipient-index.html', {'accounts': mail_accounts})
 
 @login_required
 def accounts(req):
@@ -147,4 +151,20 @@ class AccountNewView(BaseWizardView):
                 destination=form_dict['2'].cleaned_data.get('forwarder_dest')
                 )
         messages.success(self.request, _('Mail Account successfully created'))
-        return redirect(reverse('supervisr_mail:mail-accounts'))
+        return redirect(reverse('supervisr_mail:mail-index'))
+
+@login_required
+# pylint: disable=unused-argument
+def account_edit(req, domain, account):
+    """
+    Show view to edit account
+    """
+    pass
+
+@login_required
+# pylint: disable=unused-argument
+def account_delete(req, domain, account):
+    """
+    Show view to delete account
+    """
+    pass
