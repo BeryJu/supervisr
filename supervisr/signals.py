@@ -4,6 +4,8 @@ Supervisr Core Signal definitions
 
 from django.dispatch import Signal
 
+from .errors import SignalException
+
 
 class RobustSignal(Signal):
     """
@@ -17,11 +19,6 @@ class RobustSignal(Signal):
                 raise SignalException("Handler %s: %s", handler.__name__, repr(result)) from result
         return results
 
-class SignalException(Exception):
-    """
-    Exception which is used as a base for all Exceptions in Signals
-    """
-    pass
 
 SIG_USER_PRODUCT_RELATIONSHIP_CREATED = RobustSignal(providing_args=['upr'])
 SIG_USER_PRODUCT_RELATIONSHIP_DELETED = RobustSignal(providing_args=['upr'])
