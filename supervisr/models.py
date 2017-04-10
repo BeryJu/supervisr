@@ -14,7 +14,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
 from django.db import models
-from django.db.models import Max
+from django.db.models import Max, options
 from django.db.models.signals import pre_delete
 from django.db.utils import OperationalError
 from django.dispatch import receiver
@@ -29,6 +29,7 @@ from .signals import (SIG_DOMAIN_CREATED, SIG_USER_POST_SIGN_UP,
                       SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
 from .utils import get_remote_ip, get_reverse_dns
 
+options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('sv_searchable_fields',)
 
 def expiry_date():
     """

@@ -2,11 +2,15 @@
 Supervisr Core Common Views
 """
 
+from django.apps import apps
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.db.models import Q
+
+from django.utils.safestring import mark_safe
 
 from ..models import Event, UserProductRelationship
-
+from ..utils import do_404
 
 @login_required
 def index(req):
@@ -28,6 +32,44 @@ def index(req):
         'events': events,
         # 'domains': domains,
     })
+
+@login_required
+def search(req):
+    """
+    Searching of models and subapps
+    """
+    if 'q' in req.GET:
+        query = req.GET.get('q')
+    else:
+        return do_404(req, message='No query')
+    def default_app_handler(app, query, req):
+        """
+        Search through every model in model_dict with query
+        """
+        results = {}
+        for model in app.get_models():
+            if getattr(model._meta, 'sv_searchable_fields', None) != None:
+                m_query = Q()
+                for field in model._meta.sv_searchable_fields:
+                    m_query = m_query | Q(**{
+                        '%s__icontains' % field: query
+                    })
+                results[model._meta.verbose_name] = model.objects.filter(m_query)
+        if results != {}:
+            return mark_safe(render(req, 'common/search_section.html', {'results': results}))
+
+    ## Resulsts is a key:value dict of app.verbose_name to rendered html
+    results = {}
+    for app in apps.get_app_configs():
+        app_result = None
+        if getattr(app, 'custom_search', None):
+            app_result = app.custom_search(query, req)
+        else:
+            app_result = default_app_handler(app, query, req)
+        if app_result is not None:
+            results[app.label] = app_result
+
+    return render(req, 'common/search.html', {'results': results})
 
 def uncaught_404(req):
     """
