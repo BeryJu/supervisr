@@ -4,13 +4,13 @@ Supervisr Core Common Views
 
 from django.apps import apps
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
 from django.db.models import Q
-
+from django.shortcuts import render
 from django.utils.safestring import mark_safe
 
 from ..models import Event, UserProductRelationship
 from ..utils import do_404
+
 
 @login_required
 def index(req):
