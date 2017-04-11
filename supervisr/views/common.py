@@ -43,13 +43,15 @@ def search(req):
     else:
         return do_404(req, message='No query')
 
-    def make_model_url(model):
-        """
-        Create a url for model
-        """
-        from django.core.urlresolvers import reverse
-        if getattr(model._meta, 'sv_search_url', None) is not None:
-            return model._meta.sv_search_url
+    # def make_model_url(model):
+    #     """
+    #     Create a url for model
+    #     """
+    #     from django.core.urlresolvers import reverse
+    #     if getattr(model._meta, 'sv_search_url', None) is not None:
+    #         if '%' in model._meta.sv_search_url:
+    #             return model._meta.sv_search_url
+
     def default_app_handler(app, query, req):
         """
         Search through every model in model_dict with query
