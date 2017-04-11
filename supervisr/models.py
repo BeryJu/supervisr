@@ -327,7 +327,7 @@ class Domain(Product):
 
     class Meta:
 
-        sv_searchable_fields = ['name', 'registrar']
+        sv_search_fields = ['name', 'registrar']
 
 class Event(CreatedUpdatedModel):
     """

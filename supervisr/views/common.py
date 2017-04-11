@@ -42,15 +42,23 @@ def search(req):
         query = req.GET.get('q')
     else:
         return do_404(req, message='No query')
+
+    def make_model_url(model):
+        """
+        Create a url for model
+        """
+        from django.core.urlresolvers import reverse
+        if getattr(model._meta, 'sv_search_url', None) is not None:
+            return model._meta.sv_search_url
     def default_app_handler(app, query, req):
         """
         Search through every model in model_dict with query
         """
         results = {}
         for model in app.get_models():
-            if getattr(model._meta, 'sv_searchable_fields', None) is not None:
+            if getattr(model._meta, 'sv_search_fields', None) is not None:
                 m_query = Q()
-                for field in model._meta.sv_searchable_fields:
+                for field in model._meta.sv_search_fields:
                     m_query = m_query | Q(**{
                         '%s__icontains' % field: query
                     })

@@ -121,7 +121,7 @@ class MailAccount(Product):
 
     class Meta:
 
-        sv_searchable_fields = ['address', 'email_raw']
+        sv_search_fields = ['address', 'email_raw']
 
 class MailForwarder(CreatedUpdatedModel):
     """
