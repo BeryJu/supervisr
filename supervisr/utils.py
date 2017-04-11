@@ -7,6 +7,7 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.shortcuts import render
+from django.template import loader
 from django.utils.translation import ugettext as _
 
 
@@ -60,6 +61,13 @@ def send_admin_mail(exception, message):
             'exception': exception}),
         template='email/admin_mail.html',
         template_context={'exception': exception, 'message': message})
+
+def render_to_string(tmpl, ctx):
+    """
+    Render a template to string
+    """
+    template = loader.get_template(tmpl)
+    return template.render(ctx)
 
 def get_apps(mod_only=False):
     """

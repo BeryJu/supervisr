@@ -9,7 +9,7 @@ from django.shortcuts import render
 from django.utils.safestring import mark_safe
 
 from ..models import Event, UserProductRelationship
-from ..utils import do_404
+from ..utils import do_404, render_to_string
 
 
 @login_required
@@ -54,9 +54,14 @@ def search(req):
                     m_query = m_query | Q(**{
                         '%s__icontains' % field: query
                     })
-                results[model._meta.verbose_name] = model.objects.filter(m_query)
+                matching = model.objects.filter(m_query)
+                if matching.exists():
+                    results[model._meta.verbose_name] = matching
         if results != {}:
-            return mark_safe(render(req, 'common/search_section.html', {'results': results}))
+            return mark_safe(render_to_string('common/search_section.html', {
+                'results': results,
+                'request': req,
+                }))
 
     ## Resulsts is a key:value dict of app.verbose_name to rendered html
     results = {}
@@ -67,7 +72,7 @@ def search(req):
         else:
             app_result = default_app_handler(app, query, req)
         if app_result is not None:
-            results[app.label] = app_result
+            results[app.verbose_name] = app_result
 
     return render(req, 'common/search.html', {'results': results})
 

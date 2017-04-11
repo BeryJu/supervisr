@@ -325,6 +325,10 @@ class Domain(Product):
                 sender=Domain,
                 domain=self)
 
+    class Meta:
+
+        sv_searchable_fields = ['name', 'registrar']
+
 class Event(CreatedUpdatedModel):
     """
     Store information about important Event's for auditing, like signing up, changing/resetting

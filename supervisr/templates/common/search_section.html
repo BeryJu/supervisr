@@ -1,5 +1,22 @@
-<ul>
-  {% for r in results %}
-   <li>{{ r }}</li>
-  {% endfor %}
-</ul>
+{% load i18n %}
+
+<div class="card-block">
+  <div class="card-text">
+    <ul class="list">
+      {% for model, m_results in results.items %}
+       <li>
+         {% trans model|title %}
+         <ul class>
+           {% for m_result in m_results %}
+              {% if m_result.search_title %}
+                <li>{{ m_result.search_title }}</li>
+              {% else %}
+                <li>{{ m_result }}</li>
+              {% endif %}
+           {% endfor %}
+         </ul>
+       </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>

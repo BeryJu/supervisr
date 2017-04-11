@@ -113,6 +113,12 @@ class MailAccount(Product):
     def __str__(self):
         return "MailAccount %s %s" % (self.address, self.domain_mail)
 
+    def search_title(self):
+        """
+        Return email address for search results
+        """
+        return self.email
+
     class Meta:
 
         sv_searchable_fields = ['address', 'email_raw']
