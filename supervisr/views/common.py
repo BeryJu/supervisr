@@ -49,8 +49,16 @@ def search(req):
     #     """
     #     from django.core.urlresolvers import reverse
     #     if getattr(model._meta, 'sv_search_url', None) is not None:
-    #         if '%' in model._meta.sv_search_url:
-    #             return model._meta.sv_search_url
+    #         # if '%' in model._meta.sv_search_url:
+    #         return model._meta.sv_search_url
+    #     else:
+    #         # default assumed formats are
+    #         # 1: <app_label>:<model's verbose_name>
+    #         # 2: <app_label>:<model's verbose_name>-view
+    #         # 3: <app_label>:<model's verbose_name>-edit
+    #         app_label = model._meta.app_label
+    #         verbose_name = model._meta.verbose_name.replace(' ', '-')
+    #         url_choices = ()
 
     def default_app_handler(app, query, req):
         """
