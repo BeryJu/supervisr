@@ -1,0 +1,26 @@
+### auth/30_supervisr_config
+#################################
+
+plain_server:
+  driver = plaintext
+  public_name = PLAIN
+  server_condition = "${if and { \
+                        {!eq{$2}{}} \
+                        {!eq{$3}{}} \
+                        {crypteq{$3}{${lookup mysql{SUPERVISR_AUTH_PLAIN}{$value}fail}}} \
+                        } {yes}{no}}"
+  server_set_id = $2
+  server_prompts = :
+  server_advertise_condition = ${if eq{$tls_cipher}{}{}{*}} # This line only if TLS is force
+
+login_server:
+  driver = plaintext
+  public_name = LOGIN
+  server_prompts = "Username:: : Password::"
+  server_condition = "${if and { \
+                        {!eq{$1}{}} \
+                        {!eq{$2}{}} \
+                        {crypteq{$2}{${lookup mysql{SUPERVISR_AUTH_LOGIN}{$value}fail}}} \
+                        } {yes}{no}}"
+  server_set_id = $1
+  server_advertise_condition = ${if eq{$tls_cipher}{}{}{*}} # This line only if TLS is force
