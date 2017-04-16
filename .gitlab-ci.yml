@@ -45,6 +45,7 @@ grunt:
   stage: test
   script:
     - cd assets/
+    - npm install
     - grunt
 deploy:
   type: deploy
