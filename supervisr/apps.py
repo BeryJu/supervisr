@@ -4,14 +4,13 @@ Supervisr core app config
 
 from __future__ import unicode_literals
 
+import importlib
 import logging
 import os
 import subprocess
 
 from django.apps import AppConfig
 from django.conf import settings
-
-import importlib
 
 LOGGER = logging.getLogger(__name__)
 

@@ -1,13 +1,12 @@
 """
 supervisr core urls
 """
+import importlib
 import logging
 
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin as admin_django
-
-import importlib
 
 from .utils import get_apps
 from .views import about, account, admin, common, domain, product, user
