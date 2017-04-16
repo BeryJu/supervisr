@@ -93,4 +93,4 @@ class PuppetModule(models.Model):
     supported = models.BooleanField(default=False)
 
     def __str__(self):
-        return "PuppetModule '%s' by '%s'" % (self.name, self.owner.username)
+        return "PuppetModule '%s' by '%s'" % (self.name, self.owner.first_name)
