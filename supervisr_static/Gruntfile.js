@@ -18,7 +18,7 @@ module.exports = function(grunt) {
             'node_modules/jquery/dist/jquery.js',
             'js/*.js',
         ],
-        dest: 'build/app.min.js',
+        dest: '../supervisr/static/app.min.js',
       },
     },
     cssmin: {
@@ -29,7 +29,7 @@ module.exports = function(grunt) {
               'node_modules/clarity-ui/clarity-ui.min.css',
               'css/*.css',
           ],
-          dest: 'build/app.min.css',
+          dest: '../supervisr/static/app.min.css',
         }]
       }
     }
