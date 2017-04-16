@@ -2,7 +2,6 @@
 Supervisr Core About Views
 """
 
-from django.conf import settings
 from django.shortcuts import render
 
 
@@ -33,4 +32,3 @@ def attributions(req):
     return render(req, 'about/attributions.html', {
         'attributions': text
         })
-
