@@ -5,8 +5,8 @@
   "main": "index.js",
   "dependencies": {
     "@webcomponents/custom-elements": "^1.0.0-alpha.3",
-    "clarity-icons": "latest",
-    "clarity-ui": "latest",
+    "clarity-icons": "^0.8.15",
+    "clarity-ui": "^0.8.15",
     "grunt": "^1.0.1",
     "grunt-contrib-cssmin": "^2.0.0",
     "grunt-contrib-uglify": "^2.3.0",
