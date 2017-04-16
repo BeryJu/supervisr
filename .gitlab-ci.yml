@@ -44,6 +44,7 @@ grunt:
   type: test
   stage: test
   script:
+    - sudo chown -R $USER ~/.npm
     - cd assets/
     - npm install
     - grunt
