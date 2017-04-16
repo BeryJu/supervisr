@@ -14,7 +14,7 @@ class PictureWidget(forms.widgets.Widget):
     Widget to render value as img-tag
     """
 
-    # pylint: disable=unused-argument
+    # pylint: disable=unused-argument,arguments-differ
     def render(self, name, value, attrs=None, renderer=None):
         return mark_safe("<img src=\"%s\" />" % value)
 

@@ -261,4 +261,5 @@ for app in INSTALLED_APPS:
         except ImportError:
             pass
         # Also add logging for app
-        LOGGING['loggers'][app_package] = LOGGING['loggers']['supervisr']
+        if LOGGING:
+            LOGGING['loggers'][app_package] = LOGGING['loggers']['supervisr']
