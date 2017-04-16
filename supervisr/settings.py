@@ -41,13 +41,12 @@
 
 
 
+import importlib
 import logging
 import os
 import sys
 
 from django.contrib import messages
-
-import importlib
 
 SYSLOG_HOST = '127.0.0.1'
 SYSLOG_PORT = 514
