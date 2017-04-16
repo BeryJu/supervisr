@@ -3,14 +3,17 @@ Supervisr Puppet Utils
 """
 
 import json
+import logging
 import os
 import shutil
 
 import requests
+from django.contrib.auth.models import User
 from django.core.files import File
 
-from .models import PuppetModule, PuppetModuleRelease, PuppetUser
+from .models import PuppetModule, PuppetModuleRelease
 
+LOGGER = logging.getLogger(__name__)
 
 class ForgeImporter(object):
     """
@@ -33,7 +36,7 @@ class ForgeImporter(object):
         Shortcut to get json data
         """
         f_url = '%s/%s' % (self.BASE_URL, url)
-        print("About to GET %s" % f_url)
+        LOGGER.debug("About to GET %s", f_url)
         return requests.get(f_url).json()
 
     def get_user_info(self, username):
@@ -42,17 +45,17 @@ class ForgeImporter(object):
         """
         result = self._get_helper('/v3/users/' + username)
 
-        existing_user = PuppetUser.objects.filter(
+        existing_user = User.objects.filter(
             username=result['username'],
-            display_name=result['display_name'])
+            first_name=result['display_name'])
 
         if not existing_user:
-            print("Created user '%s' from PuppetForge..." % result['username'])
-            return PuppetUser.objects.create(
+            LOGGER.info("Created user '%s' from PuppetForge...", result['username'])
+            return User.objects.create(
                 username=result['username'],
-                display_name=result['display_name'])
+                first_name=result['display_name'])
 
-        print("User '%s' exists already" % (result['username']))
+        LOGGER.info("User '%s' exists already", result['username'])
         return existing_user.first()
 
     def get_module_info(self, user, modulename):
@@ -66,13 +69,13 @@ class ForgeImporter(object):
             name=result['name'])
 
         if not existing_module:
-            print("Created module '%s-%s' from PuppetForge..." % (user.username, result['name']))
+            LOGGER.info("Created module '%s-%s' from PuppetForge...", user.username, result['name'])
             return PuppetModule.objects.create(
                 owner=user,
                 name=result['name'],
                 supported=result['supported'])
 
-        print("Module '%s-%s' exists already" % (user.username, result['name']))
+        LOGGER.info("Module '%s-%s' exists already", user.username, result['name'])
         return existing_module.first()
 
     def import_releases(self, user, module):
@@ -87,11 +90,12 @@ class ForgeImporter(object):
                 version=release['version'])
 
             if not existing_module:
-                print("Created release '%s-%s@%s' from PuppetForge..." \
-                      % (user.username, module.name, release['version']))
+                LOGGER.info("Created release '%s-%s@%s' from PuppetForge...",
+                            user.username, module.name, release['version'])
 
                 archive = requests.get(self.BASE_URL + release['file_uri'], stream=True)
-                filename = 'modules/%s-%s-%s.tgz' % (user.username, module.name, release['version'])
+                filename = 'supervisr_puppet/modules/%s-%s-%s.tgz' \
+                           % (user.username, module.name, release['version'])
                 with open(filename, 'wb') as file:
                     archive.raw.decode_content = True
                     shutil.copyfileobj(archive.raw, file)
@@ -107,3 +111,6 @@ class ForgeImporter(object):
                     )
 
                 os.remove(filename)
+            else:
+                LOGGER.info("Release %s-%s@%s exists already", user.username,
+                            module.name, release['version'])

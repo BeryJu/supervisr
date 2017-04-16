@@ -3,38 +3,13 @@ Supervisr Puppet Models
 """
 import hashlib
 import json
+import logging
 import tarfile
 
+from django.contrib.auth.models import User
 from django.db import models
 
-
-class PuppetUser(models.Model):
-    """
-    Store Information about a Puppet User
-    """
-    username = models.TextField()
-    display_name = models.TextField()
-    create_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
-
-    @property
-    def release_count(self):
-        """
-        Return Count of releases from this user
-        """
-        modules = PuppetModule.objects.filter(owner=self)
-        releases = PuppetModuleRelease.objects.filter(puppetmodule_set__in=[modules])
-        return releases.count()
-
-    @property
-    def module_count(self):
-        """
-        Return Count of modules from this user
-        """
-        return PuppetModule.objects.filter(owner=self).count()
-
-    def __str__(self):
-        return "PuppetUser %s" % (self.username)
+LOGGER = logging.getLogger(__name__)
 
 class PuppetModuleRelease(models.Model):
     """
@@ -87,21 +62,20 @@ class PuppetModuleRelease(models.Model):
             for file in tar.getnames():
                 if file.lower().endswith('metadata.json'):
                     self.metadata = tar.extractfile(file).read()
-                    print("Added 'metadata' from targz")
-
+                    LOGGER.info("%s: Added 'metadata' from targz", self.module.name)
                     try:
                         json.loads(self.metadata.decode("utf-8"))
                     except ValueError:
                         raise
                 elif file.lower().endswith('readme.md'):
                     self.readme = tar.extractfile(file).read()
-                    print("Added 'readme' from targz")
+                    LOGGER.info("%s: Added 'readme' from targz", self.module.name)
                 elif file.lower().endswith('changelog.md'):
                     self.changelog = tar.extractfile(file).read()
-                    print("Added 'changelog' from targz")
+                    LOGGER.info("%s: Added 'changelog' from targz", self.module.name)
                 elif file.lower().endswith('license.md'):
                     self.license = tar.extractfile(file).read()
-                    print("Added 'license' from targz")
+                    LOGGER.info("%s: Added 'license' from targz", self.module.name)
         super(PuppetModuleRelease, self).save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
@@ -115,7 +89,7 @@ class PuppetModule(models.Model):
     downloads = models.IntegerField(default=0)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
-    owner = models.ForeignKey(PuppetUser)
+    owner = models.ForeignKey(User)
     supported = models.BooleanField(default=False)
 
     def __str__(self):
