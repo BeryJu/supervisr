@@ -41,12 +41,13 @@
 
 
 
-import importlib
 import logging
 import os
 import sys
 
 from django.contrib import messages
+
+import importlib
 
 SYSLOG_HOST = '127.0.0.1'
 SYSLOG_PORT = 514
@@ -78,6 +79,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'captcha',
     'supervisr.apps.SupervisrCoreConfig',
+    'supervisr_puppet.apps.SupervisrPuppetConfig',
     'supervisr_dns.apps.SupervisrDNSConfig',
     'supervisr_server.apps.SupervisrServerConfig',
     'supervisr_web.apps.SupervisrWebConfig',
@@ -250,7 +252,7 @@ if DEBUG is True:
 # Load subapps's INSTALLED_APPS
 for app in INSTALLED_APPS:
     if app.startswith('supervisr') and \
-        app is not 'supervisr' and \
+        app != 'supervisr' and \
         not app.startswith('supervisr.'):
         app_package = app.split('.')[0]
         try:

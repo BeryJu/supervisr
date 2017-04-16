@@ -17,7 +17,7 @@ def google_analytics(context, tracking_id=''):
     if Setting.objects.get(pk='supervisr:analytics:ga:enabled').value_bool is False:
         # Google Analytics is not enabled
         return ''
-    if tracking_id is '':
+    if tracking_id == '':
         tracking_id = Setting.get('supervisr:analytics:ga:tracking_id')
     if tracking_id is None or tracking_id is False:
         # Check if tracking is disabled

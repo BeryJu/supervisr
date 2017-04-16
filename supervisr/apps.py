@@ -4,13 +4,14 @@ Supervisr core app config
 
 from __future__ import unicode_literals
 
-import importlib
 import logging
 import os
 import subprocess
 
 from django.apps import AppConfig
 from django.conf import settings
+
+import importlib
 
 LOGGER = logging.getLogger(__name__)
 
@@ -24,9 +25,6 @@ class SupervisrAppConfig(AppConfig):
     admin_url_name = 'admin-mod_default'
     navbar_title = None
     view_user_settings = None
-
-    def __init__(self, *args, **kwargs):
-        super(SupervisrAppConfig, self).__init__(*args, **kwargs)
 
     def ready(self):
         self.load_init()

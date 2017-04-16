@@ -57,6 +57,7 @@ def clean(ctx):
     print("Removed %i files" % len(files))
 
 @task
+@shell
 def install(ctx, dev=False):
     """
     Install requirements for supervisr and all modules

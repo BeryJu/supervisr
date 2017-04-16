@@ -69,8 +69,7 @@ def get_system_user():
     system_users = User.objects.filter(username=settings.SYSTEM_USER_NAME)
     if system_users.exists():
         return system_users[0].id
-    else:
-        return 1 # Django starts AutoField's with 1 not 0
+    return 1 # Django starts AutoField's with 1 not 0
 
 class CreatedUpdatedModel(models.Model):
     """
@@ -164,8 +163,7 @@ class AccountConfirmation(CreatedUpdatedModel):
         (KIND_PASSWORD_RESET, _('Password Reset')),
     )
 
-    account_confirmation_id = models.UUIDField(primary_key=True, \
-        default=uuid.uuid4, editable=False)
+    account_confirmation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User)
     expires = models.BigIntegerField(default=expiry_date, editable=False)
     confirmed = models.BooleanField(default=False)
@@ -208,13 +206,13 @@ class UserProductRelationship(CreatedUpdatedModel):
             'product': self.product,
             })
 
-    def save(self, *args, **kwargs):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.pk is None:
             # Trigger event that we were saved
             SIG_USER_PRODUCT_RELATIONSHIP_CREATED.send(
                 sender=UserProductRelationship,
                 upr=self)
-        super(UserProductRelationship, self).save(*args, **kwargs)
+        super(UserProductRelationship, self).save(force_insert, force_update, using, update_fields)
 
 @receiver(pre_delete)
 # pylint: disable=unused-argument
@@ -270,12 +268,12 @@ class Product(CreatedUpdatedModel):
     def __str__(self):
         return "%s %s (%s)" % (self.__class__.__name__, self.name, self.description)
 
-    def save(self, *args, **kwargs):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # Auto generate slug
         if not self.pk:
             self.slug = slugify(self.name)
 
-        super(Product, self).save(*args, **kwargs)
+        super(Product, self).save(force_insert, force_update, using, update_fields)
         if self.auto_all_add is True:
             # Since there is no better way to do the query other way roundd
             # We have to do it like this
@@ -315,9 +313,9 @@ class Domain(Product):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         _first = True if self.pk is None else False
-        super(Domain, self).save(*args, **kwargs)
+        super(Domain, self).save(force_insert, force_update, using, update_fields)
         if _first:
             # Trigger event that we were saved
             SIG_DOMAIN_CREATED.send(
@@ -393,8 +391,7 @@ class Event(CreatedUpdatedModel):
             return _("%(days)d day(s) ago" % {'days': diff.days})
         elif hours > 0:
             return _("%(hours)d hour(s) ago" % {'hours': hours})
-        else:
-            return _("%(minutes)d minute(s) ago" % {'minutes': minutes})
+        return _("%(minutes)d minute(s) ago" % {'minutes': minutes})
 
     @staticmethod
     def create(**kwargs):

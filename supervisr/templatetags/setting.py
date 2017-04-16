@@ -16,5 +16,4 @@ def setting(key, default=''):
     """
     if key not in BLOCKED_SETTINGS:
         return getattr(settings, key, default)
-    else:
-        return default
+    return default

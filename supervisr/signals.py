@@ -12,8 +12,8 @@ class RobustSignal(Signal):
     Signal Class that raises Exceptions in a child class
     """
 
-    def send(self, *args, **kwargs):
-        results = super(RobustSignal, self).send_robust(*args, **kwargs)
+    def send(self, sender, **named):
+        results = super(RobustSignal, self).send_robust(sender, **named)
         for handler, result in results:
             if isinstance(result, Exception):
                 raise SignalException("Handler %s: %s", handler.__name__, repr(result)) from result

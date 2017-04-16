@@ -18,8 +18,7 @@ def get_remote_ip(req):
         return '0.0.0.0'
     if req.META.get('HTTP_X_FORWARDED_FOR'):
         return req.META.get('HTTP_X_FORWARDED_FOR')
-    else:
-        return req.META.get('REMOTE_ADDR')
+    return req.META.get('REMOTE_ADDR')
 
 def uuid():
     """
@@ -33,7 +32,7 @@ def get_reverse_dns(dev_ip):
     """
     try:
         rev = socket.gethostbyaddr(dev_ip)
-        if len(rev) > 0:
+        if rev:
             return rev[0]
     except (socket.herror, TypeError, IndexError):
         return ''
@@ -68,9 +67,9 @@ def get_apps(mod_only=False):
     app_list = []
     for app in settings.INSTALLED_APPS:
         if app.startswith('supervisr') and \
-            app is not 'supervisr' and \
+            app != 'supervisr' and \
             not app.startswith('supervisr.'):
-            if mod_only is True:
+            if mod_only:
                 if app.startswith('supervisr_mod'):
                     app_list.append(app)
             else:
