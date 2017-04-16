@@ -57,11 +57,12 @@ def clean(ctx):
     print("Removed %i files" % len(files))
 
 @task
-@shell
 def install(ctx, dev=False):
     """
     Install requirements for supervisr and all modules
     """
+    if WINDOWS:
+        ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
     files = glob("*/requirements.txt")
     if dev:
         files.extend(glob("*/requirements-dev.txt"))
