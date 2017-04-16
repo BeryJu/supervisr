@@ -1,9 +1,7 @@
 before_script:
   - sudo apt-get update >/dev/null
   - sudo apt-get -y install python3-pip python3-dev libsasl2-dev libldap2-dev libssl-dev python3-mysqldb libmysqlclient-dev >/dev/null
-  - sudo apt-get -y -t jessie-backports install nodejs nodejs-legacy
   - sudo python3 -m pip install -U virtualenv
-  - sudo npm -g install grunt-cli
   - virtualenv env
   - source env/bin/activate
   - pip3 install invoke
@@ -41,16 +39,6 @@ prospector:
   stage: test
   script:
     - inv prospector
-grunt:
-  type: test
-  stage: test
-  script:
-    - mkdir -p ~/.npm
-    - sudo chown -R $USER ~/.npm
-    - sudo npm -g install npm
-    - cd assets/
-    - npm install
-    - grunt
 deploy:
   type: deploy
   stage: deploy
