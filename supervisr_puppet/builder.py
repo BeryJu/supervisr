@@ -99,6 +99,7 @@ class ReleaseBuilder(object):
         """
         Copy non-templates into tar, render templates into tar and import into django
         """
+        # pylint: disable=unexpected-keyword-arg
         files = glob('%s/**' % self.base_dir, recursive=True)
         if context is None:
             context = {}
@@ -109,7 +110,6 @@ class ReleaseBuilder(object):
             if arc_path.endswith(self.extension):
                 self.to_tarinfo(file, _context, arc_path)
             else:
-                # pylint: disable=unexpected-keyword-arg
                 self._tgz_file.add(file, arcname=arc_path, recursive=False)
             LOGGER.info('Added %s', arc_path)
 
