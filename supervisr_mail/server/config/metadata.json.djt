@@ -1,9 +1,9 @@
 {% load supervisr_setting %}
 
 {
-    "name": "supervisr_mail",
-    "version": "0.1.0",
-    "author": "_{% supervisr_setting 'branding' %}",
+    "name": "{{ PUPPET.module.owner.first_name }}-mail",
+    "version": "{{ PUPPET.version }}",
+    "author": "{{ PUPPET.module.owner.first_name }}",
     "summary": "Manage mail for supervisr.",
     "license": "MIT",
     "source": "{% supervisr_setting 'domain' %}",
@@ -11,6 +11,6 @@
     "issues_url": "{% supervisr_setting 'domain' %}",
     "dependencies": [
         {"name":"puppetlabs-apt","version_requirement":">= 2.4.0"},
-        {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"},
-    ],
+        {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+    ]
 }
