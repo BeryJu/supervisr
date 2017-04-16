@@ -30,10 +30,10 @@
   {% endfor %}
   {% endif %}
   {% endblock %}
-  <header class="header header-2">
+  <header class="header header-1">
     <div class="branding">
       <a class="logo-and-title" href="{% url 'common-index' %}">
-        <span class="clr-icon clarity-logo"></span>
+        <img class="clr-icon clarity-logo" src="{% static 'img/icon.png' %}" alt="{% trans 'Logo' %}}">
         <span class="title">{% supervisr_setting 'branding' %}</span>
       </a>
     </div>

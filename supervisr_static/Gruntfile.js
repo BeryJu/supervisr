@@ -32,13 +32,21 @@ module.exports = function(grunt) {
           dest: '../supervisr/static/app.min.css',
         }]
       }
+    },
+    copy: {
+      images: {
+        files: [
+          { expand: true, cwd: 'img', src: ['*'], dest: '../supervisr/static/img/' },
+        ]
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-npm-command');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
-  grunt.registerTask('default', ['npm-command', 'uglify', 'cssmin']);
+  grunt.registerTask('default', ['npm-command', 'uglify', 'cssmin', 'copy']);
 
 };

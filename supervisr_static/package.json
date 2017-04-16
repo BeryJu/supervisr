@@ -8,6 +8,7 @@
     "clarity-icons": "^0.8.15",
     "clarity-ui": "^0.8.15",
     "grunt": "^1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-cssmin": "^2.0.0",
     "grunt-contrib-uglify": "^2.3.0",
     "grunt-npm-command": "^0.1.2",
