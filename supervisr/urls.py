@@ -48,7 +48,9 @@ urlpatterns = [
     url(r'^admin/mod/default/(?P<mod>[a-zA-Z0-9]+)/$', admin.mod_default, name='admin-mod_default'),
     url(r'^admin/info/$', admin.info, name='admin-info'),
     url(r'^admin/events/$', admin.events, name='admin-events'),
+    # About views
     url(r'^about/changelog/$', about.changelog, name='about-changelog'),
+    url(r'^about/attributions/$', about.attributions, name='about-attributions'),
     # Include django-admin
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),

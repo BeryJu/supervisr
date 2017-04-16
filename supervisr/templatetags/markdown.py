@@ -16,4 +16,4 @@ def markdown(mdwn):
     """
     Simple tag to render markdown from a variable
     """
-    return mark_safe(markdown_render(mdwn))
+    return mark_safe(markdown_render(mdwn, extensions=['markdown.extensions.tables']))

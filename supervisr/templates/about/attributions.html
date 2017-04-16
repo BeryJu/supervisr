@@ -1,0 +1,12 @@
+{% extends "core/base.html" %}
+
+{% load markdown %}
+{% load supervisr_title %}
+
+{% block title %}
+{% supervisr_title "Attributions" %}
+{% endblock %}
+
+{% block content %}
+{% markdown attributions %}
+{% endblock %}
