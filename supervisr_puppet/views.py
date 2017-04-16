@@ -4,11 +4,12 @@ Supervisr Puppet views
 
 from wsgiref.util import FileWrapper
 
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render
 
-from .models import PuppetModule, PuppetModuleRelease, PuppetUser
+from .models import PuppetModule, PuppetModuleRelease
 
 
 # pylint: disable=unused-argument
@@ -70,7 +71,7 @@ def file(req, user, module, version):
     """
     Return file for release
     """
-    p_user = PuppetUser.objects.get(username=user)
+    p_user = User.objects.get(username=user)
     p_module = PuppetModule.objects.get(name=module, owner=p_user)
     p_release = PuppetModuleRelease.objects.get(module=p_module, version=version)
 

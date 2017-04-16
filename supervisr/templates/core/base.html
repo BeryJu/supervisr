@@ -13,6 +13,7 @@
 
 {% block body %}
 <div class="main-container">
+  {% block main_container %}
   {% block messages %}
   {% if messages %}
   {% for msg in messages %}
@@ -95,5 +96,6 @@
     {% block sidenav %}
     {% endblock %}
   </div>
+  {% endblock %}
 </div>
 {% endblock %}

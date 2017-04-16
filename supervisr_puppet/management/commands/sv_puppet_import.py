@@ -17,12 +17,11 @@ class Command(BaseCommand):
 
     help = 'Import a module from puppetforge'
 
-    # def add_arguments(self, parser):
-    #     parser.add_argument('state', type=str)
+    def add_arguments(self, parser):
+        parser.add_argument('--module', type=str, action='append')
 
     def handle(self, *args, **options):
         i = ForgeImporter()
-        i.import_module('puppetlabs-apt')
-        i.import_module('puppetlabs-ntp')
-        i.import_module('puppetlabs-stdlib')
-        print("Done!")
+        for mod in options['module']:
+            i.import_module(mod)
+        LOGGER.info("Done!")
