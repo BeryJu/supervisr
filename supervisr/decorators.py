@@ -17,7 +17,7 @@ def anonymous_required(view_function):
         """
         Check if request's user is authenticated and route back to index
         """
-        req = args[0] if len(args) > 0 else None
+        req = args[0] if args else None
         if req and req.user is not None and req.user.is_authenticated():
             return redirect(reverse('common-index'))
         return view_function(*args, **kwargs)
@@ -34,7 +34,7 @@ def reauth_required(view_function):
         """
         check if user just authenticated or not
         """
-        req = args[0] if len(args) > 0 else None
+        req = args[0] if args else None
         # Check if user is authenticated at all
         if not req or not req.user or not req.user.is_authenticated():
             return redirect(reverse('account-login'))

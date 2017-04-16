@@ -15,7 +15,7 @@ class PictureWidget(forms.widgets.Widget):
     """
 
     # pylint: disable=unused-argument
-    def render(self, name, value, **kwargs):
+    def render(self, name, value, attrs=None, renderer=None):
         return mark_safe("<img src=\"%s\" />" % value)
 
 class TFAVerifyForm(InlineForm):

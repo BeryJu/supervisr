@@ -1,0 +1,12 @@
+django                         BSD-3
+django-crispy-forms>=1.6.1     MIT
+django-formtools               BSD-3
+django-recaptcha               BSD-3
+django-oauth-toolkit           BSD
+django-cors-middleware         MIT
+mysqlclient                    GPLv2
+markdown                       BSD
+docutils                       BSD
+passlib                        BSD
+django-two-factor-auth         MIT
+ldap3                          LGPLv3

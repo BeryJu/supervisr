@@ -1,0 +1,15 @@
+# Enable TLS and set let's encrypt fullchain
+MAIN_TLS_ENABLE = yes
+MAIN_TLS_CERTIFICATE = /etc/letsencrypt/fullchain.pem
+MAIN_TLS_PRIVATEKEY = /etc/letsencrypt/fullchain.pem
+
+SUPERVISR_ACTIVE     = yes
+SUPERVISR_MYSQL_HOST =
+SUPERVISR_MYSQL_DB   =
+SUPERVISR_MYSQL_USER =
+SUPERVISR_MYSQL_PASS =
+IGNORE_SMTP_LINE_LENGTH_LIMIT = yes
+
+message_size_limit = 100M
+tls_on_connect_ports = 465
+daemon_smtp_ports = 25 : 587

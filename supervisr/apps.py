@@ -25,9 +25,6 @@ class SupervisrAppConfig(AppConfig):
     navbar_title = None
     view_user_settings = None
 
-    def __init__(self, *args, **kwargs):
-        super(SupervisrAppConfig, self).__init__(*args, **kwargs)
-
     def ready(self):
         self.load_init()
         self.merge_settings()

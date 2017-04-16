@@ -71,7 +71,6 @@ for app in get_apps():
         ]
         LOGGER.info("Loaded %s", url_module)
 
-
 if settings.DEBUG:
     import debug_toolbar
     urlpatterns += [

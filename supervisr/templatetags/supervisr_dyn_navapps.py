@@ -4,6 +4,8 @@ Supervisr Core NavApps Templatetag
 
 from django import template
 from django.apps import apps
+from django.urls import reverse
+from django.urls.exceptions import NoReverseMatch
 
 from ..utils import get_apps
 
@@ -28,10 +30,15 @@ def supervisr_dyn_navapps():
                 mod = mod.replace('supervisr_', '')
                 if title is None:
                     title = mod.title()
-                APP_LIST.append({
-                    'short': mod,
-                    'title': title,
-                    'index': 'supervisr_%s:%s-index' % (mod, mod)
-                    })
+                index = 'supervisr_%s:%s-index' % (mod, mod)
+                try:
+                    reverse(index)
+                    APP_LIST.append({
+                        'short': mod,
+                        'title': title,
+                        'index': index
+                        })
+                except NoReverseMatch:
+                    pass
         APP_LIST = sorted(APP_LIST, key=lambda x: x['short'])
     return APP_LIST

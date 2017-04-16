@@ -1,0 +1,46 @@
+{% load jsonify %}
+
+{% autoescape off %}
+{
+    "pagination": {
+        "limit": 20,
+        "offset": 0,
+        "first": "/",
+        "previous": null,
+        "current": "/",
+        "next": null,
+        "total": {{ releases|length }}
+    },
+    "results": [
+        {% for release in releases %}
+        {
+            "uri": "{% url 'supervisr_puppet:release' user=release.module.owner.username module=release.module.name version=release.version %}",
+            "slug": "{{ release.module.owner.username }}-{{ release.module.name }}-{{ release.version }}",
+            "version": "{{ release.version }}",
+            "module": {
+                "uri": "{% url 'supervisr_puppet:module' user=release.module.owner.username module=release.module.name %}",
+                "slug": "{{ release.module.owner.username }}-{{ release.module.name }}",
+                "name": "{{ release.module.name }}",
+                "owner": {
+                    "url": "{% url 'supervisr_puppet:user' user=release.module.owner.username %}",
+                    "slug": "{{ release.module.owner.username }}",
+                    "username": "{{ release.module.owner.username }}"
+                }
+            },
+            "metadata": {{ release.metadata }},
+            "tags": [],
+            "supported": {{ release.module.supported|lower }},
+            "file_size": {{ release.get_size }},
+            "file_md5": "{{ release.get_md5 }}",
+            "file_uri": "{% url 'supervisr_puppet:file' user=release.module.owner.username module=release.module.name version=release.version %}",
+            "downloads": {{ release.get_downloads }},
+            "readme": "{{ release.readme|jsonify }}",
+            "changelog": "{{ release.changelog|jsonify }}",
+            "license": "{{ release.license|jsonify }}",
+            "created_at": "{{ release.create_at }}",
+            "updated_at": "{{ release.update_at }}",
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]
+}
+{% endautoescape %}
