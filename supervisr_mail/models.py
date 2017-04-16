@@ -47,7 +47,7 @@ class MailDomain(Product):
         super(MailDomain, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "MailDomain %s" % self.domain
+        return self.domain
 
     def has_catchall(self):
         """
@@ -111,7 +111,7 @@ class MailAccount(Product):
         super(MailAccount, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "MailAccount %s %s" % (self.address, self.domain_mail)
+        return "%s@%s" % (self.address, self.domain_mail)
 
 class MailForwarder(CreatedUpdatedModel):
     """
@@ -122,7 +122,7 @@ class MailForwarder(CreatedUpdatedModel):
     destination = models.EmailField()
 
     def __str__(self):
-        return "MailForwarder %s => %s" % (self.account.address, self.destination)
+        return "%s => %s" % (self.account.address, self.destination)
 
 @receiver(SIG_DOMAIN_CREATED)
 # pylint: disable=unused-argument

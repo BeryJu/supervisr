@@ -18,7 +18,7 @@ module.exports = function(grunt) {
             'node_modules/jquery/dist/jquery.js',
             'js/*.js',
         ],
-        dest: 'build/app.min.js',
+        dest: '../supervisr/static/app.min.js',
       },
     },
     cssmin: {
@@ -29,8 +29,15 @@ module.exports = function(grunt) {
               'node_modules/clarity-ui/clarity-ui.min.css',
               'css/*.css',
           ],
-          dest: 'build/app.min.css',
+          dest: '../supervisr/static/app.min.css',
         }]
+      }
+    },
+    copy: {
+      images: {
+        files: [
+          { expand: true, cwd: 'img', src: ['*'], dest: '../supervisr/static/img/' },
+        ]
       }
     }
   });
@@ -38,7 +45,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-npm-command');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
-  grunt.registerTask('default', ['npm-command', 'uglify', 'cssmin']);
+  grunt.registerTask('default', ['npm-command', 'uglify', 'cssmin', 'copy']);
 
 };
