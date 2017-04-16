@@ -1,6 +1,7 @@
 before_script:
   - sudo apt-get update >/dev/null
-  - sudo apt-get -y install python3-pip python3-dev libsasl2-dev libldap2-dev libssl-dev python3-mysqldb libmysqlclient-dev nodejs npm nodejs-legacy >/dev/null
+  - sudo apt-get -y install python3-pip python3-dev libsasl2-dev libldap2-dev libssl-dev python3-mysqldb libmysqlclient-dev >/dev/null
+  - sudo apt-get -y -t jessie-backports install nodejs nodejs-legacy npm
   - sudo python3 -m pip install -U virtualenv
   - sudo npm -g install grunt-cli
   - virtualenv env
