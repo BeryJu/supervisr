@@ -109,6 +109,7 @@ class ReleaseBuilder(object):
             if arc_path.endswith(self.extension):
                 self.to_tarinfo(file, _context, arc_path)
             else:
+                # pylint: disable=unexpected-keyword-arg
                 self._tgz_file.add(file, arcname=arc_path, recursive=False)
             LOGGER.info('Added %s', arc_path)
 
