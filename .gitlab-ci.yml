@@ -44,6 +44,7 @@ grunt:
   type: test
   stage: test
   script:
+    - mkdir -p ~/.npm
     - sudo chown -R $USER ~/.npm
     - sudo npm -g install npm
     - cd assets/
