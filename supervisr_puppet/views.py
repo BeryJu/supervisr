@@ -71,12 +71,12 @@ def file(req, user, module, version):
     """
     Return file for release
     """
-    p_user = User.objects.get(username=user)
+    p_user = User.objects.get(first_name=user)
     p_module = PuppetModule.objects.get(name=module, owner=p_user)
     p_release = PuppetModuleRelease.objects.get(module=p_module, version=version)
 
     # generate the file
-    filename = "%s-%s-%s" % (p_user.username, p_module.name, p_release.version)
+    filename = "%s-%s-%s" % (p_user.first_name, p_module.name, p_release.version)
     response = HttpResponse(FileWrapper(p_release.release), content_type='application/zip')
     response['Content-Disposition'] = 'attachment; filename=%s' % filename
 

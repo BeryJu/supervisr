@@ -61,20 +61,20 @@ class PuppetModuleRelease(models.Model):
             tar = tarfile.open(mode="r:gz", fileobj=self.release)
             for file in tar.getnames():
                 if file.lower().endswith('metadata.json'):
-                    self.metadata = tar.extractfile(file).read()
+                    self.metadata = tar.extractfile(file).read().decode('utf-8')
                     LOGGER.info("%s: Added 'metadata' from targz", self.module.name)
                     try:
-                        json.loads(self.metadata.decode("utf-8"))
+                        json.loads(self.metadata)
                     except ValueError:
                         raise
                 elif file.lower().endswith('readme.md'):
-                    self.readme = tar.extractfile(file).read()
+                    self.readme = tar.extractfile(file).read().decode('utf-8')
                     LOGGER.info("%s: Added 'readme' from targz", self.module.name)
                 elif file.lower().endswith('changelog.md'):
-                    self.changelog = tar.extractfile(file).read()
+                    self.changelog = tar.extractfile(file).read().decode('utf-8')
                     LOGGER.info("%s: Added 'changelog' from targz", self.module.name)
                 elif file.lower().endswith('license.md'):
-                    self.license = tar.extractfile(file).read()
+                    self.license = tar.extractfile(file).read().decode('utf-8')
                     LOGGER.info("%s: Added 'license' from targz", self.module.name)
         super(PuppetModuleRelease, self).save(force_insert, force_update, using, update_fields)
 
@@ -93,4 +93,4 @@ class PuppetModule(models.Model):
     supported = models.BooleanField(default=False)
 
     def __str__(self):
-        return "PuppetModule '%s' by '%s'" % (self.name, self.owner.username)
+        return "PuppetModule '%s' by '%s'" % (self.name, self.owner.first_name)

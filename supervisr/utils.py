@@ -2,12 +2,16 @@
 Supervisr Core utils
 """
 
+import logging
 import socket
+from time import time as timestamp
 from uuid import uuid4
 
 from django.conf import settings
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
+
+LOGGER = logging.getLogger(__name__)
 
 
 def get_remote_ip(req):
@@ -75,3 +79,20 @@ def get_apps(mod_only=False):
             else:
                 app_list.append(app)
     return app_list
+
+def time(method):
+    """
+    Decorator to time a method call
+    """
+    def timed(*args, **kw):
+        """
+        Decorator to time a method call
+        """
+        time_start = timestamp()
+        result = method(*args, **kw)
+        time_end = timestamp()
+
+        LOGGER.info("'%s' took %2.2f to run", method.__name__, time_end-time_start)
+        return result
+
+    return timed
