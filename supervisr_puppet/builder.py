@@ -6,8 +6,8 @@ import io
 import json
 import logging
 import os
-import tarfile
 import sys
+import tarfile
 from tempfile import TemporaryFile
 
 from django.core.files import File
