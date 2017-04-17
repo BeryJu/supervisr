@@ -8,7 +8,7 @@ import logging
 import os
 import sys
 import tarfile
-from tempfile import TemporaryFile
+from tempfile import NamedTemporaryFile
 
 from django.core.files import File
 from django.template import loader
@@ -157,8 +157,7 @@ class ReleaseBuilder(object):
         prefix = 'version_%s_' % self.version
         if not os.path.exists(module_dir):
             os.makedirs(module_dir)
-
-        with TemporaryFile(dir=module_dir, suffix='.tgz', prefix=prefix) as temp_file:
+        with NamedTemporaryFile(dir=module_dir, suffix='.tgz', prefix=prefix) as temp_file:
             temp_file.write(gzipped)
             temp_file.seek(0, io.SEEK_SET)
             # Create the module in the db and write it to disk
