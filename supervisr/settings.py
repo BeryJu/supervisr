@@ -55,7 +55,7 @@ SYSLOG_PORT = 514
 # WARNING!
 # This can only be changed before the first `migrate` is run
 # If you change this afterwards, it may cause serious damage!
-SYSTEM_USER_NAME = 'System'
+SYSTEM_USER_NAME = 'supervisr'
 USER_PROFILE_ID_START = 5000
 
 REMEMBER_SESSION_AGE = 60 * 60 * 24 * 30 # One Month

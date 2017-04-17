@@ -46,12 +46,12 @@ class ReleaseBuilder(object):
                 # Create semantic version from pk with .0.0 appended
                 self.version = str(releases.order_by('-pk').first().pk + 1)+'.0.0'
             else:
-                self.version = '1'
+                self.version = '1.0.0'
         else:
             self.version = version
         self._spooled_tgz_file = io.BytesIO()
         self._tgz_file = tarfile.TarFile(mode='w', fileobj=self._spooled_tgz_file)
-        self._root_dir = '%s-%s-%s' % (module.owner.first_name.lower(), module.name, self.version)
+        self._root_dir = '%s-%s-%s' % (module.owner.username.lower(), module.name, self.version)
         LOGGER.info('Building %s', self._root_dir)
 
     def make_context(self, context):
@@ -153,7 +153,7 @@ class ReleaseBuilder(object):
         gzipped = gzip.compress(self._spooled_tgz_file.getbuffer())
         # Write to file and add to db
         module_dir = 'supervisr_puppet/modules/%s/%s' \
-                     % (self.module.owner.first_name, self.module.name)
+                     % (self.module.owner.username, self.module.name)
         prefix = 'version_%s_' % self.version
         if not os.path.exists(module_dir):
             os.makedirs(module_dir)
