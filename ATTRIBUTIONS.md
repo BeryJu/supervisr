@@ -1,28 +1,29 @@
 # Supervisr Attributions
 
 ## Backend
-|                                                  |         |                                                                                                              |
-|--------------------------------------------------|---------|--------------------------------------------------------------------------------------------------------------|
-| [django](#django)                                | BSD-3   | [https://www.djangoproject.com/](https://www.djangoproject.com/)                                             |
-| [django-crispy-forms](#django-crispy-forms)      | MIT     | [http://django-crispy-forms.readthedocs.io/en/latest/](http://django-crispy-forms.readthedocs.io/en/latest)  |
-| [django-formtools](#django-formtools)            | BSD-3   | [https://github.com/django/django-formtools](https://github.com/django/django-formtools)                     |
-| [django-recaptcha](#django-recaptcha)            | BSD-3   | [https://github.com/praekelt/django-recaptcha](https://github.com/praekelt/django-recaptcha)                 |
-| [django-oauth-toolkit](#django-oauth-toolkit)    | BSD     | [https://github.com/evonove/django-oauth-toolkit](https://github.com/evonove/django-oauth-toolkit)           |
-| [django-cors-middleware](#django-cors-middleware)| MIT     | [https://github.com/ottoyiu/django-cors-headers](https://github.com/ottoyiu/django-cors-headers)             |
-| [django-two-factor-auth](#django-two-factor-auth)| MIT     | [https://github.com/Bouke/django-two-factor-auth](https://github.com/Bouke/django-two-factor-auth)           |
-| [mysqlclient](#mysqlclient)                      | GPLv2   | [https://github.com/PyMySQL/mysqlclient-python](https://github.com/PyMySQL/mysqlclient-python)               |
-| [markdown](#markdown)                            | BSD-3   | [https://github.com/waylan/Python-Markdown](https://github.com/waylan/Python-Markdown)                       |
-| [docutils](#docutils)                            | BSD     | [http://docutils.sourceforge.net/](http://docutils.sourceforge.net/)                                         |
-| [passlib](#passlib)                              | BSD     | [https://passlib.readthedocs.io/en/stable/](https://passlib.readthedocs.io/en/stable/)                       |
-| [pyyaml](#pyyaml)                                | MIT     | [http://pyyaml.org/wiki/PyYAML](http://pyyaml.org/wiki/PyYAML)                                               |
-| [ldap3](#ldap3)                                  | LGPLv3  | [http://ldap3.readthedocs.io/](http://ldap3.readthedocs.io/)                                                 |
-| [tie icon](#tie)                                 | CC 3 BY | [http://www.flaticon.com/free-icon/tie_230358](http://www.flaticon.com/free-icon/tie_230358)                 |
+|                                                  |          |                                                                                                              |
+|--------------------------------------------------|----------|--------------------------------------------------------------------------------------------------------------|
+| [django](#django)                                | BSD-3    | [https://www.djangoproject.com/](https://www.djangoproject.com/)                                             |
+| [django-crispy-forms](#django-crispy-forms)      | MIT      | [http://django-crispy-forms.readthedocs.io/en/latest/](http://django-crispy-forms.readthedocs.io/en/latest)  |
+| [django-formtools](#django-formtools)            | BSD-3    | [https://github.com/django/django-formtools](https://github.com/django/django-formtools)                     |
+| [django-recaptcha](#django-recaptcha)            | BSD-3    | [https://github.com/praekelt/django-recaptcha](https://github.com/praekelt/django-recaptcha)                 |
+| [django-oauth-toolkit](#django-oauth-toolkit)    | BSD      | [https://github.com/evonove/django-oauth-toolkit](https://github.com/evonove/django-oauth-toolkit)           |
+| [django-cors-middleware](#django-cors-middleware)| MIT      | [https://github.com/ottoyiu/django-cors-headers](https://github.com/ottoyiu/django-cors-headers)             |
+| [django-two-factor-auth](#django-two-factor-auth)| MIT      | [https://github.com/Bouke/django-two-factor-auth](https://github.com/Bouke/django-two-factor-auth)           |
+| [mysqlclient](#mysqlclient)                      | GPLv2    | [https://github.com/PyMySQL/mysqlclient-python](https://github.com/PyMySQL/mysqlclient-python)               |
+| [markdown](#markdown)                            | BSD-3    | [https://github.com/waylan/Python-Markdown](https://github.com/waylan/Python-Markdown)                       |
+| [docutils](#docutils)                            | BSD      | [http://docutils.sourceforge.net/](http://docutils.sourceforge.net/)                                         |
+| [passlib](#passlib)                              | BSD      | [https://passlib.readthedocs.io/en/stable/](https://passlib.readthedocs.io/en/stable/)                       |
+| [pyyaml](#pyyaml)                                | MIT      | [http://pyyaml.org/wiki/PyYAML](http://pyyaml.org/wiki/PyYAML)                                               |
+| [ldap3](#ldap3)                                  | LGPLv3   | [http://ldap3.readthedocs.io/](http://ldap3.readthedocs.io/)                                                 |
+| [requests](#requests)                            | Apache 2 | [https://github.com/kennethreitz/requests](https://github.com/kennethreitz/requests)
+| [tie icon](#tie)                                 | CC 3 BY  | [http://www.flaticon.com/free-icon/tie_230358](http://www.flaticon.com/free-icon/tie_230358)                 |
 
 ## Frontend
-|                                                  |         |                                                                                                              |
-|--------------------------------------------------|---------|--------------------------------------------------------------------------------------------------------------|
-| [vmware-clarity](#vmware-clarity)                | MIT     | [https://github.com/vmware/clarity/](https://github.com/vmware/clarity/)                                     |
-| [jquery](#jquery)                                | MIT     | [https://jquery.com/](https://jquery.com/)                                                                   |
+|                                                  |          |                                                                                                              |
+|--------------------------------------------------|----------|--------------------------------------------------------------------------------------------------------------|
+| [vmware-clarity](#vmware-clarity)                | MIT      | [https://github.com/vmware/clarity/](https://github.com/vmware/clarity/)                                     |
+| [jquery](#jquery)                                | MIT      | [https://jquery.com/](https://jquery.com/)                                                                   |
 
 <a name="django"></a>
 
@@ -907,6 +908,24 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program in the COPYING and COPYING.LESSER files.
 If not, see <http://www.gnu.org/licenses/>.
+
+<a name="requests"></a>
+
+## requests
+
+Copyright 2017 Kenneth Reitz
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
 
 <a name="tie"></a>
 

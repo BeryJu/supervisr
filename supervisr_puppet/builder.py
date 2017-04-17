@@ -122,15 +122,19 @@ class ReleaseBuilder(object):
             # pylint: disable=unexpected-keyword-arg
             return glob.glob('%s/**' % list_dir, recursive=True)
         else:
-            root, dirnames, filenames = os.walk(list_dir) # pylint: disable=unused-variable
-            return filenames
+            matches = []
+            # pylint: disable=unused-variable
+            for root, dirs, files in os.walk('supervisr_mail/server/config'):
+                for file in files:
+                    matches.append(os.path.join(root, file))
+            return matches
 
     @time
     def build(self, context=None):
         """
         Copy non-templates into tar, render templates into tar and import into django
         """
-        files = self._glob_helper('%s/**' % self.base_dir)
+        files = self._glob_helper(self.base_dir)
         if context is None:
             context = {}
         _context = self.make_context(context)
