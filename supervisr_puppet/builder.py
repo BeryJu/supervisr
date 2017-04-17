@@ -6,8 +6,8 @@ import io
 import json
 import logging
 import os
+import sys
 import tarfile
-from glob import glob
 from tempfile import TemporaryFile
 
 from django.core.files import File
@@ -16,6 +16,7 @@ from django.template import loader
 from supervisr.utils import time
 
 from .models import PuppetModuleRelease
+from .utils import ForgeImporter
 
 LOGGER = logging.getLogger(__name__)
 
@@ -33,6 +34,7 @@ class ReleaseBuilder(object):
     _root_dir = ''
     _spooled_tgz_file = None
     _tgz_file = None
+    _release = None
 
     def __init__(self, module, version=None):
         super(ReleaseBuilder, self).__init__()
@@ -97,12 +99,38 @@ class ReleaseBuilder(object):
             raise
 
     @time
+    def import_deps(self):
+        """
+        Import dependencies for release
+        """
+        if not self._release:
+            return False
+        dependencies = json.loads(self._release.metadata)['dependencies']
+        importer = ForgeImporter()
+        for module in dependencies:
+            importer.import_module(module['name'])
+        LOGGER.info('Imported dependencies for %s', self._root_dir)
+
+    @staticmethod
+    def _glob_helper(list_dir):
+        """
+        Wrapper for glob which can't do recursive under python 3.5
+        """
+        if sys.version_info >= (3, 5):
+            # Python 3.5 has a glob function with recursion
+            import glob
+            # pylint: disable=unexpected-keyword-arg
+            return glob.glob('%s/**' % list_dir, recursive=True)
+        else:
+            root, dirnames, filenames = os.walk(list_dir) # pylint: disable=unused-variable
+            return filenames
+
+    @time
     def build(self, context=None):
         """
         Copy non-templates into tar, render templates into tar and import into django
         """
-        # pylint: disable=unexpected-keyword-arg
-        files = glob('%s/**' % self.base_dir, recursive=True)
+        files = self._glob_helper('%s/**' % self.base_dir)
         if context is None:
             context = {}
         _context = self.make_context(context)
@@ -130,7 +158,7 @@ class ReleaseBuilder(object):
             temp_file.write(gzipped)
             temp_file.seek(0, io.SEEK_SET)
             # Create the module in the db and write it to disk
-            PuppetModuleRelease.objects.create(
+            self._release = PuppetModuleRelease.objects.create(
                 module=self.module,
                 version=self.version,
                 release=File(temp_file))
