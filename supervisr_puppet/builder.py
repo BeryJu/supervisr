@@ -5,6 +5,7 @@ import gzip
 import io
 import json
 import logging
+import os
 import tarfile
 from glob import glob
 from tempfile import TemporaryFile
@@ -40,7 +41,8 @@ class ReleaseBuilder(object):
         if version is None:
             releases = PuppetModuleRelease.objects.filter(module=module)
             if releases.exists():
-                self.version = str(releases.order_by('-pk').first().pk + 1)
+                # Create semantic version from pk with .0.0 appended
+                self.version = str(releases.order_by('-pk').first().pk + 1)+'.0.0'
             else:
                 self.version = '1'
         else:
@@ -106,7 +108,7 @@ class ReleaseBuilder(object):
         _context = self.make_context(context)
         for file in files:
             # Render template if matches extension
-            arc_path = file.replace(self.base_dir, self._root_dir)
+            arc_path = file.replace(self.base_dir, self._root_dir).replace('\\', '/')
             if arc_path.endswith(self.extension):
                 self.to_tarinfo(file, _context, arc_path)
             else:
@@ -117,8 +119,14 @@ class ReleaseBuilder(object):
         self._tgz_file.close()
         # Gzip it so we actually have a tgz
         gzipped = gzip.compress(self._spooled_tgz_file.getbuffer())
-        # Write to temp file
-        with TemporaryFile(dir='.') as temp_file:
+        # Write to file and add to db
+        module_dir = 'supervisr_puppet/modules/%s/%s' \
+                     % (self.module.owner.first_name, self.module.name)
+        prefix = 'version_%s_' % self.version
+        if not os.path.exists(module_dir):
+            os.makedirs(module_dir)
+
+        with TemporaryFile(dir=module_dir, suffix='.tgz', prefix=prefix) as temp_file:
             temp_file.write(gzipped)
             temp_file.seek(0, io.SEEK_SET)
             # Create the module in the db and write it to disk
