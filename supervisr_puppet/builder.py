@@ -113,6 +113,9 @@ class ReleaseBuilder(object):
 
     @staticmethod
     def _glob_helper(list_dir):
+        """
+        Wrapper for glob which can't do recursive under python 3.5
+        """
         if sys.version_info >= (3, 5):
             # Python 3.5 has a glob function with recursion
             import glob
