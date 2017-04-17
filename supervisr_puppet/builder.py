@@ -111,14 +111,15 @@ class ReleaseBuilder(object):
             importer.import_module(module['name'])
         LOGGER.info('Imported dependencies for %s', self._root_dir)
 
+    @staticmethod
     def _glob_helper(list_dir):
-        if sys.version_info >= (3,5):
+        if sys.version_info >= (3, 5):
             # Python 3.5 has a glob function with recursion
             import glob
             # pylint: disable=unexpected-keyword-arg
             return glob.glob('%s/**' % list_dir, recursive=True)
         else:
-            root, dirnames, filenames = os.walk(list_dir)
+            root, dirnames, filenames = os.walk(list_dir) # pylint: disable=unused-variable
             return filenames
 
     @time
