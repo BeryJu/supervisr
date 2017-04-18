@@ -47,7 +47,7 @@ class MailDomain(Product):
         super(MailDomain, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.domain
+        return str(self.domain)
 
     def has_catchall(self):
         """
