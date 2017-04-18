@@ -68,7 +68,7 @@ def get_system_user():
     """
     system_users = User.objects.filter(username=settings.SYSTEM_USER_NAME)
     if system_users.exists():
-        return system_users[0].id
+        return system_users.first().id
     return 1 # Django starts AutoField's with 1 not 0
 
 class CreatedUpdatedModel(models.Model):

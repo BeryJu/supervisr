@@ -39,6 +39,8 @@ class ReleaseBuilder(object):
     def __init__(self, module, version=None):
         super(ReleaseBuilder, self).__init__()
         self.module = module
+        if self.module.source_path:
+            self.base_dir = self.module.source_path
         # If version is None, just use the newest Release's ID + 1
         if version is None:
             releases = PuppetModuleRelease.objects.filter(module=module)
@@ -130,7 +132,7 @@ class ReleaseBuilder(object):
             return matches
 
     @time
-    def build(self, context=None):
+    def build(self, context=None, db_add=True):
         """
         Copy non-templates into tar, render templates into tar and import into django
         """
@@ -140,7 +142,7 @@ class ReleaseBuilder(object):
         _context = self.make_context(context)
         for file in files:
             # Render template if matches extension
-            arc_path = file.replace(self.base_dir, self._root_dir).replace('\\', '/')
+            arc_path = file.replace('\\', '/').replace(self.base_dir, self._root_dir + '/')
             if arc_path.endswith(self.extension):
                 self.to_tarinfo(file, _context, arc_path)
             else:
@@ -152,16 +154,21 @@ class ReleaseBuilder(object):
         # Gzip it so we actually have a tgz
         gzipped = gzip.compress(self._spooled_tgz_file.getbuffer())
         # Write to file and add to db
-        module_dir = 'supervisr_puppet/modules/%s/%s' \
+        module_dir = 'supervisr_puppet/modules/%s/%s/' \
                      % (self.module.owner.username, self.module.name)
-        prefix = 'version_%s_' % self.version
+        prefix = '%s-%s_version_%s_' % (self.module.owner.username, self.module.name, self.version)
         if not os.path.exists(module_dir):
             os.makedirs(module_dir)
-        with NamedTemporaryFile(dir=module_dir, suffix='.tgz', prefix=prefix) as temp_file:
-            temp_file.write(gzipped)
-            temp_file.seek(0, io.SEEK_SET)
-            # Create the module in the db and write it to disk
-            self._release = PuppetModuleRelease.objects.create(
-                module=self.module,
-                version=self.version,
-                release=File(temp_file))
+        if db_add is True:
+            with NamedTemporaryFile(dir=module_dir, suffix='.tgz', prefix=prefix) as temp_file:
+                temp_file.write(gzipped)
+                temp_file.seek(0, io.SEEK_SET)
+                # Create the module in the db and write it to disk
+                self._release = PuppetModuleRelease.objects.create(
+                    module=self.module,
+                    version=self.version,
+                    release=File(temp_file))
+        else:
+            with open(prefix+'.tgz', mode='w+b') as file:
+                file.write(gzipped)
+                LOGGER.info("Wrote module to %s", prefix+'.tgz')
