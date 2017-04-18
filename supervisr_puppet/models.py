@@ -91,6 +91,7 @@ class PuppetModule(models.Model):
     update_at = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(User)
     supported = models.BooleanField(default=False)
+    source_path = models.TextField(default='', blank=True)
 
     def __str__(self):
-        return "PuppetModule '%s' by '%s'" % (self.name, self.owner.first_name)
+        return "PuppetModule '%s' by '%s'" % (self.name, self.owner.username)
