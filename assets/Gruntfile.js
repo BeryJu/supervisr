@@ -14,6 +14,7 @@ module.exports = function(grunt) {
       },
       supervisr: {
         src: [
+            'node_modules/@webcomponents/custom-elements/custom-elements.min.js',
             'node_modules/clarity-icons/clarity-icons.min.js',
             'node_modules/jquery/dist/jquery.js',
             'js/*.js',
