@@ -3,11 +3,13 @@ Supervisr 2FA Forms
 """
 
 from django import forms
+from django.core.validators import RegexValidator
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 from supervisr.forms.core import InlineForm
 
+TFA_CODE_VALIDATOR = RegexValidator(r'^[0-9]{6,8}$', _('Only numeric characters are allowed.'))
 
 class PictureWidget(forms.widgets.Widget):
     """
@@ -23,7 +25,8 @@ class TFAVerifyForm(InlineForm):
     Simple Form to verify 2FA Code
     """
     order = ['code']
-    code = forms.IntegerField(label=_('Code'))
+
+    code = forms.CharField(label=_('Code'), validators=[TFA_CODE_VALIDATOR])
 
     def __init__(self, *args, **kwargs):
         super(TFAVerifyForm, self).__init__(*args, **kwargs)
@@ -39,7 +42,7 @@ class TFASetupInitForm(forms.Form):
     confirmed = False
     qr_code = forms.CharField(widget=PictureWidget, disabled=True, required=False, \
         label=_('Scan this Code with your 2FA App.'))
-    code = forms.IntegerField(label=_('Current Code'))
+    code = forms.CharField(label=_('Code'), validators=[TFA_CODE_VALIDATOR])
 
     def clean_code(self):
         """
