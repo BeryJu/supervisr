@@ -19,7 +19,7 @@ module.exports = function(grunt) {
             'node_modules/jquery/dist/jquery.js',
             'js/*.js',
         ],
-        dest: '../supervisr/static/app.min.js',
+        dest: '../supervisr/core/static/app.min.js',
       },
     },
     cssmin: {
@@ -30,14 +30,14 @@ module.exports = function(grunt) {
               'node_modules/clarity-ui/clarity-ui.min.css',
               'css/*.css',
           ],
-          dest: '../supervisr/static/app.min.css',
+          dest: '../supervisr/core/static/app.min.css',
         }]
       }
     },
     copy: {
       images: {
         files: [
-          { expand: true, cwd: 'img', src: ['*'], dest: '../supervisr/static/img/' },
+          { expand: true, cwd: 'img', src: ['*'], dest: '../supervisr/core/static/img/' },
         ]
       }
     }
