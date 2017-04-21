@@ -30,7 +30,7 @@ class TestMiddleware(TestCase):
         """
         Test Enabled Maintenance Mode
         """
-        Setting.set('supervisr:maintenancemode', True)
+        Setting.set('core:maintenancemode', True)
         req = self.factory.get(reverse('account-login'))
         req.user = AnonymousUser()
         res = maintenance_mode(account.login)(req)
@@ -40,7 +40,7 @@ class TestMiddleware(TestCase):
         """
         Test Disabled Maintenance Mode
         """
-        Setting.set('supervisr:maintenancemode', False)
+        Setting.set('core:maintenancemode', False)
         req = self.factory.get(reverse('account-login'))
         req.user = AnonymousUser()
         res = maintenance_mode(account.login)(req)
@@ -51,9 +51,9 @@ class TestMiddleware(TestCase):
         Test Permanent Message Middleware
         """
         test_message = 'Test Message'
-        Setting.set('supervisr:banner:enabled', True)
-        Setting.set('supervisr:banner:message', test_message)
-        Setting.set('supervisr:banner:level', 'info')
+        Setting.set('core:banner:enabled', True)
+        Setting.set('core:banner:message', test_message)
+        Setting.set('core:banner:level', 'info')
         req = self.factory.get(reverse('account-login'))
         # Fix django.contrib.messages.api.MessageFailure
         # because this request doesn't have a session or anything
@@ -71,9 +71,9 @@ class TestMiddleware(TestCase):
         """
         test_message = 'Test Message'
         test_level = 'info'
-        Setting.set('supervisr:banner:enabled', True)
-        Setting.set('supervisr:banner:message', test_message)
-        Setting.set('supervisr:banner:level', test_level)
+        Setting.set('core:banner:enabled', True)
+        Setting.set('core:banner:message', test_message)
+        Setting.set('core:banner:level', test_level)
         req = self.factory.get(reverse('account-login'))
         # Fix django.contrib.messages.api.MessageFailure
         # because this request doesn't have a session or anything

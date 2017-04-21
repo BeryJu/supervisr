@@ -34,13 +34,13 @@ class LDAPConnector(object):
             return
         # Either use mock argument or test is in argv
         if mock is False and 'test' not in sys.argv:
-            self.domain = Setting.get('supervisr:ldap:domain')
-            self.base_dn = Setting.get('supervisr:ldap:base')
-            full_user = Setting.get('supervisr:ldap:bind:user')+'@'+self.domain
-            self.server = Server(Setting.get('supervisr:ldap:server'))
+            self.domain = Setting.get('mod:ldap:domain')
+            self.base_dn = Setting.get('mod:ldap:base')
+            full_user = Setting.get('mod:ldap:bind:user')+'@'+self.domain
+            self.server = Server(Setting.get('mod:ldap:server'))
             self.con = Connection(self.server, raise_exceptions=True,
                                   user=full_user,
-                                  password=Setting.get('supervisr:ldap:bind:password'))
+                                  password=Setting.get('mod:ldap:bind:password'))
             self.con.bind()
             self.con.start_tls()
         else:
@@ -93,7 +93,7 @@ class LDAPConnector(object):
         """
         Returns whether LDAP is enabled or not
         """
-        return Setting.objects.get(key='supervisr:ldap:enabled').value_bool or \
+        return Setting.objects.get(key='mod:ldap:enabled').value_bool or \
             'test' in sys.argv
 
     @staticmethod
@@ -101,7 +101,7 @@ class LDAPConnector(object):
         """
         Return the saved LDAP Server
         """
-        return Setting.objects.get(key='supervisr:ldap:server')
+        return Setting.objects.get(key='mod:ldap:server')
 
     @staticmethod
     def encode_pass(password):

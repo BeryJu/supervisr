@@ -14,7 +14,7 @@ def supervisr_title(title=None):
     """
     Return either just branding or title - branding
     """
-    branding = Setting.get('supervisr:branding')
+    branding = Setting.get('core:branding')
     if title is None or title == '':
         return branding
     return _("%(title)s - %(branding)s" % {

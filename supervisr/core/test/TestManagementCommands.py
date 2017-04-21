@@ -19,6 +19,6 @@ class TestManagementCommandss(TestCase):
         Test Maintenance Mode's add_arguments
         """
         call_command('sv_maintenance', 'on')
-        self.assertTrue(Setting.get('supervisr:maintenancemode'), True)
+        self.assertTrue(Setting.get('core:maintenancemode'), True)
         call_command('sv_maintenance', 'off')
-        self.assertTrue(Setting.get('supervisr:maintenancemode'), False)
+        self.assertTrue(Setting.get('core:maintenancemode'), False)

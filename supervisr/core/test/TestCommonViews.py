@@ -21,7 +21,7 @@ class TestCommonViews(TestCase):
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
-        Setting.set('supervisr:analytics:ga:enabled', True)
+        Setting.set('core:analytics:ga:enabled', True)
         self.factory = RequestFactory()
 
     def test_index_view(self):

@@ -13,8 +13,7 @@ def create_settings(apps, schema_editor):
         'core:recaptcha:private': '',
         'core:recaptcha:public': '',
         'core:domain': 'http://localhost/',
-        'core:branding': 'core',
-        'core:version': '0.02',
+        'core:branding': 'supervisr',
     }
     for key, value in settings.items():
         Setting.objects.get_or_create(

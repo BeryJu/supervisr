@@ -8,8 +8,8 @@ from django.shortcuts import redirect, render, reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.models import Domain, UserProductRelationship
-from supervisr.core.views.wizard import BaseWizardView
 from supervisr.core.utils import do_404
+from supervisr.core.views.wizard import BaseWizardView
 
 from ..forms.mail_account import (MailAccountForm, MailAccountFormCredentials,
                                   MailAccountFormForwarder)

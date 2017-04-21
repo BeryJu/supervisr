@@ -14,4 +14,4 @@ def supervisr_setting(key, default=''):
     Get a setting from the database. Returns default is setting doesn't exist.
     """
     return Setting.get(
-        "supervisr:%s" % key, default)
+        "core:%s" % key, default)

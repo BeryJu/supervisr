@@ -254,9 +254,8 @@ if DEBUG is True:
 # Load subapps's INSTALLED_APPS
 for app in INSTALLED_APPS:
     if app.startswith('supervisr') and \
-        app != 'supervisr' and \
-        not app.startswith('supervisr.'):
-        app_package = app.split('.')[0]
+        not app.startswith('supervisr.core.'):
+        app_package = '.'.join(app.split('.')[:-2])
         try:
             app_settings = importlib.import_module("%s.settings" % app_package)
             INSTALLED_APPS.extend(getattr(app_settings, 'INSTALLED_APPS', []))

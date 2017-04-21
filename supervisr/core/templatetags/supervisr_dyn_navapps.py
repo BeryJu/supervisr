@@ -24,13 +24,15 @@ def supervisr_dyn_navapps():
     if APP_LIST == []:
         for mod in sub_apps:
             if 'mod' not in mod:
-                if '.' in mod:
-                    mod = mod.split('.')[0]
+                if 'mod' in mod:
+                    mod = mod.split('.')[2]
+                else:
+                    mod = mod.split('.')[1]
                 title = apps.get_app_config(mod).navbar_title
-                mod = mod.replace('supervisr_', '')
+                mod = mod.replace('supervisr.', '')
                 if title is None:
                     title = mod.title()
-                index = 'supervisr_%s:%s-index' % (mod, mod)
+                index = '%s:%s-index' % (mod, mod)
                 try:
                     reverse(index)
                     APP_LIST.append({

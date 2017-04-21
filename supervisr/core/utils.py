@@ -71,10 +71,9 @@ def get_apps(mod_only=False):
     app_list = []
     for app in settings.INSTALLED_APPS:
         if app.startswith('supervisr') and \
-            app != 'supervisr' and \
-            not app.startswith('supervisr.'):
+            not app.startswith('supervisr.core'):
             if mod_only:
-                if app.startswith('supervisr_mod'):
+                if app.startswith('supervisr.mod'):
                     app_list.append(app)
             else:
                 app_list.append(app)

@@ -14,11 +14,11 @@ def google_analytics(context, tracking_id=''):
     """
     Returns the GA Script with tracking_id inserted
     """
-    if Setting.objects.get(pk='supervisr:analytics:ga:enabled').value_bool is False:
+    if Setting.objects.get(pk='core:analytics:ga:enabled').value_bool is False:
         # Google Analytics is not enabled
         return ''
     if tracking_id == '':
-        tracking_id = Setting.get('supervisr:analytics:ga:tracking_id')
+        tracking_id = Setting.get('core:analytics:ga:tracking_id')
     if tracking_id is None or tracking_id is False:
         # Check if tracking is disabled
         return ''

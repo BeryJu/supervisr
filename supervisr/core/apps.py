@@ -70,6 +70,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
 
     name = 'supervisr.core'
     init_modules = ['signals', 'events', 'mailer', 'models']
+    navbar_title = 'Core'
 
     def ready(self):
         # Read this commit's shortened hash if git is in the path

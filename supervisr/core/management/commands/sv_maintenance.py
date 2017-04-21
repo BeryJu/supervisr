@@ -24,7 +24,7 @@ class Command(BaseCommand):
         value = options['state'].lower() in ('on', 'true', 'yes')
 
         setting = Setting.objects.get_or_create(
-            key='supervisr:maintenancemode',
+            key='core:maintenancemode',
             defaults={'value': 'False'})[0]
         setting.set_bool(value)
         setting.save()

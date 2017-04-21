@@ -21,12 +21,14 @@ def supervisr_dyn_user():
     sub_apps = get_apps(mod_only=False)
     if APP_LIST == []:
         for mod in sub_apps:
-            if '.' in mod:
-                mod = mod.split('.')[0]
+            if 'mod' in mod:
+                mod = mod.split('.')[2]
+            else:
+                mod = mod.split('.')[1]
             view = apps.get_app_config(mod).view_user_settings
             if view is not None:
                 view = '%s:%s' % (mod, view)
-                mod = mod.replace('supervisr_', '').replace('mod_', '')
+                mod = mod.replace('supervisr.', '').replace('mod.', '')
                 APP_LIST.append({
                     'title': mod.title(),
                     'view': view

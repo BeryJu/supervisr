@@ -60,16 +60,19 @@ urlpatterns = [
 
 # Load Urls for all sub apps
 for app in get_apps():
-    short_name = app.replace('supervisr_', '').replace('_', '/')
+    short_name = app.replace('supervisr.', '')
     # Check if it's only a module or a full path
-    if '.' in app:
-        app = app.split('.')[0]
+    app = '.'.join(app.split('.')[:-2])
+    if 'mod' in app:
+        short_name = short_name.split('.')[1]
+    else:
         short_name = short_name.split('.')[0]
     url_module = "%s.urls" % app
     # Only add if module could be loaded
     if importlib.util.find_spec(url_module) is not None:
+        print(short_name)
         urlpatterns += [
-            url(r"^app/%s/" % short_name, include(url_module, app)),
+            url(r"^app/%s/" % short_name, include(url_module, namespace=short_name)),
         ]
         LOGGER.info("Loaded %s", url_module)
 
