@@ -70,7 +70,6 @@ for app in get_apps():
     url_module = "%s.urls" % app
     # Only add if module could be loaded
     if importlib.util.find_spec(url_module) is not None:
-        print(short_name)
         urlpatterns += [
             url(r"^app/%s/" % short_name, include(url_module, namespace=short_name)),
         ]
