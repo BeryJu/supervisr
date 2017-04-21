@@ -1,0 +1,15 @@
+{% extends "core/base.html" %}
+
+{% load i18n %}
+{% load is_active %}
+
+{% block sidenav %}
+<nav class="sidenav">
+  <section class="sidenav-content">
+    <a href="{% url 'mail:mail-index' %}" class="nav-link {% is_active 'mail-index' %}">
+    {% trans "Recipients" %}
+    </a>
+
+  </section>
+</nav>
+{% endblock %}
