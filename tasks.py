@@ -63,10 +63,12 @@ def install(ctx, dev=False):
     """
     if WINDOWS:
         ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
-    files = glob("*/requirements.txt")
+    requirements = glob("supervisr/**/requirements.txt")
+    requirements.extend(glob("supervisr/**/**/requirements.txt"))
     if dev:
-        files.extend(glob("*/requirements-dev.txt"))
-    ctx.run("pip3 install -U -r %s" % ' -r '.join(files))
+        requirements.extend(glob("supervisr/**/requirements-dev.txt"))
+        requirements.extend(glob("supervisr/**/**/requirements-dev.txt"))
+    ctx.run("pip3 install -U -r %s" % ' -r '.join(requirements))
 
 @task
 def deploy(ctx, user=None, fqdn=None):
@@ -172,6 +174,6 @@ def docs(ctx):
     os.remove('docs/source/modules.rst')
     shutil.rmtree('docs/build', ignore_errors=True)
     print("Cleaned!")
-    for module in glob('supervisr*'):
+    for module in glob('supervisr/**/'):
         ctx.run('sphinx-apidoc -o docs/source %s' % module)
     ctx.run('sphinx-build -b html docs/source docs/build')
