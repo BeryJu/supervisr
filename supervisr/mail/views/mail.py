@@ -7,13 +7,12 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.core.models import Domain, UserProductRelationship
+from supervisr.core.models import UserProductRelationship
 from supervisr.core.utils import do_404
 from supervisr.core.views.wizard import BaseWizardView
 
 from ..forms.mail_account import (MailAccountForm, MailAccountFormCredentials,
                                   MailAccountFormForwarder)
-from ..forms.mail_domain import MailDomainForm
 from ..models import MailAccount, MailDomain, MailForwarder
 
 

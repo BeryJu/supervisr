@@ -56,8 +56,7 @@ class BaseWizardView(SessionWizardView):
             return self._handle_request_res
         return super(BaseWizardView, self).render(form, **kwargs)
 
-    def done(self, *args, **kwargs):
+    def done(self, form_list, **kwargs):
         # Cleanup session
         if '%s_referer' % self.__class__.__name__ in self._request.session:
             del self._request.session['%s_referer' % self.__class__.__name__]
-        pass
