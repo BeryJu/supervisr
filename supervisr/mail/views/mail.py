@@ -7,13 +7,12 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.core.models import Domain, UserProductRelationship
+from supervisr.core.models import UserProductRelationship
 from supervisr.core.utils import do_404
 from supervisr.core.views.wizard import BaseWizardView
 
 from ..forms.mail_account import (MailAccountForm, MailAccountFormCredentials,
                                   MailAccountFormForwarder)
-from ..forms.mail_domain import MailDomainForm
 from ..models import MailAccount, MailDomain, MailForwarder
 
 
@@ -70,45 +69,6 @@ def check_cred_form(wizard):
     """
     cleaned_data = wizard.get_cleaned_data_for_step('0') or {}
     return cleaned_data.get('can_send', True)
-
-# pylint: disable=too-many-ancestors
-class DomainNewView(BaseWizardView):
-    """
-    Wizard to create a Mail Domain
-    """
-
-    title = _("New Mail Domain")
-    form_list = [MailDomainForm]
-    domains = None
-
-    def handle_request(self, request):
-        if self.domains is None:
-            self.domains = Domain.objects.filter(
-                users__in=[request.user], maildomain__isnull=True)
-        if not self.domains:
-            messages.error(request, _('No Domains available'))
-            return redirect(reverse('mail:mail-domains'))
-
-    def get_form(self, step=None, data=None, files=None):
-        form = super(DomainNewView, self).get_form(step, data, files)
-        if step is None:
-            step = self.steps.current
-        if step == '0':
-            form.fields['domain'].queryset = self.domains
-        return form
-
-    # pylint: disable=unused-argument
-    def done(self, final_forms, form_dict, **kwargs):
-        m_dom = MailDomain.objects.create(
-            domain_mail=form_dict['0'].cleaned_data.get('domain')
-            )
-        UserProductRelationship.objects.create(
-            product=m_dom,
-            user=self.request.user
-            )
-        messages.success(self.request, _('Mail Domain successfully created'))
-        return redirect(reverse('mail:mail-domains'))
-
 
 # pylint: disable=too-many-ancestors
 class AccountNewView(BaseWizardView):

@@ -126,7 +126,7 @@ class ReleaseBuilder(object):
         else:
             matches = []
             # pylint: disable=unused-variable
-            for root, dirs, files in os.walk('supervisr_mail/server/config'):
+            for root, dirs, files in os.walk(list_dir):
                 for file in files:
                     matches.append(os.path.join(root, file))
             return matches

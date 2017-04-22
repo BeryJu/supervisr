@@ -26,9 +26,9 @@
       </div>
       <div class="card-footer">
         {% if not state %}
-        <a href="{% url 'supervisr_mod_2fa:tfa-enable' %}" class="btn btn-success btn-sm">{% trans "Enable 2FA" %}</a>
+        <a href="{% url 'tfa:tfa-enable' %}" class="btn btn-success btn-sm">{% trans "Enable 2FA" %}</a>
         {% else %}
-        <a href="{% url 'supervisr_mod_2fa:tfa-disable' %}" class="btn btn-danger btn-sm">{% trans "Disable 2FA" %}</a>
+        <a href="{% url 'tfa:tfa-disable' %}" class="btn btn-danger btn-sm">{% trans "Disable 2FA" %}</a>
         {% endif %}
       </div>
     </div>
