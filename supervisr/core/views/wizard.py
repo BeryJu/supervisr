@@ -16,6 +16,8 @@ class BaseWizardView(SessionWizardView):
 
     template_name = 'core/generic_wizard.html'
     _handle_request_res = None
+    _referer = ''
+    _request = None
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -25,7 +27,15 @@ class BaseWizardView(SessionWizardView):
         """
         Do things with data from req and save to self
         """
-        pass
+        self._request = req
+        # Check if this is the first call
+        if not any(f.endswith('-current_step') for f in req.POST):
+            # Save referal if there is one
+            if 'HTTP_REFERER' in req.META:
+                self._referer = req.META.get('HTTP_REFERER')
+                req.session['%s_referer' % self.__class__.__name__] = self._referer
+        if '%s_referer' % self.__class__.__name__ in req.session:
+            self._referer = req.session.get('%s_referer' % self.__class__.__name__)
 
     def get(self, req, *args, **kwargs):
         self._handle_request_res = self.handle_request(req)
@@ -38,6 +48,7 @@ class BaseWizardView(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(BaseWizardView, self).get_context_data(form=form, **kwargs)
         context['title'] = self.title
+        context['back'] = self._referer
         return context
 
     def render(self, form=None, **kwargs):
@@ -46,4 +57,7 @@ class BaseWizardView(SessionWizardView):
         return super(BaseWizardView, self).render(form, **kwargs)
 
     def done(self, *args, **kwargs):
+        # Cleanup session
+        if '%s_referer' % self.__class__.__name__ in self._request.session:
+            del self._request.session['%s_referer' % self.__class__.__name__]
         pass

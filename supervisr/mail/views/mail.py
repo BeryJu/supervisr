@@ -72,45 +72,6 @@ def check_cred_form(wizard):
     return cleaned_data.get('can_send', True)
 
 # pylint: disable=too-many-ancestors
-class DomainNewView(BaseWizardView):
-    """
-    Wizard to create a Mail Domain
-    """
-
-    title = _("New Mail Domain")
-    form_list = [MailDomainForm]
-    domains = None
-
-    def handle_request(self, request):
-        if self.domains is None:
-            self.domains = Domain.objects.filter(
-                users__in=[request.user], maildomain__isnull=True)
-        if not self.domains:
-            messages.error(request, _('No Domains available'))
-            return redirect(reverse('mail:mail-domains'))
-
-    def get_form(self, step=None, data=None, files=None):
-        form = super(DomainNewView, self).get_form(step, data, files)
-        if step is None:
-            step = self.steps.current
-        if step == '0':
-            form.fields['domain'].queryset = self.domains
-        return form
-
-    # pylint: disable=unused-argument
-    def done(self, final_forms, form_dict, **kwargs):
-        m_dom = MailDomain.objects.create(
-            domain_mail=form_dict['0'].cleaned_data.get('domain')
-            )
-        UserProductRelationship.objects.create(
-            product=m_dom,
-            user=self.request.user
-            )
-        messages.success(self.request, _('Mail Domain successfully created'))
-        return redirect(reverse('mail:mail-domains'))
-
-
-# pylint: disable=too-many-ancestors
 class AccountNewView(BaseWizardView):
     """
     Wizard to create a Mail Account

@@ -3,7 +3,6 @@
 {% load supervisr_title %}
 {% load crispy_forms_tags %}
 {% load fieldtype %}
-{% load back %}
 {% load i18n %}
 
 {% block title %}
@@ -11,99 +10,112 @@
 {% endblock %}
 
 {% block content %}
-<div class="clr-wizard main-container">
-  <div class="modal">
-    <div class="modal-dialog modal-xl" role="dialog" aria-hidden="true">
-      <div class="modal-content">
-        <div class="modal-header">
-        </div>
-        <form action="" method="post">
-          {% csrf_token %}
-          <div class="modal-body">
-            <div class="content-container">
-              <nav class="nav-panel sidenav">
-                <div class="text-light">
-                  <div class="wizard-title">
-                    {{ title }}
-                  </div>
-                </div>
-                <ol class="nav navList" role="tablist">
-                  {% for step in wizard.steps.all %}
-                  <li class="clr-nav-link {% if step < wizard.steps.current %} complete {% endif %} {% if step == wizard.steps.current %} active {% endif %}" role="presentation">
-                    <button type="submit" value="{{ step }}" class="btn btn-link nav-link" type="button" {% if step < wizard.steps.current %} formnovalidate {% endif %}>
+<div class="clr-wizard">
+  <div class="modal static">
+    <div class="modal-dialog modal-xl" role="dialog">
+      <div class="modal-outer-wrapper">
+        <div class="modal-content-wrapper">
+          <nav class="modal-nav clr-wizard-stepnav-wrapper">
+            <h3 class="clr-wizard-title">{{ title }}</h3>
+            <div class="clr-wizard-stepnav">
+              <ol class="clr-wizard-stepnav-list" role="tablist">
+                {% for step in wizard.steps.all %}
+                <li class="clr-wizard-stepnav-item clr-nav-link nav-item {% if step < wizard.steps.current %} complete {% endif %} {% if step == wizard.steps.current %} active {% endif %}" role="presentation">
+                  <button type="submit" value="{{ step }}" class="btn btn-link clr-wizard-stepnav-link" type="button" {% if step < wizard.steps.current %} formnovalidate {% endif %}>
                     Step {{ step|add:1 }}
-                    </button>
-                  </li>
-                  {% endfor %}
-                </ol>
-              </nav>
-              <main class="content-area">
-                <a aria-label="Close" class="close btn btn-link" type="button" href="{% back %}">
+                  </button>
+                </li>
+                {% endfor %}
+              </ol>
+            </div>
+          </nav>
+
+          <form action="" method="post">
+            {% csrf_token %}
+            <div class="modal-content">
+              <div class="modal-header">
+                <a href="{{ back }}" class="btn btn-link" type="button">
                   <clr-icon aria-hidden="true" shape="close"></clr-icon>
                 </a>
-                <div class="clr-nav-content" role="tabpanel">
-                  <section>
-                    <label class="text-light">{% trans wizard.form.title %}</label>
-                    <div class="content-wrapper">
-                      <div class="form">
-                        <section class="form-block">
-                          <p>{% trans form.help_text %}</p>
-                          {{ wizard.management_form }}
-                          {% block form %}
-                          {% for field in wizard.form %}
-                          {% for error in field.errors %}
-                          <div class="alert alert-danger">
-                            <div class="alert-item">
-                              <span class="alert-text">
-                                {{ error }}
-                              </span>
-                            </div>
+                <h3 class="modal-title">
+                  <span class="modal-title-text">{% trans wizard.form.title %}</span>
+                </h3>
+              </div>
+              <div class="modal-body">
+                <main class="clr-wizard-content">
+                  <div role="tabpanel" id="clr-wizard-page-0" class="active clr-wizard-page">
+                    <div class="form">
+                      <section class="form-block">
+                        <p>{% trans form.help_text %}</p>
+                        {{ wizard.management_form }}
+                        {% block form %}
+                        {% for field in wizard.form %}
+                        {% for error in field.errors %}
+                        <div class="alert alert-danger">
+                          <div class="alert-item">
+                            <span class="alert-text">
+                              {{ error }}
+                            </span>
+                          </div>
+                        </div>
+                        {% endfor %}
+                        <div class="form-group">
+                          {% if field.field.widget|fieldtype == 'RadioSelect' %}
+                          {{ field.label_tag }}
+                          {% for c in field %}
+                          <div class="radio">
+                            <input type="radio" id="{{ field.name }}-{{ forloop.counter0 }}" name="{{ wizard.steps.current }}-{{ field.name }}" value="{{ c.choice_value }}" {% if c.is_checked %} checked {% endif %}>
+                            <label for="{{ field.name }}-{{ forloop.counter0 }}">{{ c.choice_label }}</label>
                           </div>
                           {% endfor %}
-                          <div class="form-group">
-                            {% if field.field.widget|fieldtype == 'RadioSelect' %}
-                              {{ field.label_tag }}
-                              {% for c in field %}
-                              <div class="radio">
-                                <input type="radio" id="{{ field.name }}-{{ forloop.counter0 }}" name="{{ wizard.steps.current }}-{{ field.name }}" value="{{ c.choice_value }}" {% if c.is_checked %} checked {% endif %}>
-                                <label for="{{ field.name }}-{{ forloop.counter0 }}">{{ c.choice_label }}</label>
-                              </div>
-                              {% endfor %}
-                            {% elif field.field.widget|fieldtype == 'Select' %}
-                            {{ field.label_tag }}
-                            <div class="select">
-                              {{ field }}
-                            </div>
-                            {% elif field.field.widget|fieldtype == 'CheckboxInput' %}
-                            <div class="checkbox">
-                              {{ field }}
-                              {{ field.label_tag }}
-                            </div>
-                            {% else %}
-                            {{ field.label_tag }}
+                          {% elif field.field.widget|fieldtype == 'Select' %}
+                          {{ field.label_tag }}
+                          <div class="select">
                             {{ field }}
-                            {% endif %}
                           </div>
-                          {% endfor %}
-                          {% endblock %}
-                        </section>
-                      </div>
+                          {% elif field.field.widget|fieldtype == 'CheckboxInput' %}
+                          <div class="checkbox">
+                            {{ field }}
+                            {{ field.label_tag }}
+                          </div>
+                          {% else %}
+                          {{ field.label_tag }}
+                          {{ field }}
+                          {% endif %}
+                        </div>
+                        {% endfor %}
+                        {% endblock %}
+                      </section>
                     </div>
-                  </section>
+                  </div>
+                </main>
+              </div>
+
+              <div class="modal-footer clr-wizard-footer">
+                <div class="clr-wizard-footer-buttons">
+                  <div class="clr-wizard-footer-buttons-wrapper">
+                    <div class="clr-wizard-btn-wrapper">
+                      <a aria-label="Close" class="btn clr-wizard-btn btn-link clr-wizard-btn--tertiary" type="button" href="{{ back }}">
+                        {% trans "Cancel" %}
+                      </a>
+                    </div>
+                    {% if wizard.steps.prev %}
+                    <div class="clr-wizard-btn-wrapper">
+                      <button name="wizard_goto_step" type="submit" class="btn btn clr-wizard" value="{{ wizard.steps.prev }}" formnovalidate>{% trans "Back" %}</button>
+                    </div>
+                    {% endif %}
+                    <div class="clr-wizard-btn-wrapper">
+                      <input type="submit" name="submit" class="btn clr-wizard-btn btn-primary clr-wizard-btn--primary" value="{% trans "Next" %}"></input>
+                    </div>
+                  </div>
                 </div>
-              </main>
-            </div>
+              </div>
+
+            </form>
           </div>
-          <div class="modal-footer">
-            {% if wizard.steps.prev %}
-            <button name="wizard_goto_step" type="submit" class="btn btn-primary" value="{{ wizard.steps.prev }}" formnovalidate>{% trans "Back" %}</button>
-            {% endif %}
-            <input type="submit" name="submit" class="btn btn-primary" value="{% trans "Next" %}"></input>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
+    <div aria-hidden="true" class="modal-backdrop"></div>
   </div>
-  <div class="modal-backdrop" aria-hidden="true"></div>
-</div>
-{% endblock %}
+  {% endblock %}
