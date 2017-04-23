@@ -118,7 +118,7 @@ def debug_puppet_build(req):
     from supervisr.puppet.builder import ReleaseBuilder
     from supervisr.puppet.models import PuppetModule
     module = PuppetModule.objects.filter(name='mail').first()
-    rb = ReleaseBuilder(module)
-    rb.build()
+    rel_builder = ReleaseBuilder(module)
+    rel_builder.build()
     messages.success(req, 'Successfully built')
     return redirect(reverse('admin-debug'))

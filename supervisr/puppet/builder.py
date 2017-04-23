@@ -21,18 +21,7 @@ from .utils import ForgeImporter
 
 LOGGER = logging.getLogger(__name__)
 
-class Builder(object):
-    """
-    Base Builder Class
-    """
-
-    def build(self, context=None, db_add=True):
-        """
-        Base Build Method
-        """
-        return NotImplementedError("%s.build needs to be overridden" % self.__class__.__name__)
-
-class ReleaseBuilder(Builder):
+class ReleaseBuilder(object):
     """
     Class to build PuppetModuleRelease's in Memory from files and templates
     """
