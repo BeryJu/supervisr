@@ -35,6 +35,9 @@
     <a href="{% url 'admin-events' %}" class="nav-link {% is_active 'admin-events' %}">
       {% trans "Events" %}
     </a>
+    <a href="{% url 'admin-debug' %}" class="nav-link {% is_active 'admin-debug' %}">
+      {% trans "Debug" %}
+    </a>
   </section>
 </nav>
 {% endblock %}

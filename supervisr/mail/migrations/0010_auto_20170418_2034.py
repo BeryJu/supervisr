@@ -15,7 +15,7 @@ def create_module(apps, schema_editor):
     PuppetModule.objects.get_or_create(
         name='mail',
         owner=system_user,
-        source_path='mail/server/config/')
+        source_path='supervisr/mail/server/config/')
 
 class Migration(migrations.Migration):
 

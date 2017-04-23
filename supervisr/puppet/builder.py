@@ -10,6 +10,7 @@ import sys
 import tarfile
 from tempfile import NamedTemporaryFile
 
+from django import conf
 from django.core.files import File
 from django.template import loader
 
@@ -20,8 +21,18 @@ from .utils import ForgeImporter
 
 LOGGER = logging.getLogger(__name__)
 
+class Builder(object):
+    """
+    Base Builder Class
+    """
 
-class ReleaseBuilder(object):
+    def build(self, context=None, db_add=True):
+        """
+        Base Build Method
+        """
+        return NotImplementedError("%s.build needs to be overridden" % self.__class__.__name__)
+
+class ReleaseBuilder(Builder):
     """
     Class to build PuppetModuleRelease's in Memory from files and templates
     """
@@ -64,7 +75,9 @@ class ReleaseBuilder(object):
             'PUPPET': {
                 'module': self.module,
                 'version': self.version,
-            }})
+            },
+            'settings': conf.settings
+            })
         return context
 
     def to_tarinfo(self, template, ctx, rel_path):
@@ -132,7 +145,7 @@ class ReleaseBuilder(object):
             return matches
 
     @time
-    def build(self, context=None, db_add=True):
+    def build(self, context=None, db_add=True, force_rebuild=False):
         """
         Copy non-templates into tar, render templates into tar and import into django
         """
@@ -168,7 +181,7 @@ class ReleaseBuilder(object):
                     module=self.module,
                     version=self.version,
                     release=File(temp_file))
-        else:
+        elif force_rebuild is True:
             with open(prefix+'.tgz', mode='w+b') as file:
                 file.write(gzipped)
                 LOGGER.info("Wrote module to %s", prefix+'.tgz')
