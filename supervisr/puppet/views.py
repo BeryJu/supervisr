@@ -4,11 +4,15 @@ Supervisr Puppet views
 
 from wsgiref.util import FileWrapper
 
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.urls import reverse
 
+from .builder import ReleaseBuilder
 from .models import PuppetModule, PuppetModuleRelease
 
 
@@ -86,3 +90,16 @@ def file(req, user, module, version):
     p_module.downloads += 1
     p_module.save()
     return response
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def debug_build(req, user, module):
+    """
+    Run Puppet Build
+    """
+    p_user = User.objects.get(username=user)
+    p_module = PuppetModule.objects.get(name=module, owner=p_user)
+    rel_builder = ReleaseBuilder(p_module)
+    rel_builder.build()
+    messages.success(req, 'Successfully built %s-%s' % (user, module))
+    return redirect(reverse('admin-debug'))

@@ -1,0 +1,20 @@
+{% extends "_admin/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+{% load setting %}
+
+{% block title %}
+{% supervisr_title "Overview" %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <a class="btn btn-primary" href="{% url 'puppet:debug-build' user='supervisr' module='supervisr_core' %}">
+    Puppet Build (core)
+  </a>
+  <a class="btn btn-primary" href="{% url 'puppet:debug-build' user='supervisr' module='supervisr_mail' %}">
+    Puppet Build (mail)
+  </a>
+</div>
+{% endblock %}

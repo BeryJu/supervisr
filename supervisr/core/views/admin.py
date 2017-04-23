@@ -8,10 +8,12 @@ import sys
 
 from django import get_version as django_version
 from django.conf import settings as django_settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.urls import reverse
 
 from ..models import Event
 from ..signals import SIG_GET_MOD_INFO
@@ -98,3 +100,25 @@ def events(req):
         event_page = paginator.page(paginator.num_pages)
 
     return render(req, '_admin/events.html', {'events': event_page})
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def debug(req):
+    """
+    Show some misc debug buttons
+    """
+    return render(req, '_admin/debug.html')
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def debug_puppet_build(req):
+    """
+    Run Puppet Build
+    """
+    from supervisr.puppet.builder import ReleaseBuilder
+    from supervisr.puppet.models import PuppetModule
+    module = PuppetModule.objects.filter(name='supervisr_mail').first()
+    rel_builder = ReleaseBuilder(module)
+    rel_builder.build()
+    messages.success(req, 'Successfully built')
+    return redirect(reverse('admin-debug'))

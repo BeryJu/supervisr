@@ -18,7 +18,7 @@ class Command(BaseCommand):
     help = 'Import a module from puppetforge'
 
     def add_arguments(self, parser):
-        parser.add_argument('--module', type=str, action='append')
+        parser.add_argument('--module', type=str, action='append', required=True)
 
     def handle(self, *args, **options):
         i = ForgeImporter()

@@ -136,13 +136,13 @@ def isort(ctx):
     """
     ctx.run("isort -c -vb -sg env")
 
-@task(pre=[migrate])
+@task()
 @shell
 def coverage(ctx):
     """
     Run Unittests and get coverage
     """
-    ctx.run("coverage run --source='.' manage.py test --pattern=Test*.py")
+    ctx.run("coverage run manage.py test --pattern=Test*.py")
     ctx.run("coverage report")
 
 @task

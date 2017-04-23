@@ -26,7 +26,7 @@ def create_user(apps, schema_editor):
         is_active=False,
         is_staff=False,
         is_superuser=False,
-        first_name='core',
+        first_name='System',
         defaults={'email': 'root@localhost'})
 
 class Migration(migrations.Migration):

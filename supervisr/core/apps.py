@@ -50,7 +50,7 @@ class SupervisrAppConfig(AppConfig):
             counter = 0
             sub_settings = importlib.import_module("%s.settings" % self.name)
             for key in dir(sub_settings):
-                if not key.startswith('__') and not key.endswith('__'):
+                if not key.startswith('__') and not key.endswith('__') and key.isupper():
                     # Only overwrite if set
                     if overwrite is True or \
                         hasattr(settings, key) is False and \
@@ -58,7 +58,8 @@ class SupervisrAppConfig(AppConfig):
                         value = getattr(sub_settings, key)
                         setattr(settings, key, value)
                         counter += 1
-            LOGGER.info("Overwrote %s settings for %s", counter, self.name)
+            if counter > 0:
+                LOGGER.info("Overwrote %s settings for %s", counter, self.name)
         except ImportError:
             pass # ignore non-existant modules
 

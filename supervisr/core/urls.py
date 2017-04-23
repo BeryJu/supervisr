@@ -48,6 +48,7 @@ urlpatterns = [
     url(r'^admin/mod/default/(?P<mod>[a-zA-Z0-9]+)/$', admin.mod_default, name='admin-mod_default'),
     url(r'^admin/info/$', admin.info, name='admin-info'),
     url(r'^admin/events/$', admin.events, name='admin-events'),
+    url(r'^admin/debug/$', admin.debug, name='admin-debug'),
     # About views
     url(r'^about/changelog/$', about.changelog, name='about-changelog'),
     url(r'^about/attributions/$', about.attributions, name='about-attributions'),

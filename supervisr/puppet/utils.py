@@ -21,6 +21,7 @@ class ForgeImporter(object):
     """
 
     BASE_URL = 'https://forgeapi.puppetlabs.com'
+    output_base = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'modules')
 
     def import_module(self, name):
         """
@@ -94,8 +95,8 @@ class ForgeImporter(object):
                             user.username, module.name, release['version'])
 
                 archive = requests.get(self.BASE_URL + release['file_uri'], stream=True)
-                filename = 'puppet/modules/%s-%s-%s.tgz' \
-                           % (user.username, module.name, release['version'])
+                filename = '%s/%s-%s-%s.tgz' \
+                           % (self.output_base, user.username, module.name, release['version'])
                 with open(filename, 'wb') as file:
                     archive.raw.decode_content = True
                     shutil.copyfileobj(archive.raw, file)
