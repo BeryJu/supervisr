@@ -261,6 +261,3 @@ for app in INSTALLED_APPS:
             MIDDLEWARE.extend(getattr(app_settings, 'MIDDLEWARE', []))
         except ImportError:
             pass
-        # Also add logging for app
-        if LOGGING:
-            LOGGING['loggers'][app_package] = LOGGING['loggers']['supervisr']

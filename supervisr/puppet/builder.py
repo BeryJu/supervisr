@@ -11,6 +11,7 @@ import tarfile
 from tempfile import NamedTemporaryFile
 
 from django import conf
+from django.contrib.auth.models import Group
 from django.core.files import File
 from django.template import loader
 
@@ -27,7 +28,6 @@ class ReleaseBuilder(object):
     """
 
     module = None
-    extension = '.djt'
     base_dir = None
     version = None
 
@@ -65,7 +65,8 @@ class ReleaseBuilder(object):
                 'module': self.module,
                 'version': self.version,
             },
-            'settings': conf.settings
+            'settings': conf.settings,
+            'puppet_systemgroup': Group.objects.get(name='Puppet Systemusers'),
             })
         return context
 
@@ -76,16 +77,14 @@ class ReleaseBuilder(object):
         # First off render the template
         tmpl = loader.get_template(template)
         rendered = tmpl.render(ctx)
-        # Create the new path without the .djt
-        new_path = rel_path.replace(self.extension, '')
         # If it's a json file now, check if it's valid
-        if new_path.endswith('.json'):
+        if rel_path.endswith('.json'):
             self.validate_json(rendered)
-            LOGGER.info('Successfully validated %s', new_path)
+            LOGGER.info('Successfully validated %s', rel_path)
         # Convert it to bytes, create a TarInfo object and add it to the main archive
         byteio = io.BytesIO(rendered.encode('utf-8'))
         byteio.seek(0, io.SEEK_END)
-        tar_info = tarfile.TarInfo(name=new_path)
+        tar_info = tarfile.TarInfo(name=rel_path)
         tar_info.size = byteio.tell()
         byteio.seek(0, io.SEEK_SET)
         self._tgz_file.addfile(tar_info, fileobj=byteio)
@@ -143,12 +142,12 @@ class ReleaseBuilder(object):
             context = {}
         _context = self.make_context(context)
         for file in files:
-            # Render template if matches extension
+            # Render template
             arc_path = file.replace('\\', '/').replace(self.base_dir, self._root_dir + '/')
-            if arc_path.endswith(self.extension):
-                self.to_tarinfo(file, _context, arc_path)
-            else:
+            if os.path.isdir(file):
                 self._tgz_file.add(file, arcname=arc_path, recursive=False)
+            else:
+                self.to_tarinfo(file, _context, arc_path)
             LOGGER.info('Added %s', arc_path)
 
         # Flush to file buffer
@@ -156,7 +155,7 @@ class ReleaseBuilder(object):
         # Gzip it so we actually have a tgz
         gzipped = gzip.compress(self._spooled_tgz_file.getbuffer())
         # Write to file and add to db
-        module_dir = 'puppet/modules/%s/%s/' \
+        module_dir = 'puppet_modules/%s/%s/' \
                      % (self.module.owner.username, self.module.name)
         prefix = '%s-%s_version_%s_' % (self.module.owner.username, self.module.name, self.version)
         if not os.path.exists(module_dir):

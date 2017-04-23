@@ -49,7 +49,6 @@ urlpatterns = [
     url(r'^admin/info/$', admin.info, name='admin-info'),
     url(r'^admin/events/$', admin.events, name='admin-events'),
     url(r'^admin/debug/$', admin.debug, name='admin-debug'),
-    url(r'^admin/debug/puppet-build/$', admin.debug_puppet_build, name='admin-debug-puppet-build'),
     # About views
     url(r'^about/changelog/$', about.changelog, name='about-changelog'),
     url(r'^about/attributions/$', about.attributions, name='about-attributions'),

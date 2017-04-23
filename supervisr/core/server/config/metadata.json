@@ -1,16 +1,15 @@
 {% load supervisr_setting %}
 
 {
-    "name": "{{ PUPPET.module.owner.first_name }}-mail",
+    "name": "{{ PUPPET.module.owner.username }}-supervisr_core",
     "version": "{{ PUPPET.version }}",
-    "author": "{{ PUPPET.module.owner.first_name }}",
-    "summary": "Manage mail for supervisr.",
+    "author": "{{ PUPPET.module.owner.username }}",
+    "summary": "Core classes for supervisr",
     "license": "MIT",
     "source": "{% supervisr_setting 'domain' %}",
     "project_page": "{% supervisr_setting 'domain' %}",
     "issues_url": "{% supervisr_setting 'domain' %}",
     "dependencies": [
-        {"name":"puppetlabs-apt","version_requirement":">= 2.4.0"},
         {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
     ]
 }

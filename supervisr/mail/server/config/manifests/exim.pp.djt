@@ -1,7 +1,0 @@
-class supervisr::mail::exim {
-
-  package { 'exim4-daemon-heavy':
-    ensure => 'latest',
-  }
-
-}

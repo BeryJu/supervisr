@@ -16,7 +16,8 @@ class RobustSignal(Signal):
         results = super(RobustSignal, self).send_robust(sender, **named)
         for handler, result in results:
             if isinstance(result, Exception):
-                raise SignalException("Handler %s: %s", handler.__name__, repr(result)) from result
+                raise SignalException("Handler %s: %s" %
+                                      (handler.__name__, repr(result))) from result
         return results
 
 

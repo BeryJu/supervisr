@@ -10,4 +10,3 @@ maildir_supervisr:
   log_output
   user = 2000
   group = 2000
-.endif

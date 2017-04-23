@@ -117,7 +117,7 @@ def debug_puppet_build(req):
     """
     from supervisr.puppet.builder import ReleaseBuilder
     from supervisr.puppet.models import PuppetModule
-    module = PuppetModule.objects.filter(name='mail').first()
+    module = PuppetModule.objects.filter(name='supervisr_mail').first()
     rel_builder = ReleaseBuilder(module)
     rel_builder.build()
     messages.success(req, 'Successfully built')

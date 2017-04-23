@@ -42,10 +42,17 @@ def send_message(recipients, subject, **kwargs):
     else:
         django_text = ''
 
-    # Actually send the mail
-    sent = send_mail(subject, django_text, django_from, \
-        recipients, **django_kwargs)
-    return sent == 1 # send_mail returns either 0 or 1
+    try:
+        # Actually send the mail
+        sent = send_mail(subject, django_text, django_from, \
+            recipients, **django_kwargs)
+        return sent == 1 # send_mail returns either 0 or 1
+    except ConnectionRefusedError:
+        # Always return true when debugging
+        if settings.DEBUG:
+            return True
+        else:
+            raise
 
 @receiver(SIG_USER_POST_SIGN_UP)
 # pylint: disable=unused-argument
