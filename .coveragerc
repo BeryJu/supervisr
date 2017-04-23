@@ -1,5 +1,13 @@
 [run]
-source = .
+source = supervisr/
+omit =
+    env/
+    manage.py
+    supervisr/core/wsgi.py
+    *settings.py
+    */migrations/*
+    */apps.py
+    docs/
 
 [report]
 sort = Cover
@@ -20,14 +28,5 @@ exclude_lines =
     # Don't complain if non-runnable code isn't run:
     if 0:
     if __name__ == .__main__.:
-
-omit =
-    manage.py
-    supervisr/settings.py
-    supervisr/wsgi.py
-    supervisr*/migrations/*
-    supervisr*/apps.py
-    *env/
-    docs/
 
 show_missing = True
