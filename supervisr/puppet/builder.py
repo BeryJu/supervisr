@@ -22,6 +22,7 @@ from .utils import ForgeImporter
 
 LOGGER = logging.getLogger(__name__)
 
+# pylint: disable=too-many-instance-attributes
 class ReleaseBuilder(object):
     """
     Class to build PuppetModuleRelease's in Memory from files and templates
@@ -30,6 +31,7 @@ class ReleaseBuilder(object):
     module = None
     base_dir = None
     version = None
+    output_base = None
 
     _root_dir = ''
     _spooled_tgz_file = None
@@ -41,6 +43,7 @@ class ReleaseBuilder(object):
         self.module = module
         if self.module.source_path:
             self.base_dir = self.module.source_path
+        self.output_base = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'modules')
         # If version is None, just use the newest Release's ID + 1
         if version is None:
             releases = PuppetModuleRelease.objects.filter(module=module)
@@ -155,8 +158,8 @@ class ReleaseBuilder(object):
         # Gzip it so we actually have a tgz
         gzipped = gzip.compress(self._spooled_tgz_file.getbuffer())
         # Write to file and add to db
-        module_dir = 'puppet_modules/%s/%s/' \
-                     % (self.module.owner.username, self.module.name)
+        module_dir = '%s/%s/%s/' \
+                     % (self.output_base, self.module.owner.username, self.module.name)
         prefix = '%s-%s_version_%s_' % (self.module.owner.username, self.module.name, self.version)
         if not os.path.exists(module_dir):
             os.makedirs(module_dir)
@@ -164,6 +167,7 @@ class ReleaseBuilder(object):
             with NamedTemporaryFile(dir=module_dir, suffix='.tgz', prefix=prefix) as temp_file:
                 temp_file.write(gzipped)
                 temp_file.seek(0, io.SEEK_SET)
+                LOGGER.info("Target filename: %s", temp_file.name)
                 # Create the module in the db and write it to disk
                 self._release = PuppetModuleRelease.objects.create(
                     module=self.module,

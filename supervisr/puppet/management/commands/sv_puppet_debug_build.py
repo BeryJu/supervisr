@@ -21,8 +21,8 @@ class Command(BaseCommand):
     help = 'Build a Puppet Module without saving it to the DB'
 
     def add_arguments(self, parser):
-        parser.add_argument('--module', type=str, action='append', required=True)
         parser.add_argument('-i', '--import-deps', type=bool, default=False)
+        parser.add_argument('--module', type=str, action='append', required=True)
 
     def handle(self, *args, **options):
         for module in options['module']:
@@ -36,7 +36,7 @@ class Command(BaseCommand):
                 p_module = PuppetModule.objects.filter(name=n_module, owner=p_user.first())
                 if p_module.exists():
                     i = ReleaseBuilder(p_module.first())
-                    i.build(db_add=False)
+                    i.build()
                     LOGGER.info("Built Module %s!", n_module)
                 else:
                     LOGGER.error("Module %s-%s doesn't exist!", n_user, n_module)
