@@ -21,6 +21,7 @@ handler500 = 'supervisr.core.views.common.uncaught_500'
 urlpatterns = [
     # Account views
     url(r'^$', common.index, name='common-index'),
+    url(r'^search/$', common.search, name='common-search'),
     url(r'^accounts/login/$', account.login, name='account-login'),
     url(r'^accounts/login/reauth/$', account.reauth, name='account-reauth'),
     url(r'^accounts/signup/$', account.signup, name='account-signup'),

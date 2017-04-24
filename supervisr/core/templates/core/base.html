@@ -40,7 +40,7 @@
     <div class="divider"></div>
     <div class="header-nav clr-nav-level-1">
       <a class="nav-link {% is_active 'account' 'common' 'domain' %}" href="{% url 'common-index' %}">
-        <span class="nav-text">{% trans "Home" %}</span> <span class="sr-only">(current)</span>
+        <span class="nav-text">{% trans "Home" %}</span>
       </a>
       {% if user.is_authenticated %}
       {% supervisr_dyn_navapps as installed_apps %}
@@ -57,9 +57,9 @@
       {% endif %}
     </div>
     <div class="divider"></div>
-    <form class="search" method="POST">
+    <form class="search" method="GET" action="{% url 'common-search' %}">
       <label for="search_input">
-        <input id="search_input" placeholder="{% trans 'Search for keywords...' %}" type="text">
+        <input id="search_input" name="q" placeholder="{% trans 'Search for keywords...' %}" type="text" {% if request.GET.q %} value="{{ request.GET.q }}" {% endif %}>
       </label>
     </form>
     <div class="settings">
