@@ -113,6 +113,16 @@ class MailAccount(Product):
     def __str__(self):
         return "%s@%s" % (self.address, self.domain_mail)
 
+    def search_title(self):
+        """
+        Return email address for search results
+        """
+        return self.email
+
+    class Meta:
+
+        sv_search_fields = ['address', 'email_raw']
+
 class MailForwarder(CreatedUpdatedModel):
     """
     Record to save destinations to forward mail to

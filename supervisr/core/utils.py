@@ -9,6 +9,7 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.shortcuts import render
+from django.template import loader
 from django.utils.translation import ugettext as _
 
 LOGGER = logging.getLogger(__name__)
@@ -47,7 +48,7 @@ def do_404(req, message=None):
     """
     return render(req, 'common/error.html', {
         'code': 404,
-        'message': _('message') if message is not None else None
+        'message': _(message) if message is not None else None
     }, status=404)
 
 def send_admin_mail(exception, message):
@@ -63,6 +64,13 @@ def send_admin_mail(exception, message):
             'exception': exception}),
         template='email/admin_mail.html',
         template_context={'exception': exception, 'message': message})
+
+def render_to_string(tmpl, ctx):
+    """
+    Render a template to string
+    """
+    template = loader.get_template(tmpl)
+    return template.render(ctx)
 
 def get_apps(mod_only=False):
     """
