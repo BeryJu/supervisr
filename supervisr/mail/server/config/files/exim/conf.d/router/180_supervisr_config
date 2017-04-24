@@ -1,0 +1,13 @@
+mailalias:
+  debug_print = "R: mailalias for $local_part@$domain"
+  driver = redirect
+  domains = +supervisr_domain
+  data = ${lookup mysql {SUPERVISR_MAILALIAS}{$value}fail}
+
+mailuser:
+  debug_print = "R: mailuser for $local_part@$domain"
+  driver = redirect
+  domains = +supervisr_domain
+  data = ${lookup mysql {SUPERVISR_MAILUSER}{$value}fail}
+  directory_transport = maildir_supervisr
+  no_more

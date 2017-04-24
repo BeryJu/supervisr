@@ -1,9 +1,0 @@
-django>=1.10.0
-django-crispy-forms>=1.6.1
-django-formtools
-django-recaptcha
-django-oauth-toolkit
-django-cors-middleware
-mysqlclient
-markdown
-docutils

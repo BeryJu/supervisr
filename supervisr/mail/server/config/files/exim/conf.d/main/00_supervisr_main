@@ -1,0 +1,16 @@
+# Enable TLS and set let's encrypt fullchain
+# MAIN_TLS_ENABLE             = yes
+# MAIN_TLS_CERTIFICATE        = /etc/letsencrypt/fullchain.pem
+# MAIN_TLS_PRIVATEKEY         = /etc/letsencrypt/fullchain.pem
+
+SUPERVISR_ACTIVE              = yes
+SUPERVISR_MYSQL_HOST          = {{ settings.DATABASE.default.HOST }}
+SUPERVISR_MYSQL_DB            = {{ settings.DATABASE.default.NAME }}
+SUPERVISR_MYSQL_USER          = {{ settings.DATABASE.default.USER }}
+SUPERVISR_MYSQL_PASS          = {{ settings.DATABASE.default.PASSWORD }}
+IGNORE_SMTP_LINE_LENGTH_LIMIT = yes
+
+message_size_limit           = 100M
+tls_on_connect_ports         = 465
+daemon_smtp_ports            = 25 : 587
+smtp_banner                  = $smtp_active_hostname ESMTP Exim $version_number supervisr {{ settings.VERSION_HASH }} {% if settings.DEBUG %}DEBUG{% endif %} $tod_full

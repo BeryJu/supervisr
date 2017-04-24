@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 """
 Supervisr Invoke Tasks
 """
@@ -62,10 +61,14 @@ def install(ctx, dev=False):
     """
     Install requirements for supervisr and all modules
     """
-    files = glob("*/requirements.txt")
+    if WINDOWS:
+        ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
+    requirements = glob("supervisr/**/requirements.txt")
+    requirements.extend(glob("supervisr/**/**/requirements.txt"))
     if dev:
-        files.extend(glob("*/requirements-dev.txt"))
-    ctx.run("pip3 install -r %s" % ' -r '.join(files))
+        requirements.extend(glob("supervisr/**/requirements-dev.txt"))
+        requirements.extend(glob("supervisr/**/**/requirements-dev.txt"))
+    ctx.run("pip3 install -U -r %s" % ' -r '.join(requirements))
 
 @task
 def deploy(ctx, user=None, fqdn=None):
@@ -133,13 +136,13 @@ def isort(ctx):
     """
     ctx.run("isort -c -vb -sg env")
 
-@task(pre=[migrate])
+@task()
 @shell
 def coverage(ctx):
     """
     Run Unittests and get coverage
     """
-    ctx.run("coverage run --source='.' manage.py test --pattern=Test*.py")
+    ctx.run("coverage run manage.py test --pattern=Test*.py")
     ctx.run("coverage report")
 
 @task
@@ -152,7 +155,7 @@ def unittest(ctx):
     ctx.run("%s manage.py test --pattern=Test*.py" % PYTHON_EXEC)
 
 # Some tasks to make full testing easier
-@task(pre=[migrate, unittest, coverage, isort, lint, prospector])
+@task(pre=[migrate, coverage, isort, lint, prospector])
 # pylint: disable=unused-argument
 def test(ctx):
     """
@@ -171,6 +174,6 @@ def docs(ctx):
     os.remove('docs/source/modules.rst')
     shutil.rmtree('docs/build', ignore_errors=True)
     print("Cleaned!")
-    for module in glob('supervisr*'):
+    for module in glob('supervisr/**/'):
         ctx.run('sphinx-apidoc -o docs/source %s' % module)
     ctx.run('sphinx-build -b html docs/source docs/build')
