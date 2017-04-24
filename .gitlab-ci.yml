@@ -1,9 +1,10 @@
 before_script:
   - sudo apt-get update >/dev/null
   - sudo apt-get -y install python3-pip python3-dev libsasl2-dev libldap2-dev libssl-dev python3-mysqldb libmysqlclient-dev >/dev/null
-  - sudo python3 -m pip install -U invoke virtualenv
+  - sudo python3 -m pip install -U virtualenv
   - virtualenv env
   - source env/bin/activate
+  - pip3 install invoke
   - inv install --dev
 stages:
   - test
@@ -47,7 +48,7 @@ deploy:
     - "eval $(ssh-agent -s)"
     - "mkdir ~/.ssh -p"
     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
-    - inv deploy --user=beryjuorg --fqdn=prd-web01.prs.fr.beryju.org
+    - inv deploy --user=beryjuorg --fqdn=ory1-web-prod-1.ory1.beryju.org
   environment:
     name: production
     url: https://my.beryju.org

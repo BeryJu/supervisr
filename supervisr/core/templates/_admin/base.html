@@ -1,0 +1,43 @@
+{% extends "core/base.html" %}
+
+{% load i18n %}
+{% load is_active %}
+{% load supervisr_dyn_modlist %}
+
+{% block sidenav %}
+<nav class="sidenav">
+  <section class="sidenav-content">
+    <a href="{% url 'admin-index' %}" class="nav-link {% is_active 'admin-index' %}">
+      {% trans "Overview" %}
+    </a>
+    <a href="{% url 'admin-settings' %}" class="nav-link {% is_active 'admin-settings' %}">
+      {% trans "Settings" %}
+    </a>
+    <a href="{% url 'admin:index' %}" class="nav-link {% is_active 'index' %}">
+      {% trans "Admin Interface" %}
+    </a>
+    <a href="{% url 'django-admindocs-docroot' %}" class="nav-link {% is_active 'django-admindocs' %}">
+      {% trans "Admin Docs" %}
+    </a>
+    <section class="nav-group collapsible">
+      <input id="admin_modules" type="checkbox">
+      <label for="admin_modules">{% trans "Module Settings" %}</label>
+      <ul class="nav-list">
+        {% supervisr_dyn_modlist as apps %}
+        {% for app in apps %}
+        <li><a href="{% url app.url app.name %}" class="nav-link">{{ app.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </section>
+    <a href="{% url 'admin-info' %}" class="nav-link {% is_active 'admin-info' %}">
+      {% trans "System Information" %}
+    </a>
+    <a href="{% url 'admin-events' %}" class="nav-link {% is_active 'admin-events' %}">
+      {% trans "Events" %}
+    </a>
+    <a href="{% url 'admin-debug' %}" class="nav-link {% is_active 'admin-debug' %}">
+      {% trans "Debug" %}
+    </a>
+  </section>
+</nav>
+{% endblock %}

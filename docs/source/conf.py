@@ -22,7 +22,7 @@ import django
 import sphinx_rtd_theme
 
 sys.path.insert(0, os.path.abspath('../..'))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
 

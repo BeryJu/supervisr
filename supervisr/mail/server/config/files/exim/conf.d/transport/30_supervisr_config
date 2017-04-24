@@ -1,0 +1,12 @@
+maildir_supervisr:
+  debug_print = "T: maildir_supervisr for $local_part@$domain"
+  driver = pipe
+  command = /usr/lib/dovecot/deliver -d $local_part@$domain
+  message_prefix = ""
+  message_suffix = ""
+  delivery_date_add
+  envelope_to_add
+  return_path_add
+  log_output
+  user = 2000
+  group = 2000
