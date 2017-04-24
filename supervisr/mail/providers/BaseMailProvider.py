@@ -2,7 +2,7 @@
 Supervisr Mail Provider
 """
 
-from supervisr.providers.BaseProvider import BaseProvider
+from supervisr.core.providers.BaseProvider import BaseProvider
 
 
 class BaseMailProvider(BaseProvider):

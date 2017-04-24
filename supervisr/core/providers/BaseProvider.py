@@ -5,7 +5,7 @@ Supervisr Core Generic Provider
 from abc import ABCMeta
 
 
-class GenericProvider(object):
+class BaseProvider(object):
     """
     Generic Interface as base for GenericManagedProvider and GenericUserProvider
     """

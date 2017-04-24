@@ -1,7 +1,7 @@
 """
-Supervisr mod_ldap Admin
+Supervisr module _seed app admin
 """
 
 from supervisr.core.admin import admin_autoregister
 
-admin_autoregister('ldap')
+admin_autoregister('_seed')
