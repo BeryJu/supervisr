@@ -33,7 +33,7 @@ class NamecheapProvider(BaseProvider):
 
     def __init__(self):
         super(NamecheapProvider, self).__init__()
-        self.api = Api(self.api_username, self.api_key, self.username, ip_address, sandbox=self.sandbox)
+        self.api = Api(self.api_username, self.api_key, self.username, '', sandbox=self.sandbox)
 
 class NamecheapProviderInstance(BaseProviderInstance):
 
