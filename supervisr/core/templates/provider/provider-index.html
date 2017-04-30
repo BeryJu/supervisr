@@ -1,0 +1,38 @@
+{% extends "common/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+
+{% block title %}
+{% supervisr_title "Providers" %}
+{% endblock %}
+
+{% block content %}
+<div class="btn-group btn-link btn-icon-link">
+  <a href="{% url 'provider-new' %}" class="btn">
+    <clr-icon shape="add"></clr-icon>
+  </a>
+  <a data-ctx-name="edit" class="btn">
+    <clr-icon shape="edit"></clr-icon>
+  </a>
+  <a data-ctx-name="trash" class="btn">
+    <clr-icon shape="trash"></clr-icon>
+  </a>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>{% trans 'Name' %}</th>
+      <th>{% trans 'InstanceInfo' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for instance in providers %}
+    <tr data-selectable data-ctx-edit="{% url 'mail:mail-account-edit' account=account.address domain=account.domain.domain.name %}" data-ctx-trash="{% url 'mail:mail-account-delete' account=account.address domain=account.domain.domain.name %}">
+      <td>{{ instance.ui_name }}</td>
+      <td>{{ instance.instance_info }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

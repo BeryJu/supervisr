@@ -9,7 +9,8 @@ from django.conf.urls import include, url
 from django.contrib import admin as admin_django
 
 from .utils import get_apps
-from .views import about, account, admin, common, domain, product, user
+from .views import (about, account, admin, common, domain, product, provider,
+                    user)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -39,6 +40,9 @@ urlpatterns = [
     # Domain views
     url(r'^domains/$', domain.index, name='domain-index'),
     url(r'^domains/new/$', domain.DomainNewView.as_view(), name='domain-new'),
+    # Provider views
+    url(r'^providers/$', provider.index, name='provider-index'),
+    url(r'^providers/new/$', provider.ProviderNewView.as_view(), name='provider-new'),
     # User views
     url(r'^user/$', user.index, name='user-index'),
     url(r'^user/events/$', user.events, name='user-events'),

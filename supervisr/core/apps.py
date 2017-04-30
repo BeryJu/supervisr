@@ -70,7 +70,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr.core'
-    init_modules = ['signals', 'events', 'mailer', 'models']
+    init_modules = ['signals', 'events', 'mailer', 'models', 'providers.base']
     navbar_title = 'Core'
 
     def ready(self):

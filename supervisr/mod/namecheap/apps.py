@@ -11,3 +11,4 @@ class SupervisrModNamecheapConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr.mod.namecheap'
+    init_modules = ['signals', 'events', 'models', 'providers.core', 'providers.domain']

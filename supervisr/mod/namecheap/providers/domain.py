@@ -4,10 +4,14 @@ Supervisr Namecheap Domain Provider
 
 from django.conf import settings
 from django.db import models
-
-from supervisr.mod.namecheap.forms.domain import DoaminForm
-from supervisr.core.providers.domain import DomainProvider
+from django.http import HttpRequest
 from namecheap import Api
+
+from supervisr.core.providers.base import (BaseProviderUIInterface,
+                                           ProviderInterfaceAction)
+from supervisr.core.providers.domain import DomainProvider
+from supervisr.mod.namecheap.forms.domain import DoaminForm
+from supervisr.mod.namecheap.providers.core import NamecheapProvider
 
 
 class NamecheapDomainProvider(DomainProvider):
@@ -15,20 +19,7 @@ class NamecheapDomainProvider(DomainProvider):
     Namecheap domain provider
     """
 
-    # Fields
-    api_key = models.TextField()
-    api_username = module.TextField()
-    username = models.TextField()
-    sandbox = models.BooleanField(default=settings.DEBUG)
-
-    # Forms
-    setup_form = [DoaminForm]
-
-    api = None
-
-    def __init__(self):
-        super(NamecheapDomainProvider, self).__init__()
-        api = Api(self.api_username, self.api_key, self.username, ip_address, sandbox=self.sandbox)
+    interface_ui = NamecheapDomainProviderUIInterface
 
     def register(self, domain):
         return self.api.domains_create(
@@ -53,3 +44,28 @@ class NamecheapDomainProvider(DomainProvider):
     def import_domains(self):
         pass
 
+
+class NamecheapDomainProviderUIInterface(BaseProviderUIInterface):
+
+    def __init__(self, provider: NamecheapDomainProvider, action: ProviderInterfaceAction, request: HttpRequest):
+        super(NamecheapDomainProviderUIInterface, self).__init__(provider, action, request)
+
+        if action == ProviderInterfaceAction.create:
+            domain_form = DoaminForm()
+            setattr(domain_form, 'provider', self.provider)
+            self.forms = [domain_form]
+
+    def post_submit(self, form_data) -> Any:
+        print(form_data)
+        # self.provider.register(
+        #     DomainName = 'registeringadomainthroughtheapiwow.com',
+        #     FirstName = 'Jack',
+        #     LastName = 'Trotter',
+        #     Address1 = 'Ridiculously Big Mansion, Yellow Brick Road',
+        #     City = 'Tokushima',
+        #     StateProvince = 'Tokushima',
+        #     PostalCode = '771-0144',
+        #     Country = 'Japan',
+        #     Phone = '+81.123123123',
+        #     EmailAddress = 'jack.trotter@example.com'
+        #     )
