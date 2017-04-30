@@ -2,7 +2,6 @@
 Supervisr Core Generic Provider
 """
 from enum import Enum
-from typing import Any, List
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -32,7 +31,7 @@ class BaseProviderUIInterface(BaseProviderInterface):
     Base Class for UI Interaction with provider
     """
 
-    forms = List[Form]
+    forms = []
     request = HttpRequest
 
     def __init__(self, provider, action: ProviderInterfaceAction, request: HttpRequest):
@@ -42,7 +41,7 @@ class BaseProviderUIInterface(BaseProviderInterface):
     def get_form_initial(self, index):
         return {}
 
-    def post_submit(self, form_data: Any) -> Any:
+    def post_submit(self, form_data):
         """
         This method is called after all forms are filled in and validated.
         The Provider should create it's resources in this step.
