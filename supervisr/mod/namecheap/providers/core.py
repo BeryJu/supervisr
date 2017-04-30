@@ -1,6 +1,7 @@
 
 from django.conf import settings
 from django.db import models
+from namecheap import Api
 
 from supervisr.core.providers.base import (BaseProvider, BaseProviderInstance,
                                            BaseProviderUIInterface,

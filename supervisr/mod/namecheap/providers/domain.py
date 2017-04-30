@@ -2,11 +2,6 @@
 Supervisr Namecheap Domain Provider
 """
 
-from django.conf import settings
-from django.db import models
-from django.http import HttpRequest
-from namecheap import Api
-
 from supervisr.core.providers.base import (BaseProviderUIInterface,
                                            ProviderInterfaceAction)
 from supervisr.core.providers.domain import DomainProvider
@@ -47,7 +42,7 @@ class NamecheapDomainProvider(DomainProvider):
 
 class NamecheapDomainProviderUIInterface(BaseProviderUIInterface):
 
-    def __init__(self, provider: NamecheapDomainProvider, action: ProviderInterfaceAction, request: HttpRequest):
+    def __init__(self, provider, action, request):
         super(NamecheapDomainProviderUIInterface, self).__init__(provider, action, request)
 
         if action == ProviderInterfaceAction.create:

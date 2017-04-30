@@ -5,7 +5,6 @@ from enum import Enum
 
 from django.contrib.auth.models import User
 from django.db import models
-from django.forms import Form
 from django.http import HttpRequest
 
 
