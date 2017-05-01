@@ -7,6 +7,8 @@ from supervisr.core.providers.base import (BaseProviderUIInterface,
 from supervisr.core.providers.domain import DomainProvider
 from supervisr.mod.namecheap.forms.domain import DoaminForm
 
+from .core import NamecheapProvider, NamecheapProviderSetupUI
+
 
 class NamecheapDomainProviderUIInterface(BaseProviderUIInterface):
     """
@@ -24,12 +26,14 @@ class NamecheapDomainProviderUIInterface(BaseProviderUIInterface):
     def post_submit(self, form_data):
         print(form_data)
 
-class NamecheapDomainProvider(DomainProvider):
+class NamecheapDomainProvider(DomainProvider, NamecheapProvider):
     """
     Namecheap domain provider
     """
 
+    ui_name = 'Namecheap Domain'
     interface_ui = NamecheapDomainProviderUIInterface
+    setup_ui = NamecheapProviderSetupUI
 
     def register(self, domain):
         pass

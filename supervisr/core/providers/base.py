@@ -73,6 +73,30 @@ class BaseProvider(object):
         if self.interface_ui:
             self.interface_ui = self.interface_ui()
 
+    @staticmethod
+    # pylint: disable=bad-staticmethod-argument
+    def walk_providers(cls):
+        """
+        Walk across all subclasses and return all subclasses which have no children
+        """
+        def walk(root):
+            """
+            Recursively walk subclasses of <root>
+            """
+            # pylint: disable=no-member
+            sub = root.__subclasses__()
+            result = []
+            if sub != []:
+                for _sub in sub:
+                    result += walk(_sub)
+            # else:
+            result += [root]
+            return result
+
+        providers = walk(cls)
+        # Filter duplicates
+        return list(set(providers))
+
 class BaseProviderInstance(models.Model):
     """
     Save information about information specifially for a user

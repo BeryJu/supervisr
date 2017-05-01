@@ -34,9 +34,6 @@ class NamecheapProvider(BaseProvider):
     Namecheap provider
     """
 
-    ui_name = 'Namecheap'
-    interface_ui = NamecheapProviderSetupUI
-
     api = None
 
     def __init__(self, instance):
