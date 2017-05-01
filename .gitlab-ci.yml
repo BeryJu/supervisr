@@ -4,8 +4,8 @@ before_script:
   - sudo python3 -m pip install -U virtualenv
   - virtualenv env
   - source env/bin/activate
-  - pip3 install invoke
-  - inv install --dev
+  - pip3 install invoke >/dev/null
+  - inv install --dev >/dev/null
 stages:
   - test
   - deploy

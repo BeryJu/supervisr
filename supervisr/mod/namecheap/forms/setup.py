@@ -1,4 +1,6 @@
-
+"""
+Supervisr Mod Namecheap Setup form
+"""
 
 from django import forms
 from django.conf import settings
@@ -6,6 +8,9 @@ from django.utils.translation import ugettext as _
 
 
 class SetupForm(forms.Form):
+    """
+    Namecheap Provider Setup form
+    """
 
     title = _('Namecheap API Information')
 

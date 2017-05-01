@@ -9,10 +9,14 @@ from django.http import HttpRequest
 
 
 class ProviderInterfaceAction(Enum):
+    """
+    Different Actions for Providers
+    """
     create = 0
     edit = 2
     delete = 4
 
+# pylint: disable=too-few-public-methods
 class BaseProviderInterface(object):
     """
     Base Class for all possible interfaces with a provider, i.e. API or Forms
@@ -37,7 +41,11 @@ class BaseProviderUIInterface(BaseProviderInterface):
         super(BaseProviderUIInterface, self).__init__(provider, action)
         self.request = request
 
+    # pylint: disable=no-self-use,unused-argument
     def get_form_initial(self, index):
+        """
+        Return Initial form data for form#index
+        """
         return {}
 
     def post_submit(self, form_data):
@@ -47,6 +55,7 @@ class BaseProviderUIInterface(BaseProviderInterface):
         """
         pass
 
+# pylint: disable=too-few-public-methods
 class BaseProvider(object):
     """
     Generic Interface as base for GenericManagedProvider and GenericUserProvider
@@ -57,7 +66,10 @@ class BaseProvider(object):
     interface_ui = BaseProviderUIInterface
     setup_ui = BaseProviderUIInterface
 
-    def __init__(self):
+    instance = None
+
+    def __init__(self, instance):
+        self.instance = instance
         if self.interface_ui:
             self.interface_ui = self.interface_ui()
 

@@ -6,10 +6,12 @@ from supervisr.core.providers.base import (BaseProviderUIInterface,
                                            ProviderInterfaceAction)
 from supervisr.core.providers.domain import DomainProvider
 from supervisr.mod.namecheap.forms.domain import DoaminForm
-from supervisr.mod.namecheap.providers.core import NamecheapProvider
 
 
 class NamecheapDomainProviderUIInterface(BaseProviderUIInterface):
+    """
+    Frontend for Namecheap Provider (Domain Setup)
+    """
 
     def __init__(self, provider, action, request):
         super(NamecheapDomainProviderUIInterface, self).__init__(provider, action, request)
@@ -21,7 +23,17 @@ class NamecheapDomainProviderUIInterface(BaseProviderUIInterface):
 
     def post_submit(self, form_data):
         print(form_data)
-        # self.provider.register(
+
+class NamecheapDomainProvider(DomainProvider):
+    """
+    Namecheap domain provider
+    """
+
+    interface_ui = NamecheapDomainProviderUIInterface
+
+    def register(self, domain):
+        pass
+        # return self.api.domains_create(
         #     DomainName = 'registeringadomainthroughtheapiwow.com',
         #     FirstName = 'Jack',
         #     LastName = 'Trotter',
@@ -32,28 +44,7 @@ class NamecheapDomainProviderUIInterface(BaseProviderUIInterface):
         #     Country = 'Japan',
         #     Phone = '+81.123123123',
         #     EmailAddress = 'jack.trotter@example.com'
-        #     )
-
-class NamecheapDomainProvider(DomainProvider):
-    """
-    Namecheap domain provider
-    """
-
-    interface_ui = NamecheapDomainProviderUIInterface
-
-    def register(self, domain):
-        return self.api.domains_create(
-            DomainName = 'registeringadomainthroughtheapiwow.com',
-            FirstName = 'Jack',
-            LastName = 'Trotter',
-            Address1 = 'Ridiculously Big Mansion, Yellow Brick Road',
-            City = 'Tokushima',
-            StateProvince = 'Tokushima',
-            PostalCode = '771-0144',
-            Country = 'Japan',
-            Phone = '+81.123123123',
-            EmailAddress = 'jack.trotter@example.com'
-        )
+        # )
 
     def check_available(self, domain):
         pass
@@ -63,4 +54,3 @@ class NamecheapDomainProvider(DomainProvider):
 
     def import_domains(self):
         pass
-

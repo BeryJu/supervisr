@@ -8,9 +8,8 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.core.providers.base import BaseProvider, BaseProviderInstance
-
 from ..forms.provider import NewProviderForm
+from ..providers.base import BaseProvider, BaseProviderInstance
 from .wizard import BaseWizardView
 
 
@@ -38,6 +37,7 @@ class ProviderNewView(BaseWizardView):
         if step is None:
             step = self.steps.current
         if step == '0':
+            # pylint: disable=no-member
             subclasses = BaseProvider.__subclasses__()
             form.fields['provider'].choices = [(s.__qualname__, s.ui_name) for s in subclasses]
         return form
