@@ -11,7 +11,8 @@ from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from ..forms.provider import NewProviderForm
-from ..providers.base import BaseProvider, BaseProviderInstance
+from ..providers.base import (BaseProvider, BaseProviderInstance,
+                              ProviderInterfaceAction, SetupProvider)
 from .wizard import BaseWizardView
 
 
@@ -50,20 +51,32 @@ class ProviderNewView(BaseWizardView):
         """
         Dynamically add forms from provider's setup_ui
         """
-        # Todo: also check in form if class exists and is subclass of BaseProvider
         if form.__class__ == NewProviderForm:
+            # Import provider based on form
+            # TODO: also check in form if class exists and is subclass of BaseProvider
             parts = form.cleaned_data.get('provider').split('.')
             package = '.'.join(parts[:-1])
             module = importlib.import_module(package)
             _class = getattr(module, parts[-1])
-            print(_class)
+            if _class.setup_ui:
+                # create new provider instance
+                provider_inst = SetupProvider()
+                self.provider_setup_ui = _class.setup_ui(
+                    provider_inst, ProviderInterfaceAction.setup, self.request)
+                print(self.provider_setup_ui.forms)
+                # Add forms to our list
+                for idx, form in enumerate(self.provider_setup_ui.forms):
+                    next_idx = str(idx + int(self.steps.current))
+                    # self.form_list is turned into an ordered_dict
+                    # pylint: disable=no-member
+                    self.form_list.update({next_idx: form})
         return self.get_form_step_data(form)
 
     def get_form_initial(self, step):
         if step == '0':
             return self.initial_dict.get(step, {})
         else:
-            self.provider.interface_ui.get_form_initial(step)
+            self.provider_setup_ui.get_form_initial(step)
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):

@@ -7,8 +7,7 @@ from django.db import models
 from namecheap import Api
 
 from supervisr.core.providers.base import (BaseProvider, BaseProviderInstance,
-                                           BaseProviderUIInterface,
-                                           ProviderInterfaceAction)
+                                           BaseProviderUIInterface)
 from supervisr.mod.namecheap.forms.setup import SetupForm
 
 
@@ -17,13 +16,10 @@ class NamecheapProviderSetupUI(BaseProviderUIInterface):
     Frontend for Namecheap Provider (API Setup)
     """
 
+    forms = [SetupForm]
+
     def __init__(self, provider, action, request):
         super(NamecheapProviderSetupUI, self).__init__(provider, action, request)
-
-        if action == ProviderInterfaceAction.create:
-            setup_form = SetupForm()
-            setattr(setup_form, 'provider', self.provider)
-            self.forms = [setup_form]
 
     def post_submit(self, form_data):
         print(form_data)
@@ -35,6 +31,8 @@ class NamecheapProvider(BaseProvider):
     """
 
     api = None
+    setup_ui = NamecheapProviderSetupUI
+
 
     def __init__(self, instance):
         super(NamecheapProvider, self).__init__(instance)

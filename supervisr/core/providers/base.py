@@ -5,7 +5,6 @@ from enum import Enum
 
 from django.contrib.auth.models import User
 from django.db import models
-from django.http import HttpRequest
 
 
 class ProviderInterfaceAction(Enum):
@@ -15,6 +14,7 @@ class ProviderInterfaceAction(Enum):
     create = 0
     edit = 2
     delete = 4
+    setup = 8
 
 # pylint: disable=too-few-public-methods
 class BaseProviderInterface(object):
@@ -25,7 +25,7 @@ class BaseProviderInterface(object):
     provider = None
     action = ProviderInterfaceAction
 
-    def __init__(self, provider, action: ProviderInterfaceAction):
+    def __init__(self, provider, action):
         self.provider = provider
         self.action = action
 
@@ -35,9 +35,9 @@ class BaseProviderUIInterface(BaseProviderInterface):
     """
 
     forms = []
-    request = HttpRequest
+    request = None
 
-    def __init__(self, provider, action: ProviderInterfaceAction, request: HttpRequest):
+    def __init__(self, provider, action, request):
         super(BaseProviderUIInterface, self).__init__(provider, action)
         self.request = request
 
@@ -70,8 +70,8 @@ class BaseProvider(object):
 
     def __init__(self, instance):
         self.instance = instance
-        if self.interface_ui:
-            self.interface_ui = self.interface_ui()
+        # if self.interface_ui:
+        #     self.interface_ui = self.interface_ui()
 
     @staticmethod
     # pylint: disable=bad-staticmethod-argument
@@ -96,6 +96,14 @@ class BaseProvider(object):
         providers = walk(cls)
         # Filter duplicates
         return list(set(providers))
+
+class SetupProvider(BaseProvider):
+    """
+    Dummy Class which is used a provider instance when setting up a new provider
+    """
+
+    def __init__(self):
+        super(SetupProvider, self).__init__(None)
 
 class BaseProviderInstance(models.Model):
     """
