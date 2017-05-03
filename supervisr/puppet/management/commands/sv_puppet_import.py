@@ -25,3 +25,4 @@ class Command(BaseCommand):
         for mod in options['module']:
             i.import_module(mod)
         LOGGER.info("Done!")
+        return "Done!"

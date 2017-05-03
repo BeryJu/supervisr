@@ -21,28 +21,28 @@ def module_list(req):
     """
     Return a list of modules
     """
-    pass
+    return HttpResponse('Not Implemented yet!', status=501)
 
 # pylint: disable=unused-argument
 def module(req, user, module):
     """
     Return information about module <module>
     """
-    pass
+    return HttpResponse('Not Implemented yet!', status=501)
 
 # pylint: disable=unused-argument
 def user_list(req):
     """
     Return user list
     """
-    pass
+    return HttpResponse('Not Implemented yet!', status=501)
 
 # pylint: disable=unused-argument
 def user(req, user):
     """
     Return user information
     """
-    pass
+    return HttpResponse('Not Implemented yet!', status=501)
 
 # pylint: disable=unused-argument
 def release_list(req):
@@ -68,7 +68,7 @@ def release(req, user, module, version):
     """
     Return list of releases for module
     """
-    pass
+    return HttpResponse('Not Implemented yet!', status=501)
 
 # pylint: disable=unused-argument
 def file(req, user, module, version):

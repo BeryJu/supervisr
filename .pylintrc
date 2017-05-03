@@ -1,9 +1,0 @@
-[MASTER]
-
-disable=E0611,R0401,W0621,I0011,RP0401,W0511
-
-[SIMILARITIES]
-
-# Minimum lines number of a similarity.
-min-similarity-lines=20
-

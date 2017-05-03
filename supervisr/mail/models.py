@@ -49,6 +49,7 @@ class MailDomain(Product):
     def __str__(self):
         return str(self.domain)
 
+    @property
     def has_catchall(self):
         """
         Return true if this domain has a catch all account
@@ -112,6 +113,16 @@ class MailAccount(Product):
 
     def __str__(self):
         return "%s@%s" % (self.address, self.domain_mail)
+
+    def search_title(self):
+        """
+        Return email address for search results
+        """
+        return self.email
+
+    class Meta:
+
+        sv_search_fields = ['address', 'email_raw']
 
 class MailForwarder(CreatedUpdatedModel):
     """

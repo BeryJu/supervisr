@@ -11,7 +11,7 @@ omit =
 
 [report]
 sort = Cover
-#skip_covered = True
+skip_covered = True
 exclude_lines =
   pragma: no cover
 
