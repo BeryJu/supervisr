@@ -16,7 +16,7 @@ class PuppetModuleRelease(models.Model):
     Store Information about a Puppet Module Release
     """
     version = models.TextField()
-    release = models.FileField()
+    release = models.FileField(max_length=500)
     downloads = models.IntegerField(default=0)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
