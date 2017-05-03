@@ -2,9 +2,10 @@
 Supervisr Mail Test
 """
 
+from django.contrib.auth.models import User
 from django.test import TestCase
 
-from supervisr.core.models import Domain
+from supervisr.core.models import Domain, UserProductRelationship, get_system_user
 
 from ..models import MailAccount, MailDomain
 
@@ -16,6 +17,20 @@ class TestModels(TestCase):
 
     def setUp(self):
         pass
+
+    def test_maildomain_upr_auto(self):
+        """
+        Test if Maildomain is created when a UPR with a Domain is created
+        """
+        usr = User.objects.get(pk=get_system_user())
+        domain = Domain.objects.create(
+            name='beryjuorgtesting.xyz',
+            invite_only=True,
+            price=0)
+        UserProductRelationship.objects.create(
+            product=domain,
+            user=usr)
+        self.assertTrue(MailDomain.objects.filter(domain_mail=domain).exists())
 
     def test_maildomain_get_set(self):
         """
