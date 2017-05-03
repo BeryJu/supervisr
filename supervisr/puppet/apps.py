@@ -20,7 +20,7 @@ class SupervisrPuppetConfig(SupervisrAppConfig):
 
     def ready(self):
         super(SupervisrPuppetConfig, self).ready()
-        self.initial_import()
+        # self.initial_import()
 
     @staticmethod
     def initial_import():
