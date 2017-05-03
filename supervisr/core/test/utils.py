@@ -2,8 +2,11 @@
 Supervisr Core test utils
 """
 
+from io import StringIO
+
 from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.core.management import call_command
 from django.test import RequestFactory
 from django.urls import reverse
 
@@ -41,3 +44,11 @@ def test_request(view,
     req.user = user
 
     return view(req, **url_kwargs)
+
+def call_command_ret(*args, **kwargs):
+    """
+    This is a wrapper for django's call_command, but it returns the stdout output
+    """
+    with StringIO() as output:
+        call_command(*args, stdout=output, stderr=output, **kwargs)
+        return output.getvalue()

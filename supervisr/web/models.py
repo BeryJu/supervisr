@@ -13,11 +13,11 @@ class WebDomain(Product):
     """
 
     domain_web = models.OneToOneField(Domain)
-    root = models.TextField()
+    root = models.TextField(default='/')
     profile = models.ForeignKey(UserProfile)
     quota = models.BigIntegerField(default=0) # domain quota in MB. 0 == unlimited
     is_php_enabled = models.BooleanField(default=True)
-    custom_config = models.TextField()
+    custom_config = models.TextField(blank=True)
 
     @property
     def domain(self):

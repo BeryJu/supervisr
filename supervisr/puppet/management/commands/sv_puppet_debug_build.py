@@ -38,7 +38,10 @@ class Command(BaseCommand):
                     i = ReleaseBuilder(p_module.first())
                     i.build()
                     LOGGER.info("Built Module %s!", n_module)
+                    return "Built Module %s!" % n_module
                 else:
                     LOGGER.error("Module %s-%s doesn't exist!", n_user, n_module)
+                    return "Module %s-%s doesn't exist!" % (n_user, n_module)
             else:
                 LOGGER.error("User %s doesn't exist!", n_user)
+                return "User %s doesn't exist!" % n_user

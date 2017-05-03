@@ -9,7 +9,7 @@ from supervisr.core.models import Domain
 from ..models import MailAccount, MailDomain
 
 
-class TestMail(TestCase):
+class TestModels(TestCase):
     """
     Supervisr Mail Test
     """
