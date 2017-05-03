@@ -54,7 +54,7 @@ class ProviderNewView(BaseWizardView):
         print(len(self.form_list))
         if form.__class__ == NewProviderForm:
             # Import provider based on form
-            # TODO: also check in form if class exists and is subclass of BaseProvider
+            # also check in form if class exists and is subclass of BaseProvider
             parts = form.cleaned_data.get('provider').split('.')
             package = '.'.join(parts[:-1])
             module = importlib.import_module(package)
