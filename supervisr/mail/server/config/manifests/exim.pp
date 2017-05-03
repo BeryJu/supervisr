@@ -15,9 +15,9 @@ class supervisr_mail::exim {
   }
 
   exec { 'update-exim4.conf':
-    command => 'update-exim4.conf',
+    command     => 'update-exim4.conf',
     refreshonly => true,
-    provider => 'shell',
+    provider    => 'shell',
   }
 
 }

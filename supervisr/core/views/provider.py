@@ -51,6 +51,7 @@ class ProviderNewView(BaseWizardView):
         """
         Dynamically add forms from provider's setup_ui
         """
+        print(len(self.form_list))
         if form.__class__ == NewProviderForm:
             # Import provider based on form
             # TODO: also check in form if class exists and is subclass of BaseProvider
@@ -63,13 +64,12 @@ class ProviderNewView(BaseWizardView):
                 provider_inst = SetupProvider()
                 self.provider_setup_ui = _class.setup_ui(
                     provider_inst, ProviderInterfaceAction.setup, self.request)
-                print(self.provider_setup_ui.forms)
                 # Add forms to our list
-                for idx, form in enumerate(self.provider_setup_ui.forms):
-                    next_idx = str(idx + int(self.steps.current))
+                for idx, _form in enumerate(self.provider_setup_ui.forms):
+                    next_idx = str(idx + int(self.steps.current) + 1)
                     # self.form_list is turned into an ordered_dict
                     # pylint: disable=no-member
-                    self.form_list.update({next_idx: form})
+                    self.form_list.update({next_idx: _form})
         return self.get_form_step_data(form)
 
     def get_form_initial(self, step):
