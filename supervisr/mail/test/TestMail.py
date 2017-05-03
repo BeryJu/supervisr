@@ -29,6 +29,7 @@ class TestMail(TestCase):
         self.assertEqual(mx_domain.domain, domain)
         mx_domain.domain = domain
         mx_domain.save()
+        self.assertFalse(mx_domain.has_catchall)
         self.assertEqual(mx_domain.domain, domain)
 
     def test_mailaccount_get_set(self):
@@ -45,6 +46,7 @@ class TestMail(TestCase):
             address='info',
             domain=mx_domain,
             price=0)
+        self.assertEqual(mx_account.search_title(), mx_account.email)
         self.assertEqual(mx_account.domain, mx_domain)
 
     def test_mailaccount_password(self):
