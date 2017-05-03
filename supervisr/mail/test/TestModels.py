@@ -5,7 +5,8 @@ Supervisr Mail Test
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from supervisr.core.models import Domain, UserProductRelationship, get_system_user
+from supervisr.core.models import (Domain, UserProductRelationship,
+                                   get_system_user)
 
 from ..models import MailAccount, MailDomain
 
