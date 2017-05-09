@@ -28,10 +28,12 @@ def test_request(view,
 
     factory = RequestFactory()
 
-    if method == 'GET':
-        req = factory.get(view, req_kwargs)
-    elif method == 'POST':
-        req = factory.post(view, req_kwargs)
+    factory_handler = getattr(factory, method.lower(), None)
+
+    if not factory_handler:
+        return
+
+    req = factory_handler(view, req_kwargs)
 
     if not session_data:
         session_data = {}

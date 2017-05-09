@@ -176,7 +176,7 @@ class LDAPConnector(object):
             'name'              : str(user.first_name),
             'mail'              : str(user.email),
             'userPrincipalName' : str(username+'@'+self.domain),
-            'objectclass'       : ['top', 'person', 'organizationalPerson', 'user'],
+            'objectClass'       : ['top', 'person', 'organizationalPerson', 'user'],
         }
         try:
             self.con.add(user_dn, attributes=attrs)
