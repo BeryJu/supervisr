@@ -2,8 +2,9 @@
 Supervisr Core Utils Test
 """
 
-import platform
 import socket
+import sys
+from unittest import skipUnless
 
 from django.test import RequestFactory, TestCase
 
@@ -28,12 +29,18 @@ class TestUtils(TestCase):
         req2 = self.factory.get('/', REMOTE_ADDR='2.3.4.5')
         self.assertEqual(get_remote_ip(req2), '2.3.4.5')
 
-    def test_get_reverse_dns(self):
+    @skipUnless(sys.platform.startswith('win'), 'requires Windows')
+    def test_reverse_dns_win(self): # pragma: no cover
         """
-        Test get_reverse_dns
+        Test reverse_dns (windows)
         """
         reverse = get_reverse_dns('127.0.0.1')
-        if platform.system() == 'Linux':
-            self.assertEqual(reverse, 'localhost')
-        elif platform.system() == 'Windows':
-            self.assertEqual(reverse, socket.getfqdn())
+        self.assertEqual(reverse, socket.getfqdn())
+
+    @skipUnless(sys.platform.endswith('nix'), 'requires Linux')
+    def test_reverse_dns_nix(self): # pragma: no cover
+        """
+        Test reverse_dns (nix)
+        """
+        reverse = get_reverse_dns('127.0.0.1')
+        self.assertEqual(reverse, 'localhost')
