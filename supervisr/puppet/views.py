@@ -44,7 +44,6 @@ def user(req, user):
     """
     return HttpResponse('Not Implemented yet!', status=501)
 
-# pylint: disable=unused-argument
 def release_list(req):
     """
     Return a list of releases
@@ -59,7 +58,7 @@ def release_list(req):
 
     releases = PuppetModuleRelease.objects.filter(query)
 
-    return render(req, 'release_list.json.djt', {
+    return render(req, 'release_list.json', {
         'releases': releases
         }, content_type='application/json')
 
@@ -70,7 +69,6 @@ def release(req, user, module, version):
     """
     return HttpResponse('Not Implemented yet!', status=501)
 
-# pylint: disable=unused-argument
 def file(req, user, module, version):
     """
     Return file for release

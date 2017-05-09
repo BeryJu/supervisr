@@ -2,12 +2,10 @@
 Supervisr Core AboutView Test
 """
 
-from django.contrib.auth.models import AnonymousUser, User
-from django.test import RequestFactory, TestCase
-from django.urls import reverse
+from django.test import TestCase
 
-from ..models import get_system_user
-from ..views import about, admin
+from ..views import about
+from .utils import test_request
 
 
 # pylint: disable=duplicate-code
@@ -16,23 +14,14 @@ class TestAboutViews(TestCase):
     Supervisr Core AboutView Test
     """
 
-    def setUp(self):
-        self.factory = RequestFactory()
-
-    def test_info_view(self):
-        """
-        Test Info View
-        """
-        req = self.factory.get(reverse('admin-info'))
-        req.user = User.objects.get(pk=get_system_user())
-        res = admin.info(req)
-        self.assertEqual(res.status_code, 200)
-
     def test_changelog_view(self):
         """
         Test Changelog View
         """
-        req = self.factory.get(reverse('about-changelog'))
-        req.user = AnonymousUser()
-        res = about.changelog(req)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(test_request(about.changelog).status_code, 200)
+
+    def test_attributions_view(self):
+        """
+        Test attributions view
+        """
+        self.assertEqual(test_request(about.attributions).status_code, 200)
