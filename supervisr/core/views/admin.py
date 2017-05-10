@@ -34,11 +34,12 @@ def index(req):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
+# pylint: disable=unused-argument
 def settings(req):
     """
     Admin settings
     """
-    return render(req, '_admin/index.html')
+    return redirect(reverse('admin-index'))
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)

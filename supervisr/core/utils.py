@@ -57,7 +57,7 @@ def send_admin_mail(exception, message):
     """
     from django.contrib.auth.models import User
     from .mailer import send_message
-    emails = [x.email for x in User.objects.filter(superuser=True)]
+    emails = [x.email for x in User.objects.filter(is_superuser=True)]
     return send_message(
         recipients=emails,
         subject=_("Supervisr Error %(exception)s" % {

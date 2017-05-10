@@ -49,6 +49,7 @@ class MailDomain(Product):
     def __str__(self):
         return str(self.domain)
 
+    @property
     def has_catchall(self):
         """
         Return true if this domain has a catch all account

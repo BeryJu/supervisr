@@ -126,6 +126,7 @@ def signup(req):
                     req=req)
             except SignalException as exception:
                 LOGGER.error("Failed to sign up user %s", exception)
+                new_up.delete()
                 new_user.delete()
                 messages.error(req, _("Failed to sign up."))
                 return redirect(reverse('account-login'))
