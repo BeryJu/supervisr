@@ -9,7 +9,6 @@ from ..views import admin
 from .utils import test_request
 
 
-# pylint: disable=duplicate-code
 class TestAdminViews(TestCase):
     """
     Supervisr Core AdminView Test

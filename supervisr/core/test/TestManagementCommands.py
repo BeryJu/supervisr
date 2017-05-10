@@ -8,7 +8,6 @@ from django.test import TestCase
 from ..models import Setting
 
 
-# pylint: disable=duplicate-code
 class TestManagementCommandss(TestCase):
     """
     Supervisr Core ManagementCommands Test

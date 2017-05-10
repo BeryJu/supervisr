@@ -2,7 +2,7 @@
 Supervisr Core Decorator Test
 """
 
-# pylint: disable=duplicate-code
+
 import os
 import time
 
@@ -15,7 +15,6 @@ from ..views import account, common
 from .utils import test_request
 
 
-# pylint: disable=duplicate-code
 class TestDecorators(TestCase):
     """
     Supervisr Core Decorator Test

@@ -13,7 +13,6 @@ from supervisr.core.models import get_system_user
 from ..views import mail
 
 
-# pylint: disable=duplicate-code
 class TestCommonViews(TestCase):
     """
     Supervisr Mail CommonView Test

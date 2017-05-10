@@ -13,7 +13,6 @@ from supervisr.core.views import common
 from ..middleware import tfa_force_verify
 
 
-# pylint: disable=duplicate-code
 class TestMiddleware(TestCase):
     """
     Supervisr 2FA Middleware Test

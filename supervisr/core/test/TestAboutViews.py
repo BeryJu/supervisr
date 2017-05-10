@@ -8,7 +8,6 @@ from ..views import about
 from .utils import test_request
 
 
-# pylint: disable=duplicate-code
 class TestAboutViews(TestCase):
     """
     Supervisr Core AboutView Test

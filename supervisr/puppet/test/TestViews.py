@@ -9,7 +9,6 @@ from supervisr.puppet import views
 from supervisr.puppet.utils import ForgeImporter
 
 
-# pylint: disable=duplicate-code
 class TestPuppetViews(TestCase):
     """
     Supervisr Puppet View Test

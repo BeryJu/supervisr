@@ -34,11 +34,11 @@ pylint:
   stage: test
   script:
     - inv lint
-# prospector:
-#   type: test
-#   stage: test
-#   script:
-#     - inv prospector
+prospector:
+  type: test
+  stage: test
+  script:
+    - inv prospector
 deploy:
   type: deploy
   stage: deploy

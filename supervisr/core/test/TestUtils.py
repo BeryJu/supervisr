@@ -13,7 +13,6 @@ from ..utils import (do_404, get_remote_ip, get_reverse_dns, render_to_string,
 from .utils import test_request
 
 
-# pylint: disable=duplicate-code
 class TestUtils(TestCase):
     """
     Supervisr Core Utils Test

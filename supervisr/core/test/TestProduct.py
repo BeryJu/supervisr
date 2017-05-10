@@ -11,7 +11,6 @@ from ..models import Product, UserProductRelationship
 from ..signals import SIG_USER_POST_SIGN_UP
 
 
-# pylint: disable=duplicate-code
 class TestProduct(TestCase):
     """
     Supervisr Core Product Test
