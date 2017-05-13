@@ -21,7 +21,6 @@ import sys
 import django
 import guzzle_sphinx_theme
 
-
 html_theme_path = guzzle_sphinx_theme.html_theme_path()
 html_theme = 'guzzle_sphinx_theme'
 
