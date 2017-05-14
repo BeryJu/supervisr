@@ -6,14 +6,14 @@ import os
 import sys
 import time
 
-from ldap3 import (MOCK_SYNC, MODIFY_ADD, MODIFY_DELETE, MODIFY_REPLACE,
-                   OFFLINE_AD_2012_R2, Connection, Server)
+from ldap3 import (ALL_ATTRIBUTES, MOCK_SYNC, MODIFY_ADD, MODIFY_DELETE,
+                   MODIFY_REPLACE, OFFLINE_AD_2012_R2, Connection, Server)
 from ldap3.core.exceptions import LDAPException, LDAPInvalidCredentialsResult
 
 from supervisr.core.models import Setting
 from supervisr.core.utils import send_admin_mail
-
-from .models import LDAPModification
+from supervisr.mod.ldap.errors import LDAPUserNotFound
+from supervisr.mod.ldap.models import LDAPModification
 
 LOGGER = logging.getLogger(__name__)
 
@@ -56,6 +56,26 @@ class LDAPConnector(object):
             self.con.bind()
         # Apply LDAPModification's from DB
         # self.apply_db()
+
+    @staticmethod
+    def cleanup_mock():
+        """
+        Cleanup mock files which are not this PID's
+        """
+        pid = os.getpid()
+        json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock_%d.json' % pid)
+        os.unlink(json_path)
+        LOGGER.info("Cleaned up LDAP Mock from PID %d" % pid)
+
+    def __del__(self):
+        """
+        Write entries to json
+        """
+        pid = os.getpid()
+        json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock_%d.json' % pid)
+        if self.con.search(self.base_dn, '(objectclass=*)', attributes=ALL_ATTRIBUTES):
+            self.con.response_to_file(json_path, raw=True)
+        LOGGER.info("Saved LDAP State as %s" % json_path)
 
     def apply_db(self):
         """
@@ -119,10 +139,11 @@ class LDAPConnector(object):
         ldap_filter = "(mail=%s)" % mail
         self.con.search(self.base_dn, ldap_filter)
         results = self.con.response
-        if len(results) == 1:
+
+        if len(results) >= 1:
             return str(results[0]['dn'])
         else:
-            return False
+            raise LDAPUserNotFound("User '%s' not found" % mail)
 
     def auth_user(self, password, user_dn=None, mail=None):
         """
@@ -194,12 +215,13 @@ class LDAPConnector(object):
             return False
         if user_dn is None and mail is not None:
             user_dn = self.mail_to_dn(mail)
+
         try:
             self.con.modify(user_dn, diff)
         except LDAPException as exception:
             LOGGER.error("Failed to modify %s ('%s'), saved to DB", user_dn, exception)
             LDAPConnector.handle_ldap_error(user_dn, LDAPModification.ACTION_MODIFY, diff)
-        LOGGER.debug("disabled account '%s'", user_dn)
+        LOGGER.debug("moddified account '%s' [%s]", user_dn, ','.join(diff.keys()))
         return 'result' in self.con.result and self.con.result['result'] == 0
 
     def disable_user(self, mail=None, user_dn=None):

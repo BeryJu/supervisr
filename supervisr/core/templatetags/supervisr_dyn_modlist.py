@@ -20,10 +20,7 @@ def supervisr_dyn_modlist():
     mod_list = get_apps(mod_only=True)
     if VIEW_LIST == []:
         for mod in mod_list:
-            if 'mod' in mod:
-                mod = mod.split('.')[2]
-            else:
-                mod = mod.split('.')[1]
+            mod = mod.split('.')[2]
             name = mod.split('.')[-1]
             VIEW_LIST.append({
                 'url': apps.get_app_config(mod).admin_url_name,
