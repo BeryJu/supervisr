@@ -6,6 +6,7 @@ from io import StringIO
 
 from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.contrib.sessions.backends.cached_db import SessionStore
 from django.core.management import call_command
 from django.test import RequestFactory
 
@@ -35,11 +36,13 @@ def test_request(view,
 
     req = factory_handler(view, req_kwargs)
 
-    if not session_data:
-        session_data = {}
+    session = SessionStore()
+    if session_data:
+        for key, value in session_data.items():
+            session[key] = value
     # Fix django.contrib.messages.api.MessageFailure
     # because this request doesn't have a session or anything
-    setattr(req, 'session', session_data)
+    setattr(req, 'session', session)
     setattr(req, '_messages', FallbackStorage(req))
 
     if user is AnonymousUser:

@@ -43,6 +43,7 @@ def login(req):
             user = authenticate(
                 username=form.cleaned_data.get('email'),
                 password=form.cleaned_data.get('password'))
+
             if user is not None:
                 django_login(req, user)
                 if form.cleaned_data.get('remember') is True:
