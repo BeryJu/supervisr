@@ -32,7 +32,6 @@ def event_handle_user_changed_pass(signal, user, req, was_reset, **kwargs):
     """
     Create an Event when a user changes their password
     """
-    print("test")
     Event.create(
         user=user,
         message=_("You changed your Password (%(kind)s)" % {
