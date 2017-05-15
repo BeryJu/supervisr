@@ -19,7 +19,7 @@ class SupervisrAppConfig(AppConfig):
     Base AppConfig Class that logs when it's loaded
     """
 
-    init_modules = ['signals', 'events', 'models']
+    init_modules = ['signals', 'models']
     admin_url_name = 'admin-mod_default'
     navbar_title = None
     view_user_settings = None

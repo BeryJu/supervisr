@@ -7,7 +7,6 @@ from django.test import TestCase
 from ..admin import admin_autoregister
 
 
-# pylint: disable=duplicate-code
 class TestDjangoAdmin(TestCase):
     """
     Supervisr Core Django Admin Test

@@ -10,7 +10,6 @@ from django.test import TestCase
 from ..ldap_connector import LDAPConnector
 
 
-# pylint: disable=duplicate-code
 class TestAccountLDAP(TestCase):
     """
     Supervisr Core Account Test

@@ -7,7 +7,6 @@ from django.test import TestCase
 from ..signals import RobustSignal, SignalException
 
 
-# pylint: disable=duplicate-code
 class TestSignals(TestCase):
     """
     Supervisr Core Signals Test

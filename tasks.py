@@ -115,9 +115,7 @@ def lint(ctx, modules=None):
         modules = [modules]
 
     from pylint.lint import Run
-    args = ['--load-plugins', 'pylint_django']
-    args.extend(modules)
-    Run(args)
+    Run(modules)
 
 @task
 @shell
@@ -125,7 +123,7 @@ def prospector(ctx):
     """
     Run prospector
     """
-    ctx.run("prospector -I migration")
+    ctx.run("prospector")
 
 @task
 @shell

@@ -9,7 +9,6 @@ from django.test import TestCase
 from supervisr.core.test.utils import call_command_ret
 
 
-# pylint: disable=duplicate-code
 class TestManagementCommandss(TestCase):
     """
     Supervisr Core ManagementCommands Test

@@ -104,6 +104,8 @@ local_settings.py
 # Sphinx Build
 docs/build/
 
+.vs
+
 # Nodejs .gitignore
 
 # Logs

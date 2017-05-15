@@ -12,7 +12,6 @@ from ..views import account, user
 from .utils import test_request
 
 
-# pylint: disable=duplicate-code
 class TestUser(TestCase):
     """
     Supervisr Core User Test
