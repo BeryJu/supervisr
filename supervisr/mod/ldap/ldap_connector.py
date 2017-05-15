@@ -65,7 +65,7 @@ class LDAPConnector(object):
         pid = os.getpid()
         json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock_%d.json' % pid)
         os.unlink(json_path)
-        LOGGER.info("Cleaned up LDAP Mock from PID %d" % pid)
+        LOGGER.info("Cleaned up LDAP Mock from PID %d", pid)
 
     def __del__(self):
         """
