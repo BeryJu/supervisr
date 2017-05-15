@@ -71,11 +71,11 @@ class LDAPConnector(object):
         """
         Write entries to json
         """
-        pid = os.getpid()
-        json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock_%d.json' % pid)
-        if self.con.search(self.base_dn, '(objectclass=*)', attributes=ALL_ATTRIBUTES):
-            self.con.response_to_file(json_path, raw=True)
-        LOGGER.info("Saved LDAP State as %s" % json_path)
+        # pid = os.getpid()
+        # json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock_%d.json' % pid)
+        # if self.con.search(self.base_dn, '(objectclass=*)', attributes=ALL_ATTRIBUTES):
+        #     self.con.response_to_file(json_path, raw=True)
+        # LOGGER.info("Saved LDAP State as %s" % json_path)
 
     def apply_db(self):
         """
