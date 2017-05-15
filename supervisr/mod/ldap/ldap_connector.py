@@ -6,8 +6,8 @@ import os
 import sys
 import time
 
-from ldap3 import (ALL_ATTRIBUTES, MOCK_SYNC, MODIFY_ADD, MODIFY_DELETE,
-                   MODIFY_REPLACE, OFFLINE_AD_2012_R2, Connection, Server)
+from ldap3 import (MOCK_SYNC, MODIFY_ADD, MODIFY_DELETE, MODIFY_REPLACE,
+                   OFFLINE_AD_2012_R2, Connection, Server)
 from ldap3.core.exceptions import LDAPException, LDAPInvalidCredentialsResult
 
 from supervisr.core.models import Setting
