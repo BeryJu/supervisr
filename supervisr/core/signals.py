@@ -2,9 +2,15 @@
 Supervisr Core Signal definitions
 """
 
-from django.dispatch import Signal
+import logging
 
-from .errors import SignalException
+from django.db.models.signals import post_migrate
+from django.dispatch import Signal, receiver
+
+from supervisr.core.apps import SupervisrAppConfig
+from supervisr.core.errors import SignalException
+
+LOGGER = logging.getLogger(__name__)
 
 
 class RobustSignal(Signal):
@@ -37,6 +43,10 @@ SIG_USER_RESEND_CONFIRM = RobustSignal(providing_args=['user', 'req'])
 
 SIG_DOMAIN_CREATED = RobustSignal(providing_args=['domain'])
 
+# Signal which can be subscribed to initialize things that take longer
+# and should not be run up on reboot of the app
+SIG_DO_SETUP = RobustSignal(providing_args=['app_name'])
+
 # SIG_CHECK_* Signals return a boolean
 
 # Return wether user with `email` exists
@@ -46,3 +56,13 @@ SIG_CHECK_USER_EXISTS = RobustSignal(providing_args=['email'])
 
 # Return a hash for the /about/info page
 SIG_GET_MOD_INFO = RobustSignal(providing_args=[])
+
+@receiver(post_migrate)
+# pylint: disable=unused-argument
+def core_handle_post_migrate(sender, *args, **kwargs):
+    """
+    Trigger SIG_DO_SETUP
+    """
+    if isinstance(sender, SupervisrAppConfig):
+        LOGGER.info("Running Post-Migrate for '%s'...", sender.name)
+        SIG_DO_SETUP.send(sender.name)

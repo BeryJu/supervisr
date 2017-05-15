@@ -6,14 +6,16 @@ from io import StringIO
 
 from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.contrib.sessions.backends.cached_db import SessionStore
 from django.core.management import call_command
 from django.test import RequestFactory
-from django.urls import reverse
 
 
+# pylint: disable=too-many-arguments
 def test_request(view,
                  method='GET',
                  user=AnonymousUser,
+                 session_data=None,
                  url_kwargs=None,
                  req_kwargs=None):
     """
@@ -26,16 +28,22 @@ def test_request(view,
         req_kwargs = {}
 
     factory = RequestFactory()
-    if method == 'GET':
-        req = factory.get(reverse(view), req_kwargs)
-    elif method == 'POST':
-        req = factory.post(reverse(view), req_kwargs)
 
+    factory_handler = getattr(factory, method.lower(), None)
+
+    if not factory_handler:
+        return
+
+    req = factory_handler(view, req_kwargs)
+
+    session = SessionStore()
+    if session_data:
+        for key, value in session_data.items():
+            session[key] = value
     # Fix django.contrib.messages.api.MessageFailure
     # because this request doesn't have a session or anything
-    setattr(req, 'session', 'session')
-    messages = FallbackStorage(req)
-    setattr(req, '_messages', messages)
+    setattr(req, 'session', session)
+    setattr(req, '_messages', FallbackStorage(req))
 
     if user is AnonymousUser:
         user = AnonymousUser()

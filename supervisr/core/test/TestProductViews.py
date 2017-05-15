@@ -11,7 +11,6 @@ from ..models import Product, get_system_user
 from ..views import product
 
 
-# pylint: disable=duplicate-code
 class TestProductViews(TestCase):
     """
     Supervisr Core ProductView Test

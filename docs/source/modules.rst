@@ -1,7 +1,7 @@
-web
-===
+core
+====
 
 .. toctree::
    :maxdepth: 4
 
-   web
+   core

@@ -24,10 +24,7 @@ def supervisr_dyn_navapps():
     if APP_LIST == []:
         for mod in sub_apps:
             if 'mod' not in mod:
-                if 'mod' in mod:
-                    mod = mod.split('.')[2]
-                else:
-                    mod = mod.split('.')[1]
+                mod = mod.split('.')[1]
                 title = apps.get_app_config(mod).navbar_title
                 mod = mod.replace('supervisr.', '')
                 if title is None:

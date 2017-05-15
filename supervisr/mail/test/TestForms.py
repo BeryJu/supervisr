@@ -9,7 +9,6 @@ from django.test import TestCase
 from ..forms.mail_account import MailAccountFormCredentials
 
 
-# pylint: disable=duplicate-code
 class TestForms(TestCase):
     """
     Supervisr Mail Form Test

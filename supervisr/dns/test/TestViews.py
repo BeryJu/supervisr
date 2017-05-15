@@ -11,7 +11,6 @@ from supervisr.core.models import get_system_user
 from ..views import dns
 
 
-# pylint: disable=duplicate-code
 class TestDNSViews(TestCase):
     """
     Supervisr DNS View Test

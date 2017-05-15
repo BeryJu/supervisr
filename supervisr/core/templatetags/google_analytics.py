@@ -10,18 +10,14 @@ from ..models import Setting
 register = template.Library()
 
 @register.simple_tag(takes_context=True)
-def google_analytics(context, tracking_id=''):
+def google_analytics(context):
     """
     Returns the GA Script with tracking_id inserted
     """
     if Setting.objects.get(pk='core:analytics:ga:enabled').value_bool is False:
         # Google Analytics is not enabled
         return ''
-    if tracking_id == '':
-        tracking_id = Setting.get('core:analytics:ga:tracking_id')
-    if tracking_id is None or tracking_id is False:
-        # Check if tracking is disabled
-        return ''
+    tracking_id = Setting.get('core:analytics:ga:tracking_id')
     # Check if we're signed in and pass the user through
     req = context['request']
     if req.user.is_authenticated:

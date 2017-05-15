@@ -43,6 +43,7 @@ def login(req):
             user = authenticate(
                 username=form.cleaned_data.get('email'),
                 password=form.cleaned_data.get('password'))
+
             if user is not None:
                 django_login(req, user)
                 if form.cleaned_data.get('remember') is True:
@@ -126,6 +127,7 @@ def signup(req):
                     req=req)
             except SignalException as exception:
                 LOGGER.error("Failed to sign up user %s", exception)
+                new_up.delete()
                 new_user.delete()
                 messages.error(req, _("Failed to sign up."))
                 return redirect(reverse('account-login'))

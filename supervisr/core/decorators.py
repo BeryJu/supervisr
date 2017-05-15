@@ -9,6 +9,8 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.http import urlencode
 
+REAUTH_KEY = getattr(settings, 'REAUTH_KEY', 'supervisr_require_reauth_done')
+REAUTH_MARGIN = getattr(settings, 'REAUTH_MARGIN', 300)
 
 def anonymous_required(view_function):
     """
@@ -42,16 +44,20 @@ def reauth_required(view_function):
 
         now = time.time()
 
-        if 'supervisr_require_reauth_done' in req.session and \
-            req.session['supervisr_require_reauth_done'] > (now + 300):
-            del req.session['supervisr_require_reauth_done']
+        if REAUTH_KEY in req.session and \
+            req.session[REAUTH_KEY] < (now - REAUTH_MARGIN):
+            # Timestamp in session but expired
+            del req.session[REAUTH_KEY]
 
-        if 'supervisr_require_reauth_done' not in req.session:
+        if REAUTH_KEY not in req.session:
+            # Timestamp not in session, force user to reauth
             return redirect(reverse('account-reauth')+'?'+
                             urlencode({'next': req.path}))
 
-        if 'supervisr_require_reauth_done' in req.session and \
-            req.session['supervisr_require_reauth_done'] <= (now + 300):
+        if REAUTH_KEY in req.session and \
+            req.session[REAUTH_KEY] >= (now - REAUTH_MARGIN) and \
+            req.session[REAUTH_KEY] <= now:
+            # Timestamp in session and valid
             return view_function(*args, **kwargs)
 
     wrap.__doc__ = view_function.__doc__
@@ -78,6 +84,7 @@ def ifapp(app_name):
                     APP_CACHE.append(parts[0])
             else:
                 APP_CACHE.append(app)
+
     def outer_wrap(ifapp_func):
         """
         Only executes ifapp_func if app_name is installed

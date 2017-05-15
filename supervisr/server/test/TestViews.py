@@ -11,7 +11,6 @@ from supervisr.core.models import get_system_user
 from ..views import server
 
 
-# pylint: disable=duplicate-code
 class TestServerViews(TestCase):
     """
     Supervisr Server View Test

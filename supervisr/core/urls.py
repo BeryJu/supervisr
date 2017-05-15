@@ -77,7 +77,7 @@ for app in get_apps():
         ]
         LOGGER.info("Loaded %s", url_module)
 
-if settings.DEBUG:
+if settings.DEBUG or settings.TEST:
     import debug_toolbar
     urlpatterns += [
         url(r'^__debug__/', include(debug_toolbar.urls)),

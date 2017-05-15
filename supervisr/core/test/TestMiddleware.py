@@ -16,7 +16,6 @@ from ..models import Setting
 from ..views import account
 
 
-# pylint: disable=duplicate-code
 class TestMiddleware(TestCase):
     """
     Supervisr Core Middleware Test
