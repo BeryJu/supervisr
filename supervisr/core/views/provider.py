@@ -47,6 +47,10 @@ class ProviderNewView(BaseWizardView):
                 [('%s.%s' % (s.__module__, s.__name__), s.__name__) for s in providers]
         return form
 
+    def dispatch(self, req, *args, **kwargs):
+        print(req.session)
+        return super(ProviderNewView, self).dispatch(req, *args, **kwargs)
+
     def process_step(self, form):
         """
         Dynamically add forms from provider's setup_ui
