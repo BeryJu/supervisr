@@ -6,8 +6,8 @@ import os
 import sys
 import time
 
-from ldap3 import (ALL_ATTRIBUTES, MOCK_SYNC, MODIFY_ADD, MODIFY_DELETE,
-                   MODIFY_REPLACE, OFFLINE_AD_2012_R2, Connection, Server)
+from ldap3 import (MOCK_SYNC, MODIFY_ADD, MODIFY_DELETE, MODIFY_REPLACE,
+                   OFFLINE_AD_2012_R2, Connection, Server)
 from ldap3.core.exceptions import LDAPException, LDAPInvalidCredentialsResult
 
 from supervisr.core.models import Setting
@@ -65,17 +65,17 @@ class LDAPConnector(object):
         pid = os.getpid()
         json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock_%d.json' % pid)
         os.unlink(json_path)
-        LOGGER.info("Cleaned up LDAP Mock from PID %d" % pid)
+        LOGGER.info("Cleaned up LDAP Mock from PID %d", pid)
 
     def __del__(self):
         """
         Write entries to json
         """
-        pid = os.getpid()
-        json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock_%d.json' % pid)
-        if self.con.search(self.base_dn, '(objectclass=*)', attributes=ALL_ATTRIBUTES):
-            self.con.response_to_file(json_path, raw=True)
-        LOGGER.info("Saved LDAP State as %s" % json_path)
+        # pid = os.getpid()
+        # json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock_%d.json' % pid)
+        # if self.con.search(self.base_dn, '(objectclass=*)', attributes=ALL_ATTRIBUTES):
+        #     self.con.response_to_file(json_path, raw=True)
+        # LOGGER.info("Saved LDAP State as %s" % json_path)
 
     def apply_db(self):
         """
