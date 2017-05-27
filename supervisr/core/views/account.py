@@ -81,7 +81,7 @@ def login(req):
         form = LoginForm()
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("Login"),
+        'title': _("SSO - Login"),
         'primary_action': _("Login"),
         'extra_links': {
             'account-signup': 'Sign up for an account',
@@ -139,7 +139,7 @@ def signup(req):
         form = SignupForm()
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("Signup"),
+        'title': _("SSO - Signup"),
         'primary_action': _("Signup")
         })
 
@@ -177,7 +177,7 @@ def change_password(req):
         form = ChangePasswordForm()
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("Change Password"),
+        'title': _("SSO - Change Password"),
         'primary_action': _("Change Password")
         })
 
@@ -245,7 +245,7 @@ def reset_password_init(req):
         form = PasswordResetInitForm()
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("Reset your Password - Step 1/3"),
+        'title': _("SSO - Reset your Password - Step 1/3"),
         'primary_action': _("Send Confirmation Email")
         })
 
@@ -299,7 +299,7 @@ def reset_password_confirm(req, uuid):
         form = PasswordResetFinishForm()
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("Reset your Password - Step 3/3"),
+        'title': _("SSO - Reset your Password - Step 3/3"),
         'primary_action': _("Reset your Password")
         })
 
@@ -352,6 +352,6 @@ def reauth(req):
 
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("Re-Authenticate"),
+        'title': _("SSO - Re-Authenticate"),
         'primary_action': _("Login"),
         })
