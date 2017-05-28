@@ -8,8 +8,9 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
 
-from ..models import Event, UserProductRelationship
-from ..utils import do_404, render_to_string
+from supervisr.core.models import Event, UserProductRelationship
+from supervisr.core.utils import do_404, render_to_string
+from supervisr.core.views.api.utils import api_response
 
 
 @login_required
@@ -98,10 +99,16 @@ def uncaught_404(req):
     """
     Handle an uncaught 404
     """
+    if 'api' in req.path:
+        # return a json/xml/yaml message if this was an api call
+        return api_response(req, {'message': 'not_found'})
     return render(req, 'common/error.html', {'code': 404})
 
 def uncaught_500(req):
     """
     Handle an uncaught 500
     """
+    if 'api' in req.path:
+        # return a json/xml/yaml message if this was an api call
+        return api_response(req, {'message': 'unexpected_error'})
     return render(req, 'common/error.html', {'code': 500})
