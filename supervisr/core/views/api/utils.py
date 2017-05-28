@@ -7,20 +7,23 @@ from django.http import HttpResponse, JsonResponse
 
 
 def api_response(req, data):
+    """
+    Prase data in correct format extracted from request
+    """
     # Check which format is requested, default to json
     format_keys = ['type', 'format']
-    format = 'json'
+    selected_format = 'json'
     for key in format_keys:
         if key in req.GET:
-            format = req.GET.get(key)
+            selected_format = req.GET.get(key)
 
     _globals = globals()
-    handler_name = 'api_response_%s' % format
+    handler_name = 'api_response_%s' % selected_format
     handler = _globals[handler_name] if handler_name in _globals else None
     if handler is not None:
         return handler(data)
     else:
-        return JsonResponse({'error': 'type "%s" not found' % format})
+        return JsonResponse({'error': 'type "%s" not found' % selected_format})
 
 def api_response_json(data):
     """
