@@ -13,6 +13,7 @@ def account_me(req):
     Return oursevles as json
     """
     data = {}
-    for field in ['pk', 'first_name', 'email']:
+    for field in ['first_name', 'email']:
         data[field] = getattr(req.user, field)
+    data['id'] = req.user.pk
     return api_response(req, data)

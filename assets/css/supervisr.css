@@ -123,3 +123,9 @@ tr.selected {
     width: 100%;
 }
 
+
+/* fix links in alerts */
+
+.alert > .alert-item > .alert-text > a {
+    color: white;
+}
