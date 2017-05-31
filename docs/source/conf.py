@@ -19,16 +19,16 @@ import os
 import sys
 
 import django
-import guzzle_sphinx_theme
+# import guzzle_sphinx_theme
 
-html_theme_path = guzzle_sphinx_theme.html_theme_path()
-html_theme = 'guzzle_sphinx_theme'
+# html_theme_path = guzzle_sphinx_theme.html_theme_path()
+# html_theme = 'guzzle_sphinx_theme'
 
 # Guzzle theme options (see theme.conf for more information)
-html_theme_options = {
-    # Set the name of the project to appear in the sidebar
-    'project_nav_name': 'supervisr',
-}
+# html_theme_options = {
+#     # Set the name of the project to appear in the sidebar
+#     'project_nav_name': 'supervisr',
+# }
 
 
 sys.path.insert(0, os.path.abspath('../..'))
@@ -53,7 +53,6 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'guzzle_sphinx_theme',
 ]
 
 source_parsers = {
