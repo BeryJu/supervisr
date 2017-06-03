@@ -6,10 +6,13 @@ from __future__ import unicode_literals
 
 import importlib
 import logging
+import os
 import subprocess
 
+import pkg_resources
 from django.apps import AppConfig
 from django.conf import settings
+from pip.req import parse_requirements
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,6 +28,7 @@ class SupervisrAppConfig(AppConfig):
     view_user_settings = None
 
     def ready(self):
+        self.check_requirements()
         self.load_init()
         self.merge_settings()
         super(SupervisrAppConfig, self).ready()
@@ -36,10 +40,36 @@ class SupervisrAppConfig(AppConfig):
         LOGGER.info("Loaded %s", self.name)
         for module in self.init_modules:
             try:
-                importlib.import_module("%s.%s" % (self.name, module))
                 LOGGER.info("Loaded %s.%s", self.name, module)
+                importlib.import_module("%s.%s" % (self.name, module))
             except ImportError:
                 pass # ignore non-existant modules
+
+    def check_requirements(self):
+        """
+        Check requirements(-dev) and see if everything is installed
+        """
+        def _check_file(self, path):
+            # Basedir
+            basedir = (os.path.dirname(os.path.dirname(os.path.dirname(
+                os.path.realpath(__file__)))))
+            # Path to the this module
+            subdir = os.sep.join(self.__module__.split('.')[:-1])
+            # Complete path to *path
+            path = os.path.join(basedir, subdir, path)
+
+            if not os.path.isfile(path):
+                # Path is not a file, assume this module has no requirements
+                return False
+
+            # Read file and parse all lines
+            install_reqs = parse_requirements(path, session='hack')
+
+            pkg_resources.require([str(x.req) for x in install_reqs])
+
+        _check_file(self, 'requirements.txt')
+        if settings.DEBUG:
+            _check_file(self, 'requirements-dev.txt')
 
     def merge_settings(self, overwrite=False):
         """
