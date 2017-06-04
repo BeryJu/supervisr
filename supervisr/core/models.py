@@ -95,13 +95,14 @@ class UserProfile(CreatedUpdatedModel):
     """
     user = models.OneToOneField(User, primary_key=True)
     username = models.TextField()
+    crypt6_password = models.CharField(max_length=128, blank=True, default='')
     unix_username = models.CharField(max_length=32, default=get_random_string, editable=False)
     unix_userid = models.IntegerField(default=get_userid)
     locale = models.CharField(max_length=5, default='en-US')
     news_subscribe = models.BooleanField(default=False)
 
     def __str__(self):
-        return "UserProfile %s" % self.user.email
+        return "UserProfile %s (uid: %d)" % (self.user.email, self.unix_userid)
 
 # class GroupProfile(CreatedUpdatedModel):
 #     """
