@@ -37,6 +37,13 @@ def expiry_date():
     """
     return time.time() + 172800 # 2 days
 
+def make_username(username):
+    """
+    Return username with some random chars and cut to 32 chars
+    """
+    full_username = '%s_%s' % (get_random_string(), username)
+    return full_username[:32]
+
 def get_random_string(length=10):
     """
     Generate a completely random 10-char user_name (used for unix-accounts)
@@ -87,6 +94,7 @@ class UserProfile(CreatedUpdatedModel):
     Save settings associated with user, since we don't want a custom user Model
     """
     user = models.OneToOneField(User, primary_key=True)
+    username = models.TextField()
     unix_username = models.CharField(max_length=10, default=get_random_string, editable=False)
     unix_userid = models.IntegerField(default=get_userid)
     locale = models.CharField(max_length=5, default='en-US')

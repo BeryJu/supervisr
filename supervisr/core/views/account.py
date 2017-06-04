@@ -22,7 +22,7 @@ from ..decorators import anonymous_required
 from ..forms.account import (ChangePasswordForm, LoginForm,
                              PasswordResetFinishForm, PasswordResetInitForm,
                              ReauthForm, SignupForm)
-from ..models import AccountConfirmation, UserProfile
+from ..models import AccountConfirmation, UserProfile, make_username
 from ..signals import (SIG_USER_CHANGE_PASS, SIG_USER_CONFIRM, SIG_USER_LOGIN,
                        SIG_USER_LOGOUT, SIG_USER_PASS_RESET_INIT,
                        SIG_USER_POST_CHANGE_PASS, SIG_USER_POST_SIGN_UP,
@@ -109,7 +109,8 @@ def signup(req):
             # Create user profile
             new_up = UserProfile(
                 user=new_user,
-                news_subscribe=form.cleaned_data.get('news_accept'))
+                username=form.cleaned_data.get('username'),
+                unix_username=make_username(form.cleaned_data.get('username')))
             new_up.save()
             # Send signal for other auth sources
             try:

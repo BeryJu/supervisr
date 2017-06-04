@@ -34,8 +34,9 @@ class SignupForm(InlineForm):
     """
     Form to handle signups
     """
-    order = ['name', 'email', 'password', 'password_rep', 'captcha', 'tos_accept', 'news_accept']
+    order = ['name', 'username', 'email', 'password', 'password_rep', 'captcha', 'tos_accept']
     name = forms.CharField(label=_('Name'))
+    username = forms.CharField(label=_('Username'))
     email = forms.EmailField(label=_('Email'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
@@ -44,7 +45,6 @@ class SignupForm(InlineForm):
         private_key=Setting.get('core:recaptcha:private'),
         public_key=Setting.get('core:recaptcha:public'))
     tos_accept = forms.BooleanField(required=True, label=_('I accept the Terms of service'))
-    news_accept = forms.BooleanField(required=False, label=_('Subscribe to Newsletters'))
 
     def clean_email(self):
         """
