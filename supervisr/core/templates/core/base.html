@@ -69,7 +69,7 @@
       {% if user.is_authenticated %}
       <div class="dropdown bottom-right">
         <button class="dropdown-toggle btn btn-primary" clrDropdown>
-          {{ user.userprofile.unix_username }}
+          {{ user.userprofile.username }}
           <clr-icon shape="caret down"></clr-icon>
         </button>
         <div class="dropdown-menu">
