@@ -17,6 +17,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_GET
+from passlib.hash import sha512_crypt
 
 from ..decorators import anonymous_required
 from ..forms.account import (ChangePasswordForm, LoginForm,
@@ -46,6 +47,11 @@ def login(req):
 
             if user is not None:
                 django_login(req, user)
+                # Set updated password in user profile for PAM
+                user.userprofile.crypt6_password = \
+                    sha512_crypt.hash(form.cleaned_data.get('password'))
+                user.userprofile.save()
+
                 if form.cleaned_data.get('remember') is True:
                     req.session.set_expiry(settings.REMEMBER_SESSION_AGE)
                 else:
