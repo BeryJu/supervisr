@@ -24,11 +24,11 @@ class TestAccount(TestCase):
         os.environ['RECAPTCHA_TESTING'] = 'True'
         self.signup_data = {
             'email': 'test@test.test',
+            'username': 'beryjuorg',
             'name': 'Test user',
             'password': 'b3ryju0rg!',
             'password_rep': 'b3ryju0rg!',
             'tos_accept': True,
-            'news_accept': False,
             'g-recaptcha-response': 'PASSED',
             'captcha': 'PASSED',
         }
