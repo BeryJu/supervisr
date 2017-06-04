@@ -54,7 +54,7 @@ def get_random_string(length=10):
     offset = random.randint(0, 25-length)
     # Python3 changed the way we need to encode
     res = base64.b64encode(uid.bytes, altchars=b'_-')
-    return res[offset:offset+length]
+    return res[offset:offset+length].decode("utf-8")
 
 def get_userid():
     """
