@@ -48,7 +48,8 @@ def login(req):
             if user is not None:
                 django_login(req, user)
                 # Set updated password in user profile for PAM
-                user.userprofile.crypt6_password = sha512_crypt(form.cleaned_data.get('password'))
+                user.userprofile.crypt6_password = \
+                    sha512_crypt.hash(form.cleaned_data.get('password'))
                 user.userprofile.save()
 
                 if form.cleaned_data.get('remember') is True:
