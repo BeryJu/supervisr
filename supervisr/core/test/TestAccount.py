@@ -203,12 +203,12 @@ class TestAccount(TestCase):
         # Create Account Confirmation UUID
         new_ac = AccountConfirmation.objects.create(user=user)
         self.assertFalse(new_ac.is_expired)
+        uuid = AccountConfirmation.objects.filter(user=user).first().pk
         reset_res = test_request(account.reset_password_confirm,
                                  method='POST',
                                  user=user,
                                  url_kwargs={
-                                     'uuid': AccountConfirmation.objects.
-                                             filter(user=user).first().pk
+                                     'uuid': uuid
                                  },
                                  req_kwargs=self.change_data)
 
