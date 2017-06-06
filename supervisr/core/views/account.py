@@ -116,6 +116,7 @@ def signup(req):
             new_up = UserProfile(
                 user=new_user,
                 username=form.cleaned_data.get('username'),
+                crypt6_password=sha512_crypt.hash(form.cleaned_data.get('password')),
                 unix_username=make_username(form.cleaned_data.get('username')))
             new_up.save()
             # Send signal for other auth sources

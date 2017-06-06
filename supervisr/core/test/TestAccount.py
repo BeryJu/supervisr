@@ -180,6 +180,41 @@ class TestAccount(TestCase):
             user=user,
             req=None)
 
+    def test_reset_passowrd(self):
+        """
+        Test reset password POST
+        """
+        # Signup user first
+        signup_form = SignupForm(self.signup_data)
+        self.assertTrue(signup_form.is_valid())
+
+        signup_res = test_request(account.signup,
+                                  method='POST',
+                                  req_kwargs=signup_form.cleaned_data)
+        self.assertEqual(signup_res.status_code, 302)
+
+        user = User.objects.get(email=self.signup_data['email'])
+        # Invalidate all other links for this user
+        old_acs = AccountConfirmation.objects.filter(
+            user=user)
+        for old_ac in old_acs:
+            old_ac.confirmed = True
+            old_ac.save()
+        # Create Account Confirmation UUID
+        new_ac = AccountConfirmation.objects.create(user=user)
+        self.assertFalse(new_ac.is_expired)
+        uuid = AccountConfirmation.objects.filter(user=user).first().pk
+        reset_res = test_request(account.reset_password_confirm,
+                                 method='POST',
+                                 user=user,
+                                 url_kwargs={
+                                     'uuid': uuid
+                                 },
+                                 req_kwargs=self.change_data)
+
+        self.assertEqual(reset_res.status_code, 302)
+        self.assertEqual(reset_res.url, reverse(common.index))
+
     def test_change_password(self):
         """
         Test account.change_password view POST
