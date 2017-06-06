@@ -2,6 +2,7 @@
 Supervisr Core test utils
 """
 
+from datetime import timedelta
 from io import StringIO
 
 from django.contrib.auth.models import AnonymousUser, User
@@ -9,6 +10,8 @@ from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.backends.cached_db import SessionStore
 from django.core.management import call_command
 from django.test import RequestFactory
+from django.utils import timezone
+from oauth2_provider.models import AccessToken, Application
 
 
 # pylint: disable=too-many-arguments
@@ -17,7 +20,8 @@ def test_request(view,
                  user=AnonymousUser,
                  session_data=None,
                  url_kwargs=None,
-                 req_kwargs=None):
+                 req_kwargs=None,
+                 headers=None):
     """
     Wrapper to make test requests easier
     """
@@ -26,6 +30,8 @@ def test_request(view,
         url_kwargs = {}
     if req_kwargs is None:
         req_kwargs = {}
+    if headers is None:
+        headers = {}
 
     factory = RequestFactory()
 
@@ -34,7 +40,7 @@ def test_request(view,
     if not factory_handler:
         return
 
-    req = factory_handler(view, req_kwargs)
+    req = factory_handler(view, req_kwargs, **headers)
 
     session = SessionStore()
     if session_data:
@@ -60,3 +66,23 @@ def call_command_ret(*args, **kwargs):
     with StringIO() as output:
         call_command(*args, stdout=output, stderr=output, **kwargs)
         return output.getvalue()
+
+def oauth2_get_token(user):
+    """
+    Generate an OAuth2 Token for unittests
+    """
+    app = Application.objects.create(
+        client_type=Application.CLIENT_CONFIDENTIAL,
+        authorization_grant_type=Application.GRANT_AUTHORIZATION_CODE,
+        redirect_uris='https://www.none.com/oauth2/callback',
+        name='dummy',
+        user=user
+    )
+    access_token = AccessToken.objects.create(
+        user=user,
+        scope='read write',
+        expires=timezone.now() + timedelta(seconds=300),
+        token='secret-access-token-key',
+        application=app
+    )
+    return "Bearer {0}".format(access_token)
