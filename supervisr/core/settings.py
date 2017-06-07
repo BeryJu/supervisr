@@ -229,12 +229,12 @@ LOGGING = {
     },
     'loggers': {
         'supervisr': {
-            'handlers': ['console', 'syslog'],
+            'handlers': ['console', 'syslog', 'mail_admins'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'django': {
-            'handlers': ['console', 'syslog'],
+            'handlers': ['console', 'syslog', 'mail_admins'],
             'level': 'INFO',
             'propagate': True,
         },
