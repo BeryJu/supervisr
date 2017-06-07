@@ -39,10 +39,9 @@ def expiry_date():
 
 def make_username(username):
     """
-    Return username with some random chars and cut to 32 chars
+    Return username cut to 32 chars, also make POSIX conform
     """
-    full_username = '%s_%s' % (get_random_string(), username)
-    return full_username[:32]
+    return re.sub('([^a-zA-Z0-9\._-])', '_', username[:32])
 
 def get_random_string(length=10):
     """
