@@ -7,6 +7,7 @@ import base64
 import json
 import math
 import random
+import re
 import time
 import uuid
 
@@ -39,10 +40,9 @@ def expiry_date():
 
 def make_username(username):
     """
-    Return username with some random chars and cut to 32 chars
+    Return username cut to 32 chars, also make POSIX conform
     """
-    full_username = '%s_%s' % (get_random_string(), username)
-    return full_username[:32]
+    return re.sub(r'([^a-zA-Z0-9\._-])', '_', str(username)[:32])
 
 def get_random_string(length=10):
     """

@@ -2,18 +2,20 @@
 Supervisr Puppet views
 """
 
+import ipaddress
 from wsgiref.util import FileWrapper
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from .builder import ReleaseBuilder
-from .models import PuppetModule, PuppetModuleRelease
+from supervisr.core.utils import get_remote_ip
+from supervisr.puppet.builder import ReleaseBuilder
+from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 
 
 # pylint: disable=unused-argument
@@ -73,6 +75,9 @@ def file(req, user, module, version):
     """
     Return file for release
     """
+    remote_ip = get_remote_ip(req)
+    if not (ipaddress.ip_address(remote_ip)).is_private:
+        return Http404
     p_user = User.objects.get(username=user)
     p_module = PuppetModule.objects.get(name=module, owner=p_user)
     p_release = PuppetModuleRelease.objects.get(module=p_module, version=version)
