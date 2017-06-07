@@ -3,7 +3,6 @@ Supervisr Core Account Forms
 """
 
 import logging
-import re
 
 from captcha.fields import ReCaptchaField
 from django import forms
