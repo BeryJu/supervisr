@@ -5,11 +5,10 @@ Supervisr Core Events
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext as _
-from passlib.hash import sha512_crypt
 
 from .mailer import send_message
 from .models import Event
-from .signals import (SIG_USER_CHANGE_PASS, SIG_USER_LOGIN, SIG_USER_LOGOUT,
+from .signals import (SIG_USER_LOGIN, SIG_USER_LOGOUT,
                       SIG_USER_POST_CHANGE_PASS, SIG_USER_POST_SIGN_UP,
                       SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
                       SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
@@ -26,17 +25,6 @@ def event_handle_user_signed_up(sender, signal, user, req, **kwargs):
         message=_("You Signed up"),
         current=False,
         request=req)
-
-@receiver(SIG_USER_CHANGE_PASS)
-# pylint: disable=unused-argument
-def crypt6_handle_user_change_pass(signal, user, password, **kwargs):
-    """
-    Update crypt6_password
-    """
-    # Also update UserProfile's crypt6_pass
-    upro = user.userprofile
-    upro.crypt6_password = sha512_crypt.hash(password)
-    upro.save()
 
 @receiver(SIG_USER_POST_CHANGE_PASS)
 # pylint: disable=unused-argument
