@@ -6,6 +6,7 @@ import logging
 
 from django.db.models.signals import post_migrate
 from django.dispatch import Signal, receiver
+from passlib.hash import sha512_crypt
 
 from supervisr.core.apps import SupervisrAppConfig
 from supervisr.core.errors import SignalException
@@ -66,3 +67,14 @@ def core_handle_post_migrate(sender, *args, **kwargs):
     if isinstance(sender, SupervisrAppConfig):
         LOGGER.info("Running Post-Migrate for '%s'...", sender.name)
         SIG_DO_SETUP.send(sender.name)
+
+@receiver(SIG_USER_CHANGE_PASS)
+# pylint: disable=unused-argument
+def crypt6_handle_user_change_pass(signal, user, password, **kwargs):
+    """
+    Update crypt6_password
+    """
+    # Also update UserProfile's crypt6_pass
+    upro = user.userprofile
+    upro.crypt6_password = sha512_crypt.hash(password)
+    upro.save()

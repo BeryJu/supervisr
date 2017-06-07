@@ -2,7 +2,7 @@
 Supervisr Puppet views
 """
 
-import ipaddress
+import logging
 from wsgiref.util import FileWrapper
 
 from django.contrib import messages
@@ -13,9 +13,11 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from supervisr.core.utils import get_remote_ip
+from supervisr.core.models import Setting
 from supervisr.puppet.builder import ReleaseBuilder
 from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
+
+LOGGER = logging.getLogger(__name__)
 
 
 # pylint: disable=unused-argument
@@ -75,9 +77,9 @@ def file(req, user, module, version):
     """
     Return file for release
     """
-    remote_ip = get_remote_ip(req)
-    if not (ipaddress.ip_address(remote_ip)).is_private:
-        return Http404
+    if not req.META['HTTP_USER_AGENT'] == Setting.get('puppet:allowed_user_agent'):
+        LOGGER.warning("Denied Download with User-Agent '%s'", req.META['HTTP_USER_AGENT'])
+        raise Http404
     p_user = User.objects.get(username=user)
     p_module = PuppetModule.objects.get(name=module, owner=p_user)
     p_release = PuppetModuleRelease.objects.get(module=p_module, version=version)
