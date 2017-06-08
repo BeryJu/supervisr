@@ -5,7 +5,6 @@ Supervisr Core APIv2
 from django.core.cache import CacheKeyWarning, cache
 from django.db import connections
 from django.db.utils import OperationalError
-from oauth2_provider.decorators import protected_resource
 
 from supervisr.core.views.api.utils import api_response
 
@@ -25,7 +24,6 @@ def _cache_status():
         return False
     return True
 
-@protected_resource()
 def health(req):
     """
     Return oursevles as json
