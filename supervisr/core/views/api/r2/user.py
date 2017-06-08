@@ -1,10 +1,10 @@
 """
-Supervisr Core APIv1
+Supervisr Core APIv2
 """
 
 from oauth2_provider.decorators import protected_resource
 
-from ..utils import api_response
+from supervisr.core.views.api.utils import api_response
 
 
 @protected_resource()
