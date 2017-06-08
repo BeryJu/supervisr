@@ -11,31 +11,37 @@ stages:
   - deploy
 migrations:
   type: test
+  except: prod
   stage: test
   script:
     - inv migrate
 unittest:
   type: test
+  except: prod
   stage: test
   script:
     - inv unittest
 coverage:
   type: test
+  except: prod
   stage: test
   script:
     - inv coverage
 isort:
   type: test
+  except: prod
   stage: test
   script:
     - inv isort
 pylint:
   type: test
+  except: prod
   stage: test
   script:
     - inv lint
 prospector:
   type: test
+  except: prod
   stage: test
   script:
     - inv prospector
