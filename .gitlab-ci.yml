@@ -1,60 +1,66 @@
 before_script:
-  - sudo apt-get update >/dev/null
-  - sudo apt-get -y install python3-pip python3-dev libsasl2-dev libldap2-dev libssl-dev python3-mysqldb libmysqlclient-dev >/dev/null
-  - sudo python3 -m pip install -U virtualenv
-  - virtualenv env
-  - source env/bin/activate
-  - pip3 install invoke
-  - inv install --dev
-stages:
-  - test
-  - deploy
-migrations:
-  type: test
-  except: prod
-  stage: test
-  script:
-    - inv migrate
-unittest:
-  type: test
-  except: prod
-  stage: test
-  script:
-    - inv unittest
+  - "sudo apt-get update >/dev/null"
+  - "sudo apt-get -y install python3-pip python3-dev libsasl2-dev libldap2-dev libssl-dev python3-mysqldb libmysqlclient-dev >/dev/null"
+  - "sudo python3 -m pip install -U virtualenv"
+  - "virtualenv env"
+  - "source env/bin/activate"
+  - "pip3 install invoke"
+  - "inv install --dev"
 coverage:
-  type: test
-  except: prod
-  stage: test
+  except:
+    - prod
   script:
-    - inv coverage
-isort:
-  type: test
-  except: prod
+    - "inv coverage"
   stage: test
-  script:
-    - inv isort
-pylint:
   type: test
-  except: prod
-  stage: test
-  script:
-    - inv lint
-prospector:
-  type: test
-  except: prod
-  stage: test
-  script:
-    - inv prospector
 deploy:
-  type: deploy
-  stage: deploy
+  environment:
+    name: production
+    url: "https://my.beryju.org"
   only:
     - prod
   script:
     - "eval $(ssh-agent -s)"
     - "mkdir ~/.ssh -p"
     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
-    - inv deploy --user=beryjuorg --fqdn=ory1-web-prod-1.ory1.beryju.org
-  environment:
-    name: production
-    url: https://my.beryju.org
+    - "inv deploy --user=beryjuorg --fqdn=ory1-web-prod-1.ory1.beryju.org"
+  stage: deploy
+  type: deploy
+isort:
+  except:
+    - prod
+  script:
+    - "inv isort"
+  stage: test
+  type: test
+migrations:
+  except:
+    - prod
+  script:
+    - "inv migrate"
+  stage: test
+  type: test
+prospector:
+  except:
+    - prod
+  script:
+    - "inv prospector"
+  stage: test
+  type: test
+pylint:
+  except:
+    - prod
+  script:
+    - "inv lint"
+  stage: test
+  type: test
+stages:
+  - test
+  - deploy
+unittest:
+  except:
+    - prod
+  script:
+    - "inv unittest"
+  stage: test
+  type: test
