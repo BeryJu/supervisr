@@ -42,7 +42,7 @@ def make_username(username):
     """
     Return username cut to 32 chars, also make POSIX conform
     """
-    return re.sub(r'([^a-zA-Z0-9\.-\s])', '_', str(username)[:32])
+    return re.sub(r'([^a-zA-Z0-9\.\s-])', '_', str(username)[:32])
 
 def get_random_string(length=10):
     """
