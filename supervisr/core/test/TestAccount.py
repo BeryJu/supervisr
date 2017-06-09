@@ -26,21 +26,21 @@ class TestAccount(TestCase):
             'email': 'test@test.test',
             'username': 'beryjuorg',
             'name': 'Test user',
-            'password': 'b3ryju0rg!',
-            'password_rep': 'b3ryju0rg!',
+            'password': 'B3ryju0rg!',
+            'password_rep': 'B3ryju0rg!',
             'tos_accept': True,
             'g-recaptcha-response': 'PASSED',
             'captcha': 'PASSED',
         }
         self.login_data = {
             'email': 'test@test.test',
-            'password': 'b3ryju0rg!',
+            'password': 'B3ryju0rg!',
             'g-recaptcha-response': 'PASSED',
             'captcha': 'PASSED',
         }
         self.change_data = {
-            'password': 'b4ryju0rg!',
-            'password_rep': 'b4ryju0rg!',
+            'password': 'B4ryju0rg!',
+            'password_rep': 'B4ryju0rg!',
         }
 
     def test_signup_form(self):

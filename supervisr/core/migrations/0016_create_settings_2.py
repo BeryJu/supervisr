@@ -9,7 +9,7 @@ def create_settings(apps, schema_editor):
     Setting = apps.get_model('core', 'Setting')
     settings = {
         'core:password:filter:description': 'One Letter, one Number and one speical Character',
-        'core:password:filter': "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&\.])[A-Za-z\d$@$!%*?&\.]{8,}",
+        'core:password:filter': r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&\.])[A-Za-z\d$@$!%*?&\.]{8,}$",
     }
     for key, value in settings.items():
         Setting.objects.get_or_create(
