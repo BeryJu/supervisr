@@ -4,7 +4,7 @@ django-formtools
 django-recaptcha
 django-oauth-toolkit
 django-cors-middleware
-mysqlclient
 markdown
 docutils
 pyyaml
+passlib

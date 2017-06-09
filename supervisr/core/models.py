@@ -7,6 +7,7 @@ import base64
 import json
 import math
 import random
+import re
 import time
 import uuid
 
@@ -37,6 +38,12 @@ def expiry_date():
     """
     return time.time() + 172800 # 2 days
 
+def make_username(username):
+    """
+    Return username cut to 32 chars, also make POSIX conform
+    """
+    return re.sub(r'([^a-zA-Z0-9\.\s-])', '_', str(username)[:32])
+
 def get_random_string(length=10):
     """
     Generate a completely random 10-char user_name (used for unix-accounts)
@@ -47,7 +54,7 @@ def get_random_string(length=10):
     offset = random.randint(0, 25-length)
     # Python3 changed the way we need to encode
     res = base64.b64encode(uid.bytes, altchars=b'_-')
-    return res[offset:offset+length]
+    return res[offset:offset+length].decode("utf-8")
 
 def get_userid():
     """
@@ -87,13 +94,15 @@ class UserProfile(CreatedUpdatedModel):
     Save settings associated with user, since we don't want a custom user Model
     """
     user = models.OneToOneField(User, primary_key=True)
-    unix_username = models.CharField(max_length=10, default=get_random_string, editable=False)
+    username = models.TextField()
+    crypt6_password = models.CharField(max_length=128, blank=True, default='')
+    unix_username = models.CharField(max_length=32, default=get_random_string, editable=False)
     unix_userid = models.IntegerField(default=get_userid)
     locale = models.CharField(max_length=5, default='en-US')
     news_subscribe = models.BooleanField(default=False)
 
     def __str__(self):
-        return "UserProfile %s" % self.user.email
+        return "UserProfile %s (uid: %d)" % (self.user.email, self.unix_userid)
 
 # class GroupProfile(CreatedUpdatedModel):
 #     """

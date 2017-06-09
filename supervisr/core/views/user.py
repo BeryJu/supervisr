@@ -18,18 +18,17 @@ def index(req):
     """
     initial_data = {
         'name': req.user.first_name,
+        'username': req.user.userprofile.username,
         'email': req.user.email,
         'unix_username': req.user.userprofile.unix_username,
         'unix_userid': req.user.userprofile.unix_userid,
-        'news_accept': req.user.userprofile.news_subscribe,
     }
     if req.method == 'POST':
         form = EditUserForm(req.POST, initial=initial_data)
         if form.is_valid():
             req.user.first_name = form.cleaned_data.get('name')
             req.user.save()
-            print(form.cleaned_data.get('news_accept'))
-            req.user.userprofile.news_subscribe = form.cleaned_data.get('news_accept')
+            req.user.userprofile.username = form.cleaned_data.get('username')
             req.user.userprofile.save()
             messages.success(req, 'User updated successfully')
     else:

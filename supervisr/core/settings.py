@@ -244,6 +244,7 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
         },
         'syslog': {
             'level': 'DEBUG',
@@ -254,12 +255,12 @@ LOGGING = {
     },
     'loggers': {
         'supervisr': {
-            'handlers': ['console', 'syslog'],
+            'handlers': ['console', 'syslog', 'mail_admins'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'django': {
-            'handlers': ['console', 'syslog'],
+            'handlers': ['console', 'syslog', 'mail_admins'],
             'level': 'INFO',
             'propagate': True,
         },

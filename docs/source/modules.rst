@@ -1,7 +1,6 @@
-core
-====
+__pycache__
+===========
 
 .. toctree::
    :maxdepth: 4
 
-   core

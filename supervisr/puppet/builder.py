@@ -11,7 +11,7 @@ import tarfile
 from tempfile import NamedTemporaryFile
 
 from django import conf
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.core.files import File
 from django.template import loader
 
@@ -70,6 +70,7 @@ class ReleaseBuilder(object):
             },
             'settings': conf.settings,
             'puppet_systemgroup': Group.objects.get(name='Puppet Systemusers'),
+            'User': User.objects,
             })
         return context
 

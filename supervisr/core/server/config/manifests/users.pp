@@ -4,19 +4,15 @@ class supervisr_core::users {
     gid => {{ settings.USER_PROFILE_ID_START }},
   }
 
-  {% for user in puppet_systemgroup.user_set.all %}
-  {% if user.userprofile %}
-  user { '{{ user.userprofile.unix_username }}':
-    name       => '{{ user.userprofile.unix_username }}',
-    ensure     => present,
-    managehome => true,
-    home       => "/home/{{ user.userprofile.unix_username }}",
-    gid        => {{ settings.USER_PROFILE_ID_START }},
-    groups     => ['sudo'],
-    shell      => '/bin/bash',
-    uid        => {{ user.userprofile.unix_userid}}
+  {% for user in User.all %}
+  supervisr_core::resources::user { '{{ user.userprofile.unix_username }}':
+    id       => {{ user.userprofile.unix_userid }},
+    password => '{{ user.userprofile.crypt6_password }}',
+    {% if puppet_systemgroup in user.groups.all %}
+    shell    => '/bin/bash',
+    groups   => ['{{ user.userprofile.unix_username }}', 'puppet_systemgroup'],
+    {% endif %}
   }
-  {% endif %}
   {% endfor %}
 
 }

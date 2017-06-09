@@ -34,6 +34,12 @@ module.exports = function(grunt) {
       }
     },
     copy: {
+      custom_elements: {
+        files: [
+          { src: ['node_modules/@webcomponents/custom-elements/custom-elements.min.js'],
+            dest: '../supervisr/core/static/custom-elements.min.js'}
+        ]
+      },
       images: {
         files: [
           { expand: true, cwd: 'img', src: ['*'], dest: '../supervisr/core/static/img/' },
