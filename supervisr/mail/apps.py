@@ -12,6 +12,3 @@ class SupervisrMailConfig(SupervisrAppConfig):
 
     name = 'supervisr.mail'
     verbose_name = 'Supervisr Mail'
-
-    def ready(self):
-        super(SupervisrMailConfig, self).ready()

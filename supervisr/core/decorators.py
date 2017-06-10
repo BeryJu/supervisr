@@ -95,8 +95,7 @@ def ifapp(app_name):
             """
             if app_name in APP_CACHE:
                 return ifapp_func(*args, **kwargs)
-            else:
-                return
+            return
         wrap.__doc__ = ifapp_func.__doc__
         wrap.__name__ = ifapp_func.__name__
 

@@ -12,6 +12,3 @@ class SupervisrWebConfig(SupervisrAppConfig):
 
     name = 'supervisr.web'
     verbose_name = 'Supervisr Web'
-
-    def ready(self):
-        super(SupervisrWebConfig, self).ready()
