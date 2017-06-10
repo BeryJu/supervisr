@@ -1,19 +1,3 @@
-
-
-# import guzzle_sphinx_theme
-
-# html_theme_path = guzzle_sphinx_theme.html_theme_path()
-# html_theme = 'guzzle_sphinx_theme'
-
-# Guzzle theme options (see theme.conf for more information)
-# html_theme_options = {
-#     # Set the name of the project to appear in the sidebar
-#     'project_nav_name': 'supervisr',
-# }
-
-
-sys.path.insert(0, os.path.abspath('../..'))
-import os
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
@@ -31,9 +15,13 @@ import os
 #
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
+import os
 import sys
 
 import django
+
+sys.path.insert(0, os.path.abspath('../..'))
+
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
 # documentation root, use os.path.abspath to make it absolute, like shown here.
