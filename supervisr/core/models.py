@@ -242,9 +242,10 @@ class ProductExtension(CreatedUpdatedModel):
     """
 
     product_extension_id = models.AutoField(primary_key=True)
+    extension_name = models.TextField(default='')
 
     def __str__(self):
-        return "ProductExtension %s" % self.__class__.__name__
+        return "ProductExtension %s" % self.extension_name
 
 class ProductExtensionOAuth2(ProductExtension):
     """
@@ -273,7 +274,7 @@ class Product(CreatedUpdatedModel):
     revision = models.IntegerField(default=1)
     managed = models.BooleanField(default=True)
     management_url = models.URLField(max_length=1000, blank=True, null=True)
-    extensions = models.ManyToManyField(ProductExtension)
+    extensions = models.ManyToManyField(ProductExtension, blank=True)
 
     def __str__(self):
         return "%s %s (%s)" % (self.__class__.__name__, self.name, self.description)

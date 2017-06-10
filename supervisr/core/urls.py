@@ -8,8 +8,9 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin as admin_django
 
-from .utils import get_apps
-from .views import about, account, admin, common, domain, product, user
+from supervisr.core.utils import get_apps
+from supervisr.core.views import (about, account, admin, common, domain,
+                                  oauth2, product, user)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -56,6 +57,8 @@ urlpatterns = [
     # Include django-admin
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),
+    url(r'^api/oauth2/authorize/$', oauth2.SupervisrAuthorizationView.as_view(),
+        name="oauth2-authorize"),
     url(r'^api/oauth2/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^api/', include('supervisr.core.views.api.urls')),
 ]
