@@ -65,7 +65,7 @@ def verify(req):
 
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("Two-factor authentication code"),
+        'title': _("SSO - Two-factor verification"),
         'primary_action': _("Verify"),
         })
 

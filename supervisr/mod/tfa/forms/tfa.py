@@ -9,7 +9,8 @@ from django.utils.translation import ugettext as _
 
 from supervisr.core.forms.core import InlineForm
 
-TFA_CODE_VALIDATOR = RegexValidator(r'^[0-9]{6,8}$', _('Only numeric characters are allowed.'))
+TFA_CODE_VALIDATOR = RegexValidator(r'^[0-9a-z]{6,8}$',
+                                    _('Only alpha-numeric characters are allowed.'))
 
 class PictureWidget(forms.widgets.Widget):
     """

@@ -15,21 +15,26 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        {% blocktrans with state=state|yesno:"Enabled,Disabled" %}
-        2-Factor Authentication is {{ state }}
-        {% endblocktrans %}
-        {% if state %}
-        <clr-icon shape="check" size="32" class="is-success"></clr-icon>
-        {% else %}
-        <clr-icon shape="times" size="32" class="is-error"></clr-icon>
-        {% endif %}
+        {% trans "2-Factor Authentication" %}
       </div>
       <div class="card-footer">
-        {% if not state %}
-        <a href="{% url 'tfa:tfa-enable' %}" class="btn btn-success btn-sm">{% trans "Enable 2FA" %}</a>
-        {% else %}
-        <a href="{% url 'tfa:tfa-disable' %}" class="btn btn-danger btn-sm">{% trans "Disable 2FA" %}</a>
-        {% endif %}
+        <p>
+          {% blocktrans with state=state|yesno:"Enabled,Disabled" %}
+          Status: {{ state }}
+          {% endblocktrans %}
+          {% if state %}
+          <clr-icon shape="check" size="32" class="is-success"></clr-icon>
+          {% else %}
+          <clr-icon shape="times" size="32" class="is-error"></clr-icon>
+          {% endif %}
+        </p>
+        <p>
+          {% if not state %}
+          <a href="{% url 'tfa:tfa-enable' %}" class="btn btn-success btn-sm">{% trans "Enable 2FA" %}</a>
+          {% else %}
+          <a href="{% url 'tfa:tfa-disable' %}" class="btn btn-danger btn-sm">{% trans "Disable 2FA" %}</a>
+          {% endif %}
+        </p>
       </div>
     </div>
   </div>
