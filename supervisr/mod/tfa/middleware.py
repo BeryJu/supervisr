@@ -26,7 +26,7 @@ def tfa_force_verify(get_response):
 
             # At this point the request is already forwarded to the target destination
             # So we just add the current request's path as next parameter
-            args = '?%s' % urlencode({ 'next': req.get_full_path() })
+            args = '?%s' % urlencode({'next': req.get_full_path()})
             return redirect(reverse('tfa:tfa-verify')+args)
 
         response = get_response(req)
