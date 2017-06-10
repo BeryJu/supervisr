@@ -13,6 +13,3 @@ class SupervisrDNSConfig(SupervisrAppConfig):
     name = 'supervisr.dns'
     verbose_name = 'Supervisr DNS'
     navbar_title = 'DNS'
-
-    def ready(self):
-        super(SupervisrDNSConfig, self).ready()

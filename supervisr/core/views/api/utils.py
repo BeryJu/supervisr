@@ -22,8 +22,7 @@ def api_response(req, data):
     handler = _globals[handler_name] if handler_name in _globals else None
     if handler is not None:
         return handler(data)
-    else:
-        return JsonResponse({'error': 'type "%s" not found' % selected_format})
+    return JsonResponse({'error': 'type "%s" not found' % selected_format})
 
 def api_response_json(data):
     """

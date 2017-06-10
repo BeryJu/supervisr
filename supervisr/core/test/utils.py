@@ -40,7 +40,8 @@ def test_request(view,
     if not factory_handler:
         return
 
-    req = factory_handler(view, req_kwargs, **headers)
+    # pylint: disable=not-callable
+    req = factory_handler(view, req_kwargs, **headers) #
 
     session = SessionStore()
     if session_data:

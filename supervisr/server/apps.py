@@ -12,6 +12,3 @@ class SupervisrServerConfig(SupervisrAppConfig):
 
     name = 'supervisr.server'
     verbose_name = 'Supervisr Server'
-
-    def ready(self):
-        super(SupervisrServerConfig, self).ready()

@@ -40,7 +40,7 @@ def check_password(form):
     if password_a != password_b:
         raise forms.ValidationError(_("Your passwords do not match"))
     # Check if password is strong enough
-    if Setting.get('core:password:filter') is not '':
+    if Setting.get('core:password:filter') != '':
         if not re.match(Setting.get('core:password:filter'), password_b):
             desc = Setting.get('core:password:filter:description')
             raise forms.ValidationError(_("Password has to contain %(desc)s" % {

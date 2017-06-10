@@ -128,13 +128,12 @@ class ReleaseBuilder(object):
             import glob
             # pylint: disable=unexpected-keyword-arg
             return glob.glob('%s/**' % list_dir, recursive=True)
-        else:
-            matches = []
-            # pylint: disable=unused-variable
-            for root, dirs, files in os.walk(list_dir):
-                for file in files:
-                    matches.append(os.path.join(root, file))
-            return matches
+        matches = []
+        # pylint: disable=unused-variable
+        for root, dirs, files in os.walk(list_dir):
+            for file in files:
+                matches.append(os.path.join(root, file))
+        return matches
 
     @time
     def build(self, context=None, db_add=True, force_rebuild=False):
