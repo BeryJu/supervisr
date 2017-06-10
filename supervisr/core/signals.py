@@ -57,6 +57,8 @@ SIG_CHECK_USER_EXISTS = RobustSignal(providing_args=['email'])
 
 # Return a hash for the /about/info page
 SIG_GET_MOD_INFO = RobustSignal(providing_args=[])
+# Get information for health status
+SIG_GET_MOD_HEALTH = RobustSignal(providing_args=[])
 
 @receiver(post_migrate)
 # pylint: disable=unused-argument

@@ -6,6 +6,7 @@ from django.core.cache import cache
 from django.db import connections
 from django.db.utils import OperationalError
 
+from supervisr.core.signals import SIG_GET_MOD_HEALTH
 from supervisr.core.views.api.utils import api_response
 
 
@@ -32,4 +33,8 @@ def health(req):
         'database': _db_status(),
         'cache': _cache_status(),
     }
+    results = SIG_GET_MOD_HEALTH.send(sender=health)
+    for handler, mod_info in results:
+        # Get the handler's root module
+        data[handler.__module__] = mod_info
     return api_response(req, data)
