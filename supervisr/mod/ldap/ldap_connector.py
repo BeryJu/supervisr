@@ -121,7 +121,7 @@ class LDAPConnector(object):
         """
         Return the saved LDAP Server
         """
-        return Setting.objects.get(key='mod:ldap:server')
+        return Setting.objects.get(key='mod:ldap:server').value
 
     @staticmethod
     def encode_pass(password):

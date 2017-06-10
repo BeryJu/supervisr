@@ -4,9 +4,11 @@ Supervisr mod_ldap Signals
 
 from django.dispatch import receiver
 from ldap3 import version as ldap3_version
+from ldap3.core.exceptions import LDAPException
 
-from supervisr.core.signals import (SIG_CHECK_USER_EXISTS, SIG_GET_MOD_INFO,
-                                    SIG_USER_CHANGE_PASS, SIG_USER_CONFIRM,
+from supervisr.core.signals import (SIG_CHECK_USER_EXISTS, SIG_GET_MOD_HEALTH,
+                                    SIG_GET_MOD_INFO, SIG_USER_CHANGE_PASS,
+                                    SIG_USER_CONFIRM,
                                     SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
                                     SIG_USER_PRODUCT_RELATIONSHIP_DELETED,
                                     SIG_USER_SIGN_UP)
@@ -100,3 +102,16 @@ def ldap_handle_get_mod_info(sender, signal, **kwargs):
         'LDAP Enabled': LDAPConnector.enabled(),
         'LDAP Server': LDAPConnector.get_server(),
     }
+
+@receiver(SIG_GET_MOD_HEALTH)
+# pylint: disable=unused-argument
+def ldap_handle_get_mod_health(sender, signal, **kwargs):
+    """
+    Return LDAP health
+    """
+    try:
+        if LDAPConnector.enabled():
+            LDAPConnector()
+        return True
+    except LDAPException:
+        return False
