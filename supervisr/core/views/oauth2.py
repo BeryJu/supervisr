@@ -21,15 +21,16 @@ class SupervisrAuthorizationView(AuthorizationView):
         Check if request.user has a relationship with product
         """
         full_res = super(SupervisrAuthorizationView, self).get(request, *args, **kwargs)
-        # now self.oauth2_data['application'] is set
-        app = self.oauth2_data['application']
-        if app.productextensionoauth2_set.exists() and \
-            app.productextensionoauth2_set.first().product_set.exists():
-            # Only check if there is a connection from OAuth2 Application to product
-            product = app.productextensionoauth2_set.first().product_set.first()
-            upr = UserProductRelationship.objects.filter(user=request.user, product=product)
-            # Product is invite_only = True and no relation with user exists
-            if product.invite_only and not upr.exists():
-                LOGGER.error("User '%s' has no invitation to '%s'", request.user, product)
-                raise Http404
+        # self.oauth2_data['application'] should be set, if not an error occured
+        if 'application' in self.oauth2_data:
+            app = self.oauth2_data['application']
+            if app.productextensionoauth2_set.exists() and \
+                app.productextensionoauth2_set.first().product_set.exists():
+                # Only check if there is a connection from OAuth2 Application to product
+                product = app.productextensionoauth2_set.first().product_set.first()
+                upr = UserProductRelationship.objects.filter(user=request.user, product=product)
+                # Product is invite_only = True and no relation with user exists
+                if product.invite_only and not upr.exists():
+                    LOGGER.error("User '%s' has no invitation to '%s'", request.user, product)
+                    raise Http404
         return full_res
