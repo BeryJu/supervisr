@@ -22,7 +22,7 @@ def supervisr_dyn_user():
     if APP_LIST == []:
         for mod in sub_apps:
             if 'mod' in mod:
-                mod = mod.split('.')[2]
+                mod = mod.split('.')[:-2][-1]
             else:
                 mod = mod.split('.')[1]
             view = apps.get_app_config(mod).view_user_settings

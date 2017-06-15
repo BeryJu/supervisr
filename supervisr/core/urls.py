@@ -57,9 +57,12 @@ urlpatterns = [
     # Include django-admin
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),
+    # Custom OAuth 2 Authorize View
     url(r'^api/oauth2/authorize/$', oauth2.SupervisrAuthorizationView.as_view(),
         name="oauth2-authorize"),
+    # OAuth API
     url(r'^api/oauth2/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    # General API Urls
     url(r'^api/', include('supervisr.core.views.api.urls')),
 ]
 
