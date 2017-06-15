@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     'supervisr.mail.apps.SupervisrMailConfig',
     'supervisr.mod.ldap.apps.SupervisrModLDAPConfig',
     'supervisr.mod.tfa.apps.SupervisrModTFAConfig',
+    'supervisr.mod.stats.graphite.apps.SupervisrModStatGraphiteConfig',
     'formtools',
     'django.contrib.admin',
     'django.contrib.admindocs',
