@@ -38,7 +38,7 @@ class SupervisrModStatGraphiteConfig(SupervisrAppConfig):
         from supervisr.core.models import Setting
         from supervisr.mod.stats.graphite.graphite_client import GraphiteClient
 
-        if Setting.objects.get(pk='mod:stats:graphite:enabled').value_bool:
+        if Setting.get('mod:stats:graphite:enabled', 'False') != 'False':
             with GraphiteClient() as client:
                 if settings.DEBUG:
                     LOGGER.info("Not starting StatsThread because DEBUG")
