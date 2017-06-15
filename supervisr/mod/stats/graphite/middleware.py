@@ -4,6 +4,8 @@ Supervisr Core Middleware to detect Maintenance Mode
 
 import time
 
+from django.core.urlresolvers import resolve
+
 from supervisr.core.models import Setting
 from supervisr.mod.stats.graphite.graphite_client import GraphiteClient
 
@@ -23,6 +25,8 @@ def stats(get_response):
 
         if Setting.objects.get(pk='mod:stats:graphite:enabled').value_bool:
             with GraphiteClient() as client:
-                client.write('views.duration', (after - before) * 1000)
+                res_match = resolve(req.path_info).func
+                view_path = res_match.__module__ + '.' + res_match.__name__
+                client.write('views.%s.duration' % view_path, (after - before) * 1000)
         return response
     return middleware
