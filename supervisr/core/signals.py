@@ -60,6 +60,10 @@ SIG_GET_MOD_INFO = RobustSignal(providing_args=[])
 # Get information for health status
 SIG_GET_MOD_HEALTH = RobustSignal(providing_args=[])
 
+
+# Set a statistic
+SIG_SET_STAT = RobustSignal(providing_args=['key', 'value'])
+
 @receiver(post_migrate)
 # pylint: disable=unused-argument
 def core_handle_post_migrate(sender, *args, **kwargs):

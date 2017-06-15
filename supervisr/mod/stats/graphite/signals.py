@@ -7,8 +7,9 @@ from django.dispatch import receiver
 
 from supervisr.core.models import Setting
 from supervisr.core.signals import (SIG_DO_SETUP, SIG_DOMAIN_CREATED,
-                                    SIG_USER_CONFIRM, SIG_USER_LOGIN,
-                                    SIG_USER_LOGOUT, SIG_USER_PASS_RESET_FIN,
+                                    SIG_SET_STAT, SIG_USER_CONFIRM,
+                                    SIG_USER_LOGIN, SIG_USER_LOGOUT,
+                                    SIG_USER_PASS_RESET_FIN,
                                     SIG_USER_POST_CHANGE_PASS,
                                     SIG_USER_POST_SIGN_UP,
                                     SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
@@ -134,3 +135,13 @@ def stats_graphite_handle_domain_create(sender, **kwargs):
     if Setting.objects.get(pk='mod:stats:graphite:enabled').value_bool:
         with GraphiteClient() as client:
             client.write('signal.domain.create', 1)
+
+@receiver(SIG_SET_STAT)
+# pylint: disable=unused-argument,invalid-name
+def stats_graphite_handle_set_stat(sender, key, value, **kwargs):
+    """
+    Handle stats for SET_STAT
+    """
+    if Setting.objects.get(pk='mod:stats:graphite:enabled').value_bool:
+        with GraphiteClient() as client:
+            client.write(key, value)
