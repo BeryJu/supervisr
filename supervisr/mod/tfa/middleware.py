@@ -17,6 +17,7 @@ def tfa_force_verify(get_response):
         Middleware to force 2FA Verification
         """
 
+        # pylint: disable=too-many-boolean-expressions
         if req.user.is_authenticated and \
             user_has_device(req.user) and \
             not req.user.is_verified() and \
