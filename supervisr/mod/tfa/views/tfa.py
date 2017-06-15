@@ -67,6 +67,9 @@ def verify(req):
         'form': form,
         'title': _("SSO - Two-factor verification"),
         'primary_action': _("Verify"),
+        'extra_links': {
+            'account-logout': 'Logout',
+        }
         })
 
 @login_required
