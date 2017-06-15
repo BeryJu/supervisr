@@ -105,7 +105,7 @@ class ReleaseBuilder(object):
             LOGGER.error(body)
             raise
 
-    @time
+    @time(statistic_key='puppet.builder.import_deps')
     def import_deps(self):
         """
         Import dependencies for release
@@ -135,7 +135,7 @@ class ReleaseBuilder(object):
                 matches.append(os.path.join(root, file))
         return matches
 
-    @time
+    @time(statistic_key='puppet.builder.build')
     def build(self, context=None, db_add=True, force_rebuild=False):
         """
         Copy non-templates into tar, render templates into tar and import into django

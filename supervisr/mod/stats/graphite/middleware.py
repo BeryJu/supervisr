@@ -28,5 +28,7 @@ def stats(get_response):
                 res_match = resolve(req.path_info).func
                 view_path = (res_match.__module__ + '.' + res_match.__name__).replace('.', '::')
                 client.write('views.%s.duration' % view_path, (after - before) * 1000)
+                client.write('views.%s.status.%s' % (view_path, response.status_code), 1)
+                client.write('views.%s.count' % view_path, 1)
         return response
     return middleware
