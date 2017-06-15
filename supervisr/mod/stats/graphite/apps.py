@@ -30,8 +30,8 @@ class SupervisrModStatGraphiteConfig(SupervisrAppConfig):
             Statistics checker function
             """
             process = psutil.Process(os.getpid())
-            client.write('%s.mem' % host, process.memory_info().rss / 1024 / 1024)
-            client.write('%s.cpu' % host, process.cpu_percent())
+            client.write('server.%s.mem' % host, process.memory_info().rss / 1024 / 1024)
+            client.write('server.%s.cpu' % host, process.cpu_percent())
             time.sleep(10)
             send_stats(client, host)
 
@@ -43,6 +43,7 @@ class SupervisrModStatGraphiteConfig(SupervisrAppConfig):
                 LOGGER.info("Not starting StatsThread because DEBUG")
             else:
                 client = GraphiteClient()
+                client.connect()
                 thread = threading.Thread(target=send_stats,
                                           args=(client, socket.gethostname(), ))
                 thread.start()
