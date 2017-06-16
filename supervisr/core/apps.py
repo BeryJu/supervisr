@@ -33,6 +33,22 @@ class SupervisrAppConfig(AppConfig):
         self.load_init()
         self.merge_settings()
         super(SupervisrAppConfig, self).ready()
+        self._ensure_settings()
+
+    # pylint: disable=no-self-use
+    def _ensure_settings(self):
+        from supervisr.core.models import Setting
+        items = self.ensure_settings()
+        for key, defv in items.items():
+            Setting.set(key, defv, overwrite=False)
+        if items:
+            LOGGER.info("Ensured %d settings", len(items))
+
+    def ensure_settings(self):
+        """
+        By Default ensure no settings
+        """
+        return {}
 
     def load_init(self):
         """
