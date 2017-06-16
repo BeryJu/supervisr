@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load is_active %}
+{% load is_active_url %}
 {% load supervisr_dyn_modlist %}
 
 {% block sidenav %}
@@ -25,7 +26,7 @@
       <ul class="nav-list">
         {% supervisr_dyn_modlist as apps %}
         {% for app in apps %}
-        <li><a href="{% url app.url app.name %}" class="nav-link">{{ app.name }}</a></li>
+        <li><a href="{% url app.url app.name %}" class="nav-link {% is_active_url app.url app.name %}">{{ app.name }}</a></li>
         {% endfor %}
       </ul>
     </section>

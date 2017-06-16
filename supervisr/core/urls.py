@@ -72,7 +72,7 @@ for app in get_apps():
     # Check if it's only a module or a full path
     app = '.'.join(app.split('.')[:-2])
     if 'mod' in app:
-        short_name = short_name.split('.')[1]
+        short_name = '/'.join(short_name.split('.')[1:-2])
     else:
         short_name = short_name.split('.')[0]
     url_module = "%s.urls" % app
