@@ -24,8 +24,9 @@ class SupervisrAppConfig(AppConfig):
 
     init_modules = ['signals', 'models']
     admin_url_name = 'admin-mod_default'
-    navbar_title = None
     view_user_settings = None
+    navbar_enabled = lambda self, request: False
+    title_moddifier = lambda self, label, request: label.title()
 
     def ready(self):
         self.check_requirements()

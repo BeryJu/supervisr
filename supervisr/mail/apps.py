@@ -12,3 +12,4 @@ class SupervisrMailConfig(SupervisrAppConfig):
 
     name = 'supervisr.mail'
     verbose_name = 'Supervisr Mail'
+    navbar_enabled = lambda self, request: True

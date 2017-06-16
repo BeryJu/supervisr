@@ -13,3 +13,4 @@ class SupervisrModTFAConfig(SupervisrAppConfig):
 
     name = 'supervisr.mod.tfa'
     view_user_settings = 'tfa-user_settings'
+    title_moddifier = lambda self, title, request: '2FA'
