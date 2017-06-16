@@ -23,6 +23,14 @@ class SupervisrModStatGraphiteConfig(SupervisrAppConfig):
     name = 'supervisr.mod.stats.graphite'
     admin_url_name = 'stats/graphite:admin_settings'
 
+    def ensure_settings(self):
+        return {
+            'mod:stats:graphite:enabled': False,
+            'mod:stats:graphite:host': 'localhost',
+            'mod:stats:graphite:port': 2003,
+            'mod:stats:graphite:prefix': 'supervisr',
+        }
+
     def ready(self):
         super(SupervisrModStatGraphiteConfig, self).ready()
 
