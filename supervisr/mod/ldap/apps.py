@@ -11,3 +11,5 @@ class SupervisrModLDAPConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr.mod.ldap'
+    title_moddifier = lambda self, title, request: title.upper()
+    admin_url_name = 'ldap:admin_settings'

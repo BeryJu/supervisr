@@ -25,10 +25,10 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from oauth2_provider.models import Application
 
-from .signals import (SIG_DOMAIN_CREATED, SIG_USER_POST_SIGN_UP,
-                      SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
-                      SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
-from .utils import get_remote_ip, get_reverse_dns
+from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_USER_POST_SIGN_UP,
+                                    SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
+                                    SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
+from supervisr.core.utils import get_remote_ip, get_reverse_dns
 
 options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('sv_search_url', 'sv_search_fields',)
 

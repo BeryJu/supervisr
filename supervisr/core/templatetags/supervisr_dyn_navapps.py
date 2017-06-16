@@ -13,8 +13,8 @@ register = template.Library()
 
 APP_LIST = []
 
-@register.simple_tag
-def supervisr_dyn_navapps():
+@register.simple_tag(takes_context=True)
+def supervisr_dyn_navapps(context):
     """
     Get a list of subapps for the navbar
     """
@@ -23,12 +23,11 @@ def supervisr_dyn_navapps():
     sub_apps = get_apps(mod_only=False)
     if APP_LIST == []:
         for mod in sub_apps:
-            if 'mod' not in mod:
-                mod = mod.split('.')[1]
-                title = apps.get_app_config(mod).navbar_title
+            mod = mod.split('.')[:-2][-1]
+            config = apps.get_app_config(mod)
+            title = config.title_moddifier(config.label, context.request)
+            if config.navbar_enabled(context.request):
                 mod = mod.replace('supervisr.', '')
-                if title is None:
-                    title = mod.title()
                 index = '%s:%s-index' % (mod, mod)
                 try:
                     reverse(index)
