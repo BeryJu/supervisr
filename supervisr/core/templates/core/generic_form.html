@@ -16,8 +16,7 @@
     </div>
     <div class="panel-body">
       <form role="form" method="POST">
-        {% csrf_token %}
-        {{ form|crispy }}
+        {% include 'block/block_form.html' with form=form %}
         <button type="submit" class="btn btn-lg btn-block btn-primary">{{ primary_action }}</button>
       </form>
     </div>
