@@ -9,8 +9,9 @@ https://docs.djangoproject.com/en/1.10/howto/deployment/wsgi/
 
 import os
 
-import pymysql
 from django.core.wsgi import get_wsgi_application
+
+import pymysql
 
 pymysql.install_as_MySQLdb()
 

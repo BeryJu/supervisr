@@ -6,7 +6,6 @@ import unittest
 from smtplib import SMTP
 
 from supervisr.core.models import Domain
-
 from supervisr.mail.models import MailAccount, MailDomain
 
 

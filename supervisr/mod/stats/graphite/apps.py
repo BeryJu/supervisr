@@ -8,9 +8,9 @@ import socket
 import threading
 import time
 
-import psutil
 from django.conf import settings
 
+import psutil
 from supervisr.core.apps import SupervisrAppConfig
 
 LOGGER = logging.getLogger(__name__)
