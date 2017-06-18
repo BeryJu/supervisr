@@ -7,7 +7,7 @@ from smtplib import SMTP
 
 from supervisr.core.models import Domain
 
-from ..models import MailAccount, MailDomain
+from supervisr.mail.models import MailAccount, MailDomain
 
 
 class TestSmtp(unittest.TestCase):

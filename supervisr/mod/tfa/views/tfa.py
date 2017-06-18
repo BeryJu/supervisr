@@ -103,7 +103,14 @@ def disable(req):
     for token in static_tokens:
         token.delete()
     messages.success(req, 'Successfully disabled 2FA')
-    return redirect(reverse('commin-index'))
+    # Create event with email notification
+    Event.create(
+        user=req.user,
+        message=_('You disabled 2FA.'),
+        current=True,
+        request=req,
+        send_notification=True)
+    return redirect(reverse('common-index'))
 
 # pylint: disable=too-many-ancestors
 @method_decorator([login_required, reauth_required], name="dispatch")
