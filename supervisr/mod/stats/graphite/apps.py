@@ -38,11 +38,11 @@ class SupervisrModStatGraphiteConfig(SupervisrAppConfig):
             """
             Statistics checker function
             """
-            process = psutil.Process(os.getpid())
-            client.write('server.%s.mem' % host, process.memory_info().rss / 1024 / 1024)
-            client.write('server.%s.cpu' % host, process.cpu_percent())
-            time.sleep(10)
-            send_stats(client, host)
+            while True:
+                process = psutil.Process(os.getpid())
+                client.write('server.%s.mem' % host, process.memory_info().rss / 1024 / 1024)
+                client.write('server.%s.cpu' % host, process.cpu_percent())
+                time.sleep(10)
 
         from supervisr.core.models import Setting
         from supervisr.mod.stats.graphite.graphite_client import GraphiteClient
