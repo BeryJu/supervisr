@@ -72,6 +72,7 @@ def core_handle_post_migrate(sender, *args, **kwargs):
     """
     if isinstance(sender, SupervisrAppConfig):
         LOGGER.info("Running Post-Migrate for '%s'...", sender.name)
+        sender.run_ensure_settings()
         SIG_DO_SETUP.send(sender.name)
 
 @receiver(SIG_USER_CHANGE_PASS)
