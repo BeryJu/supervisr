@@ -158,9 +158,13 @@ class Setting(CreatedUpdatedModel):
             setting, created = Setting.objects.get_or_create(
                 key=key,
                 defaults={'value': value})
-            return created
+            if created is False:
+                setting.value = value
+                setting.save()
+            return True
         except OperationalError:
             return False
+
 
 class AccountConfirmation(CreatedUpdatedModel):
     """

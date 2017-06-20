@@ -12,7 +12,6 @@ import subprocess
 import pkg_resources
 from django.apps import AppConfig
 from django.conf import settings
-from django.db.utils import OperationalError
 from pip.req import parse_requirements
 
 LOGGER = logging.getLogger(__name__)
@@ -37,6 +36,9 @@ class SupervisrAppConfig(AppConfig):
 
     # pylint: disable=no-self-use
     def run_ensure_settings(self):
+        """
+        Make sure settings defined in `ensure_settings` are theere
+        """
         from supervisr.core.models import Setting
         items = self.ensure_settings()
         for key, defv in items.items():
