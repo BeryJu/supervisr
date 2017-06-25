@@ -150,7 +150,7 @@ class Setting(CreatedUpdatedModel):
             return default
 
     @staticmethod
-    def set(key, value, overwrite=True):
+    def set(key, value,):
         """
         Set value, when Setting doesn't exist, it's created with value
         """
@@ -158,12 +158,13 @@ class Setting(CreatedUpdatedModel):
             setting, created = Setting.objects.get_or_create(
                 key=key,
                 defaults={'value': value})
-            if created is False and overwrite is True:
+            if created is False:
                 setting.value = value
                 setting.save()
             return True
         except OperationalError:
             return False
+
 
 class AccountConfirmation(CreatedUpdatedModel):
     """

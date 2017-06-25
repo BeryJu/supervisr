@@ -33,14 +33,16 @@ class SupervisrAppConfig(AppConfig):
         self.load_init()
         self.merge_settings()
         super(SupervisrAppConfig, self).ready()
-        self._ensure_settings()
 
     # pylint: disable=no-self-use
-    def _ensure_settings(self):
+    def run_ensure_settings(self):
+        """
+        Make sure settings defined in `ensure_settings` are theere
+        """
         from supervisr.core.models import Setting
         items = self.ensure_settings()
         for key, defv in items.items():
-            Setting.set(key, defv, overwrite=False)
+            Setting.objects.create(key=key, value=defv)
         if items:
             LOGGER.info("Ensured %d settings", len(items))
 

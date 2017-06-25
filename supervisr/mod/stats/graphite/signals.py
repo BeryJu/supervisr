@@ -6,7 +6,7 @@ Supervisr Stats Graphite Signals
 from django.dispatch import receiver
 
 from supervisr.core.models import Setting
-from supervisr.core.signals import (SIG_DO_SETUP, SIG_DOMAIN_CREATED,
+from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_GET_MOD_HEALTH,
                                     SIG_SET_STAT, SIG_USER_CONFIRM,
                                     SIG_USER_LOGIN, SIG_USER_LOGOUT,
                                     SIG_USER_PASS_RESET_FIN,
@@ -18,23 +18,17 @@ from supervisr.core.signals import (SIG_DO_SETUP, SIG_DOMAIN_CREATED,
 from supervisr.mod.stats.graphite.graphite_client import GraphiteClient
 
 
-@receiver(SIG_DO_SETUP)
+@receiver(SIG_GET_MOD_HEALTH)
 # pylint: disable=unused-argument,invalid-name
-def stats_graphite_handle_setup(sender, **kwargs):
+def stats_graphite_handle_health(sender, **kwargs):
     """
     Create initial settings needed
     """
-    default_settings = {
-        'mod:stats:graphite:host': 'localhost',
-        'mod:stats:graphite:port': 2003,
-        'mod:stats:graphite:prefix': 'supervisr',
-        'mod:stats:graphite:enabled': False,
-    }
-    for key, value in default_settings.items():
-        Setting.objects.get_or_create(
-            key=key,
-            defaults={'value': value})
-
+    if Setting.objects.get(pk='mod:stats:graphite:enabled').value_bool:
+        with GraphiteClient():
+            return True
+    else:
+        return True
 
 @receiver(SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
 # pylint: disable=unused-argument,invalid-name
