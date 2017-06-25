@@ -42,7 +42,7 @@ class SupervisrAppConfig(AppConfig):
         from supervisr.core.models import Setting
         items = self.ensure_settings()
         for key, defv in items.items():
-            Setting.objects.create(key=key, value=defv)
+            Setting.objects.get_or_create(key=key, defaults={'value': defv})
         if items:
             LOGGER.info("Ensured %d settings", len(items))
 
