@@ -41,6 +41,8 @@ urlpatterns = [
     # Domain views
     url(r'^domains/$', domain.index, name='domain-index'),
     url(r'^domains/new/$', domain.DomainNewView.as_view(), name='domain-new'),
+    url(r'^domains/(?P<domain>[a-z0-9\-\.]+)/edit/$', domain.edit, name='domain-edit'),
+    url(r'^domains/(?P<domain>[a-z0-9\-\.]+)/delete/$', domain.delete, name='domain-delete'),
     # User views
     url(r'^user/$', user.index, name='user-index'),
     url(r'^user/events/$', user.events, name='user-events'),

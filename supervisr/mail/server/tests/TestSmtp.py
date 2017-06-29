@@ -13,7 +13,7 @@ from supervisr.mail.models import MailAccount, MailDomain
 class TestSmtp(unittest.TestCase):
 
     def setUp(self):
-        self.client = SMTP(host='ory2-mx-edge-dev-1.ory2.beryju.org', port=25)
+        self.client = SMTP(host='ory1-mx-edge-prod-1.ory1.beryju.org', port=25)
         self.rand = str(uuid.uuid4())[:8]
         self.domain = Domain.objects.create(
             domain='supervisr-test.beryju.org')
@@ -41,4 +41,17 @@ class TestSmtp(unittest.TestCase):
         self.assertTrue(self.client.login(
             user=self.m_account.email,
             password=self.m_acc_pass))
-        # self.assertTrue(self.client.    )
+        self.assertEqual(self.client.sendmail(
+            from_addr=self.m_account.email,
+            to_addrs=[self.m_account.email],
+            msg='supervisr test msg'), {})
+
+    @unittest.expectedFailure
+    def test_send_invalid_from(self):
+        self.assertTrue(self.client.login(
+            user=self.m_account.email,
+            password=self.m_acc_pass))
+        self.assertEqual(self.client.sendmail(
+            from_addr='invalid@from.addr',
+            to_addrs=[self.m_account.email],
+            msg='supervisr test msg'), {})
