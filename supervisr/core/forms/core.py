@@ -24,7 +24,7 @@ class InlineForm(forms.Form):
         self.helper.field_template = 'bootstrap3/layout/inline_field.html'
         self.helper.layout = Layout(*self.order)
 
-def check_password(form):
+def check_password(form, check_filter=True):
     """
     Check if Password adheres to filter and if passwords matche
     """
@@ -40,7 +40,7 @@ def check_password(form):
     if password_a != password_b:
         raise forms.ValidationError(_("Your passwords do not match"))
     # Check if password is strong enough
-    if Setting.get('core:password:filter') != '':
+    if Setting.get('core:password:filter') != '' and check_filter:
         if not re.match(Setting.get('core:password:filter'), password_b):
             desc = Setting.get('core:password:filter:description')
             raise forms.ValidationError(_("Password has to contain %(desc)s" % {

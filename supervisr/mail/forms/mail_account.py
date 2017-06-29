@@ -56,7 +56,7 @@ class MailAccountFormCredentials(forms.Form):
         """
         Check if Password adheres to filter and if passwords matche
         """
-        return check_password(self)
+        return check_password(self, check_filter=False)
 
 class MailAccountFormForwarder(forms.Form):
     """
