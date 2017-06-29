@@ -30,8 +30,8 @@
   </thead>
   <tbody>
     {% for domain in domains %}
-      <tr data-selectable data-ctx-edit="{% url 'domain-edit' domain=domain.name %}" data-ctx-trash="{% url 'domain-delete' domain=domain.name %}">
-        <td>{{ domain }}</td>
+      <tr data-selectable data-ctx-edit="{% url 'domain-edit' domain=domain.domain %}" data-ctx-trash="{% url 'domain-delete' domain=domain.domain %}">
+        <td>{{ domain.domain }}</td>
         <td>{{ domain.registrar }}</td>
         <td>
           {% if domain.managed %}
