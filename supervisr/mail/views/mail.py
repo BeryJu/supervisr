@@ -4,6 +4,7 @@ Supervisr Mail Common Views
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from django.shortcuts import redirect, render, reverse
 from django.utils.translation import ugettext as _
 
@@ -22,11 +23,16 @@ def index(req):
     Mail Domain Index
     """
     domains = MailDomain.objects.filter(users__in=[req.user])
-    mail_accounts = MailAccount.objects \
+    all_accounts = MailAccount.objects \
         .filter(domain_mail__in=domains, users__in=[req.user]) \
         .order_by('domain_mail')
+    acc_accounts = all_accounts.filter(mailforwarder__isnull=True)
+    fwd_accounts = all_accounts.filter(mailforwarder__isnull=False)
 
-    return render(req, 'mail/recipient-index.html', {'accounts': mail_accounts})
+    return render(req, 'mail/recipient-index.html', {
+        'acc_accounts': acc_accounts,
+        'fwd_accounts': fwd_accounts,
+        })
 
 @login_required
 def accounts(req):
@@ -127,4 +133,26 @@ def account_delete(req, domain, account):
     """
     Show view to delete account
     """
-    pass
+    domains = MailDomain.objects.filter(domain_mail__name=domain)
+    if not domains.exists():
+        raise Http404
+    r_domain = domains.first()
+
+    accounts = MailAccount.objects.filter(domain_mail=r_domain, address=account)
+    if not accounts.exists():
+        raise Http404
+    r_account = accounts.first()
+
+    if req.method == 'POST' and 'confirmdelete' in req.POST:
+        # User confirmed deletion
+        r_account.delete()
+        messages.success(req, _('Account successfully deleted'))
+        return redirect(reverse('mail:mail-index'))
+
+    return render(req, 'core/generic_delete.html', {
+        'object': 'Account %s' % r_account.email_raw,
+        'delete_url': reverse('mail:mail-account-delete', kwargs={
+            'domain': r_domain.name,
+            'account': r_account.address
+            })
+        })
