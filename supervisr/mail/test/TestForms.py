@@ -17,7 +17,6 @@ class TestForms(TestCase):
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
 
-
     def test_maccount_cred(self):
         """
         Test Index View (Anonymous)
