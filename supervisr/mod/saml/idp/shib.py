@@ -1,7 +1,8 @@
+import base64
+import zlib
+
 import base
 import xml_render
-import zlib
-import base64
 
 
 class Processor(base.Processor):

@@ -3,16 +3,18 @@
 Signing code goes here.
 """
 from __future__ import absolute_import
+
 import hashlib
+import logging
 import string
 
-from . import saml2idp_metadata as smd
-from .codex import nice64
-from .xml_templates import SIGNED_INFO, SIGNATURE
-from .logging import get_saml_logger
+import rsa
 
-logger = get_saml_logger()
+from supervisr.mod.saml.idp import saml2idp_metadata as smd
+from supervisr.mod.saml.idp.codex import nice64
+from supervisr.mod.saml.idp.xml_templates import SIGNATURE, SIGNED_INFO
 
+logger = logging.getLogger(__name__)
 
 def load_certificate(config):
     if smd.CERTIFICATE_DATA in config:
@@ -20,11 +22,6 @@ def load_certificate(config):
 
     certificate_filename = config.get(smd.CERTIFICATE_FILENAME)
     logger.info('Using certificate file: ' + certificate_filename)
-
-    import M2Crypto
-    certificate = M2Crypto.X509.load_cert(certificate_filename)
-    return ''.join(certificate.as_pem().split('\n')[1:-2])
-
 
 def load_private_key(config):
     private_key_data = config.get(smd.PRIVATE_KEY_DATA)
@@ -35,17 +32,11 @@ def load_private_key(config):
     private_key_file = config.get(smd.PRIVATE_KEY_FILENAME)
     logger.info('Using private key file: {}'.format(private_key_file))
 
-    # The filename need to be encoded because it is using a C extension under
-    # the hood which means it expects a 'const char*' type and will fail with
-    # unencoded unicode string.
-    import M2Crypto
-    return M2Crypto.EVP.load_key(private_key_file.encode('utf-8'))
-
 
 def sign_with_rsa(private_key, data):
-    private_key.sign_init()
-    private_key.sign_update(data)
-    return nice64(private_key.sign_final())
+
+    key = rsa.PrivateKey.load_pkcs1(private_key)
+    return nice64(rsa.sign(data.encode('utf-8'), key, 'SHA-1'))
 
 
 def get_signature_xml(subject, reference_uri):
@@ -59,10 +50,10 @@ def get_signature_xml(subject, reference_uri):
     certificate = load_certificate(config)
 
     logger.debug('Subject: ' + subject)
-
+    import base64
     # Hash the subject.
     subject_hash = hashlib.sha1()
-    subject_hash.update(subject)
+    subject_hash.update(subject.encode('utf-8'))
     subject_digest = nice64(subject_hash.digest())
     logger.debug('Subject digest: ' + subject_digest)
 

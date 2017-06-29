@@ -1,7 +1,8 @@
 # Portions borrowed from:
 # http://stackoverflow.com/questions/1089662/python-inflate-and-deflate-implementations
-import zlib
 import base64
+import zlib
+
 
 def decode_base64_and_inflate( b64string ):
     decoded_data = base64.b64decode( b64string )
@@ -14,4 +15,4 @@ def deflate_and_base64_encode( string_val ):
 
 def nice64(src):
     """ Returns src base64-encoded and formatted nicely for our XML. """
-    return src.encode('base64').replace('\n', '')
+    return base64.b64encode(src).decode('utf-8').replace('\n', '')

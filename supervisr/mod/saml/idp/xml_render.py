@@ -3,19 +3,18 @@
 Functions for creating XML output.
 """
 from __future__ import absolute_import
+
+import logging
 import string
 
-from .xml_signing import get_signature_xml
-from .xml_templates import (ATTRIBUTE,
-                            ATTRIBUTE_STATEMENT,
-                            ASSERTION_GOOGLE_APPS,
-                            ASSERTION_SALESFORCE,
-                            RESPONSE,
-                            SUBJECT)
+from supervisr.mod.saml.idp.xml_signing import get_signature_xml
+from supervisr.mod.saml.idp.xml_templates import (ASSERTION_GOOGLE_APPS,
+                                                  ASSERTION_SALESFORCE,
+                                                  ATTRIBUTE,
+                                                  ATTRIBUTE_STATEMENT,
+                                                  RESPONSE, SUBJECT)
 
-from .logging import get_saml_logger
-
-logger = get_saml_logger()
+logger = logging.getLogger(__name__)
 
 
 def _get_attribute_statement(params):

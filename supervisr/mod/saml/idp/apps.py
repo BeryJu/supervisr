@@ -10,4 +10,4 @@ class SupervisrModSAMLIDPConfig(SupervisrAppConfig):
     Supervisr mod saml_idp app config
     """
 
-    name = 'supervisr.mod.saml_idp'
+    name = 'supervisr.mod.saml.idp'

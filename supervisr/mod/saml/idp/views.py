@@ -1,26 +1,22 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
+
+import logging
 import os
 
 from django.contrib import auth
-from django.core.validators import URLValidator
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.urlresolvers import reverse
-from django.utils.datastructures import MultiValueDictKeyError
-from django.shortcuts import render_to_response, redirect
+from django.core.validators import URLValidator
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.shortcuts import redirect, render, render_to_response
 from django.template import RequestContext
+from django.utils.datastructures import MultiValueDictKeyError
 from django.views.decorators.csrf import csrf_exempt
 
-from . import saml2idp_metadata
-from . import exceptions
-from . import metadata
-from . import registry
-from . import xml_signing
-from .logging import get_saml_logger
+from supervisr.mod.saml.idp import (exceptions, metadata, registry,
+                                    saml2idp_metadata, xml_signing)
 
-logger = get_saml_logger()
+logger = logging.getLogger(__name__)
 
 # The 'schemes' argument for the URLValidator was introduced in Django 1.6. This
 # ensure that URL validation works in 1.5 as well.
@@ -29,7 +25,7 @@ try:
 except TypeError:
     URL_VALIDATOR = URLValidator()
 
-BASE_TEMPLATE_DIR = 'saml2idp'
+BASE_TEMPLATE_DIR = 'saml/idp/'
 
 
 def _get_template_names(filename, processor=None):
@@ -54,13 +50,10 @@ def _generate_response(request, processor):
         tv = processor.generate_response()
     except exceptions.UserNotAuthorized:
         template_names = _get_template_names('invalid_user.html', processor)
-        return render_to_response(template_names,
-                                  context_instance=RequestContext(request))
+        return render(request, template_names)
 
     template_names = _get_template_names('login.html', processor)
-    return render_to_response(template_names,
-                              tv,
-                              context_instance=RequestContext(request))
+    return render(request, template_names, tv)
 
 
 def xml_response(request, template, tv):
@@ -85,7 +78,7 @@ def login_begin(request, *args, **kwargs):
         return HttpResponseBadRequest('the SAML request payload is missing')
 
     request.session['RelayState'] = source.get('RelayState', '')
-    return redirect('saml_login_process')
+    return redirect(reverse('saml/idp:saml_login_process'))
 
 
 @login_required
@@ -172,8 +165,8 @@ def descriptor(request):
     """
     idp_config = saml2idp_metadata.SAML2IDP_CONFIG
     entity_id = idp_config['issuer']
-    slo_url = request.build_absolute_uri(reverse('saml_logout'))
-    sso_url = request.build_absolute_uri(reverse('saml_login_begin'))
+    slo_url = request.build_absolute_uri(reverse('saml/idp:saml_logout'))
+    sso_url = request.build_absolute_uri(reverse('saml/idp:saml_login_begin'))
     pubkey = xml_signing.load_certificate(idp_config)
     tv = {
         'entity_id': entity_id,

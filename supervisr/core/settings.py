@@ -9,32 +9,10 @@
 ####################################################################################################
 
 
-SAML2IDP_CONFIG = {
-    # Default metadata to configure this local IdP.
-    'autosubmit': True,
-    'certificate_data': 'keys/certificate.pem', # If using relative paths, be careful!
-    'private_key_data': 'keys/private-key.pem', # If using relative paths, be careful!
-    'issuer': 'http://127.0.0.1:8000',
-    'signing': True,
-}
 
-sampleSpConfig = {
-    #REQUIRED:
-    'acs_url': 'https://www.example.com/acs/',
-    'processor': 'saml2idp.some.Processor',
 
-    # OPTIONAL:
-    'links': {
-        # For IdP-initiated deep-linking.
-        # named-resource: expanded URL string including one "%s" for substitution
-        'starwars': 'https://www.example.com/starwars/%s.php',
-    }
-}
 
-SAML2IDP_REMOTES = {
-    # friendlyname: SP config
-    'sample': sampleSpConfig,
-}
+
 
 
 
@@ -110,7 +88,7 @@ INSTALLED_APPS = [
     'supervisr.mail.apps.SupervisrMailConfig',
     'supervisr.mod.ldap.apps.SupervisrModLDAPConfig',
     'supervisr.mod.tfa.apps.SupervisrModTFAConfig',
-    'supervisr.mod.saml_idp.apps.SupervisrModSAMLIDPConfig',
+    'supervisr.mod.saml.idp.apps.SupervisrModSAMLIDPConfig',
     'supervisr.mod.stats.graphite.apps.SupervisrModStatGraphiteConfig',
     'formtools',
     'django.contrib.admin',

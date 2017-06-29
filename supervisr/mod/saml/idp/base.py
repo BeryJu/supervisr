@@ -1,29 +1,35 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
+"""
+Basic SAML Processor
+"""
+
 import base64
+import logging
 import time
 import uuid
+import zlib
 
-from BeautifulSoup import BeautifulStoneSoup
+from bs4 import BeautifulSoup
 from django.core.exceptions import ImproperlyConfigured
 
-from . import codex
-from . import exceptions
-from . import saml2idp_metadata
-from . import xml_render
-from .logging import get_saml_logger
+from supervisr.mod.saml.idp import (codex, exceptions, saml2idp_metadata,
+                                    xml_render)
 
 MINUTES = 60
 HOURS = 60 * MINUTES
 
 
 def get_random_id():
+    """
+    Random hex id
+    """
     # It is very important that these random IDs NOT start with a number.
     random_id = '_' + uuid.uuid4().hex
     return random_id
 
-
 def get_time_string(delta=0):
+    """
+    Get Data formatted in SAML format
+    """
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() + delta))
 
 
@@ -46,13 +52,11 @@ class Processor(object):
     def __init__(self, config, name=None):
         self.name = name
         self._config = config.copy()
-        self._logger = get_saml_logger()
+        self._logger = logging.getLogger(__name__)
 
         processor_path = self._config.get('processor', 'invalid')
 
-        self._logger.info('initializing processor',
-                          configured_processor=processor_path,
-                          processor=self.dotted_path)
+        self._logger.info('initializing processor')
 
         if processor_path != self.dotted_path:
             raise ImproperlyConfigured(
@@ -63,7 +67,7 @@ class Processor(object):
                 "no ACS URL specified in SP configuration: {}".format(
                     self._config))
 
-        self._logger.info('processor configured', config=self._config)
+        self._logger.info('processor configured')
 
     def _build_assertion(self):
         """
@@ -109,10 +113,10 @@ class Processor(object):
         """
         Decodes _request_xml from _saml_request.
         """
-        self._request_xml = base64.b64decode(self._saml_request)
 
-        self._logger.debug('SAML request decoded',
-                           decoded_request=self._request_xml)
+        self._request_xml = codex.decode_base64_and_inflate(self._saml_request).decode('utf-8')
+
+        self._logger.debug('SAML request decoded')
 
     def _determine_assertion_id(self):
         """
@@ -129,7 +133,7 @@ class Processor(object):
         if not self._audience:
             self._audience = self._request_params.get('PROVIDER_NAME', None)
 
-        self._logger.info('determined audience', audience=self._audience)
+        self._logger.info('determined audience')
 
     def _determine_response_id(self):
         """
@@ -150,7 +154,7 @@ class Processor(object):
         """
         Encodes _response_xml to _encoded_xml.
         """
-        self._saml_response = codex.nice64(self._response_xml)
+        self._saml_response = codex.nice64(str.encode(self._response_xml))
 
     def _extract_saml_request(self):
         """
@@ -189,16 +193,17 @@ class Processor(object):
         Parses various parameters from _request_xml into _request_params.
         """
         #Minimal test to verify that it's not binarily encoded still:
-        if not self._request_xml.strip().startswith('<'):
+        print(self._request_xml.strip())
+        if not str(self._request_xml.strip()).startswith('<'):
             raise Exception('RequestXML is not valid XML; '
                             'it may need to be decoded or decompressed.')
-        soup = BeautifulStoneSoup(self._request_xml)
+        soup = BeautifulSoup(self._request_xml, features="xml")
         request = soup.findAll()[0]
         params = {}
-        params['ACS_URL'] = request['assertionconsumerserviceurl']
-        params['REQUEST_ID'] = request['id']
-        params['DESTINATION'] = request.get('destination', '')
-        params['PROVIDER_NAME'] = request.get('providername', '')
+        params['ACS_URL'] = request['AssertionConsumerServiceURL']
+        params['REQUEST_ID'] = request['ID']
+        params['DESTINATION'] = request.get('Destination', '')
+        params['PROVIDER_NAME'] = request.get('ProviderName', '')
         self._request_params = params
 
     def _reset(self, django_request, sp_config=None):
@@ -270,12 +275,12 @@ class Processor(object):
             self._logger.info(msg)
             raise exceptions.CannotHandleAssertion(msg)
 
-        try:
-            self._parse_request()
-        except Exception as exc:
-            msg = "can't parse SAML request: %s" % exc
-            self._logger.info(msg)
-            raise exceptions.CannotHandleAssertion(msg)
+        # try:
+        self._parse_request()
+        # except Exception as exc:
+            # msg = "can't parse SAML request: %s" % exc
+            # self._logger.info(msg)
+            # raise exceptions.CannotHandleAssertion(msg)
 
         self._validate_request()
         return True

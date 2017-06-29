@@ -1,6 +1,9 @@
 from django.conf.urls import url
-from supervisr.mod.saml_idp.views import descriptor, login_begin, login_init, login_process, logout
-from supervisr.mod.saml_idp.metadata import get_deeplink_resources
+
+from supervisr.mod.saml.idp.metadata import get_deeplink_resources
+from supervisr.mod.saml.idp.views import (descriptor, login_begin, login_init,
+                                          login_process, logout)
+
 
 def deeplink_url_patterns(
     prefix='',
