@@ -57,6 +57,12 @@ SIG_CHECK_USER_EXISTS = RobustSignal(providing_args=['email'])
 
 # Return a hash for the /about/info page
 SIG_GET_MOD_INFO = RobustSignal(providing_args=[])
+# Get information for health status
+SIG_GET_MOD_HEALTH = RobustSignal(providing_args=[])
+
+
+# Set a statistic
+SIG_SET_STAT = RobustSignal(providing_args=['key', 'value'])
 
 @receiver(post_migrate)
 # pylint: disable=unused-argument
@@ -66,6 +72,7 @@ def core_handle_post_migrate(sender, *args, **kwargs):
     """
     if isinstance(sender, SupervisrAppConfig):
         LOGGER.info("Running Post-Migrate for '%s'...", sender.name)
+        sender.run_ensure_settings()
         SIG_DO_SETUP.send(sender.name)
 
 @receiver(SIG_USER_CHANGE_PASS)

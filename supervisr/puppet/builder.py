@@ -49,7 +49,7 @@ class ReleaseBuilder(object):
             releases = PuppetModuleRelease.objects.filter(module=module)
             if releases.exists():
                 # Create semantic version from pk with .0.0 appended
-                self.version = str(releases.order_by('-pk').first().pk + 1)+'.0.0'
+                self.version = '1.0.0+build' + str(releases.order_by('-pk').first().pk + 1)
             else:
                 self.version = '1.0.0'
         else:
@@ -105,7 +105,7 @@ class ReleaseBuilder(object):
             LOGGER.error(body)
             raise
 
-    @time
+    @time(statistic_key='puppet.builder.import_deps')
     def import_deps(self):
         """
         Import dependencies for release
@@ -128,15 +128,14 @@ class ReleaseBuilder(object):
             import glob
             # pylint: disable=unexpected-keyword-arg
             return glob.glob('%s/**' % list_dir, recursive=True)
-        else:
-            matches = []
-            # pylint: disable=unused-variable
-            for root, dirs, files in os.walk(list_dir):
-                for file in files:
-                    matches.append(os.path.join(root, file))
-            return matches
+        matches = []
+        # pylint: disable=unused-variable
+        for root, dirs, files in os.walk(list_dir):
+            for file in files:
+                matches.append(os.path.join(root, file))
+        return matches
 
-    @time
+    @time(statistic_key='puppet.builder.build')
     def build(self, context=None, db_add=True, force_rebuild=False):
         """
         Copy non-templates into tar, render templates into tar and import into django

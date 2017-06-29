@@ -25,10 +25,10 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from oauth2_provider.models import Application
 
-from .signals import (SIG_DOMAIN_CREATED, SIG_USER_POST_SIGN_UP,
-                      SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
-                      SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
-from .utils import get_remote_ip, get_reverse_dns
+from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_USER_POST_SIGN_UP,
+                                    SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
+                                    SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
+from supervisr.core.utils import get_remote_ip, get_reverse_dns
 
 options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('sv_search_url', 'sv_search_fields',)
 
@@ -150,16 +150,21 @@ class Setting(CreatedUpdatedModel):
             return default
 
     @staticmethod
-    def set(key, value):
+    def set(key, value,):
         """
         Set value, when Setting doesn't exist, it's created with value
         """
-        setting, created = Setting.objects.get_or_create(
-            key=key,
-            defaults={'value': value})
-        if created is False:
-            setting.value = value
-            setting.save()
+        try:
+            setting, created = Setting.objects.get_or_create(
+                key=key,
+                defaults={'value': value})
+            if created is False:
+                setting.value = value
+                setting.save()
+            return True
+        except OperationalError:
+            return False
+
 
 class AccountConfirmation(CreatedUpdatedModel):
     """
@@ -242,9 +247,10 @@ class ProductExtension(CreatedUpdatedModel):
     """
 
     product_extension_id = models.AutoField(primary_key=True)
+    extension_name = models.TextField(default='')
 
     def __str__(self):
-        return "ProductExtension %s" % self.__class__.__name__
+        return "ProductExtension %s" % self.extension_name
 
 class ProductExtensionOAuth2(ProductExtension):
     """
@@ -273,7 +279,7 @@ class Product(CreatedUpdatedModel):
     revision = models.IntegerField(default=1)
     managed = models.BooleanField(default=True)
     management_url = models.URLField(max_length=1000, blank=True, null=True)
-    extensions = models.ManyToManyField(ProductExtension)
+    extensions = models.ManyToManyField(ProductExtension, blank=True)
 
     def __str__(self):
         return "%s %s (%s)" % (self.__class__.__name__, self.name, self.description)
@@ -303,28 +309,15 @@ class Domain(Product):
     Information about a Domain, which is used for other sub-apps.
     This is also used for sub domains, hence the is_sub.
     """
+    domain = models.CharField(max_length=253, unique=True)
     registrar = models.TextField()
     is_sub = models.BooleanField(default=False)
-
-    @property
-    def domain(self):
-        """
-        Wrapper so we can do domain.domain
-        """
-        return self.name
-
-    @domain.setter
-    def domain(self, value):
-        """
-        Wrapper so we can do domain.domain
-        """
-        self.name = value
 
     def __str__(self):
         return self.name
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        _first = True if self.pk is None else False
+        _first = self.pk is None
         super(Domain, self).save(force_insert, force_update, using, update_fields)
         if _first:
             # Trigger event that we were saved
@@ -334,6 +327,7 @@ class Domain(Product):
 
     class Meta:
 
+        default_related_name = 'domains'
         sv_search_fields = ['name', 'registrar']
 
 class Event(CreatedUpdatedModel):

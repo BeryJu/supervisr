@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load is_active %}
+{% load is_active_url %}
 {% load supervisr_dyn_modlist %}
 
 {% block sidenav %}
@@ -13,19 +14,13 @@
     <a href="{% url 'admin-settings' %}" class="nav-link {% is_active 'admin-settings' %}">
       {% trans "Settings" %}
     </a>
-    <a href="{% url 'admin:index' %}" class="nav-link {% is_active 'index' %}">
-      {% trans "Admin Interface" %}
-    </a>
-    <a href="{% url 'django-admindocs-docroot' %}" class="nav-link {% is_active 'django-admindocs' %}">
-      {% trans "Admin Docs" %}
-    </a>
-    <section class="nav-group collapsible">
+    <section class="nav-group">
       <input id="admin_modules" type="checkbox">
       <label for="admin_modules">{% trans "Module Settings" %}</label>
       <ul class="nav-list">
         {% supervisr_dyn_modlist as apps %}
         {% for app in apps %}
-        <li><a href="{% url app.url app.name %}" class="nav-link">{{ app.name }}</a></li>
+        <li><a href="{% url app.url app.name %}" class="nav-link {% is_active_url app.url app.name %}">{{ app.name }}</a></li>
         {% endfor %}
       </ul>
     </section>
@@ -35,6 +30,22 @@
     <a href="{% url 'admin-events' %}" class="nav-link {% is_active 'admin-events' %}">
       {% trans "Events" %}
     </a>
+    <section class="nav-group">
+      <input id="django-admin" type="checkbox">
+      <label for="django-admin">{% trans "Django Builtins" %}</label>
+      <ul class="nav-list">
+        <li>
+          <a href="{% url 'admin:index' %}" class="nav-link {% is_active 'index' %}">
+            {% trans "Admin Interface" %}
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'django-admindocs-docroot' %}" class="nav-link {% is_active 'django-admindocs' %}">
+            {% trans "Admin Docs" %}
+          </a>
+        </li>
+      </ul>
+    </section>
     <a href="{% url 'admin-debug' %}" class="nav-link {% is_active 'admin-debug' %}">
       {% trans "Debug" %}
     </a>

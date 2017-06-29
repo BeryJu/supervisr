@@ -1,9 +1,8 @@
 coverage
 isort
-pylint<=1.6
+pylint
 pylint-django
 prospector
 django-debug-toolbar
 sphinx
-guzzle_sphinx_theme
 recommonmark

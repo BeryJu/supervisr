@@ -8,8 +8,9 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin as admin_django
 
-from .utils import get_apps
-from .views import about, account, admin, common, domain, product, user
+from supervisr.core.utils import get_apps
+from supervisr.core.views import (about, account, admin, common, domain,
+                                  oauth2, product, user)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -40,6 +41,8 @@ urlpatterns = [
     # Domain views
     url(r'^domains/$', domain.index, name='domain-index'),
     url(r'^domains/new/$', domain.DomainNewView.as_view(), name='domain-new'),
+    url(r'^domains/(?P<domain>[a-z0-9\-\.]+)/edit/$', domain.edit, name='domain-edit'),
+    url(r'^domains/(?P<domain>[a-z0-9\-\.]+)/delete/$', domain.delete, name='domain-delete'),
     # User views
     url(r'^user/$', user.index, name='user-index'),
     url(r'^user/events/$', user.events, name='user-events'),
@@ -56,7 +59,12 @@ urlpatterns = [
     # Include django-admin
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),
+    # Custom OAuth 2 Authorize View
+    url(r'^api/oauth2/authorize/$', oauth2.SupervisrAuthorizationView.as_view(),
+        name="oauth2-authorize"),
+    # OAuth API
     url(r'^api/oauth2/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    # General API Urls
     url(r'^api/', include('supervisr.core.views.api.urls')),
 ]
 
@@ -66,7 +74,7 @@ for app in get_apps():
     # Check if it's only a module or a full path
     app = '.'.join(app.split('.')[:-2])
     if 'mod' in app:
-        short_name = short_name.split('.')[1]
+        short_name = '/'.join(short_name.split('.')[1:-2])
     else:
         short_name = short_name.split('.')[0]
     url_module = "%s.urls" % app

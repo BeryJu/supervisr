@@ -111,6 +111,7 @@ INSTALLED_APPS = [
     'supervisr.mod.ldap.apps.SupervisrModLDAPConfig',
     'supervisr.mod.tfa.apps.SupervisrModTFAConfig',
     'supervisr.mod.saml_idp.apps.SupervisrModSAMLIDPConfig',
+    'supervisr.mod.stats.graphite.apps.SupervisrModStatGraphiteConfig',
     'formtools',
     'django.contrib.admin',
     'django.contrib.admindocs',

@@ -4,14 +4,14 @@ Wrapper for ldap3 to easily manage user
 import logging
 import os
 import sys
-import time
+import time as py_time
 
 from ldap3 import (MOCK_SYNC, MODIFY_ADD, MODIFY_DELETE, MODIFY_REPLACE,
                    OFFLINE_AD_2012_R2, Connection, Server)
 from ldap3.core.exceptions import LDAPException, LDAPInvalidCredentialsResult
 
 from supervisr.core.models import Setting
-from supervisr.core.utils import send_admin_mail
+from supervisr.core.utils import send_admin_mail, time
 from supervisr.mod.ldap.errors import LDAPUserNotFound
 from supervisr.mod.ldap.models import LDAPModification
 
@@ -27,6 +27,7 @@ class LDAPConnector(object):
     base_dn = None
     mock = False
 
+    @time(statistic_key='ldap.ldap_connector.init')
     def __init__(self, mock=False):
         super(LDAPConnector, self).__init__()
         if LDAPConnector.enabled() is False:
@@ -121,7 +122,7 @@ class LDAPConnector(object):
         """
         Return the saved LDAP Server
         """
-        return Setting.objects.get(key='mod:ldap:server')
+        return Setting.objects.get(key='mod:ldap:server').value
 
     @staticmethod
     def encode_pass(password):
@@ -130,6 +131,7 @@ class LDAPConnector(object):
         """
         return '"{}"'.format(password).encode('utf-16-le')
 
+    @time(statistic_key='ldap.ldap_connector.mail_to_dn')
     def mail_to_dn(self, mail):
         """
         Search email in LDAP and return the DN.
@@ -173,6 +175,7 @@ class LDAPConnector(object):
         ldap_filter = "(mail=%s)" % mail
         return self.con.search(self.base_dn, ldap_filter)
 
+    @time(statistic_key='ldap.ldap_connector.create_user')
     def create_user(self, user, raw_password):
         """
         Creates a new LDAP User from a django user and raw_password.
@@ -190,7 +193,7 @@ class LDAPConnector(object):
         attrs = {
             'distinguishedName' : str(user_dn),
             'cn'                : str(username),
-            'description'       : str('t='+str(time.time())),
+            'description'       : str('t='+str(py_time.time())),
             'sAMAccountName'    : str(username_trunk),
             'givenName'         : str(user.first_name),
             'displayName'       : str(user.first_name),
@@ -207,6 +210,7 @@ class LDAPConnector(object):
         LOGGER.info("Signed up user %s", user.email)
         return self.change_password(raw_password, mail=user.email)
 
+    @time(statistic_key='ldap.ldap_connector._do_modify')
     def _do_modify(self, diff, mail=None, user_dn=None):
         """
         Do the LDAP modification itself

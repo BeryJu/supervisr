@@ -24,14 +24,33 @@ class SupervisrAppConfig(AppConfig):
 
     init_modules = ['signals', 'models']
     admin_url_name = 'admin-mod_default'
-    navbar_title = None
     view_user_settings = None
+    navbar_enabled = lambda self, request: False
+    title_moddifier = lambda self, label, request: label.title()
 
     def ready(self):
         self.check_requirements()
         self.load_init()
         self.merge_settings()
         super(SupervisrAppConfig, self).ready()
+
+    # pylint: disable=no-self-use
+    def run_ensure_settings(self):
+        """
+        Make sure settings defined in `ensure_settings` are theere
+        """
+        from supervisr.core.models import Setting
+        items = self.ensure_settings()
+        for key, defv in items.items():
+            Setting.objects.get_or_create(key=key, defaults={'value': defv})
+        if items:
+            LOGGER.info("Ensured %d settings", len(items))
+
+    def ensure_settings(self):
+        """
+        By Default ensure no settings
+        """
+        return {}
 
     def load_init(self):
         """

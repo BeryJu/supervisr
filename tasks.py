@@ -65,9 +65,11 @@ def install(ctx, dev=False):
         ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
     requirements = glob("supervisr/**/requirements.txt")
     requirements.extend(glob("supervisr/**/**/requirements.txt"))
+    requirements.extend(glob("supervisr/**/**/**/requirements.txt"))
     if dev:
         requirements.extend(glob("supervisr/**/requirements-dev.txt"))
         requirements.extend(glob("supervisr/**/**/requirements-dev.txt"))
+        requirements.extend(glob("supervisr/**/**/**/requirements-dev.txt"))
     ctx.run("pip3 install -U -r %s" % ' -r '.join(requirements))
 
 @task
@@ -153,7 +155,7 @@ def unittest(ctx):
     ctx.run("%s manage.py test --pattern=Test*.py" % PYTHON_EXEC)
 
 # Some tasks to make full testing easier
-@task(pre=[migrate, coverage, isort, lint, prospector])
+@task(pre=[coverage, isort, lint, prospector])
 # pylint: disable=unused-argument
 def test(ctx):
     """

@@ -4,13 +4,14 @@ Supervisr Core Domain Views
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from ..forms.domain import NewDomainForm
-from ..models import Domain, UserProductRelationship
-from .wizard import BaseWizardView
+from supervisr.core.forms.domain import DomainForm
+from supervisr.core.models import Domain, UserProductRelationship
+from supervisr.core.views.wizard import BaseWizardView
 
 
 @login_required
@@ -29,7 +30,7 @@ class DomainNewView(BaseWizardView):
     """
 
     title = _("New Domain")
-    form_list = [NewDomainForm]
+    form_list = [DomainForm]
     registrars = None
 
     # def handle_request(self, request):
@@ -52,7 +53,8 @@ class DomainNewView(BaseWizardView):
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
         m_dom = Domain.objects.create(
-            name=form_dict['0'].cleaned_data.get('domain'),
+            name='Domain %s' % form_dict['0'].cleaned_data.get('domain'),
+            domain=form_dict['0'].cleaned_data.get('domain'),
             registrar=form_dict['0'].cleaned_data.get('registrar'),
             description='Domain %s' % form_dict['0'].cleaned_data.get('domain'),
             )
@@ -62,3 +64,62 @@ class DomainNewView(BaseWizardView):
             )
         messages.success(self.request, _('Domain successfully created'))
         return redirect(reverse('domain-index'))
+
+@login_required
+# pylint: disable=unused-argument
+def edit(req, domain):
+    """
+    Show view to edit account
+    """
+    domains = Domain.objects.filter(domain=domain)
+    if not domains.exists():
+        raise Http404
+    r_domain = domains.first()
+
+    if req.method == 'POST':
+        form = DomainForm(req.POST)
+
+        if form.is_valid():
+            r_domain.domain = form.cleaned_data.get('domain')
+            r_domain.registrar = form.cleaned_data.get('registrar')
+            r_domain.save()
+            messages.success(req, _('Successfully edited Domain'))
+            return redirect(reverse('domain-index'))
+        messages.error(req, _("Invalid Domain"))
+        return redirect(reverse('domain-index'))
+
+    else:
+        form = DomainForm(initial={
+            'domain': r_domain.domain,
+            'registrar': r_domain.registrar
+            })
+
+    return render(req, 'core/generic_form.html', {
+        'title': "Edit Domain '%s'" % domain,
+        'primary_action': 'Apply',
+        'form': form
+        })
+
+@login_required
+# pylint: disable=unused-argument
+def delete(req, domain):
+    """
+    Show view to delete account
+    """
+    domains = Domain.objects.filter(domain=domain)
+    if not domains.exists():
+        raise Http404
+    r_domain = domains.first()
+
+    if req.method == 'POST' and 'confirmdelete' in req.POST:
+        # User confirmed deletion
+        r_domain.delete()
+        messages.success(req, _('Domain successfully deleted'))
+        return redirect(reverse('domain-index'))
+
+    return render(req, 'core/generic_delete.html', {
+        'object': r_domain.name,
+        'delete_url': reverse('domain-delete', kwargs={
+            'domain': r_domain.domain,
+            })
+        })

@@ -3,24 +3,24 @@ Supervisr Mail ServerTest Smtp
 """
 
 import unittest
+import uuid
 from smtplib import SMTP
 
 from supervisr.core.models import Domain
-
-from ..models import MailAccount, MailDomain
+from supervisr.mail.models import MailAccount, MailDomain
 
 
 class TestSmtp(unittest.TestCase):
 
     def setUp(self):
-        self.client = SMTP(host='mx1debug.s.beryju.org', port=25)
+        self.client = SMTP(host='ory1-mx-edge-prod-1.ory1.beryju.org', port=25)
+        self.rand = str(uuid.uuid4())[:8]
         self.domain = Domain.objects.create(
             domain='supervisr-test.beryju.org')
-        self.m_domain = MailDomain.objects.create(
-            domain=self.domain)
+        self.m_domain = MailDomain.objects.get(domain=self.domain)
         self.m_acc_pass = 'b3ryju0rg!'
         self.m_account = MailAccount.objects.create(
-            address='smtp-unittest',
+            address='smtp-unittest-%s' % self.rand,
             domain=self.m_domain)
         self.m_account.set_password(self.m_acc_pass)
 
@@ -41,4 +41,17 @@ class TestSmtp(unittest.TestCase):
         self.assertTrue(self.client.login(
             user=self.m_account.email,
             password=self.m_acc_pass))
-        # self.assertTrue(self.client.    )
+        self.assertEqual(self.client.sendmail(
+            from_addr=self.m_account.email,
+            to_addrs=[self.m_account.email],
+            msg='supervisr test msg'), {})
+
+    @unittest.expectedFailure
+    def test_send_invalid_from(self):
+        self.assertTrue(self.client.login(
+            user=self.m_account.email,
+            password=self.m_acc_pass))
+        self.assertEqual(self.client.sendmail(
+            from_addr='invalid@from.addr',
+            to_addrs=[self.m_account.email],
+            msg='supervisr test msg'), {})
