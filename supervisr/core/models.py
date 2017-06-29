@@ -309,28 +309,15 @@ class Domain(Product):
     Information about a Domain, which is used for other sub-apps.
     This is also used for sub domains, hence the is_sub.
     """
+    domain = models.TextField(unique=True)
     registrar = models.TextField()
     is_sub = models.BooleanField(default=False)
-
-    @property
-    def domain(self):
-        """
-        Wrapper so we can do domain.domain
-        """
-        return self.name
-
-    @domain.setter
-    def domain(self, value):
-        """
-        Wrapper so we can do domain.domain
-        """
-        self.name = value
 
     def __str__(self):
         return self.name
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        _first = True if self.pk is None else False
+        _first = self.pk is None
         super(Domain, self).save(force_insert, force_update, using, update_fields)
         if _first:
             # Trigger event that we were saved
@@ -340,6 +327,7 @@ class Domain(Product):
 
     class Meta:
 
+        default_related_name = 'domains'
         sv_search_fields = ['name', 'registrar']
 
 class Event(CreatedUpdatedModel):

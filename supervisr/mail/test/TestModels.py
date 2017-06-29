@@ -31,7 +31,7 @@ class TestModels(TestCase):
         UserProductRelationship.objects.create(
             product=domain,
             user=usr)
-        self.assertTrue(MailDomain.objects.filter(domain_mail=domain).exists())
+        self.assertTrue(MailDomain.objects.filter(domain=domain).exists())
 
     def test_maildomain_get_set(self):
         """
@@ -41,7 +41,7 @@ class TestModels(TestCase):
             name='beryjuorgtesting.xyz',
             invite_only=True,
             price=0)
-        mx_domain = MailDomain.objects.get(domain_mail=domain)
+        mx_domain = MailDomain.objects.get(domain=domain)
         self.assertEqual(mx_domain.domain, domain)
         mx_domain.domain = domain
         mx_domain.save()
@@ -56,7 +56,7 @@ class TestModels(TestCase):
             name='beryjuorgtesting.xyz',
             invite_only=True,
             price=0)
-        mx_domain = MailDomain.objects.get(domain_mail=domain)
+        mx_domain = MailDomain.objects.get(domain=domain)
         self.assertEqual(mx_domain.domain, domain)
         mx_account = MailAccount.objects.create(
             address='info',
@@ -73,7 +73,7 @@ class TestModels(TestCase):
             name='beryjuorgtesting.xyz',
             invite_only=True,
             price=0)
-        mx_domain = MailDomain.objects.get(domain_mail=domain)
+        mx_domain = MailDomain.objects.get(domain=domain)
         self.assertEqual(mx_domain.domain, domain)
         mx_account = MailAccount.objects.create(
             address='info',

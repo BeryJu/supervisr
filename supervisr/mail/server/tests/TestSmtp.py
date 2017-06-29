@@ -17,7 +17,7 @@ class TestSmtp(unittest.TestCase):
         self.rand = str(uuid.uuid4())[:8]
         self.domain = Domain.objects.create(
             domain='supervisr-test.beryju.org')
-        self.m_domain = MailDomain.objects.get(domain_mail=self.domain)
+        self.m_domain = MailDomain.objects.get(domain=self.domain)
         self.m_acc_pass = 'b3ryju0rg!'
         self.m_account = MailAccount.objects.create(
             address='smtp-unittest-%s' % self.rand,

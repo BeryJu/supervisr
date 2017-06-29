@@ -53,7 +53,8 @@ class DomainNewView(BaseWizardView):
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
         m_dom = Domain.objects.create(
-            name=form_dict['0'].cleaned_data.get('domain'),
+            name='Domain %s' % form_dict['0'].cleaned_data.get('domain'),
+            domain=form_dict['0'].cleaned_data.get('domain'),
             registrar=form_dict['0'].cleaned_data.get('registrar'),
             description='Domain %s' % form_dict['0'].cleaned_data.get('domain'),
             )
@@ -70,7 +71,7 @@ def edit(req, domain):
     """
     Show view to edit account
     """
-    domains = Domain.objects.filter(name=domain)
+    domains = Domain.objects.filter(domain=domain)
     if not domains.exists():
         raise Http404
     r_domain = domains.first()
@@ -79,7 +80,7 @@ def edit(req, domain):
         form = DomainForm(req.POST)
 
         if form.is_valid():
-            r_domain.name = form.cleaned_data.get('domain')
+            r_domain.domain = form.cleaned_data.get('domain')
             r_domain.registrar = form.cleaned_data.get('registrar')
             r_domain.save()
             messages.success(req, _('Successfully edited Domain'))
@@ -105,7 +106,7 @@ def delete(req, domain):
     """
     Show view to delete account
     """
-    domains = Domain.objects.filter(name=domain)
+    domains = Domain.objects.filter(domain=domain)
     if not domains.exists():
         raise Http404
     r_domain = domains.first()
@@ -117,8 +118,8 @@ def delete(req, domain):
         return redirect(reverse('domain-index'))
 
     return render(req, 'core/generic_delete.html', {
-        'object': 'Domain %s' % r_domain.name,
+        'object': r_domain.name,
         'delete_url': reverse('domain-delete', kwargs={
-            'domain': r_domain.name,
+            'domain': r_domain.domain,
             })
         })
