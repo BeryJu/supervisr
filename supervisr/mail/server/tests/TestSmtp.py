@@ -14,7 +14,7 @@ class TestSmtp(unittest.TestCase):
 
     def setUp(self):
         self.client = SMTP(host='ory1-mx-edge-prod-1.ory1.beryju.org', port=25)
-        self.rand = 'E1610656B'
+        self.rand = str(uuid.uuid4())[:8]
         self.domain = Domain.objects.create(
             domain='supervisr-test.beryju.org')
         self.m_domain = MailDomain.objects.get(domain_mail=self.domain)
