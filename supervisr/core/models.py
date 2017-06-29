@@ -309,7 +309,7 @@ class Domain(Product):
     Information about a Domain, which is used for other sub-apps.
     This is also used for sub domains, hence the is_sub.
     """
-    domain = models.TextField(unique=True)
+    domain = models.CharField(max_length=253, unique=True)
     registrar = models.TextField()
     is_sub = models.BooleanField(default=False)
 
