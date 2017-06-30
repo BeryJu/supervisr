@@ -2,7 +2,7 @@ hide mysql_servers = SUPERVISR_MYSQL_HOST/SUPERVISR_MYSQL_DB/SUPERVISR_MYSQL_USE
 SUPERVISR_DOMAIN     = SELECT domain_raw \
                        FROM mail_maildomain \
                        WHERE domain_raw = '${quote_mysql:$domain}'
-SUPERVISR_ALIAS      = SELECT `mail_mailforwarder`.`destination` \
+SUPERVISR_MAILALIAS  = SELECT `mail_mailforwarder`.`destination` \
                        FROM `mail_mailforwarder` \
                        WHERE `mail_mailforwarder`.`account_id` = \
                            (SELECT `mail_mailaccount`.`product_ptr_id` \
