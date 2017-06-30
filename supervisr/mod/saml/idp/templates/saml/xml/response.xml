@@ -4,8 +4,8 @@
                 {{ IN_RESPONSE_TO|safe }}
                 IssueInstant="{{ ISSUE_INSTANT }}"
                 Version="2.0">
-    <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">{{ issuer }}</saml:Issuer>
-    {% include 'saml/xml/signature.xml' with RESPONSE_SIGNATURE=RESPONSE_SIGNATURE %}
+    <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">{{ ISSUER }}</saml:Issuer>
+    {{ ASSERTION_SIGNATURE }}
     <samlp:Status>
         <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />
     </samlp:Status>

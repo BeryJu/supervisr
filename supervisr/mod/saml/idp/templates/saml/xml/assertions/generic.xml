@@ -1,6 +1,6 @@
 <saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
-        ID="{{ assertion_id }}"
-        IssueInstant="{{ issue_instant }}"
+        ID="{{ ASSERTION_ID }}"
+        IssueInstant="{{ ISSUE_INSTANT }}"
         Version="2.0">
     {% include 'saml/xml/signature.xml' %}
     {{ SUBJECT_STATEMENT }}

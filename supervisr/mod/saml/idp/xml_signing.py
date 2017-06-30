@@ -4,6 +4,7 @@ Signing code goes here.
 """
 from __future__ import absolute_import
 
+import base64
 import hashlib
 import logging
 
@@ -34,7 +35,35 @@ def sign_with_rsa(private_key, data, _hash='SHA-1'):
     Sign data with private_key
     """
     key = rsa.PrivateKey.load_pkcs1(private_key)
-    return nice64(rsa.sign(data.encode('utf-8'), key, _hash))
+    signed = rsa.sign(data.encode('utf-8'), key, _hash)
+    return nice64(signed)
+
+def sign_with_crypt(private_key, data):
+    import sys
+    import crypto
+    sys.modules['Crypto'] = crypto
+    from Crypto.PublicKey import RSA
+    from Crypto.Signature import PKCS1_v1_5
+    from Crypto.Hash import SHA
+
+    message = 'To be signed'
+    key = RSA.importKey(private_key)
+    h = SHA.new(message.encode('utf-8'))
+    signer = PKCS1_v1_5.new(key)
+    signature = signer.sign(h)
+
+    return nice64(signature)
+
+def sign_with_signxml(private_key, data, cert):
+    from lxml import etree
+    from base64 import b64decode
+    from signxml import XMLSigner
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives import serialization
+    key = serialization.load_pem_private_key(str.encode('\n'.join([x.strip() for x in private_key.split('\n')])), password=None, backend=default_backend())
+    root = etree.fromstring(data)
+    signer = XMLSigner(signature_algorithm='rsa-sha1', digest_algorithm='sha1')
+    return etree.tostring(signer.sign(root, key=key, cert=cert))
 
 def oneline_cert(cert):
     """
@@ -68,15 +97,23 @@ def get_signature_xml(subject, reference_uri):
         })
     LOGGER.debug('SignedInfo XML: %s', signed_info)
 
+    # rsa_signature = sign_xml(signed_info, private_key, certificate)
     rsa_signature = sign_with_rsa(private_key, signed_info)
+    print(rsa_signature)
+    print("\n\n\n")
+    rsa_signature = sign_with_crypt(private_key, signed_info)
+    print(rsa_signature)
+    print("\n\n\n")
+    signed_info = sign_with_signxml(private_key, signed_info, certificate)
+    print(signed_info)
     LOGGER.debug('RSA Signature: %s', rsa_signature)
 
     # Put the signed_info and rsa_signature into the XML signature.
-    signed_info_short = signed_info.replace(' xmlns:ds="http://www.w3.org/2000/09/xmldsig#"', '')
+    signed_info_short = signed_info.decode('utf-8').replace(' xmlns:ds="http://www.w3.org/2000/09/xmldsig#"', '')
     signature_data = {
-        'rsa_signature': rsa_signature,
-        'signed_info': signed_info_short,
-        'certificate': certificate,
+        'RSA_SIGNATURE': rsa_signature,
+        'SIGNED_INFO': signed_info_short,
+        'CERTIFICATE': certificate,
         }
     LOGGER.info('Signature Data: %s', signature_data)
-    return signature_data
+    return render_to_string('saml/xml/signature.xml', signature_data)
