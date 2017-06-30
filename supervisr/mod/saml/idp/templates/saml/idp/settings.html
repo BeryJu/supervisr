@@ -1,6 +1,11 @@
 {% extends "_admin/mod_default.html" %}
 
 {% load i18n %}
+{% load supervisr_title %}
+
+{% block title %}
+{% supervisr_title "Overview" %}
+{% endblock %}
 
 {% block content %}
 <div class="row">

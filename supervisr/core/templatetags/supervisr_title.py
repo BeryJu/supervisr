@@ -3,21 +3,31 @@ Supervisr Core Title Templatetag
 """
 
 from django import template
+from django.apps import apps
 from django.utils.translation import ugettext as _
 
-from ..models import Setting
+from supervisr.core.models import Setting
 
 register = template.Library()
 
-@register.simple_tag
-def supervisr_title(title=None):
+@register.simple_tag(takes_context=True)
+def supervisr_title(context, title=None):
     """
     Return either just branding or title - branding
     """
     branding = Setting.get('core:branding')
     if title is None or title == '':
         return branding
-    return _("%(title)s - %(branding)s" % {
+    # Include App Title in title
+    app = ''
+    if context.request.resolver_match and context.request.resolver_match.namespace != '':
+        app_title = context.request.resolver_match.namespace.split('/')[-1]
+        dj_app = apps.get_app_config(app_title)
+        app_title = dj_app.title_moddifier(
+            context.request.resolver_match.namespace, context.request)
+        app = app_title + ' -'
+    return _("%(title)s - %(app)s %(branding)s" % {
         'title': title,
-        'branding': branding
+        'branding': branding,
+        'app': app,
         })
