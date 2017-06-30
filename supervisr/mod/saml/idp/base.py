@@ -302,12 +302,12 @@ class Processor(object):
             self._logger.info(msg)
             raise exceptions.CannotHandleAssertion(msg)
 
-        # try:
-        self._parse_request()
-        # except Exception as exc:
-            # msg = "can't parse SAML request: %s" % exc
-            # self._logger.info(msg)
-            # raise exceptions.CannotHandleAssertion(msg)
+        try:
+            self._parse_request()
+        except Exception as exc:
+            msg = "can't parse SAML request: %s" % exc
+            self._logger.info(msg)
+            raise exceptions.CannotHandleAssertion(msg)
 
         self._validate_request()
         return True
