@@ -20,7 +20,7 @@ def supervisr_title(context, title=None):
         return branding
     # Include App Title in title
     app = ''
-    if context.request.resolver_match.namespace != '':
+    if context.request.resolver_match and context.request.resolver_match.namespace != '':
         app_title = context.request.resolver_match.namespace.split('/')[-1]
         dj_app = apps.get_app_config(app_title)
         app_title = dj_app.title_moddifier(
