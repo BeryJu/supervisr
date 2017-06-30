@@ -2,11 +2,9 @@
 Basic SAML Processor
 """
 
-import base64
 import logging
 import time
 import uuid
-import zlib
 
 from bs4 import BeautifulSoup
 from django.core.exceptions import ImproperlyConfigured
@@ -37,14 +35,40 @@ def get_time_string(delta=0):
 # just the bits you need to override. I've made use of object properties,
 # so that your sub-classes have access to all information: use wisely.
 # Formatting note: These methods are alphabetized.
+# pylint: disable=too-many-instance-attributes
 class Processor(object):
     """
     Base SAML 2.0 AuthnRequest to Response Processor.
     Sub-classes should provide Service Provider-specific functionality.
     """
 
+    _audience = ''
+    _assertion_params = None
+    _assertion_xml = None
+    _assertion_id = None
+    _django_request = None
+    _relay_state = None
+    _request = None
+    _request_id = None
+    _request_xml = None
+    _request_params = None
+    _response_id = None
+    _response_xml = None
+    _response_params = None
+    _saml_request = None
+    _saml_response = None
+    _session_index = None
+    _subject = None
+    _subject_format = 'urn:oasis:names:tc:SAML:2.0:nameid-format:email'
+    _system_params = {
+        'ISSUER': saml2idp_metadata.SAML2IDP_CONFIG['issuer'],
+    }
+
     @property
     def dotted_path(self):
+        """
+        Return a dotted path to this class
+        """
         return '{module}.{class_name}'.format(
             module=self.__module__,
             class_name=self.__class__.__name__)
@@ -167,33 +191,32 @@ class Processor(object):
         """
         Formats _assertion_params as _assertion_xml.
         """
-        raise NotImplemented()
+        self._assertion_xml = xml_render.get_assertion_generic_xml(
+            self._assertion_params, signed=True)
 
     def _format_response(self):
         """
         Formats _response_params as _response_xml.
         """
-        sign_it=saml2idp_metadata.SAML2IDP_CONFIG['signing']
+        sign_it = saml2idp_metadata.SAML2IDP_CONFIG['signing']
         self._response_xml = xml_render.get_response_xml(self._response_params, signed=sign_it)
 
     def _get_django_response_params(self):
         """
         Returns a dictionary of parameters for the response template.
         """
-        tv = {
+        return {
             'acs_url': self._request_params['ACS_URL'],
             'saml_response': self._saml_response,
             'relay_state': self._relay_state,
             'autosubmit': saml2idp_metadata.SAML2IDP_CONFIG['autosubmit'],
         }
-        return tv
 
     def _parse_request(self):
         """
         Parses various parameters from _request_xml into _request_params.
         """
         #Minimal test to verify that it's not binarily encoded still:
-        print(self._request_xml.strip())
         if not str(self._request_xml.strip()).startswith('<'):
             raise Exception('RequestXML is not valid XML; '
                             'it may need to be decoded or decompressed.')
@@ -213,18 +236,22 @@ class Processor(object):
         If provided, use sp_config throughout; otherwise, it will be set in
         _validate_request().
         """
-        self._assertion_params = None
-        self._assertion_xml = None
+        self._assertion_params = sp_config
+        self._assertion_xml = sp_config
+        self._assertion_id = sp_config
         self._django_request = django_request
-        self._relay_state = None
-        self._request = None
-        self._request_id = None
-        self._request_xml = None
-        self._request_params = None
-        self._response_id = None
-        self._saml_request = None
-        self._saml_response = None
-        self._subject = None
+        self._relay_state = sp_config
+        self._request = sp_config
+        self._request_id = sp_config
+        self._request_xml = sp_config
+        self._request_params = sp_config
+        self._response_id = sp_config
+        self._response_xml = sp_config
+        self._response_params = sp_config
+        self._saml_request = sp_config
+        self._saml_response = sp_config
+        self._session_index = sp_config
+        self._subject = sp_config
         self._subject_format = 'urn:oasis:names:tc:SAML:2.0:nameid-format:email'
         self._system_params = {
             'ISSUER': saml2idp_metadata.SAML2IDP_CONFIG['issuer'],

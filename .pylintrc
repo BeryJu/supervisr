@@ -8,3 +8,7 @@ load-plugins=pylint_django
 # Minimum lines number of a similarity.
 min-similarity-lines=20
 
+[MISCELLANEOUS]
+
+# List of note tags to take in consideration, separated by a comma.
+notes=

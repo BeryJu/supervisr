@@ -9,7 +9,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from supervisr.mod.saml.idp import exceptions, saml2idp_metadata
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 def get_processor(name, config):
@@ -58,7 +58,7 @@ def find_processor(request):
                 return proc
         except exceptions.CannotHandleAssertion as exc:
             # Log these, but keep looking.
-            logger.debug('%s %s' % (proc, exc))
+            LOGGER.debug('%s %s', proc, exc)
 
     raise exceptions.CannotHandleAssertion(
         'None of the processors in SAML2IDP_REMOTES could handle this request.')

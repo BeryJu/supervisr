@@ -5,16 +5,11 @@ Functions for creating XML output.
 from __future__ import absolute_import
 
 import logging
-import string
 
+from supervisr.core.utils import render_to_string
 from supervisr.mod.saml.idp.xml_signing import get_signature_xml
-from supervisr.mod.saml.idp.xml_templates import (ASSERTION_GOOGLE_APPS,
-                                                  ASSERTION_SALESFORCE,
-                                                  ATTRIBUTE,
-                                                  ATTRIBUTE_STATEMENT,
-                                                  RESPONSE, SUBJECT)
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 def _get_attribute_statement(params):
@@ -28,18 +23,9 @@ def _get_attribute_statement(params):
     if len(attributes) < 1:
         params['ATTRIBUTE_STATEMENT'] = ''
         return
-    # Build individual attribute list.
-    template = string.Template(ATTRIBUTE)
-    attr_list = []
-    for name, value in attributes.items():
-        subs = { 'ATTRIBUTE_NAME': name, 'ATTRIBUTE_VALUE': value }
-        one = template.substitute(subs)
-        attr_list.append(one)
-    params['ATTRIBUTES'] = ''.join(attr_list)
     # Build complete AttributeStatement.
-    stmt_template = string.Template(ATTRIBUTE_STATEMENT)
-    statement = stmt_template.substitute(params)
-    params['ATTRIBUTE_STATEMENT'] = statement
+    params['ATTRIBUTE_STATEMENT'] = render_to_string('saml/xml/attributes.xml', {
+        'attributes': attributes})
 
 def _get_in_response_to(params):
     """
@@ -61,40 +47,48 @@ def _get_subject(params):
     Insert Subject.
     Modifies the params dict.
     """
-    template = string.Template(SUBJECT)
-    params['SUBJECT_STATEMENT'] = template.substitute(params)
+    params['SUBJECT_STATEMENT'] = render_to_string('saml/xml/subject.xml', params)
 
 def _get_assertion_xml(template, parameters, signed=False):
     # Reset signature.
     params = {}
     params.update(parameters)
     params['ASSERTION_SIGNATURE'] = ''
-    template = string.Template(template)
 
     _get_in_response_to(params)
     _get_subject(params) # must come before _get_attribute_statement()
     _get_attribute_statement(params)
 
-    unsigned = template.substitute(params)
-    logger.debug('Unsigned:')
-    logger.debug(unsigned)
+    unsigned = render_to_string(template, params)
+    LOGGER.debug('Unsigned: %s', unsigned)
     if not signed:
         return unsigned
 
     # Sign it.
     signature_xml = get_signature_xml(unsigned, params['ASSERTION_ID'])
     params['ASSERTION_SIGNATURE'] = signature_xml
-    signed = template.substitute(params)
+    signed = render_to_string(template, params)
 
-    logger.debug('Signed:')
-    logger.debug(signed)
+    LOGGER.debug('Signed: %s', signed)
     return signed
 
 def get_assertion_googleapps_xml(parameters, signed=False):
-    return _get_assertion_xml(ASSERTION_GOOGLE_APPS, parameters, signed)
+    """
+    Get Assertion XML for Google Apps
+    """
+    return _get_assertion_xml('saml/xml/assertions/google_apps.xml', parameters, signed)
 
 def get_assertion_salesforce_xml(parameters, signed=False):
-    return _get_assertion_xml(ASSERTION_SALESFORCE, parameters, signed)
+    """
+    Get Assertion XML for Salesforce
+    """
+    return _get_assertion_xml('saml/xml/assertions/salesforce.xml', parameters, signed)
+
+def get_assertion_generic_xml(parameters, signed=True):
+    """
+    Get Assertion XML for Generic
+    """
+    return _get_assertion_xml('saml/xml/assertions/generic.xml', parameters, signed)
 
 def get_response_xml(parameters, signed=False):
     """
@@ -106,19 +100,16 @@ def get_response_xml(parameters, signed=False):
     params['RESPONSE_SIGNATURE'] = ''
     _get_in_response_to(params)
 
-    template = string.Template(RESPONSE)
-    unsigned = template.substitute(params)
+    unsigned = render_to_string('saml/xml/response.xml', params)
 
-    logger.debug('Unsigned:')
-    logger.debug(unsigned)
+    LOGGER.debug('Unsigned: %s', unsigned)
     if not signed:
         return unsigned
 
     # Sign it.
     signature_xml = get_signature_xml(unsigned, params['RESPONSE_ID'])
     params['RESPONSE_SIGNATURE'] = signature_xml
-    signed = template.substitute(params)
+    signed = render_to_string('saml/xml/response.xml', params)
 
-    logger.debug('Signed:')
-    logger.debug(signed)
+    LOGGER.debug('Signed: %s', signed)
     return signed

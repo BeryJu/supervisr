@@ -1,15 +1,16 @@
+"""
+Supervisr SAML IDP URLs
+"""
 from django.conf.urls import url
 
+from supervisr.mod.saml.idp import views
 from supervisr.mod.saml.idp.metadata import get_deeplink_resources
-from supervisr.mod.saml.idp.views import (descriptor, login_begin, login_init,
-                                          login_process, logout)
 
 
 def deeplink_url_patterns(
-    prefix='',
-    url_base_pattern=r'^init/%s/$',
-    login_init_func=login_init,
-    ):
+        prefix='',
+        url_base_pattern=r'^%sinit/%s/$',
+        login_init_func=views.login_init):
     """
     Returns new deeplink URLs based on 'links' from settings.SAML2IDP_REMOTES.
     Parameters:
@@ -20,24 +21,20 @@ def deeplink_url_patterns(
     new_patterns = []
     for resource in resources:
         new_patterns += [
-            url( url_base_pattern % resource,
-                 login_init_func,
-                 {
-                    'resource': resource,
-                 },
-            )
+            url(url_base_pattern % (prefix, resource), login_init_func, {'resource': resource})
         ]
     return new_patterns
 
 urlpatterns = [
-    url(r'^login/$', login_begin, name="saml_login_begin"),
-    url(r'^login/process/$', login_process, name='saml_login_process'),
-    url(r'^logout/$', logout, name="saml_logout"),
-    url(r'^metadata/xml/$', descriptor, name='metadata_xml'),
+    url(r'^login/$', views.login_begin, name="saml_login_begin"),
+    url(r'^login/process/$', views.login_process, name='saml_login_process'),
+    url(r'^logout/$', views.logout, name="saml_logout"),
+    url(r'^metadata/xml/$', views.descriptor, name='metadata_xml'),
     # For "simple" deeplinks:
     url(r'^init/(?P<resource>\w+)/(?P<target>\w+)/$',
-        login_init,
+        views.login_init,
         name="login_init"),
+    url(r'^settings/(?P<mod>[a-zA-Z0-9/]+)/$', views.admin_settings, name='admin_settings'),
 ]
 # Issue 13 - Add new automagically-created URLs for deeplinks:
 urlpatterns += deeplink_url_patterns()

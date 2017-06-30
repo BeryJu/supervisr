@@ -13,6 +13,9 @@ PRIVATE_KEY_FILENAME = 'private_key_file'
 
 
 def check_configuration_contains(config, keys):
+    """
+    Check if configuration contains keys
+    """
     available_keys = frozenset(keys).intersection(frozenset(config.keys()))
 
     if not available_keys:
@@ -27,6 +30,9 @@ def check_configuration_contains(config, keys):
 
 
 def validate_configuration(config):
+    """
+    Check if configuration is complete
+    """
     check_configuration_contains(config=config,
                                  keys=(PRIVATE_KEY_DATA, PRIVATE_KEY_FILENAME))
 

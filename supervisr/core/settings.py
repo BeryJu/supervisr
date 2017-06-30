@@ -194,7 +194,7 @@ AUTH_PASSWORD_VALIDATORS = [
 EMAIL_FROM = 'Supervisr <supervisr@localhost>'
 
 try:
-    # pylint: disable=wildcard-import
+    # pylint: disable=wildcard-import, unused-wildcard-import
     from supervisr.local_settings import * # noqa
 except ImportError as exception:
     LOGGER.warning("Failed to import local_settings because %s", exception)

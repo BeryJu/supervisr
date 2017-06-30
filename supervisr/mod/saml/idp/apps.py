@@ -11,3 +11,5 @@ class SupervisrModSAMLIDPConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr.mod.saml.idp'
+    title_moddifier = lambda self, title, request: 'SAML2/IDP'
+    admin_url_name = 'saml/idp:admin_settings'
