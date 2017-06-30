@@ -1,0 +1,54 @@
+{% extends "puppet/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+{% load setting %}
+
+{% block title %}
+{% supervisr_title "Overview" %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        {% trans "Modules" %}
+      </div>
+      <div class="card-block">
+        <div class="card-text">
+          <h1 class="text-center">{{ module_count }}</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        {% trans "Downloads" %}
+      </div>
+      <div class="card-block">
+        <div class="card-text">
+          <h1 class="text-center">{{ download_count }}</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        {% trans "Debug" %}
+      </div>
+      <div class="card-block">
+        <a class="btn btn-block" href="{% url 'puppet:puppet-debug-build' user='supervisr' module='supervisr_core' %}">
+          Puppet Build (core)
+        </a>
+        <br>
+        <a class="btn btn-block" href="{% url 'puppet:puppet-debug-build' user='supervisr' module='supervisr_mail' %}">
+          Puppet Build (mail)
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
