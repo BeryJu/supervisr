@@ -1,3 +1,7 @@
+"""
+SAML2 IDP Default settings
+"""
+
 SAML2IDP_CONFIG = {
     # Default metadata to configure this local IdP.
     'autosubmit': True,
