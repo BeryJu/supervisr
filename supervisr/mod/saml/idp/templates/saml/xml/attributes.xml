@@ -1,0 +1,7 @@
+<saml:AttributeStatement>
+    {% for name, value in attrs %}
+    <saml:Attribute Name="{{ name }}">
+        <saml:AttributeValue>{{ value }}</saml:AttributeValue>
+    </saml:Attribute>
+    {% endfor %}
+</saml:AttributeStatement>
