@@ -49,7 +49,8 @@ urlpatterns = [
     # Admin views
     url(r'^admin/$', admin.index, name='admin-index'),
     url(r'^admin/settings/$', admin.settings, name='admin-settings'),
-    url(r'^admin/mod/default/(?P<mod>[a-zA-Z0-9]+)/$', admin.mod_default, name='admin-mod_default'),
+    url(r'^admin/mod/default/(?P<mod>[a-zA-Z0-9/]+)/$',
+        admin.mod_default, name='admin-mod_default'),
     url(r'^admin/info/$', admin.info, name='admin-info'),
     url(r'^admin/events/$', admin.events, name='admin-events'),
     url(r'^admin/debug/$', admin.debug, name='admin-debug'),
