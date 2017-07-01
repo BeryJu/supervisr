@@ -54,7 +54,7 @@ def debug_render(req):
         builder = ReleaseBuilder(module)
         try:
             rendered = builder.render_template(req.POST.get('templatepath'))
-        except Exception as e:
+        except Exception: # pylint: disable=broad-except
             trab = traceback.format_exc()
             rendered = str(trab)
         ctx = {
