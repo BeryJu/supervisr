@@ -1,6 +1,11 @@
 {% extends "core/generic_wizard.html" %}
 
 {% load fieldtype %}
+{% load supervisr_title %}
+
+{% block title %}
+{% supervisr_title "Setup" %}
+{% endblock %}
 
 {% block form %}
 <label for="">Keep these tokens somewhere safe. These are to be used if you loose your primary 2FA device.</label>

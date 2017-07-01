@@ -11,8 +11,8 @@ register = template.Library()
 
 APP_LIST = []
 
-@register.simple_tag
-def supervisr_dyn_user():
+@register.simple_tag(takes_context=True)
+def supervisr_dyn_user(context):
     """
     Get a list of modules that have custom user settings
     """
@@ -25,12 +25,14 @@ def supervisr_dyn_user():
                 mod = mod.split('.')[:-2][-1]
             else:
                 mod = mod.split('.')[1]
-            view = apps.get_app_config(mod).view_user_settings
+            config = apps.get_app_config(mod)
+            view = config.view_user_settings
             if view is not None:
                 view = '%s:%s' % (mod, view)
                 mod = mod.replace('supervisr.', '').replace('mod.', '')
+                title = config.title_moddifier(config.label, context.request)
                 APP_LIST.append({
-                    'title': mod.title(),
+                    'title': title,
                     'view': view
                     })
         APP_LIST = sorted(APP_LIST, key=lambda x: x['title'])
