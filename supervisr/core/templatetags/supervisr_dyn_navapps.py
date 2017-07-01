@@ -13,7 +13,6 @@ from ..utils import get_apps
 
 register = template.Library()
 
-APP_LIST = []
 LOGGER = logging.getLogger(__name__)
 
 @register.simple_tag(takes_context=True)
@@ -22,26 +21,24 @@ def supervisr_dyn_navapps(context):
     Get a list of subapps for the navbar
     """
     # pylint: disable=global-statement
-    global APP_LIST
+    app_list = []
     sub_apps = get_apps(mod_only=False)
-    if APP_LIST == []:
-        for mod in sub_apps:
-            LOGGER.debug("Considering %s for Navbar", mod)
-            mod = mod.split('.')[:-2][-1]
-            config = apps.get_app_config(mod)
-            title = config.title_moddifier(config.label, context.request)
-            if config.navbar_enabled(context.request):
-                mod = mod.replace('supervisr.', '')
-                index = '%s:%s-index' % (mod, mod)
-                try:
-                    reverse(index)
-                    LOGGER.debug("Mod %s made it with '%s'", mod, index)
-                    APP_LIST.append({
-                        'short': mod,
-                        'title': title,
-                        'index': index
-                        })
-                except NoReverseMatch:
-                    LOGGER.debug("View '%s' not reversable, ignoring %s", index, mod)
-        APP_LIST = sorted(APP_LIST, key=lambda x: x['short'])
-    return APP_LIST
+    for mod in sub_apps:
+        LOGGER.debug("Considering %s for Navbar", mod)
+        mod = mod.split('.')[:-2][-1]
+        config = apps.get_app_config(mod)
+        title = config.title_moddifier(config.label, context.request)
+        if config.navbar_enabled(context.request):
+            mod = mod.replace('supervisr.', '')
+            index = '%s:%s-index' % (mod, mod)
+            try:
+                reverse(index)
+                LOGGER.debug("Mod %s made it with '%s'", mod, index)
+                app_list.append({
+                    'short': mod,
+                    'title': title,
+                    'index': index
+                    })
+            except NoReverseMatch:
+                LOGGER.debug("View '%s' not reversable, ignoring %s", index, mod)
+    return sorted(app_list, key=lambda x: x['short'])
