@@ -20,4 +20,4 @@ SUPERVISR_AUTH_LOGIN = SELECT password \
                        FROM mail_mailaccount \
                        WHERE email_raw = '${quote_mysql:$1}'
 
-domainlist supervisr_domain = mysql;SUPERVISR_DOMAIN
+domainlist SUPERVISR_DOMAIN = mysql;SUPERVISR_DOMAIN
