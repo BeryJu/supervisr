@@ -1,5 +1,6 @@
 {% extends "core/skel.html" %}
 
+{% load cache %}
 {% load supervisr_title %}
 {% load supervisr_dyn_navapps %}
 {% load supervisr_setting %}
@@ -43,12 +44,14 @@
         <span class="nav-text">{% trans "Home" %}</span>
       </a>
       {% if user.is_authenticated %}
-      {% supervisr_dyn_navapps as installed_apps %}
-      {% for app in installed_apps %}
-      <a class="nav-link {% is_active app.short %}" href="{% url app.index %}">
-        <span class="nav-text">{% trans app.title %}</span>
-      </a>
-      {% endfor %}
+      {% cache 1000 navbar_apps %}
+        {% supervisr_dyn_navapps as installed_apps %}
+        {% for app in installed_apps %}
+        <a class="nav-link {% is_active app.short %}" href="{% url app.index %}">
+          <span class="nav-text">{% trans app.title %}</span>
+        </a>
+        {% endfor %}
+      {% endcache %}
       {% if user.is_superuser %}
       <a class="nav-link {% is_active 'admin' %}" href="{% url 'admin-index' %}">
         <span class="nav-text">{% trans "Admin" %}</span>

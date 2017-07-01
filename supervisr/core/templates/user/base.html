@@ -1,5 +1,6 @@
 {% extends "core/base.html" %}
 
+{% load cache %}
 {% load i18n %}
 {% load is_active %}
 {% load supervisr_dyn_user %}
@@ -13,12 +14,14 @@
     <a href="{% url 'user-events' %}" class="nav-link {% is_active 'user-events' %}">
       {% trans "Events" %}
     </a>
-    {% supervisr_dyn_user as view_settings %}
-    {% for sub in view_settings %}
-    <a href="{% url sub.view %}" class="nav-link {% is_active sub.view %}">
-      {% trans sub.title %}
-    </a>
-    {% endfor %}
+    {% cache 500 request.user.username %}
+      {% supervisr_dyn_user as view_settings %}
+      {% for sub in view_settings %}
+      <a href="{% url sub.view %}" class="nav-link {% is_active sub.view %}">
+        {% trans sub.title %}
+      </a>
+      {% endfor %}
+    {% endcache %}
   </section>
 </nav>
 {% endblock %}
