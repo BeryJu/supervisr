@@ -14,10 +14,10 @@ def supervisr_dyn_modlist(context):
     """
     Get a list of all modules and their admin page
     """
-    mod_list = get_apps(mod_only=True)
+    mod_list = get_apps()
     view_list = []
     for mod in mod_list:
-        mod = mod.split('.')[:-2][-1]
+        mod = '/'.join(mod.split('.')[:-2])
         config = apps.get_app_config(mod)
         title = config.title_moddifier(config.label, context.request)
         view_list.append({

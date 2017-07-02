@@ -69,17 +69,16 @@ for app in get_apps():
     short_name = app.replace('supervisr.', '')
     # Check if it's only a module or a full path
     app = '.'.join(app.split('.')[:-2])
-    if 'mod' in app:
-        short_name = '/'.join(short_name.split('.')[1:-2])
-    else:
-        short_name = short_name.split('.')[0]
+    short_name = '/'.join(app.split('.')[1:])
+    namespace = app.replace('.', '/')
     url_module = "%s.urls" % app
     # Only add if module could be loaded
     if importlib.util.find_spec(url_module) is not None:
+        app_url = r"^app/%s/" % short_name
         urlpatterns += [
-            url(r"^app/%s/" % short_name, include(url_module, namespace=short_name)),
+            url(app_url, include(url_module, namespace=namespace)),
         ]
-        LOGGER.info("Loaded %s", url_module)
+        LOGGER.info("Loaded %s under '%s' (namespace=%s)", url_module, app_url, namespace)
 
 if settings.DEBUG or settings.TEST:
     import debug_toolbar

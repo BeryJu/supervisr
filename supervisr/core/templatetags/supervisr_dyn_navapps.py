@@ -25,12 +25,13 @@ def supervisr_dyn_navapps(context):
     sub_apps = get_apps(mod_only=False)
     for mod in sub_apps:
         LOGGER.debug("Considering %s for Navbar", mod)
-        mod = mod.split('.')[:-2][-1]
+        short_mod = mod.split('.')[:-2][-1]
+        mod = '/'.join(mod.split('.')[:-2])
         config = apps.get_app_config(mod)
-        title = config.title_moddifier(config.label, context.request)
+        title = config.title_moddifier(short_mod, context.request)
         if config.navbar_enabled(context.request):
-            mod = mod.replace('supervisr.', '')
-            index = '%s:%s-index' % (mod, mod)
+            mod = mod.replace('.', '/')
+            index = '%s:%s-index' % (mod, short_mod)
             try:
                 reverse(index)
                 LOGGER.debug("Mod %s made it with '%s'", mod, index)
