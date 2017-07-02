@@ -8,7 +8,7 @@ from django.db import migrations
 
 
 def create_settings(apps, schema_editor):
-    Setting = apps.get_model('core', 'Setting')
+    Setting = apps.get_model('supervisr/core', 'Setting')
     settings = {
         'core:recaptcha:private': '',
         'core:recaptcha:public': '',
@@ -32,7 +32,7 @@ def create_user(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0012_event'),
+        ('supervisr/core', '0012_event'),
     ]
 
     operations = [

@@ -11,22 +11,22 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('core', '0010_domain'),
+        ('supervisr/core', '0010_domain'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='DNSZone',
             fields=[
-                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='core.Product')),
+                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/core.Product')),
                 ('zone', models.CharField(max_length=255)),
             ],
-            bases=('core.product',),
+            bases=('supervisr/core.product',),
         ),
         migrations.CreateModel(
             name='DNSRecord',
             fields=[
-                ('zone', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='dns.DNSZone')),
+                ('zone', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='supervisr/dns.DNSZone')),
                 ('type', models.CharField(default='A', max_length=10)),
                 ('ttl', models.IntegerField()),
                 ('prio', models.IntegerField()),
@@ -36,6 +36,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='dnszone',
             name='domain_dns',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='core.Domain'),
+            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='supervisr/core.Domain'),
         ),
     ]

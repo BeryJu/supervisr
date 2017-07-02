@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.OAUTH2_PROVIDER_APPLICATION_MODEL),
-        ('core', '0026_auto_20170323_2101'),
+        ('supervisr/core', '0026_auto_20170323_2101'),
     ]
 
     operations = [

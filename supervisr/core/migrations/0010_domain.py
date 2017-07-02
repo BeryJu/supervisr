@@ -9,18 +9,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0009_auto_20170112_1300'),
+        ('supervisr/core', '0009_auto_20170112_1300'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='Domain',
             fields=[
-                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='core.Product')),
+                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/core.Product')),
                 ('domain_name', models.CharField(max_length=255)),
                 ('registrar', models.TextField()),
                 ('is_sub', models.BooleanField(default=False)),
             ],
-            bases=('core.product',),
+            bases=('supervisr/core.product',),
         ),
     ]

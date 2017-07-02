@@ -96,7 +96,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('nic_id', models.AutoField(primary_key=True, serialize=False)),
                 ('speed', models.IntegerField()),
-                ('ips', models.ManyToManyField(blank=True, to='core.IPAddress')),
+                ('ips', models.ManyToManyField(blank=True, to='supervisr/core.IPAddress')),
             ],
         ),
         migrations.CreateModel(
@@ -110,20 +110,20 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ServerProduct',
             fields=[
-                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, to='core.Product')),
+                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, to='supervisr/core.Product')),
                 ('server_id', models.AutoField(primary_key=True, serialize=False)),
                 ('ram', models.IntegerField()),
                 ('is_virtual', models.BooleanField(default=True)),
                 ('is_managed', models.BooleanField(default=True)),
-                ('cpus', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.ServerCPU')),
-                ('drives', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.ServerDrive')),
-                ('nics', models.ManyToManyField(to='core.ServerNIC')),
+                ('cpus', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/core.ServerCPU')),
+                ('drives', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/core.ServerDrive')),
+                ('nics', models.ManyToManyField(to='supervisr/core.ServerNIC')),
             ],
         ),
         migrations.AddField(
             model_name='userproductrelationship',
             name='product',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.Product'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/core.Product'),
         ),
         migrations.AddField(
             model_name='userproductrelationship',
@@ -133,11 +133,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='product',
             name='users',
-            field=models.ManyToManyField(through='core.UserProductRelationship', to=settings.AUTH_USER_MODEL),
+            field=models.ManyToManyField(through='supervisr/core.UserProductRelationship', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='hostedapplicationproduct',
             name='product',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.Product'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/core.Product'),
         ),
     ]

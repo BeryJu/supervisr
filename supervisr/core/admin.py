@@ -18,4 +18,4 @@ def admin_autoregister(app):
         except AlreadyRegistered:
             pass
 
-admin_autoregister('core')
+admin_autoregister('supervisr/core')

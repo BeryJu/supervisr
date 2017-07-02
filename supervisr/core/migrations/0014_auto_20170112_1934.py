@@ -12,7 +12,7 @@ import supervisr.core.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0013_auto_20170112_1925'),
+        ('supervisr/core', '0013_auto_20170112_1925'),
     ]
 
     operations = [

@@ -11,7 +11,7 @@ import supervisr.core.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ldap', '0002_auto_20170220_2040'),
+        ('supervisr/mod/auth/ldap', '0002_auto_20170220_2040'),
     ]
 
     operations = [

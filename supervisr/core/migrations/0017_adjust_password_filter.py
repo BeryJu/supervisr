@@ -6,7 +6,7 @@ from django.db import migrations
 
 
 def update_settings(apps, schema_editor):
-    Setting = apps.get_model('core', 'Setting')
+    Setting = apps.get_model('supervisr/core', 'Setting')
     settings = {
         'core:password:filter:description': 'Minimum 8 characters at least 1 Uppercase Alphabet, 1 Lowercase Alphabet, 1 Number and 1 Special Character',
         'core:password:filter': "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}",
@@ -19,7 +19,7 @@ def update_settings(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0016_create_settings_2'),
+        ('supervisr/core', '0016_create_settings_2'),
     ]
 
     operations = [

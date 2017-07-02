@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dns', '0001_initial'),
+        ('supervisr/dns', '0001_initial'),
     ]
 
     operations = [

@@ -6,7 +6,7 @@ from django.db import migrations
 
 
 def create_settings(apps, schema_editor):
-    Setting = apps.get_model('core', 'Setting')
+    Setting = apps.get_model('supervisr/core', 'Setting')
     settings = {
         'core:ldap:enabled': False,
         'core:ldap:server': '',
@@ -24,7 +24,7 @@ def create_settings(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ldap', '0003_auto_20170220_2121'),
+        ('supervisr/mod/auth/ldap', '0003_auto_20170220_2121'),
     ]
 
     operations = [

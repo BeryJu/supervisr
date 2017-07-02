@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ldap', '0005_productextensionldap'),
+        ('supervisr/mod/auth/ldap', '0005_productextensionldap'),
     ]
 
     operations = [
