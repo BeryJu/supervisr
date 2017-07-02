@@ -9,8 +9,8 @@ import uuid
 from bs4 import BeautifulSoup
 from django.core.exceptions import ImproperlyConfigured
 
-from supervisr.mod.saml.idp import (codex, exceptions, saml2idp_metadata,
-                                    xml_render)
+from supervisr.mod.auth.saml.idp import (codex, exceptions, saml2idp_metadata,
+                                         xml_render)
 
 MINUTES = 60
 HOURS = 60 * MINUTES

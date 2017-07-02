@@ -12,8 +12,8 @@ from ldap3.core.exceptions import LDAPException, LDAPInvalidCredentialsResult
 
 from supervisr.core.models import Setting
 from supervisr.core.utils import send_admin_mail, time
-from supervisr.mod.ldap.errors import LDAPUserNotFound
-from supervisr.mod.ldap.models import LDAPModification
+from supervisr.mod.auth.ldap.errors import LDAPUserNotFound
+from supervisr.mod.auth.ldap.models import LDAPModification
 
 LOGGER = logging.getLogger(__name__)
 

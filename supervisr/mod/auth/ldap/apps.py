@@ -5,14 +5,14 @@ Supervisr mod_ldap app config
 from supervisr.core.apps import SupervisrAppConfig
 
 
-class SupervisrModLDAPConfig(SupervisrAppConfig):
+class SupervisrModAuthLDAPConfig(SupervisrAppConfig):
     """
     Supervisr mod_ldap app config
     """
 
-    name = 'supervisr.mod.ldap'
+    name = 'supervisr.mod.auth.ldap'
     title_moddifier = lambda self, title, request: title.upper()
-    admin_url_name = 'ldap:admin_settings'
+    admin_url_name = 'auth/ldap:admin_settings'
 
     def ensure_settings(self):
         return {

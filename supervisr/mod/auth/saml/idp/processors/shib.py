@@ -2,8 +2,8 @@
 Shib Processor
 """
 
-from supervisr.mod.saml.idp.base import Processor
-from supervisr.mod.saml.idp.xml_render import get_assertion_salesforce_xml
+from supervisr.mod.auth.saml.idp.base import Processor
+from supervisr.mod.auth.saml.idp.xml_render import get_assertion_salesforce_xml
 
 
 class ShibProcessor(Processor):

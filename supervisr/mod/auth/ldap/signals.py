@@ -12,8 +12,7 @@ from supervisr.core.signals import (SIG_CHECK_USER_EXISTS, SIG_GET_MOD_HEALTH,
                                     SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
                                     SIG_USER_PRODUCT_RELATIONSHIP_DELETED,
                                     SIG_USER_SIGN_UP)
-
-from .ldap_connector import LDAPConnector
+from supervisr.mod.auth.ldap.ldap_connector import LDAPConnector
 
 
 @receiver(SIG_USER_SIGN_UP)
