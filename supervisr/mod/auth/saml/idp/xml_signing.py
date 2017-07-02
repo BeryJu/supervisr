@@ -10,8 +10,8 @@ import logging
 import rsa
 
 from supervisr.core.utils import render_to_string
-from supervisr.mod.saml.idp import saml2idp_metadata as smd
-from supervisr.mod.saml.idp.codex import nice64
+from supervisr.mod.auth.saml.idp import saml2idp_metadata as smd
+from supervisr.mod.auth.saml.idp.codex import nice64
 
 LOGGER = logging.getLogger(__name__)
 

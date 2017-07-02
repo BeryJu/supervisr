@@ -7,7 +7,7 @@ from importlib import import_module
 
 from django.core.exceptions import ImproperlyConfigured
 
-from supervisr.mod.saml.idp import exceptions, saml2idp_metadata
+from supervisr.mod.auth.saml.idp import exceptions, saml2idp_metadata
 
 LOGGER = logging.getLogger(__name__)
 

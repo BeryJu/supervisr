@@ -86,15 +86,14 @@ INSTALLED_APPS = [
     'supervisr.server.apps.SupervisrServerConfig',
     'supervisr.web.apps.SupervisrWebConfig',
     'supervisr.mail.apps.SupervisrMailConfig',
-    'supervisr.mod.ldap.apps.SupervisrModLDAPConfig',
+    'supervisr.mod.auth.ldap.apps.SupervisrModAuthLDAPConfig',
+    'supervisr.mod.auth.saml.idp.apps.SupervisrModAuthSAMLProvider',
+    'supervisr.mod.auth.oauth.provider.apps.SupervisrModAuthOAuthProviderAppConfig',
     'supervisr.mod.tfa.apps.SupervisrModTFAConfig',
-    'supervisr.mod.saml.idp.apps.SupervisrModSAMLIDPConfig',
     'supervisr.mod.stats.graphite.apps.SupervisrModStatGraphiteConfig',
     'formtools',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    'oauth2_provider',
-    'corsheaders',
 ]
 
 CHANGELOG = '' # This gets overwritten with ../../CHANGELOG.md on launch
@@ -140,11 +139,9 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'supervisr.core.middleware.MaintenanceMode.maintenance_mode',
     'supervisr.core.middleware.PermanentMessage.permanent_message',
 ]

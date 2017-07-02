@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.models import Setting
-from supervisr.mod.ldap.forms.settings import SettingsForm
+from supervisr.mod.auth.ldap.forms.settings import SettingsForm
 
 
 @login_required
