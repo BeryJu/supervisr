@@ -7,7 +7,7 @@ from __future__ import absolute_import
 import logging
 
 from supervisr.core.utils import render_to_string
-from supervisr.mod.saml.idp.xml_signing import get_signature_xml
+from supervisr.mod.auth.saml.idp.xml_signing import get_signature_xml
 
 LOGGER = logging.getLogger(__name__)
 

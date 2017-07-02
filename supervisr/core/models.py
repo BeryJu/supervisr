@@ -23,7 +23,6 @@ from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
-from oauth2_provider.models import Application
 
 from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_USER_POST_SIGN_UP,
                                     SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
@@ -252,15 +251,6 @@ class ProductExtension(CreatedUpdatedModel):
     def __str__(self):
         return "ProductExtension %s" % self.extension_name
 
-class ProductExtensionOAuth2(ProductExtension):
-    """
-    Associate an OAuth2 Application with a Product
-    """
-
-    application = models.ForeignKey(Application)
-
-    def __str__(self):
-        return "ProductExtenstion OAuth %s" % self.application.name
 
 class Product(CreatedUpdatedModel):
     """

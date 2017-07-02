@@ -66,10 +66,12 @@ def install(ctx, dev=False):
     requirements = glob("supervisr/**/requirements.txt")
     requirements.extend(glob("supervisr/**/**/requirements.txt"))
     requirements.extend(glob("supervisr/**/**/**/requirements.txt"))
+    requirements.extend(glob("supervisr/**/**/**/**/requirements.txt"))
     if dev:
         requirements.extend(glob("supervisr/**/requirements-dev.txt"))
         requirements.extend(glob("supervisr/**/**/requirements-dev.txt"))
         requirements.extend(glob("supervisr/**/**/**/requirements-dev.txt"))
+        requirements.extend(glob("supervisr/**/**/**/**/requirements-dev.txt"))
     ctx.run("pip3 install -U -r %s" % ' -r '.join(requirements))
 
 @task

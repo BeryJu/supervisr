@@ -3,8 +3,8 @@ Supervisr SAML IDP URLs
 """
 from django.conf.urls import url
 
-from supervisr.mod.saml.idp import views
-from supervisr.mod.saml.idp.metadata import get_deeplink_resources
+from supervisr.mod.auth.saml.idp import views
+from supervisr.mod.auth.saml.idp.metadata import get_deeplink_resources
 
 
 def deeplink_url_patterns(
