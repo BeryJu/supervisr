@@ -17,7 +17,7 @@ from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Max, options
 from django.db.models.signals import pre_delete
-from django.db.utils import OperationalError
+from django.db.utils import OperationalError, ProgrammingError
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.urls import reverse
@@ -145,7 +145,7 @@ class Setting(CreatedUpdatedModel):
                 key=key,
                 defaults={'value': default})[0]
             return setting.value
-        except OperationalError:
+        except OperationalError, ProgrammingError:
             return default
 
     @staticmethod
