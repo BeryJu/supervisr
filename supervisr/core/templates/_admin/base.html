@@ -1,7 +1,6 @@
 {% extends "core/base.html" %}
 
 {% load i18n %}
-{% load cache %}
 {% load is_active %}
 {% load is_active_url %}
 {% load supervisr_dyn_modlist %}
@@ -19,12 +18,10 @@
       <input id="admin_modules" type="checkbox">
       <label for="admin_modules">{% trans "Module Settings" %}</label>
       <ul class="nav-list">
-        {% cache 1000 sidebar_admin_mods request.user.username %}
-          {% supervisr_dyn_modlist as apps %}
-          {% for app in apps %}
-          <li><a href="{% url app.url app.name %}" class="nav-link {% is_active_url app.url app.name %}">{{ app.name }}</a></li>
-          {% endfor %}
-        {% endcache %}
+        {% supervisr_dyn_modlist as apps %}
+        {% for app in apps %}
+        <li><a href="{% url app.url app.name %}" class="nav-link {% is_active_url app.url app.name %}">{{ app.name }}</a></li>
+        {% endfor %}
       </ul>
     </section>
     <a href="{% url 'admin-info' %}" class="nav-link {% is_active 'admin-info' %}">
