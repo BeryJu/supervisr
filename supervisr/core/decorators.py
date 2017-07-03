@@ -84,6 +84,7 @@ def ifapp(app_name):
                         app_cache.append(parts[0])
                 else:
                     app_cache.append(app)
+        cache.set(cache_key, app_cache, 1000)
     app_cache = cache.get(cache_key)
 
     def outer_wrap(ifapp_func):
