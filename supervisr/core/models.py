@@ -17,7 +17,7 @@ from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Max, options
 from django.db.models.signals import pre_delete
-from django.db.utils import OperationalError, ProgrammingError
+from django.db.utils import InternalError, OperationalError, ProgrammingError
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.urls import reverse
@@ -65,7 +65,7 @@ def get_userid():
     try:
         highest = UserProfile.objects.all().aggregate(Max('unix_userid'))['unix_userid__max']
         return highest + 1 if highest is not None else settings.USER_PROFILE_ID_START
-    except (AppRegistryNotReady, ObjectDoesNotExist, OperationalError):
+    except (AppRegistryNotReady, ObjectDoesNotExist, OperationalError, InternalError):
         return settings.USER_PROFILE_ID_START
 
 def get_system_user():
