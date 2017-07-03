@@ -80,6 +80,7 @@ unittest_mysql:
     - prod
   script:
     - pip install pymysql
+    - inv migrate
     - inv unittest
   variables:
     SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_mysql
@@ -93,6 +94,7 @@ unittest_pgsql:
     - prod
   script:
     - pip install psycopg2
+    - inv migrate
     - inv unittest
   variables:
     SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_pgsql
