@@ -206,8 +206,7 @@ try:
     LOCAL_SETTINGS_MOD = importlib.import_module(LOCAL_SETTINGS, package=None)
     for key, val in LOCAL_SETTINGS_MOD.__dict__.items():
         if not key.startswith('__') and not key.endswith('__'):
-            # pylint: disable=unsupported-assignment-operation
-            globals[key] = val
+            globals()[key] = val
 except ImportError as exception:
     LOGGER.warning("Failed to import local_settings because %s", exception)
 
