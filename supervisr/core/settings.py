@@ -258,6 +258,9 @@ LOGGING = {
     }
 }
 
+LOGGER.warning("Running with database '%s' (backend=%s)", DATABASES['default']['NAME'],
+               DATABASES['default']['ENGINE'])
+
 TEST = False
 if 'test' in sys.argv:
     # LOGGING = None
