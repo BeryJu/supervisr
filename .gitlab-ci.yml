@@ -1,11 +1,11 @@
-# before_script:
-#   - "sudo apt-get update >/dev/null"
-#   - "sudo apt-get -y install python3-pip python3-dev libsasl2-dev libldap2-dev libssl-dev >/dev/null"
-#   - "sudo python3 -m pip install -U virtualenv"
-#   - "virtualenv env"
-#   - "source env/bin/activate"
-#   - "pip3 install invoke"
-#   - "inv install --dev"
+before_script:
+  # - "sudo apt-get update >/dev/null"
+  # - "sudo apt-get -y install python3-pip python3-dev libsasl2-dev libldap2-dev libssl-dev >/dev/null"
+  - "sudo python3 -m pip install -U virtualenv"
+  - "virtualenv env"
+  - "source env/bin/activate"
+  - "pip3 install invoke"
+  - "inv install --dev"
 # coverage:
 #   except:
 #     - prod
