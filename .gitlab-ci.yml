@@ -1,75 +1,70 @@
-before_script:
-  - "sudo apt-get update >/dev/null"
-  - "sudo apt-get -y install python3-pip python3-dev libsasl2-dev libldap2-dev libssl-dev >/dev/null"
-  - "sudo python3 -m pip install -U virtualenv"
-  - "virtualenv env"
-  - "source env/bin/activate"
-  - "pip3 install invoke"
-  - "inv install --dev"
-coverage:
-  except:
-    - prod
-  script:
-    - "inv coverage"
-  stage: test
-  type: test
-deploy:
-  environment:
-    name: production
-    url: "https://my.beryju.org"
-  only:
-    - prod
-  script:
-    - "eval $(ssh-agent -s)"
-    - "mkdir ~/.ssh -p"
-    - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
-    - "inv deploy --user=beryjuorg --fqdn=ory1-web-prod-1.ory1.beryju.org"
-  stage: deploy
-  type: deploy
-isort:
-  except:
-    - prod
-  script:
-    - "inv isort"
-  stage: test
-  type: test
-migrations:
-  except:
-    - prod
-  script:
-    - "inv migrate"
-  stage: test
-  type: test
-prospector:
-  except:
-    - prod
-  script:
-    - "inv prospector"
-  stage: test
-  type: test
-pylint:
-  except:
-    - prod
-  script:
-    - "inv lint"
-  stage: test
-  type: test
-unittest:
-  except:
-    - prod
-  script:
-    - "inv unittest"
-  stage: test
-  type: test
-stages:
-  - test
-  - deploy
-  - test_mysql
+# before_script:
+#   - "sudo apt-get update >/dev/null"
+#   - "sudo apt-get -y install python3-pip python3-dev libsasl2-dev libldap2-dev libssl-dev >/dev/null"
+#   - "sudo python3 -m pip install -U virtualenv"
+#   - "virtualenv env"
+#   - "source env/bin/activate"
+#   - "pip3 install invoke"
+#   - "inv install --dev"
+# coverage:
+#   except:
+#     - prod
+#   script:
+#     - "inv coverage"
+#   stage: test
+#   type: test
+# deploy:
+#   environment:
+#     name: production
+#     url: "https://my.beryju.org"
+#   only:
+#     - prod
+#   script:
+#     - "eval $(ssh-agent -s)"
+#     - "mkdir ~/.ssh -p"
+#     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
+#     - "inv deploy --user=beryjuorg --fqdn=ory1-web-prod-1.ory1.beryju.org"
+#   stage: deploy
+#   type: deploy
+# isort:
+#   except:
+#     - prod
+#   script:
+#     - "inv isort"
+#   stage: test
+#   type: test
+# migrations:
+#   except:
+#     - prod
+#   script:
+#     - "inv migrate"
+#   stage: test
+#   type: test
+# prospector:
+#   except:
+#     - prod
+#   script:
+#     - "inv prospector"
+#   stage: test
+#   type: test
+# pylint:
+#   except:
+#     - prod
+#   script:
+#     - "inv lint"
+#   stage: test
+#   type: test
+# unittest:
+#   except:
+#     - prod
+#   script:
+#     - "inv unittest"
+#   stage: test
+#   type: test
+# stages:
+#   - test
+#   - deploy
 
-image: python:3.6
-services:
-  - mysql:latest
-  - postgres:latest
 variables:
   # Configure mysql environment variables (https://hub.docker.com/r/_/mysql/)
   MYSQL_DATABASE: supervisr_test
@@ -78,6 +73,9 @@ variables:
   POSTGRES_USER: supervisr
   POSTGRES_PASSWORD: 'EK-5jnKfjrGRm<77'
 unittest_mysql:
+  services:
+    - mysql:latest
+  image: python:3.6
   except:
     - prod
   script:
@@ -88,6 +86,9 @@ unittest_mysql:
   tags:
     - _docker_dev
 unittest_pgsql:
+  services:
+    - postgres:latest
+  image: python:3.6
   except:
     - prod
   script:
