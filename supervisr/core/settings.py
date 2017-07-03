@@ -207,6 +207,7 @@ try:
     for key, val in LOCAL_SETTINGS_MOD.__dict__.items():
         if not key.startswith('__') and not key.endswith('__'):
             globals()[key] = val
+    LOGGER.warning("Loaded '%s' as local_settings", LOCAL_SETTINGS)
 except ImportError as exception:
     LOGGER.warning("Failed to import local_settings because %s", exception)
 
@@ -259,7 +260,7 @@ LOGGING = {
 
 TEST = False
 if 'test' in sys.argv:
-    LOGGING = None
+    # LOGGING = None
     TEST = True
 
 if DEBUG is True:
