@@ -145,7 +145,7 @@ class Setting(CreatedUpdatedModel):
                 key=key,
                 defaults={'value': default})[0]
             return setting.value
-        except OperationalError, ProgrammingError:
+        except (OperationalError, ProgrammingError):
             return default
 
     @staticmethod
