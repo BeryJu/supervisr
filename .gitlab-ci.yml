@@ -1,8 +1,9 @@
 # Global Variables
 before_script:
-  - "python3 -m pip install -U virtualenv invoke"
+  - "python3 -m pip install -U virtualenv"
   - "virtualenv env"
   - "source env/bin/activate"
+  - "pip3 install invoke"
   - "inv install --dev"
 stages:
   - test
