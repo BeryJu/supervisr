@@ -17,7 +17,7 @@ from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Max, options
 from django.db.models.signals import pre_delete
-from django.db.utils import OperationalError
+from django.db.utils import InternalError, OperationalError, ProgrammingError
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.urls import reverse
@@ -41,7 +41,7 @@ def make_username(username):
     """
     Return username cut to 32 chars, also make POSIX conform
     """
-    return re.sub(r'([^a-zA-Z0-9\.\s-])', '_', str(username)[:32])
+    return re.sub(r'([^a-zA-Z0-9\.\s-])', '_', str(username))[:32]
 
 def get_random_string(length=10):
     """
@@ -65,7 +65,13 @@ def get_userid():
     try:
         highest = UserProfile.objects.all().aggregate(Max('unix_userid'))['unix_userid__max']
         return highest + 1 if highest is not None else settings.USER_PROFILE_ID_START
-    except (AppRegistryNotReady, ObjectDoesNotExist, OperationalError):
+    except (AppRegistryNotReady, ObjectDoesNotExist,
+            OperationalError, InternalError, ProgrammingError):
+        # Handle Postgres transaction revert
+        if 'postgresql' in settings.DATABASES['default']['ENGINE']:
+            from django.db import connection
+            # pylint: disable=protected-access
+            connection._rollback()
         return settings.USER_PROFILE_ID_START
 
 def get_system_user():
@@ -145,7 +151,7 @@ class Setting(CreatedUpdatedModel):
                 key=key,
                 defaults={'value': default})[0]
             return setting.value
-        except OperationalError:
+        except (OperationalError, ProgrammingError):
             return default
 
     @staticmethod

@@ -31,20 +31,6 @@ def shell(func):
         return func(ctx, *args, **kwargs)
     return wrapped
 
-def hide(func):
-    """
-    Hides the STDOUT of ctx.run
-    """
-    @wraps(func)
-    def wrapped(ctx, *args, **kwargs):
-        """
-        Hides the STDOUT of ctx.run
-        """
-        ctx.config.run.hide = 'stdout'
-        ret = func(ctx, *args, **kwargs)
-        return ret
-    return wrapped
-
 @task
 # pylint: disable=unused-argument
 def clean(ctx):
@@ -91,7 +77,6 @@ def make_migrations(ctx):
 
 @task(pre=[make_migrations])
 @shell
-@hide
 def migrate(ctx):
     """
     Apply migrations
@@ -131,7 +116,6 @@ def prospector(ctx):
 
 @task
 @shell
-@hide
 def isort(ctx):
     """
     Run isort
@@ -149,7 +133,6 @@ def coverage(ctx):
 
 @task
 @shell
-@hide
 def unittest(ctx):
     """
     Run Unittests

@@ -71,9 +71,6 @@ def render_to_string(tmpl, ctx):
     """
     Render a template to string
     """
-    print('-----------------------')
-    print(tmpl)
-    print(ctx)
     template = loader.get_template(tmpl)
     return template.render(ctx)
 
