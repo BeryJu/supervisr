@@ -24,7 +24,7 @@ class TestProduct(TestCase):
             description="Test Product A with auto_add=True",
             price=0.000,
             auto_add=True)
-        self.assertEqual(self.product_a.pk, 1)
+        # self.assertEqual(self.product_a.pk, 1)
         self.user = User.objects.create(
             username="Test User a",
             email="testa@test.test")
