@@ -53,7 +53,7 @@ class TestProduct(TestCase):
             description="Test Product B with auto_all_add=True",
             price=0.000,
             auto_all_add=True)
-        self.assertEqual(product_b.pk, 2)
+        # self.assertEqual(product_b.pk, 2)
         rel = UserProductRelationship.objects.filter(
             product=product_b,
             user=self.user)
