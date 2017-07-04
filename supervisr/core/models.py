@@ -70,6 +70,7 @@ def get_userid():
         # Handle Postgres transaction revert
         if 'postgresql' in settings.DATABASES['default']['ENGINE']:
             from django.db import connection
+            # pylint: disable=protected-access
             connection._rollback()
         return settings.USER_PROFILE_ID_START
 
