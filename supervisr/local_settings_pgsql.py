@@ -10,8 +10,5 @@ DATABASES = {
         'PASSWORD': 'EK-5jnKfjrGRm<77',
         'HOST': 'postgres',
         'PORT': '',
-        'OPTIONS': {
-            'autocommit': True,
-        }
     }
 }

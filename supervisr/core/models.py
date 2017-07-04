@@ -67,6 +67,10 @@ def get_userid():
         return highest + 1 if highest is not None else settings.USER_PROFILE_ID_START
     except (AppRegistryNotReady, ObjectDoesNotExist,
             OperationalError, InternalError, ProgrammingError):
+        # Handle Postgres transaction revert
+        if 'postgresql' in settings.DATABASES['default']['ENGINE']:
+            from django.db import connection
+            connection._rollback()
         return settings.USER_PROFILE_ID_START
 
 def get_system_user():
