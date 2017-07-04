@@ -10,8 +10,5 @@ DATABASES = {
         'PASSWORD': 'EK-5jnKfjrGRm<77',
         'HOST': 'postgres',
         'PORT': '',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-        }
     }
 }
