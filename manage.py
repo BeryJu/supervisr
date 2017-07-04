@@ -5,12 +5,17 @@ Django Launcher
 import os
 import sys
 
-import crypto
 import pymysql
 
 pymysql.install_as_MySQLdb()
 
-sys.modules['Crypto'] = crypto
+try:
+    # Check if Crypto can be import
+    import Crypto
+except Exception as e:
+    # otherwise wrap crypto
+    import crypto
+    sys.modules['Crypto'] = crypto
 
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
