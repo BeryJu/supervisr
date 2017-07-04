@@ -11,7 +11,11 @@ DATABASES = {
         'HOST': 'mysql',
         'PORT': '',
         'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES',character_set_connection=utf8,collation_connection=utf8_unicode_ci"
+            'init_command': """
+            SET sql_mode='STRICT_TRANS_TABLES',
+            character_set_connection=utf8,
+            collation_connection=utf8_unicode_ci
+            """
         }
     }
 }

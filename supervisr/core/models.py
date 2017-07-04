@@ -65,7 +65,8 @@ def get_userid():
     try:
         highest = UserProfile.objects.all().aggregate(Max('unix_userid'))['unix_userid__max']
         return highest + 1 if highest is not None else settings.USER_PROFILE_ID_START
-    except (AppRegistryNotReady, ObjectDoesNotExist, OperationalError, InternalError, ProgrammingError):
+    except (AppRegistryNotReady, ObjectDoesNotExist,
+            OperationalError, InternalError, ProgrammingError):
         return settings.USER_PROFILE_ID_START
 
 def get_system_user():
