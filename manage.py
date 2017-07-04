@@ -11,8 +11,9 @@ pymysql.install_as_MySQLdb()
 
 try:
     # Check if Crypto can be import
-    import Crypto
-except Exception as e:
+    # pylint: disable=unused-import
+    import Crypto # noqa
+except ImportError:
     # otherwise wrap crypto
     import crypto
     sys.modules['Crypto'] = crypto
