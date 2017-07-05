@@ -70,6 +70,9 @@ def ifapp(app_name):
     Only executes ifapp_func if app_name is installed
     """
     def get_apps():
+        """
+        Cache all installed apps and return the list
+        """
         cache_key = 'ifapp_apps'
         if not cache.get(cache_key):
             app_cache = []
