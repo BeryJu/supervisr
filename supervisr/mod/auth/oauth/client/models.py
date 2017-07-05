@@ -28,6 +28,7 @@ class Provider(models.Model):
     "Configuration for OAuth provider."
 
     name = models.CharField(max_length=50, unique=True)
+    ui_name = models.TextField(default='')
     request_token_url = models.CharField(blank=True, max_length=255)
     authorization_url = models.CharField(max_length=255)
     access_token_url = models.CharField(max_length=255)

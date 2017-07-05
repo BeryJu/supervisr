@@ -4,6 +4,7 @@ supervisr core urls
 import importlib
 import logging
 
+from django.apps import apps
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin as admin_django
@@ -66,18 +67,29 @@ urlpatterns = [
 
 # Load Urls for all sub apps
 for app in get_apps():
-    short_name = app.replace('supervisr.', '')
-    # Check if it's only a module or a full path
+    # Remove .apps.Supervisr stuff
     app = '.'.join(app.split('.')[:-2])
-    if 'mod' in app:
-        short_name = '/'.join(short_name.split('.')[1:-2])
-    else:
-        short_name = short_name.split('.')[0]
+    # Check if app uses old or new label
+    namespace = None
+    try:
+        # Try new format first
+        # from supervisr.mod.auth.oauth.client
+        # to mod/auth/oauth/client
+        new_name = '/'.join(app.split('.'))
+        mount_path = new_name.replace('supervisr/', '')
+        app_config = apps.get_app_config(new_name)
+        namespace = new_name
+    except (KeyError, LookupError):
+        # Try old format afterwards
+        old_name = app.split('.')[-1]
+        app_config = apps.get_app_config(old_name)
+        namespace = old_name
+
     url_module = "%s.urls" % app
     # Only add if module could be loaded
     if importlib.util.find_spec(url_module) is not None:
         urlpatterns += [
-            url(r"^app/%s/" % short_name, include(url_module, namespace=short_name)),
+            url(r"^app/%s/" % mount_path, include(url_module, namespace=namespace)),
         ]
         LOGGER.info("Loaded %s", url_module)
 

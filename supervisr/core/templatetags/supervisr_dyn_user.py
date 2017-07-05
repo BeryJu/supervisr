@@ -15,7 +15,10 @@ def supervisr_dyn_user(context):
     """
     Get a list of modules that have custom user settings
     """
-    key = 'supervisr_dyn_user'
+    uniq = ''
+    if 'request' in context:
+        uniq = context['request'].user.email
+    key = 'supervisr_dyn_user_%s' % uniq
     if not cache.get(key):
         app_list = []
         sub_apps = get_apps(mod_only=False)
@@ -40,5 +43,7 @@ def supervisr_dyn_user(context):
                     'title': title,
                     'view': view
                     })
-        cache.set(key, sorted(app_list, key=lambda x: x['title']), 1000)
+        sorted_list = sorted(app_list, key=lambda x: x['title'])
+        cache.set(key, sorted_list, 1000)
+        return sorted_list
     return cache.get(key)

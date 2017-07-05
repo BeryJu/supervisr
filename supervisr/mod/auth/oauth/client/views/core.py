@@ -11,10 +11,12 @@ import logging
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import Http404
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.utils.encoding import force_text, smart_bytes
+from django.utils.translation import ugettext as _
 from django.views.generic import RedirectView, View
 
 from supervisr.mod.auth.oauth.client.clients import get_client
@@ -51,7 +53,7 @@ class OAuthRedirect(OAuthClientMixin, RedirectView):
     # pylint: disable=no-self-use
     def get_callback_url(self, provider):
         "Return the callback url for this provider."
-        return reverse('auth/oauth/client:oauth-client-callback',
+        return reverse('supervisr/mod/auth/oauth/client:oauth-client-callback',
                        kwargs={'provider': provider.name})
 
     def get_redirect_url(self, **kwargs):
@@ -179,3 +181,31 @@ class OAuthCallback(OAuthClientMixin, View):
         user = authenticate(provider=access.provider, identifier=access.identifier)
         login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
         return redirect(self.get_login_redirect(provider, user, access, True))
+
+@login_required
+def disconnect(req, provider):
+    """
+    Delete connection with provider
+    """
+    provider = Provider.objects.filter(name=provider)
+    if not provider.exists():
+        raise Http404
+    r_provider = provider.first()
+
+    aas = AccountAccess.objects.filter(provider=r_provider, user=req.user)
+    if not aas.exists():
+        raise Http404
+    r_aas = aas.first()
+
+    if req.method == 'POST' and 'confirmdelete' in req.POST:
+        # User confirmed deletion
+        r_aas.delete()
+        messages.success(req, _('Connection successfully deleted'))
+        return redirect(reverse('supervisr/mod/auth/oauth/client:user_settings'))
+
+    return render(req, 'core/generic_delete.html', {
+        'object': 'OAuth Connection with %s' % r_provider.ui_name,
+        'delete_url': reverse('supervisr/mod/auth/oauth/client:oauth-client-disconnect', kwargs={
+            'provider': r_provider.name,
+            })
+        })

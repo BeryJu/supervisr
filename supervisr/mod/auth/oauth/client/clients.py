@@ -48,7 +48,6 @@ class BaseOAuthClient(object):
     def get_redirect_url(self, request, callback, parameters=None):
         "Build authentication redirect url."
         args = self.get_redirect_args(request, callback=callback)
-        print(args)
         additional = parameters or {}
         args.update(additional)
         params = urlencode(args)

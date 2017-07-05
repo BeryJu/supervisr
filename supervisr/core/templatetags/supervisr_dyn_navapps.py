@@ -22,7 +22,10 @@ def supervisr_dyn_navapps(context):
     Get a list of subapps for the navbar
     """
     # pylint: disable=global-statement
-    key = 'supervisr_dyn_navapps'
+    uniq = ''
+    if 'request' in context:
+        uniq = context['request'].user.email
+    key = 'supervisr_dyn_navapps_%s' % uniq
     if not cache.get(key):
         app_list = []
         sub_apps = get_apps(mod_only=False)
@@ -51,5 +54,7 @@ def supervisr_dyn_navapps(context):
                         })
                 except NoReverseMatch:
                     LOGGER.debug("View '%s' not reversable, ignoring %s", index, mod)
-        cache.set(key, sorted(app_list, key=lambda x: x['short']), 1000)
+        sorted_list = sorted(app_list, key=lambda x: x['short'])
+        cache.set(key, sorted_list, 1000)
+        return sorted_list
     return cache.get(key)
