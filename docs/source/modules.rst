@@ -1,5 +1,5 @@
-__pycache__
-===========
+cache
+=====
 
 .. toctree::
    :maxdepth: 4
