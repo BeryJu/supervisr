@@ -51,6 +51,7 @@ class BaseOAuthClient(object):
         additional = parameters or {}
         args.update(additional)
         params = urlencode(args)
+        LOGGER.info("Redirect args: %s", args)
         return '{0}?{1}'.format(self.provider.authorization_url, params)
 
     def parse_raw_token(self, raw_token):
