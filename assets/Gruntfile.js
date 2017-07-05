@@ -18,7 +18,7 @@ module.exports = function(grunt) {
             'node_modules/jquery/dist/jquery.js',
             'js/*.js',
         ],
-        dest: '../supervisr/core/static/app.min.js',
+        dest: '../supervisr/core/static/js/app.min.js',
       },
     },
     cssmin: {
@@ -27,9 +27,10 @@ module.exports = function(grunt) {
           src: [
               'node_modules/clarity-icons/clarity-icons.min.css',
               'node_modules/clarity-ui/clarity-ui.min.css',
+              'node_modules/font-awesome/css/font-awesome.min.css',
               'css/*.css',
           ],
-          dest: '../supervisr/core/static/app.min.css',
+          dest: '../supervisr/core/static/css/app.min.css',
         }]
       }
     },
@@ -43,6 +44,11 @@ module.exports = function(grunt) {
       images: {
         files: [
           { expand: true, cwd: 'img', src: ['*'], dest: '../supervisr/core/static/img/' },
+        ]
+      },
+      fonts: {
+        files: [
+          { expand: true, cwd: 'node_modules/font-awesome/fonts/', src: ['*'], dest: '../supervisr/core/static/fonts/' },
         ]
       }
     }
