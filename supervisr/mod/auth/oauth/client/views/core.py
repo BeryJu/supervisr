@@ -76,47 +76,48 @@ class OAuthCallback(OAuthClientMixin, View):
     "Base OAuth callback view."
 
     provider_id = None
+    provider = None
 
     # pylint: disable=unused-argument
     def get(self, request, *args, **kwargs):
         """
-`       View Get handler
+        View Get handler
         """
         name = kwargs.get('provider', '')
         try:
-            provider = Provider.objects.get(name=name)
+            self.provider = Provider.objects.get(name=name)
         except Provider.DoesNotExist:
             raise Http404('Unknown OAuth provider.')
         else:
-            if not provider.enabled():
+            if not self.provider.enabled():
                 raise Http404('Provider %s is not enabled.' % name)
-            client = self.get_client(provider)
-            callback = self.get_callback_url(provider)
+            client = self.get_client(self.provider)
+            callback = self.get_callback_url(self.provider)
             # Fetch access token
             raw_token = client.get_access_token(self.request, callback=callback)
             if raw_token is None:
-                return self.handle_login_failure(provider, "Could not retrieve token.")
+                return self.handle_login_failure(self.provider, "Could not retrieve token.")
             # Fetch profile info
             info = client.get_profile_info(raw_token)
             if info is None:
-                return self.handle_login_failure(provider, "Could not retrieve profile.")
-            identifier = self.get_user_id(provider, info)
+                return self.handle_login_failure(self.provider, "Could not retrieve profile.")
+            identifier = self.get_user_id(self.provider, info)
             if identifier is None:
-                return self.handle_login_failure(provider, "Could not determine id.")
+                return self.handle_login_failure(self.provider, "Could not determine id.")
             # Get or create access record
             defaults = {
                 'access_token': raw_token,
             }
             access, created = AccountAccess.objects.get_or_create(
-                provider=provider, identifier=identifier, defaults=defaults
+                provider=self.provider, identifier=identifier, defaults=defaults
             )
             if not created:
                 access.access_token = raw_token
                 AccountAccess.objects.filter(pk=access.pk).update(**defaults)
-            user = authenticate(provider=provider, identifier=identifier)
+            user = authenticate(provider=self.provider, identifier=identifier)
             if user is None:
-                return self.handle_new_user(provider, access, info)
-            return self.handle_existing_user(provider, user, access, info)
+                return self.handle_new_user(self.provider, access, info)
+            return self.handle_existing_user(self.provider, user, access, info)
 
     # pylint: disable=unused-argument, no-self-use
     def get_callback_url(self, provider):
@@ -131,7 +132,10 @@ class OAuthCallback(OAuthClientMixin, View):
     # pylint: disable=unused-argument, no-self-use
     def get_login_redirect(self, provider, user, access, new=False):
         "Return url to redirect authenticated users."
-        return settings.LOGIN_REDIRECT_URL
+        messages.success(self.request, _("Successfully linked %(provider)s!" % {
+            'provider': self.provider.ui_name
+            }))
+        return 'common-index'
 
     # pylint: disable=unused-argument, no-self-use
     def get_or_create_user(self, provider, access, info):
@@ -170,7 +174,7 @@ class OAuthCallback(OAuthClientMixin, View):
     def handle_login_failure(self, provider, reason):
         "Message user and redirect on error."
         LOGGER.error('Authenication Failure: %s', reason)
-        messages.error(self.request, 'Authenication Failed.')
+        messages.error(self.request, _('Authenication Failed.'))
         return redirect(self.get_error_redirect(provider, reason))
 
     def handle_new_user(self, provider, access, info):

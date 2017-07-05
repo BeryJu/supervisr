@@ -14,7 +14,6 @@ def user_settings(req):
     Show user settings
     """
     providers = Provider.objects.all()
-    print(req.user.password)
     provider_state = []
     for prov in providers:
         provider_state.append({
