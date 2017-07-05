@@ -24,6 +24,11 @@ Extending Supervisr
  - :doc:`extending_supervisr/overwriting_settings`
  - :doc:`extending_supervisr/ui_integration`
 
+SSO
+----
+
+ - :doc:`sso/external_sources`
+
 Code
 ----
 

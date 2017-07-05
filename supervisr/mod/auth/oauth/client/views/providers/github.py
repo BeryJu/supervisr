@@ -5,6 +5,7 @@ GitHub OAuth Views
 from django.contrib.auth import get_user_model
 
 from supervisr.core.models import UserProfile, make_username
+from supervisr.mod.auth.oauth.client.utils import user_get_or_create
 from supervisr.mod.auth.oauth.client.views.core import OAuthCallback
 
 
@@ -21,7 +22,7 @@ class GitHubOAuth2Callback(OAuthCallback):
             'first_name': info['name'],
             'password': None
         }
-        gh_user = user.objects.create_user(**user_data)
+        gh_user = user_get_or_create(user_model=user, **user_data)
         UserProfile.objects.get_or_create(
             user=gh_user,
             defaults={

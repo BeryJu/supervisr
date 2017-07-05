@@ -83,7 +83,7 @@ def login_begin(request):
         return HttpResponseBadRequest('the SAML request payload is missing')
 
     request.session['RelayState'] = source.get('RelayState', '')
-    return redirect(reverse('auth/saml/idp:saml_login_process'))
+    return redirect(reverse('idp:saml_login_process'))
 
 
 @login_required
@@ -163,8 +163,8 @@ def descriptor(request):
     """
     idp_config = saml2idp_metadata.SAML2IDP_CONFIG
     entity_id = idp_config['issuer']
-    slo_url = request.build_absolute_uri(reverse('auth/saml/idp:saml_logout'))
-    sso_url = request.build_absolute_uri(reverse('auth/saml/idp:saml_login_begin'))
+    slo_url = request.build_absolute_uri(reverse('idp:saml_logout'))
+    sso_url = request.build_absolute_uri(reverse('idp:saml_login_begin'))
     pubkey = xml_signing.load_certificate(idp_config)
     ctx = {
         'entity_id': entity_id,
@@ -182,8 +182,8 @@ def admin_settings(req, mod):
     """
     idp_config = saml2idp_metadata.SAML2IDP_CONFIG
     entity_id = idp_config['issuer']
-    slo_url = req.build_absolute_uri(reverse('auth/saml/idp:saml_logout'))
-    sso_url = req.build_absolute_uri(reverse('auth/saml/idp:saml_login_begin'))
+    slo_url = req.build_absolute_uri(reverse('idp:saml_logout'))
+    sso_url = req.build_absolute_uri(reverse('idp:saml_login_begin'))
     pubkey = xml_signing.load_certificate(idp_config)
     ctx = {
         'entity_id': entity_id,
