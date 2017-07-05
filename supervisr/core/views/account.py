@@ -85,7 +85,7 @@ def login(req):
                 return redirect(reverse('account-login'))
     else:
         form = LoginForm()
-    return render(req, 'core/generic_form_login.html', {
+    return render(req, 'account/login.html', {
         'form': form,
         'title': _("Login - SSO"),
         'primary_action': _("Login"),

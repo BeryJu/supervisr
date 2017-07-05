@@ -12,7 +12,7 @@ class SupervisrModAuthLDAPConfig(SupervisrAppConfig):
 
     name = 'supervisr.mod.auth.ldap'
     title_moddifier = lambda self, title, request: title.upper()
-    admin_url_name = 'auth/ldap:admin_settings'
+    admin_url_name = 'ldap:admin_settings'
 
     def ensure_settings(self):
         return {

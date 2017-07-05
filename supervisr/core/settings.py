@@ -67,8 +67,6 @@ LOGGER = logging.getLogger(__name__)
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 NOCAPTCHA = True
 
-OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'
-
 CORS_ORIGIN_ALLOW_ALL = True
 REQUEST_APPROVAL_PROMPT = 'auto'
 
@@ -110,6 +108,7 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 STATIC_URL = '/static/'
+LOGIN_REDIRECT_URL = 'user-index'
 
 # Settings are taken from DB, these are needed for django-recaptcha to work
 RECAPTCHA_PUBLIC_KEY = ''
@@ -118,7 +117,6 @@ RECAPTCHA_PRIVATE_KEY = ''
 INTERNAL_IPS = ['127.0.0.1']
 
 AUTHENTICATION_BACKENDS = [
-    'oauth2_provider.backends.OAuth2Backend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -279,5 +277,6 @@ for app in INSTALLED_APPS:
             app_settings = importlib.import_module("%s.settings" % app_package)
             INSTALLED_APPS.extend(getattr(app_settings, 'INSTALLED_APPS', []))
             MIDDLEWARE.extend(getattr(app_settings, 'MIDDLEWARE', []))
+            AUTHENTICATION_BACKENDS.extend(getattr(app_settings, 'AUTHENTICATION_BACKENDS', []))
         except ImportError:
             pass
