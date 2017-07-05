@@ -20,8 +20,14 @@ def supervisr_dyn_modlist(context):
         mod_list = get_apps(mod_only=True)
         view_list = []
         for mod in mod_list:
-            mod = mod.split('.')[:-2][-1]
-            config = apps.get_app_config(mod)
+            config = None
+            try:
+                mod_new = '/'.join(mod.split('.')[:-2])
+                config = apps.get_app_config(mod_new)
+                mod = mod_new
+            except LookupError:
+                mod = mod.split('.')[:-2][-1]
+                config = apps.get_app_config(mod)
             title = config.title_moddifier(config.label, context.request)
             view_list.append({
                 'url': apps.get_app_config(mod).admin_url_name,

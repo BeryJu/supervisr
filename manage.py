@@ -9,15 +9,6 @@ import pymysql
 
 pymysql.install_as_MySQLdb()
 
-try:
-    # Check if Crypto can be import
-    # pylint: disable=unused-import
-    import Crypto # noqa
-except ImportError:
-    # otherwise wrap crypto
-    import crypto
-    sys.modules['Crypto'] = crypto
-
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
     os.environ.setdefault("SUPERVISR_LOCAL_SETTINGS", "supervisr.local_settings")

@@ -28,8 +28,15 @@ def supervisr_dyn_navapps(context):
         sub_apps = get_apps(mod_only=False)
         for mod in sub_apps:
             LOGGER.debug("Considering %s for Navbar", mod)
-            mod = mod.split('.')[:-2][-1]
-            config = apps.get_app_config(mod)
+            config = None
+            # Try new labels first
+            try:
+                mod_new = '/'.join(mod.split('.')[:-2])
+                config = apps.get_app_config(mod_new)
+                mod = mod_new
+            except LookupError:
+                mod = mod.split('.')[:-2][-1]
+                config = apps.get_app_config(mod)
             title = config.title_moddifier(config.label, context.request)
             if config.navbar_enabled(context.request):
                 mod = mod.replace('supervisr.', '')

@@ -20,11 +20,17 @@ def supervisr_dyn_user(context):
         app_list = []
         sub_apps = get_apps(mod_only=False)
         for mod in sub_apps:
-            if 'mod' in mod:
-                mod = mod.split('.')[:-2][-1]
-            else:
-                mod = mod.split('.')[1]
-            config = apps.get_app_config(mod)
+            config = None
+            try:
+                mod_new = '/'.join(mod.split('.')[:-2])
+                config = apps.get_app_config(mod_new)
+                mod = mod_new
+            except LookupError:
+                if 'mod' in mod:
+                    mod = mod.split('.')[:-2][-1]
+                else:
+                    mod = mod.split('.')[1]
+                config = apps.get_app_config(mod)
             view = config.view_user_settings
             if view is not None:
                 view = '%s:%s' % (mod, view)

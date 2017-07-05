@@ -5,15 +5,15 @@ Supervisr OAuth2 Views
 import json
 import logging
 
-from allaccess.clients import OAuth2Client
-from allaccess.views import OAuthCallback
 from django.contrib.auth import get_user_model
 from requests.exceptions import RequestException
 
+from supervisr.core.models import UserProfile, make_username
+from supervisr.mod.auth.oauth.client.clients import OAuth2Client
+from supervisr.mod.auth.oauth.client.utils import user_get_or_create
+from supervisr.mod.auth.oauth.client.views.core import OAuthCallback
+
 LOGGER = logging.getLogger(__name__)
-
-
-
 
 class SupervisrOAuth2Client(OAuth2Client):
     """
@@ -48,10 +48,18 @@ class SupervisrOAuthCallback(OAuthCallback):
 
     def get_or_create_user(self, provider, access, info):
         user = get_user_model()
-        kwargs = {
+        user_data = {
             user.USERNAME_FIELD: info['email'],
             'email': info['email'],
             'first_name': info['first_name'],
             'password': None
         }
-        return user.objects.create_user(**kwargs)
+        sv_user = user_get_or_create(user_model=user, **user_data)
+        UserProfile.objects.get_or_create(
+            user=sv_user,
+            defaults={
+                'username': info['first_name'],
+                'crypt6_password': '', # Set password to empty to disable login
+                'unix_username': make_username(info['first_name'])
+            })
+        return sv_user
