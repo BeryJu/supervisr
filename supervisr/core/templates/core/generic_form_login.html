@@ -47,6 +47,8 @@
       <a href="{% url link %}" class="signup">{% trans name %}</a>
       {% endfor %}
       {% endif %}
+      {% block extra %}
+      {% endblock %}
     </div>
   </form>
 </div>

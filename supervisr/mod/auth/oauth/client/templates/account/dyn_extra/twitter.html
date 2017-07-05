@@ -1,0 +1,8 @@
+{% load i18n %}
+{% load provider_exists %}
+
+{% provider_exists 'twitter' as twitter_enabled %}
+{% if twitter_enabled %}
+<a href="{% url 'supervisr/mod/auth/oauth/client:oauth-client-login' provider='twitter' %}" class="btn" style="background-color:#55ACEE;color:white;margin-top:10px;"><i class="fa fa-twitter" aria-hidden="true"></i>
+{% trans "Login with Twitter" %}</a>
+{% endif %}

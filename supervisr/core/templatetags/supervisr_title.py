@@ -21,8 +21,15 @@ def supervisr_title(context, title=None):
     # Include App Title in title
     app = ''
     if context.request.resolver_match and context.request.resolver_match.namespace != '':
-        app_title = context.request.resolver_match.namespace.split('/')[-1]
-        dj_app = apps.get_app_config(app_title)
+        dj_app = None
+        try:
+            # Old label style ('core', 'client', etc)
+            app_title = context.request.resolver_match.namespace.split('/')[-1]
+            dj_app = apps.get_app_config(app_title)
+        except (LookupError, KeyError):
+            # New label style ('supervisr/core', 'supervisr/mod/auth/oauth/client', etc)
+            app_title = context.request.resolver_match.namespace
+            dj_app = apps.get_app_config(app_title)
         app_title = dj_app.title_moddifier(
             context.request.resolver_match.namespace, context.request)
         app = app_title + ' -'
