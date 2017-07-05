@@ -25,4 +25,5 @@ def template_wildcard(tmpl_dir):
                 templates = []
                 for file in files:
                     templates.append(os.path.relpath(file, start=prefix))
-    return templates
+                    return templates
+    return []

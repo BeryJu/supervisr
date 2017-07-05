@@ -69,23 +69,27 @@ def ifapp(app_name):
     """
     Only executes ifapp_func if app_name is installed
     """
-    cache_key = 'ifapp_apps'
-    if not cache.get(cache_key):
-        app_cache = []
-        # Make a list of all short names for all apps
-        if not app_cache:
+    def get_apps():
+        cache_key = 'ifapp_apps'
+        if not cache.get(cache_key):
             app_cache = []
-            for app in settings.INSTALLED_APPS:
-                if '.' in app:
-                    parts = app.split('.')
-                    if parts[0] == 'supervisr':
-                        app_cache.append(parts[1])
+            # Make a list of all short names for all apps
+            if not app_cache:
+                app_cache = []
+                for app in settings.INSTALLED_APPS:
+                    if '.' in app:
+                        parts = app.split('.')
+                        if parts[0] == 'supervisr':
+                            app_cache.append(parts[1])
+                        else:
+                            app_cache.append(parts[0])
                     else:
-                        app_cache.append(parts[0])
-                else:
-                    app_cache.append(app)
-        cache.set(cache_key, app_cache, 1000)
-    app_cache = cache.get(cache_key)
+                        app_cache.append(app)
+            cache.set(cache_key, app_cache, 1000)
+            return app_cache
+        return cache.get(cache_key)
+
+    app_cache = get_apps()
 
     def outer_wrap(ifapp_func):
         """
