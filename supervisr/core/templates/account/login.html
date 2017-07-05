@@ -1,0 +1,10 @@
+{% extends 'core/generic_form_login.html' %}
+
+{% load template_wildcard %}
+
+{% block extra %}
+{% template_wildcard 'mod/auth/oauth/client/providers/' as incl %}
+{% for inc in incl %}
+{% include inc %}
+{% endfor %}
+{% endblock %}

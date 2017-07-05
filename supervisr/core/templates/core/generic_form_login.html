@@ -47,9 +47,8 @@
       <a href="{% url link %}" class="signup">{% trans name %}</a>
       {% endfor %}
       {% endif %}
-      {% include 'mod/auth/oauth/client/providers/facebook.html' %}
-      {% include 'mod/auth/oauth/client/providers/twitter.html' %}
-      {% include 'mod/auth/oauth/client/providers/github.html' %}
+      {% block extra %}
+      {% endblock %}
     </div>
   </form>
 </div>
