@@ -3,7 +3,7 @@
 {% load template_wildcard %}
 
 {% block extra %}
-{% template_wildcard 'mod/auth/oauth/client/providers/' as incl %}
+{% template_wildcard 'account/dyn_extra/' as incl %}
 {% for inc in incl %}
 {% include inc %}
 {% endfor %}
