@@ -42,6 +42,8 @@
 
 
 
+
+
 import importlib
 import logging
 import os
@@ -65,8 +67,6 @@ LOGGER = logging.getLogger(__name__)
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 NOCAPTCHA = True
 
-OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'
-
 CORS_ORIGIN_ALLOW_ALL = True
 REQUEST_APPROVAL_PROMPT = 'auto'
 
@@ -84,14 +84,14 @@ INSTALLED_APPS = [
     'supervisr.server.apps.SupervisrServerConfig',
     'supervisr.web.apps.SupervisrWebConfig',
     'supervisr.mail.apps.SupervisrMailConfig',
-    'supervisr.mod.ldap.apps.SupervisrModLDAPConfig',
+    'supervisr.mod.auth.ldap.apps.SupervisrModAuthLDAPConfig',
+    'supervisr.mod.auth.saml.idp.apps.SupervisrModAuthSAMLProvider',
+    'supervisr.mod.auth.oauth.provider.apps.SupervisrModAuthOAuthProviderAppConfig',
     'supervisr.mod.tfa.apps.SupervisrModTFAConfig',
-    'supervisr.mod.namecheap.apps.SupervisrModNamecheapConfig',
+    'supervisr.mod.stats.graphite.apps.SupervisrModStatGraphiteConfig',
     'formtools',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    'oauth2_provider',
-    'corsheaders',
 ]
 
 CHANGELOG = '' # This gets overwritten with ../../CHANGELOG.md on launch
@@ -108,6 +108,7 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 STATIC_URL = '/static/'
+LOGIN_REDIRECT_URL = 'user-index'
 
 # Settings are taken from DB, these are needed for django-recaptcha to work
 RECAPTCHA_PUBLIC_KEY = ''
@@ -116,9 +117,19 @@ RECAPTCHA_PRIVATE_KEY = ''
 INTERNAL_IPS = ['127.0.0.1']
 
 AUTHENTICATION_BACKENDS = [
-    'oauth2_provider.backends.OAuth2Backend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache'),
+        'TIMEOUT': 60,
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000
+        }
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -126,11 +137,9 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'supervisr.core.middleware.MaintenanceMode.maintenance_mode',
     'supervisr.core.middleware.PermanentMessage.permanent_message',
 ]
@@ -191,8 +200,12 @@ AUTH_PASSWORD_VALIDATORS = [
 EMAIL_FROM = 'Supervisr <supervisr@localhost>'
 
 try:
-    # pylint: disable=wildcard-import
-    from supervisr.local_settings import * # noqa
+    LOCAL_SETTINGS = os.environ.get('SUPERVISR_LOCAL_SETTINGS', 'supervisr.local_settings')
+    LOCAL_SETTINGS_MOD = importlib.import_module(LOCAL_SETTINGS, package=None)
+    for key, val in LOCAL_SETTINGS_MOD.__dict__.items():
+        if not key.startswith('__') and not key.endswith('__'):
+            globals()[key] = val
+    LOGGER.warning("Loaded '%s' as local_settings", LOCAL_SETTINGS)
 except ImportError as exception:
     LOGGER.warning("Failed to import local_settings because %s", exception)
 
@@ -220,6 +233,7 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
         },
         'syslog': {
             'level': 'DEBUG',
@@ -230,21 +244,24 @@ LOGGING = {
     },
     'loggers': {
         'supervisr': {
-            'handlers': ['console', 'syslog'],
+            'handlers': ['console', 'syslog', 'mail_admins'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'django': {
-            'handlers': ['console', 'syslog'],
+            'handlers': ['console', 'syslog', 'mail_admins'],
             'level': 'INFO',
             'propagate': True,
         },
     }
 }
 
+LOGGER.warning("Running with database '%s' (backend=%s)", DATABASES['default']['NAME'],
+               DATABASES['default']['ENGINE'])
+
 TEST = False
 if 'test' in sys.argv:
-    LOGGING = None
+    # LOGGING = None
     TEST = True
 
 if DEBUG is True:
@@ -260,5 +277,6 @@ for app in INSTALLED_APPS:
             app_settings = importlib.import_module("%s.settings" % app_package)
             INSTALLED_APPS.extend(getattr(app_settings, 'INSTALLED_APPS', []))
             MIDDLEWARE.extend(getattr(app_settings, 'MIDDLEWARE', []))
+            AUTHENTICATION_BACKENDS.extend(getattr(app_settings, 'AUTHENTICATION_BACKENDS', []))
         except ImportError:
             pass

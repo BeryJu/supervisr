@@ -18,9 +18,6 @@ class NamecheapProviderSetupUI(BaseProviderUIInterface):
 
     forms = [SetupForm]
 
-    def __init__(self, provider, action, request):
-        super(NamecheapProviderSetupUI, self).__init__(provider, action, request)
-
     def post_submit(self, form_data):
         print(form_data)
 
