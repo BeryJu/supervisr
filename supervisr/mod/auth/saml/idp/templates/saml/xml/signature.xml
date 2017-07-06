@@ -1,0 +1,9 @@
+<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+    {% include 'saml/xml/signed_info.xml' %}
+    <ds:SignatureValue>{{ RESPONSE_SIGNATURE.RSA_SIGNATURE }}</ds:SignatureValue>
+    <ds:KeyInfo>
+        <ds:X509Data>
+            <ds:X509Certificate>{{ RESPONSE_SIGNATURE.CERTIFICATE }}</ds:X509Certificate>
+        </ds:X509Data>
+    </ds:KeyInfo>
+</ds:Signature>

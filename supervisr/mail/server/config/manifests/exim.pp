@@ -1,6 +1,6 @@
 class supervisr_mail::exim {
 
-  include supervisr_core::users
+  include supervisr_core::users::system
 
   package { 'exim4-daemon-heavy':
     ensure => 'latest',

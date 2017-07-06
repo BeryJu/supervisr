@@ -11,7 +11,7 @@ import tarfile
 from tempfile import NamedTemporaryFile
 
 from django import conf
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.core.files import File
 from django.template import loader
 
@@ -49,7 +49,7 @@ class ReleaseBuilder(object):
             releases = PuppetModuleRelease.objects.filter(module=module)
             if releases.exists():
                 # Create semantic version from pk with .0.0 appended
-                self.version = str(releases.order_by('-pk').first().pk + 1)+'.0.0'
+                self.version = '1.0.' + str(releases.order_by('-pk').first().pk + 1)
             else:
                 self.version = '1.0.0'
         else:
@@ -70,6 +70,7 @@ class ReleaseBuilder(object):
             },
             'settings': conf.settings,
             'puppet_systemgroup': Group.objects.get(name='Puppet Systemusers'),
+            'User': User.objects,
             })
         return context
 
@@ -78,14 +79,8 @@ class ReleaseBuilder(object):
         Convert text to a in-memory file/tarinfo
         """
         # First off render the template
-        tmpl = loader.get_template(template)
-        rendered = tmpl.render(ctx)
-        # If it's a json file now, check if it's valid
-        if rel_path.endswith('.json'):
-            self.validate_json(rendered)
-            LOGGER.info('Successfully validated %s', rel_path)
         # Convert it to bytes, create a TarInfo object and add it to the main archive
-        byteio = io.BytesIO(rendered.encode('utf-8'))
+        byteio = io.BytesIO(self.render_template(template, ctx).encode('utf-8'))
         byteio.seek(0, io.SEEK_END)
         tar_info = tarfile.TarInfo(name=rel_path)
         tar_info.size = byteio.tell()
@@ -104,7 +99,7 @@ class ReleaseBuilder(object):
             LOGGER.error(body)
             raise
 
-    @time
+    @time(statistic_key='puppet.builder.import_deps')
     def import_deps(self):
         """
         Import dependencies for release
@@ -127,15 +122,29 @@ class ReleaseBuilder(object):
             import glob
             # pylint: disable=unexpected-keyword-arg
             return glob.glob('%s/**' % list_dir, recursive=True)
-        else:
-            matches = []
-            # pylint: disable=unused-variable
-            for root, dirs, files in os.walk(list_dir):
-                for file in files:
-                    matches.append(os.path.join(root, file))
-            return matches
+        matches = []
+        # pylint: disable=unused-variable
+        for root, dirs, files in os.walk(list_dir):
+            for file in files:
+                matches.append(os.path.join(root, file))
+        return matches
 
-    @time
+    def render_template(self, path, context=None, check_json=True):
+        """
+        Render template and return as string
+        """
+        LOGGER.debug("About to render '%s' for puppet", path)
+        if not context:
+            context = self.make_context({})
+        tmpl = loader.get_template(path)
+        rendered = tmpl.render(context)
+        # If it's a json file now, check if it's valid
+        if path.endswith('.json') and check_json:
+            self.validate_json(rendered)
+            LOGGER.info('Successfully validated %s', path)
+        return rendered
+
+    @time(statistic_key='puppet.builder.build')
     def build(self, context=None, db_add=True, force_rebuild=False):
         """
         Copy non-templates into tar, render templates into tar and import into django

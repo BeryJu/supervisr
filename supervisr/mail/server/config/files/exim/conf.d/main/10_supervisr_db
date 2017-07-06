@@ -1,15 +1,23 @@
-#hide mysql_servers = <host>/<db>/<user>/<pass>
 hide mysql_servers = SUPERVISR_MYSQL_HOST/SUPERVISR_MYSQL_DB/SUPERVISR_MYSQL_USER/SUPERVISR_MYSQL_PASS
-SUPERVISR_DOMAIN        = SELECT domain_raw FROM mail_maildomain WHERE domain_raw = '${quote_mysql:$domain}';
-FROXLOR_MAILALIAS       = SELECT REPLACE(destination,' ',',') FROM mail_virtual WHERE \
-                                ( email = '${quote_mysql:$local_part}@${quote_mysql:$domain}' ) \
-                                OR ( email = '@${quote_mysql:$domain}' AND iscatchall > 0 ) \
-                                AND destination <> '' AND destination <> ' ' ORDER BY iscatchall ASC LIMIT 1
-SUPERVISR_MAILUSER      = SELECT CONCAT_WS('/', '/var/mail/', domain_raw, address) FROM mail_mailaccount WHERE \
-                                email_raw = '${quote_mysql:$local_part}@${quote_mysql:$domain}'
-FROXLOR_PARENT_DOMAIN   = SELECT parent.domain FROM `panel_domains` AS parent INNER JOIN panel_domains AS alias \
-                                ON alias.domain = '${quote_mysql:$domain}' AND parent.id = alias.aliasdomain
-SUPERVISR_AUTH_PLAIN    = SELECT password FROM mail_mailaccount WHERE email_raw = '${quote_mysql:$2}'
-SUPERVISR_AUTH_LOGIN    = SELECT password FROM mail_mailaccount WHERE email_raw = '${quote_mysql:$1}'
+SUPERVISR_DOMAIN     = SELECT domain_raw \
+                       FROM mail_maildomain \
+                       WHERE domain_raw = '${quote_mysql:$domain}'
+SUPERVISR_MAILALIAS  = SELECT `mail_mailforwarder`.`destination` \
+                       FROM `mail_mailforwarder` \
+                       WHERE `mail_mailforwarder`.`account_id` = \
+                           (SELECT `mail_mailaccount`.`product_ptr_id` \
+                            FROM `mail_mailaccount` \
+                            WHERE (`mail_mailaccount`.`email_raw` = '${quote_mysql:$local_part}@${quote_mysql:$domain}') \
+                              OR (`mail_mailaccount`.`address` = '' \
+                                  AND `mail_mailaccount`.`is_catchall` <> 0))
+SUPERVISR_MAILUSER   = SELECT CONCAT_WS('/', '/var/mail/', domain_raw, address) \
+                       FROM mail_mailaccount \
+                       WHERE email_raw = '${quote_mysql:$local_part}@${quote_mysql:$domain}'
+SUPERVISR_AUTH_PLAIN = SELECT password \
+                       FROM mail_mailaccount \
+                       WHERE email_raw = '${quote_mysql:$2}'
+SUPERVISR_AUTH_LOGIN = SELECT password \
+                       FROM mail_mailaccount \
+                       WHERE email_raw = '${quote_mysql:$1}'
 
-domainlist supervisr_domain = mysql;SUPERVISR_DOMAIN
+domainlist SUPERVISR_DOMAIN = mysql;SUPERVISR_DOMAIN

@@ -12,6 +12,4 @@ class SupervisrPuppetConfig(SupervisrAppConfig):
 
     name = 'supervisr.puppet'
     verbose_name = 'Supervisr Puppet'
-
-    def ready(self):
-        super(SupervisrPuppetConfig, self).ready()
+    navbar_enabled = lambda self, request: request.user.is_superuser

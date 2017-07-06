@@ -1,0 +1,31 @@
+{% extends "_admin/mod_default.html" %}
+
+{% load i18n %}
+{% load supervisr_title %}
+
+{% block title %}
+{% supervisr_title "Overview" %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        {% trans 'Graphite Connection Settings' %}
+      </div>
+      <form role="form" method="POST">
+        <div class="card-block">
+          <section class="form-block">
+            {% include 'blocks/block_form.html' with form=form %}
+          </section>
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-sm btn-primary">{% trans 'Update' %}</button>
+          <button type="submit" name="test" class="btn btn-sm btn-outline">{% trans 'Test' %}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

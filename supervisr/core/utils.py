@@ -12,6 +12,8 @@ from django.shortcuts import render
 from django.template import loader
 from django.utils.translation import ugettext as _
 
+from supervisr.core.statistics import stat_set
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -87,19 +89,28 @@ def get_apps(mod_only=False):
                 app_list.append(app)
     return app_list
 
-def time(method):
+def time(statistic_key):
     """
     Decorator to time a method call
     """
-    def timed(*args, **kw):
+
+    def outer_wrapper(method):
         """
         Decorator to time a method call
         """
-        time_start = timestamp()
-        result = method(*args, **kw)
-        time_end = timestamp()
+        def timed(*args, **kw):
+            """
+            Decorator to time a method call
+            """
+            time_start = timestamp()
+            result = method(*args, **kw)
+            time_end = timestamp()
 
-        LOGGER.info("'%s' took %2.2f to run", method.__name__, time_end-time_start)
-        return result
+            stat_set(statistic_key, (time_end - time_start) * 1000)
+            LOGGER.info("'%s' took %2.2f to run", statistic_key, time_end-time_start)
 
-    return timed
+            return result
+
+        return timed
+
+    return outer_wrapper

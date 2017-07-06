@@ -1,6 +1,6 @@
 [MASTER]
 
-disable=E0611,R0401,W0621,I0011,RP0401,I0021
+disable=E0611,R0401,W0621,I0011,RP0401,I0021,arguments-differ
 load-plugins=pylint_django
 
 [SIMILARITIES]
@@ -8,3 +8,7 @@ load-plugins=pylint_django
 # Minimum lines number of a similarity.
 min-similarity-lines=20
 
+[MISCELLANEOUS]
+
+# List of note tags to take in consideration, separated by a comma.
+notes=

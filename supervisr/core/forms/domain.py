@@ -6,7 +6,7 @@ Supervisr Core Domain Forms
 from django import forms
 
 
-class NewDomainForm(forms.Form):
+class DomainForm(forms.Form):
     """
     Form create a new Domain
     """

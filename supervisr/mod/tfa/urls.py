@@ -4,7 +4,7 @@ Supervisr Mod 2FA Urls
 
 from django.conf.urls import url
 
-from .views import tfa
+from supervisr.mod.tfa.views import tfa
 
 urlpatterns = [
     url(r'^$', tfa.index, name='tfa-index'),

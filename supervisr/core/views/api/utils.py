@@ -2,31 +2,32 @@
 Supervisr Core API Utils
 """
 
-import yaml
+import os
+
 from django.http import HttpResponse, JsonResponse
 
 
 def api_response(req, data):
-    # Check which format is requested, default to json
+    """
+    Prase data in correct format extracted from request
+    """
+    selected_format = 'json'
+    # Check if format is set as a GET Param
     format_keys = ['type', 'format']
-    format = 'json'
     for key in format_keys:
         if key in req.GET:
-            format = req.GET.get(key)
+            selected_format = req.GET.get(key)
+    # Check if it is set as file extension
+    ext_format = os.path.splitext(req.path)[1][1:]
+    if ext_format != '':
+        selected_format = ext_format
 
     _globals = globals()
-    handler_name = 'api_response_%s' % format
+    handler_name = 'api_response_%s' % selected_format
     handler = _globals[handler_name] if handler_name in _globals else None
     if handler is not None:
         return handler(data)
-    else:
-        return JsonResponse({'error': 'type "%s" not found' % format})
-
-def api_response_json(data):
-    """
-    Pass dict to django and let it handle the encoding etc
-    """
-    return JsonResponse(data)
+    return JsonResponse({'error': "type '%s' not found" % selected_format})
 
 def api_response_openid(data):
     """
@@ -42,8 +43,18 @@ def api_response_openid(data):
             del data[init_key]
     return api_response_json(data)
 
+def api_response_json(data):
+    """
+    Pass dict to django and let it handle the encoding etc
+    """
+    import json
+    return HttpResponse(json.dumps(data, sort_keys=True, indent=4),
+                        content_type='application/json')
+
 def api_response_yaml(data):
     """
     Return data as yaml dict
     """
-    return HttpResponse(yaml.dump(data), content_type='text/x-yaml')
+    import yaml
+    return HttpResponse(yaml.dump(data, default_flow_style=False),
+                        content_type='text/x-yaml')

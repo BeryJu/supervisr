@@ -17,12 +17,13 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_GET
+from passlib.hash import sha512_crypt
 
 from ..decorators import anonymous_required
 from ..forms.account import (ChangePasswordForm, LoginForm,
                              PasswordResetFinishForm, PasswordResetInitForm,
                              ReauthForm, SignupForm)
-from ..models import AccountConfirmation, UserProfile
+from ..models import AccountConfirmation, UserProfile, make_username
 from ..signals import (SIG_USER_CHANGE_PASS, SIG_USER_CONFIRM, SIG_USER_LOGIN,
                        SIG_USER_LOGOUT, SIG_USER_PASS_RESET_INIT,
                        SIG_USER_POST_CHANGE_PASS, SIG_USER_POST_SIGN_UP,
@@ -46,6 +47,11 @@ def login(req):
 
             if user is not None:
                 django_login(req, user)
+                # Set updated password in user profile for PAM
+                user.userprofile.crypt6_password = \
+                    sha512_crypt.hash(form.cleaned_data.get('password'))
+                user.userprofile.save()
+
                 if form.cleaned_data.get('remember') is True:
                     req.session.set_expiry(settings.REMEMBER_SESSION_AGE)
                 else:
@@ -79,9 +85,9 @@ def login(req):
                 return redirect(reverse('account-login'))
     else:
         form = LoginForm()
-    return render(req, 'core/generic_form_login.html', {
+    return render(req, 'account/login.html', {
         'form': form,
-        'title': _("Login"),
+        'title': _("Login - SSO"),
         'primary_action': _("Login"),
         'extra_links': {
             'account-signup': 'Sign up for an account',
@@ -109,7 +115,9 @@ def signup(req):
             # Create user profile
             new_up = UserProfile(
                 user=new_user,
-                news_subscribe=form.cleaned_data.get('news_accept'))
+                username=form.cleaned_data.get('username'),
+                crypt6_password=sha512_crypt.hash(form.cleaned_data.get('password')),
+                unix_username=make_username(form.cleaned_data.get('username')))
             new_up.save()
             # Send signal for other auth sources
             try:
@@ -139,7 +147,7 @@ def signup(req):
         form = SignupForm()
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("Signup"),
+        'title': _("Signup - SSO"),
         'primary_action': _("Signup")
         })
 
@@ -177,7 +185,7 @@ def change_password(req):
         form = ChangePasswordForm()
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("Change Password"),
+        'title': _("Change Password - SSO"),
         'primary_action': _("Change Password")
         })
 
@@ -245,7 +253,7 @@ def reset_password_init(req):
         form = PasswordResetInitForm()
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("Reset your Password - Step 1/3"),
+        'title': _("Reset your Password - Step 1/3 - SSO"),
         'primary_action': _("Send Confirmation Email")
         })
 
@@ -299,7 +307,7 @@ def reset_password_confirm(req, uuid):
         form = PasswordResetFinishForm()
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("Reset your Password - Step 3/3"),
+        'title': _("Reset your Password - Step 3/3 - SSO"),
         'primary_action': _("Reset your Password")
         })
 
@@ -352,6 +360,6 @@ def reauth(req):
 
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("Re-Authenticate"),
+        'title': _("Re-Authenticate - SSO"),
         'primary_action': _("Login"),
         })

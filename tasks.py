@@ -31,20 +31,6 @@ def shell(func):
         return func(ctx, *args, **kwargs)
     return wrapped
 
-def hide(func):
-    """
-    Hides the STDOUT of ctx.run
-    """
-    @wraps(func)
-    def wrapped(ctx, *args, **kwargs):
-        """
-        Hides the STDOUT of ctx.run
-        """
-        ctx.config.run.hide = 'stdout'
-        ret = func(ctx, *args, **kwargs)
-        return ret
-    return wrapped
-
 @task
 # pylint: disable=unused-argument
 def clean(ctx):
@@ -65,9 +51,13 @@ def install(ctx, dev=False):
         ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
     requirements = glob("supervisr/**/requirements.txt")
     requirements.extend(glob("supervisr/**/**/requirements.txt"))
+    requirements.extend(glob("supervisr/**/**/**/requirements.txt"))
+    requirements.extend(glob("supervisr/**/**/**/**/requirements.txt"))
     if dev:
         requirements.extend(glob("supervisr/**/requirements-dev.txt"))
         requirements.extend(glob("supervisr/**/**/requirements-dev.txt"))
+        requirements.extend(glob("supervisr/**/**/**/requirements-dev.txt"))
+        requirements.extend(glob("supervisr/**/**/**/**/requirements-dev.txt"))
     ctx.run("pip3 install -U -r %s" % ' -r '.join(requirements))
 
 @task
@@ -87,7 +77,6 @@ def make_migrations(ctx):
 
 @task(pre=[make_migrations])
 @shell
-@hide
 def migrate(ctx):
     """
     Apply migrations
@@ -127,7 +116,6 @@ def prospector(ctx):
 
 @task
 @shell
-@hide
 def isort(ctx):
     """
     Run isort
@@ -145,7 +133,6 @@ def coverage(ctx):
 
 @task
 @shell
-@hide
 def unittest(ctx):
     """
     Run Unittests
@@ -153,7 +140,7 @@ def unittest(ctx):
     ctx.run("%s manage.py test --pattern=Test*.py" % PYTHON_EXEC)
 
 # Some tasks to make full testing easier
-@task(pre=[migrate, coverage, isort, lint, prospector])
+@task(pre=[coverage, isort, lint, prospector])
 # pylint: disable=unused-argument
 def test(ctx):
     """

@@ -167,4 +167,6 @@ typings/
 # dotenv environment variables file
 .env
 
-supervisr_puppet/modules/*.tgz
+supervisr/puppet/modules/*.tgz
+supervisr/mod/ca/
+supervisr/cache/

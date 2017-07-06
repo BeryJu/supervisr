@@ -32,12 +32,11 @@ class MailAccountForm(forms.Form):
         """
         domain = self.cleaned_data.get('domain')
         address = self.cleaned_data.get('address')
-        accounts = MailAccount.objects.filter(domain_mail=domain, address=address)
+        accounts = MailAccount.objects.filter(domain=domain, address=address)
         if accounts.exists():
             raise forms.ValidationError("Address '%s' exists already" % accounts.first().email)
 
         return address
-
 
 class MailAccountFormCredentials(forms.Form):
     """
@@ -56,7 +55,7 @@ class MailAccountFormCredentials(forms.Form):
         """
         Check if Password adheres to filter and if passwords matche
         """
-        return check_password(self)
+        return check_password(self, check_filter=False)
 
 class MailAccountFormForwarder(forms.Form):
     """

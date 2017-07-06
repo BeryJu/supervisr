@@ -5,6 +5,7 @@ supervisr view decorators
 import time
 
 from django.conf import settings
+from django.core.cache import cache
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.http import urlencode
@@ -64,26 +65,34 @@ def reauth_required(view_function):
     wrap.__name__ = view_function.__name__
     return wrap
 
-APP_CACHE = None
-
 def ifapp(app_name):
     """
     Only executes ifapp_func if app_name is installed
     """
-    # pylint: disable=global-statement
-    global APP_CACHE
-    # Make a list of all short names for all apps
-    if not APP_CACHE:
-        APP_CACHE = []
-        for app in settings.INSTALLED_APPS:
-            if '.' in app:
-                parts = app.split('.')
-                if parts[0] == 'supervisr':
-                    APP_CACHE.append(parts[1])
-                else:
-                    APP_CACHE.append(parts[0])
-            else:
-                APP_CACHE.append(app)
+    def get_apps():
+        """
+        Cache all installed apps and return the list
+        """
+        cache_key = 'ifapp_apps'
+        if not cache.get(cache_key):
+            app_cache = []
+            # Make a list of all short names for all apps
+            if not app_cache:
+                app_cache = []
+                for app in settings.INSTALLED_APPS:
+                    if '.' in app:
+                        parts = app.split('.')
+                        if parts[0] == 'supervisr':
+                            app_cache.append(parts[1])
+                        else:
+                            app_cache.append(parts[0])
+                    else:
+                        app_cache.append(app)
+            cache.set(cache_key, app_cache, 1000)
+            return app_cache
+        return cache.get(cache_key)
+
+    app_cache = get_apps()
 
     def outer_wrap(ifapp_func):
         """
@@ -93,10 +102,9 @@ def ifapp(app_name):
             """
             Only executes ifapp_func if app_name is installed
             """
-            if app_name in APP_CACHE:
+            if app_name in app_cache:
                 return ifapp_func(*args, **kwargs)
-            else:
-                return
+            return
         wrap.__doc__ = ifapp_func.__doc__
         wrap.__name__ = ifapp_func.__name__
 

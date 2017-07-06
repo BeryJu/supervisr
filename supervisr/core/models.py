@@ -7,6 +7,7 @@ import base64
 import json
 import math
 import random
+import re
 import time
 import uuid
 
@@ -16,18 +17,17 @@ from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Max, options
 from django.db.models.signals import pre_delete
-from django.db.utils import OperationalError
+from django.db.utils import InternalError, OperationalError, ProgrammingError
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
-from oauth2_provider.models import Application
 
-from .signals import (SIG_DOMAIN_CREATED, SIG_USER_POST_SIGN_UP,
-                      SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
-                      SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
-from .utils import get_remote_ip, get_reverse_dns
+from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_USER_POST_SIGN_UP,
+                                    SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
+                                    SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
+from supervisr.core.utils import get_remote_ip, get_reverse_dns
 
 options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('sv_search_url', 'sv_search_fields',)
 
@@ -36,6 +36,12 @@ def expiry_date():
     Return the default expiry for AccountConfirmations
     """
     return time.time() + 172800 # 2 days
+
+def make_username(username):
+    """
+    Return username cut to 32 chars, also make POSIX conform
+    """
+    return (re.sub(r'([^a-zA-Z0-9\.\s-])', '_', str(username))[:32]).lower()
 
 def get_random_string(length=10):
     """
@@ -47,7 +53,7 @@ def get_random_string(length=10):
     offset = random.randint(0, 25-length)
     # Python3 changed the way we need to encode
     res = base64.b64encode(uid.bytes, altchars=b'_-')
-    return res[offset:offset+length]
+    return res[offset:offset+length].decode("utf-8")
 
 def get_userid():
     """
@@ -59,7 +65,13 @@ def get_userid():
     try:
         highest = UserProfile.objects.all().aggregate(Max('unix_userid'))['unix_userid__max']
         return highest + 1 if highest is not None else settings.USER_PROFILE_ID_START
-    except (AppRegistryNotReady, ObjectDoesNotExist, OperationalError):
+    except (AppRegistryNotReady, ObjectDoesNotExist,
+            OperationalError, InternalError, ProgrammingError):
+        # Handle Postgres transaction revert
+        if 'postgresql' in settings.DATABASES['default']['ENGINE']:
+            from django.db import connection
+            # pylint: disable=protected-access
+            connection._rollback()
         return settings.USER_PROFILE_ID_START
 
 def get_system_user():
@@ -87,13 +99,15 @@ class UserProfile(CreatedUpdatedModel):
     Save settings associated with user, since we don't want a custom user Model
     """
     user = models.OneToOneField(User, primary_key=True)
-    unix_username = models.CharField(max_length=10, default=get_random_string, editable=False)
+    username = models.TextField()
+    crypt6_password = models.CharField(max_length=128, blank=True, default='')
+    unix_username = models.CharField(max_length=32, default=get_random_string, editable=False)
     unix_userid = models.IntegerField(default=get_userid)
     locale = models.CharField(max_length=5, default='en-US')
     news_subscribe = models.BooleanField(default=False)
 
     def __str__(self):
-        return "UserProfile %s" % self.user.email
+        return "UserProfile %s (uid: %d)" % (self.user.email, self.unix_userid)
 
 # class GroupProfile(CreatedUpdatedModel):
 #     """
@@ -137,20 +151,25 @@ class Setting(CreatedUpdatedModel):
                 key=key,
                 defaults={'value': default})[0]
             return setting.value
-        except OperationalError:
+        except (OperationalError, ProgrammingError):
             return default
 
     @staticmethod
-    def set(key, value):
+    def set(key, value,):
         """
         Set value, when Setting doesn't exist, it's created with value
         """
-        setting, created = Setting.objects.get_or_create(
-            key=key,
-            defaults={'value': value})
-        if created is False:
-            setting.value = value
-            setting.save()
+        try:
+            setting, created = Setting.objects.get_or_create(
+                key=key,
+                defaults={'value': value})
+            if created is False:
+                setting.value = value
+                setting.save()
+            return True
+        except OperationalError:
+            return False
+
 
 class AccountConfirmation(CreatedUpdatedModel):
     """
@@ -233,19 +252,11 @@ class ProductExtension(CreatedUpdatedModel):
     """
 
     product_extension_id = models.AutoField(primary_key=True)
+    extension_name = models.TextField(default='')
 
     def __str__(self):
-        return "ProductExtension %s" % self.__class__.__name__
+        return "ProductExtension %s" % self.extension_name
 
-class ProductExtensionOAuth2(ProductExtension):
-    """
-    Associate an OAuth2 Application with a Product
-    """
-
-    application = models.ForeignKey(Application)
-
-    def __str__(self):
-        return "ProductExtenstion OAuth %s" % self.application.name
 
 class Product(CreatedUpdatedModel):
     """
@@ -264,7 +275,7 @@ class Product(CreatedUpdatedModel):
     revision = models.IntegerField(default=1)
     managed = models.BooleanField(default=True)
     management_url = models.URLField(max_length=1000, blank=True, null=True)
-    extensions = models.ManyToManyField(ProductExtension)
+    extensions = models.ManyToManyField(ProductExtension, blank=True)
 
     def __str__(self):
         return "%s %s (%s)" % (self.__class__.__name__, self.name, self.description)
@@ -294,28 +305,15 @@ class Domain(Product):
     Information about a Domain, which is used for other sub-apps.
     This is also used for sub domains, hence the is_sub.
     """
+    domain = models.CharField(max_length=253, unique=True)
     registrar = models.TextField()
     is_sub = models.BooleanField(default=False)
-
-    @property
-    def domain(self):
-        """
-        Wrapper so we can do domain.domain
-        """
-        return self.name
-
-    @domain.setter
-    def domain(self, value):
-        """
-        Wrapper so we can do domain.domain
-        """
-        self.name = value
 
     def __str__(self):
         return self.name
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        _first = True if self.pk is None else False
+        _first = self.pk is None
         super(Domain, self).save(force_insert, force_update, using, update_fields)
         if _first:
             # Trigger event that we were saved
@@ -325,6 +323,7 @@ class Domain(Product):
 
     class Meta:
 
+        default_related_name = 'domains'
         sv_search_fields = ['name', 'registrar']
 
 class Event(CreatedUpdatedModel):

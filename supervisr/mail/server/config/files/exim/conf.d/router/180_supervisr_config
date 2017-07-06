@@ -3,6 +3,7 @@ mailalias:
   driver = redirect
   domains = +supervisr_domain
   data = ${lookup mysql {SUPERVISR_MAILALIAS}{$value}fail}
+  file_transport = address_file
 
 mailuser:
   debug_print = "R: mailuser for $local_part@$domain"
