@@ -22,10 +22,10 @@
         <p>{% blocktrans %}Are you sure you want to delete {{ object }}{% endblocktrans %}</p>
       </div>
       <div class="modal-footer">
-        <a href="{% back %}" class="btn btn-outline" type="button">Cancel</a>
+        <a href="{% back %}" class="btn btn-outline" type="button">{% trans 'Cancel' %}</a>
         <form action="{{ delete_url }}" method="POST">
           {% csrf_token %}
-          <button type="submit" name="confirmdelete" class="btn btn-danger">Confirm Deletion</button>
+          <button type="submit" name="confirmdelete" class="btn btn-danger">{% trans primary_action|default:'Confirm Deletion' %}</button>
         </form>
       </div>
     </div>
