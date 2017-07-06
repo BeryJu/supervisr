@@ -1,54 +1,113 @@
+# Global Variables
 before_script:
-  - sudo apt-get update >/dev/null
-  - sudo apt-get -y install python3-pip python3-dev libsasl2-dev libldap2-dev libssl-dev python3-mysqldb libmysqlclient-dev >/dev/null
-  - sudo python3 -m pip install -U virtualenv
-  - virtualenv env
-  - source env/bin/activate
-  - pip3 install invoke >/dev/null
-  - inv install --dev >/dev/null
+  - "python3 -m pip install -U virtualenv"
+  - "virtualenv env"
+  - "source env/bin/activate"
+  - "pip3 install invoke"
+  - "inv install --dev"
 stages:
   - test
+  - test-db
+  - build-release
   - deploy
-migrations:
-  type: test
-  stage: test
-  script:
-    - inv migrate
-unittest:
-  type: test
-  stage: test
-  script:
-    - inv unittest
+image: python:3.6
+variables:
+  # Configure mysql environment variables (https://hub.docker.com/r/_/mysql/)
+  MYSQL_DATABASE: supervisr_test
+  MYSQL_ROOT_PASSWORD: 'EK-5jnKfjrGRm<77'
+  POSTGRES_DB: supervisr_test
+  POSTGRES_USER: supervisr
+  POSTGRES_PASSWORD: 'EK-5jnKfjrGRm<77'
+
+# All normal tests
 coverage:
-  type: test
-  stage: test
+  except:
+    - prod
   script:
-    - inv coverage
+    - "inv coverage"
+  stage: test
 isort:
-  type: test
-  stage: test
+  except:
+    - prod
   script:
-    - inv isort
-pylint:
-  type: test
+    - "inv isort"
   stage: test
+migrations:
+  except:
+    - prod
   script:
-    - inv lint
+    - "inv migrate"
+  stage: test
 prospector:
-  type: test
-  stage: test
+  except:
+    - prod
   script:
-    - inv prospector
+    - "inv prospector"
+  stage: test
+pylint:
+  except:
+    - prod
+  script:
+    - "inv lint"
+  stage: test
+unittest:
+  except:
+    - prod
+  script:
+    - "inv unittest"
+  stage: test
+
+# Database tests
+unittest_mysql:
+  services:
+    - mysql:latest
+  except:
+    - prod
+  script:
+    - pip install pymysql
+    - inv migrate
+    - inv unittest
+  variables:
+    SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_mysql
+  stage: test-db
+  only:
+    - db-*
+    - release-*
+unittest_pgsql:
+  services:
+    - postgres:latest
+  except:
+    - prod
+  script:
+    - pip install psycopg2
+    - inv migrate
+    - inv unittest
+  variables:
+    SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_pgsql
+  stage: test-db
+  only:
+    - db-*
+    - release-*
+
+# Release test
+bundle_release:
+  script:
+    # Build package, upload, etc
+    - exit 0
+  only:
+    - release-*
+  stage: build-release
+
+# Deploy
 deploy:
-  type: deploy
-  stage: deploy
+  environment:
+    name: production
+    url: "https://my.beryju.org"
   only:
     - prod
   script:
     - "eval $(ssh-agent -s)"
     - "mkdir ~/.ssh -p"
     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
-    - inv deploy --user=beryjuorg --fqdn=ory1-web-prod-1.ory1.beryju.org
-  environment:
-    name: production
-    url: https://my.beryju.org
+    - "inv deploy --user=beryjuorg --fqdn=ory1-web-prod-1.ory1.beryju.org"
+  stage: deploy
