@@ -9,6 +9,7 @@ from django.shortcuts import render
 from django.utils.safestring import mark_safe
 
 from supervisr.core.models import Event, UserProductRelationship
+from supervisr.core.providers.base import BaseProviderInstance
 from supervisr.core.utils import do_404, render_to_string
 from supervisr.core.views.api.utils import api_response
 
@@ -26,11 +27,14 @@ def index(req):
     events = Event.objects.filter(
         user=req.user, hidden=False) \
         .order_by('-create_date')[:15]
+    user_providers = BaseProviderInstance.objects.filter(
+        userproductrelationship__user__in=[req.user])
     # domains = Domain.objects.filter(users__in=[req.user])
     return render(req, 'common/index.html', {
         'uprs': user_products,
         'hosted_applications': hosted_applications,
         'events': events,
+        'user_providers': user_providers,
         # 'domains': domains,
     })
 
