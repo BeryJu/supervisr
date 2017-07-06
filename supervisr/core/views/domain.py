@@ -10,7 +10,8 @@ from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.forms.domain import DomainForm
-from supervisr.core.models import BaseProvider, Domain, UserProductRelationship
+from supervisr.core.models import Domain, UserProductRelationship
+from supervisr.core.providers.base import BaseProvider
 from supervisr.core.views.wizard import BaseWizardView
 
 

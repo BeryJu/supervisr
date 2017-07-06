@@ -4,8 +4,6 @@ Supervisr OnlineNet Domain Provider
 
 import logging
 
-from slumber.exceptions import HttpClientError
-
 from supervisr.core.providers.domain import DomainProvider
 
 LOGGER = logging.getLogger(__name__)
