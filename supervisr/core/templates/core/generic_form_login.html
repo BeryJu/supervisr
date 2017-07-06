@@ -16,7 +16,7 @@
       {% supervisr_setting 'branding' %}
     </label>
     <label class="subtitle">
-      {{ title }}
+      {% trans title %}
     </label>
     <div class="login-group">
       {% crispy form %}
@@ -41,7 +41,7 @@
       {% if next %}
       <input type="hidden" name="next" value="{{ next }}" />
       {% endif %}
-      <button type="submit" class="btn btn-primary">{{ primary_action }}</button>
+      <button type="submit" class="btn btn-primary">{% trans primary_action|default:'Login' %}</button>
       {% if extra_links %}
       {% for link, name in extra_links.items %}
       <a href="{% url link %}" class="signup">{% trans name %}</a>

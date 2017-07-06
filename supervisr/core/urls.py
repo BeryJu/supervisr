@@ -20,6 +20,8 @@ handler404 = 'supervisr.core.views.common.uncaught_404'
 # pylint: disable=invalid-name
 handler500 = 'supervisr.core.views.common.uncaught_500'
 
+UUID_REGEX = r'[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+
 urlpatterns = [
     # Account views
     url(r'^$', common.index, name='common-index'),
@@ -48,8 +50,10 @@ urlpatterns = [
     url(r'^providers/instances/$', provider.instance_index, name='instance-index'),
     url(r'^providers/instances/new/$', provider.ProviderNewView.as_view(),
         name='instance-new'),
-    url(r'^providers/instances/(?P<pk>[0-9]+)/delete/$',
-        provider.instance_delete, name='instance-delete'),
+    url(r'^providers/instances/(?P<uuid>%s)/edit/$' % UUID_REGEX, provider.instance_edit,
+        name='instance-edit'),
+    url(r'^providers/instances/(?P<uuid>%s)/delete/$' % UUID_REGEX, provider.instance_delete,
+        name='instance-delete'),
     # Credentials
     url(r'^providers/credentials/$', provider.credential_index, name='credential-index'),
     url(r'^providers/credentials/new/$', provider.CredentialNewView.as_view(),

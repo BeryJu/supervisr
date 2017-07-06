@@ -25,7 +25,7 @@ class BaseProvider(object):
     """
 
     ui_name = "ui_name hasn't been overriden"
-
+    selectable = True
     credentials = None
 
     def __init__(self, credentials):
@@ -50,10 +50,9 @@ class BaseProvider(object):
         raise NotImplementedError("This Method should be overwritten by subclasses")
 
     @staticmethod
-    # pylint: disable=bad-staticmethod-argument
-    def walk_providers(cls):
+    def get_providers(filter_sub=None):
         """
-        Walk across all subclasses and return all subclasses which have no children
+        Get all providers, and filter their sub providers
         """
         def walk(root):
             """
@@ -66,12 +65,25 @@ class BaseProvider(object):
                 for _sub in sub:
                     result += walk(_sub)
             # else:
-            result += [root]
+            if root != BaseProvider:
+                result += [root]
             return result
 
-        providers = walk(cls)
-        # Filter duplicates
-        return list(set(providers))
+        providers = walk(BaseProvider)
+        # Filter out the sub
+        valid = []
+        for provider in list(set(providers)):
+            if provider.selectable:
+                if filter_sub:
+                    quallified = True
+                    for sub_name in filter_sub:
+                        if not getattr(provider, sub_name, False):
+                            quallified = False
+                    if quallified:
+                        valid.append(provider)
+                else:
+                    valid.append(provider)
+        return valid
 
 class BaseProviderInstance(Product):
     """
