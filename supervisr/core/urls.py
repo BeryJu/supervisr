@@ -11,7 +11,7 @@ from django.contrib import admin as admin_django
 
 from supervisr.core.utils import get_apps
 from supervisr.core.views import (about, account, admin, common, domain,
-                                  product, user)
+                                  product, provider, user)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -44,6 +44,15 @@ urlpatterns = [
     url(r'^domains/new/$', domain.DomainNewView.as_view(), name='domain-new'),
     url(r'^domains/(?P<domain>[a-z0-9\-\.]+)/edit/$', domain.edit, name='domain-edit'),
     url(r'^domains/(?P<domain>[a-z0-9\-\.]+)/delete/$', domain.delete, name='domain-delete'),
+    # Provider
+    url(r'^providers/instances/$', provider.index, name='provider-instance-index'),
+    url(r'^providers/instances/new/$', provider.ProviderNewView.as_view(),
+        name='provider-instance-new'),
+    url(r'^providers/credentials/$', provider.credential_index, name='credential-index'),
+    url(r'^providers/credentials/new/$', provider.CredentialNewView.as_view(),
+        name='credential-new'),
+    url(r'^providers/credentials/(?P<name>[a-zA-Z0-9\-\.\_\s]+)/delete/$',
+        provider.credential_delete, name='credential-delete'),
     # User views
     url(r'^user/$', user.index, name='user-index'),
     url(r'^user/events/$', user.events, name='user-events'),

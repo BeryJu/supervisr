@@ -24,6 +24,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 
+from supervisr.core import fields
 from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_USER_POST_SIGN_UP,
                                     SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
                                     SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
@@ -83,6 +84,27 @@ def get_system_user():
     if system_users.exists():
         return system_users.first().id
     return 1 # Django starts AutoField's with 1 not 0
+
+class CastableModel(models.Model):
+    """
+    Base Model for Models using Inheritance to cast them
+    """
+
+    def cast(self):
+        """
+        This method converts "self" into its correct child class.
+        """
+        for name in dir(self):
+            try:
+                attr = getattr(self, name)
+                if isinstance(attr, self.__class__):
+                    return attr
+            except (AttributeError, ObjectDoesNotExist):
+                pass
+        return self
+
+    class Meta:
+        abstract = True
 
 class CreatedUpdatedModel(models.Model):
     """
@@ -246,7 +268,7 @@ def upr_pre_delete(sender, instance, **kwargs):
             sender=UserProductRelationship,
             upr=instance)
 
-class ProductExtension(CreatedUpdatedModel):
+class ProductExtension(CreatedUpdatedModel, CastableModel):
     """
     This class can be used by extension to associate Data with a Product
     """
@@ -258,7 +280,7 @@ class ProductExtension(CreatedUpdatedModel):
         return "ProductExtension %s" % self.extension_name
 
 
-class Product(CreatedUpdatedModel):
+class Product(CreatedUpdatedModel, CastableModel):
     """
     Information about the Main Product itself. This instances of this classes
     are assumed to be managed services.
@@ -412,7 +434,62 @@ class Event(CreatedUpdatedModel):
     def __str__(self):
         return "Event '%s' '%s'" % (self.user.username, self.message)
 
-class ProviderInstance(CreatedUpdatedModel):
+class BaseCredential(CreatedUpdatedModel, CastableModel):
+    """
+    Basic set of credentials
+    """
+    owner = models.ForeignKey(User)
+    name = models.TextField()
+    form = '' # form class which is used for setup
+
+    @staticmethod
+    def all_types():
+        """
+        Return all subclasses
+        """
+        return BaseCredential.__subclasses__()
+
+    @staticmethod
+    def type():
+        """
+        Return type
+        """
+        return 'BaseCredential'
+
+    class Meta:
+        unique_together = (('owner', 'name'),)
+
+
+class APIKeyCredential(BaseCredential):
+    """
+    Credential which work with an API Key
+    """
+    api_key = fields.EncryptedField()
+    form = 'supervisr.core.forms.provider.NewCredentialAPIForm'
+
+    @staticmethod
+    def type():
+        """
+        Return type
+        """
+        return _('API Key')
+
+class UserPasswordCredential(BaseCredential):
+    """
+    Credentials which need a Username and Password
+    """
+    username = models.TextField()
+    password = fields.EncryptedField()
+    form = 'supervisr.core.forms.provider.NewCredentialUserPasswordForm'
+
+    @staticmethod
+    def type():
+        """
+        Return type
+        """
+        return _('Username and Password')
+
+class ProviderInstance(CreatedUpdatedModel, CastableModel):
     """
     Save an instance of a Provider
     """
@@ -422,9 +499,7 @@ class ProviderInstance(CreatedUpdatedModel):
     provider_class = models.CharField(max_length=255)
     provider_name = models.TextField()
     is_managed = models.BooleanField(max_length=255)
-    user_id = models.TextField()
-    user_password = models.TextField()
-    salt = models.CharField(max_length=128)
+    credentials = models.ForeignKey('BaseCredential')
 
 # class Service(CreatedUpdatedModel):
 #     """

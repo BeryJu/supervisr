@@ -8,8 +8,8 @@ from django.conf import settings
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
-from .clients import get_client
-from .fields import EncryptedField
+from supervisr.core.fields import EncryptedField
+from supervisr.mod.auth.oauth.client.clients import get_client
 
 
 # pylint: disable=too-few-public-methods

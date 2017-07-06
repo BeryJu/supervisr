@@ -6,7 +6,7 @@ import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
 
-import supervisr.mod.auth.oauth.client.fields
+import supervisr.core.fields
 
 
 class Migration(migrations.Migration):
@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('identifier', models.CharField(max_length=255)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
-                ('access_token', supervisr.mod.auth.oauth.client.fields.EncryptedField(blank=True, default=None, null=True)),
+                ('access_token', supervisr.core.fields.EncryptedField(blank=True, default=None, null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -37,8 +37,8 @@ class Migration(migrations.Migration):
                 ('authorization_url', models.CharField(max_length=255)),
                 ('access_token_url', models.CharField(max_length=255)),
                 ('profile_url', models.CharField(max_length=255)),
-                ('consumer_key', supervisr.mod.auth.oauth.client.fields.EncryptedField(blank=True, default=None, null=True)),
-                ('consumer_secret', supervisr.mod.auth.oauth.client.fields.EncryptedField(blank=True, default=None, null=True)),
+                ('consumer_key', supervisr.core.fields.EncryptedField(blank=True, default=None, null=True)),
+                ('consumer_secret', supervisr.core.fields.EncryptedField(blank=True, default=None, null=True)),
             ],
         ),
         migrations.AddField(
