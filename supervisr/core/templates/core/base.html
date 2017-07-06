@@ -39,7 +39,7 @@
     </div>
     <div class="divider"></div>
     <div class="header-nav clr-nav-level-1">
-      <a class="nav-link {% is_active 'account' 'common' 'domain' %}" href="{% url 'common-index' %}">
+      <a class="nav-link {% is_active 'account' 'common' 'domain' 'instance' 'credential' %}" href="{% url 'common-index' %}">
         <span class="nav-text">{% trans "Home" %}</span>
       </a>
       {% if user.is_authenticated %}

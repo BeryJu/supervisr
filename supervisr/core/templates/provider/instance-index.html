@@ -1,0 +1,56 @@
+{% extends "common/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+
+{% block title %}
+{% supervisr_title "Providers" %}
+{% endblock %}
+
+{% block content %}
+<div class="btn-group btn-link btn-icon-link">
+  <a href="{% url 'instance-new' %}" class="btn">
+    <clr-icon shape="add"></clr-icon>
+  </a>
+  <a data-ctx-name="edit" class="btn">
+    <clr-icon shape="edit"></clr-icon>
+  </a>
+  <a data-ctx-name="trash" class="btn">
+    <clr-icon shape="trash"></clr-icon>
+  </a>
+</div>
+<table class="table instances">
+  <thead>
+    <tr>
+      <th>{% trans 'Name' %}</th>
+      <th>{% trans 'Provider' %}</th>
+      <th>{% trans 'Credentials' %}</th>
+      <th>{% trans 'Authentication Status' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for instance in providers %}
+    <tr data-selectable data-ctx-edit="" data-ctx-trash="{% url 'instance-delete' pk=instance.pk %}">
+      <td><span>{{ instance.name }}</span></td>
+      <td><span>{{ instance.provider.ui_name }}</span></td>
+      <td><span>{{ instance.credentials.name }}</span></td>
+      <td>
+        {% with status=instance.provider.check_status %}
+          {% if status == True %}
+            <span class="label label-success">{% trans "OK" %}</span>
+          {% else %}
+            <span class="label is-error">{{ status }}</span>
+          {% endif %}
+        {% endwith %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+
+{% block scripts %}
+<script>
+clrTableSelect('.instances');
+</script>
+{% endblock %}
