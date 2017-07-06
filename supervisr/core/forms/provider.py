@@ -2,12 +2,15 @@
 Supervisr Core Provider Forms
 """
 
+from importlib import import_module
 
 from django import forms
 from django.forms import ModelForm
+from django.http import Http404
 from django.utils.translation import ugettext as _
 
-from supervisr.core.models import APIKeyCredential, UserPasswordCredential
+from supervisr.core.models import (APIKeyCredential, BaseCredential,
+                                   UserPasswordCredential)
 
 
 class NewProviderForm(forms.Form):
@@ -17,8 +20,29 @@ class NewProviderForm(forms.Form):
 
     title = 'General Information'
 
-    provider = forms.ChoiceField(choices=[], required=True,
-                                 label=_('Provider'))
+    name = forms.CharField(required=True, label=_('Instance Name'))
+    provider = forms.ChoiceField(choices=[], required=True, label=_('Provider'))
+    credentials = forms.ChoiceField(choices=[], required=True, label=_('Credentials'))
+
+    def clean_credentials(self):
+        """
+        Import Provider and check if credentials are compatible
+        """
+        # Import provider based on form
+        # also check in form if class exists and is subclass of BaseProvider
+        parts = self.cleaned_data.get('provider').split('.')
+        package = '.'.join(parts[:-1])
+        _class = getattr(import_module(package), parts[-1])
+        # Get credentials
+        creds = BaseCredential.objects.filter(name=self.cleaned_data.get('credentials'),
+                                              owner=self.request.user)
+        if not creds.exists():
+            raise Http404
+        r_creds = creds.first().cast()
+        # Check if credentials work with provider
+        prov_inst = _class(r_creds)
+        prov_inst.check_credentials(r_creds)
+        return self.cleaned_data.get('credentials')
 
 class NewCredentialForm(forms.Form):
     """

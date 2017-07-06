@@ -45,9 +45,12 @@ urlpatterns = [
     url(r'^domains/(?P<domain>[a-z0-9\-\.]+)/edit/$', domain.edit, name='domain-edit'),
     url(r'^domains/(?P<domain>[a-z0-9\-\.]+)/delete/$', domain.delete, name='domain-delete'),
     # Provider
-    url(r'^providers/instances/$', provider.index, name='provider-instance-index'),
+    url(r'^providers/instances/$', provider.instance_index, name='instance-index'),
     url(r'^providers/instances/new/$', provider.ProviderNewView.as_view(),
-        name='provider-instance-new'),
+        name='instance-new'),
+    url(r'^providers/instances/(?P<pk>[0-9]+)/delete/$',
+        provider.instance_delete, name='instance-delete'),
+    # Credentials
     url(r'^providers/credentials/$', provider.credential_index, name='credential-index'),
     url(r'^providers/credentials/new/$', provider.CredentialNewView.as_view(),
         name='credential-new'),

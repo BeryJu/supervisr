@@ -2,9 +2,11 @@
 Supervisr Core Generic Provider
 """
 from enum import Enum
+from importlib import import_module
 
-from django.contrib.auth.models import User
 from django.db import models
+
+from supervisr.core.models import Product
 
 
 class ProviderInterfaceAction(Enum):
@@ -17,45 +19,6 @@ class ProviderInterfaceAction(Enum):
     setup = 8
 
 # pylint: disable=too-few-public-methods
-class BaseProviderInterface(object):
-    """
-    Base Class for all possible interfaces with a provider, i.e. API or Forms
-    """
-
-    provider = None
-    action = ProviderInterfaceAction
-
-    def __init__(self, provider, action):
-        self.provider = provider
-        self.action = action
-
-class BaseProviderUIInterface(BaseProviderInterface):
-    """
-    Base Class for UI Interaction with provider
-    """
-
-    forms = []
-    request = None
-
-    def __init__(self, provider, action, request):
-        super(BaseProviderUIInterface, self).__init__(provider, action)
-        self.request = request
-
-    # pylint: disable=no-self-use,unused-argument
-    def get_form_initial(self, index):
-        """
-        Return Initial form data for form#index
-        """
-        return {}
-
-    def post_submit(self, form_data):
-        """
-        This method is called after all forms are filled in and validated.
-        The Provider should create it's resources in this step.
-        """
-        pass
-
-# pylint: disable=too-few-public-methods
 class BaseProvider(object):
     """
     Generic Interface as base for GenericManagedProvider and GenericUserProvider
@@ -63,15 +26,28 @@ class BaseProvider(object):
 
     ui_name = "ui_name hasn't been overriden"
 
-    interface_ui = BaseProviderUIInterface
-    setup_ui = BaseProviderUIInterface
+    credentials = None
 
-    instance = None
+    def __init__(self, credentials):
+        self.credentials = credentials.cast()
 
-    def __init__(self, instance):
-        self.instance = instance
-        # if self.interface_ui:
-        #     self.interface_ui = self.interface_ui()
+    def check_credentials(self, credentials=None):
+        """
+        Check if Credentials is the correct class and try authentication.
+        credentials might be none, in which case credentials from the constructor should be used.
+        Should return False if check fails, otherwise True
+        """
+        raise NotImplementedError("This Method should be overwritten by subclasses")
+
+    def check_status(self):
+        """
+        This is used to check if the provider is reachable
+        Expected Return values:
+         - True: Everything is ok
+         - False: Error (show generic warning)
+         - String: Error (show string)
+        """
+        raise NotImplementedError("This Method should be overwritten by subclasses")
 
     @staticmethod
     # pylint: disable=bad-staticmethod-argument
@@ -97,26 +73,23 @@ class BaseProvider(object):
         # Filter duplicates
         return list(set(providers))
 
-class SetupProvider(BaseProvider):
+class BaseProviderInstance(Product):
     """
-    Dummy Class which is used a provider instance when setting up a new provider
-    """
-
-    def __init__(self):
-        super(SetupProvider, self).__init__(None)
-
-class BaseProviderInstance(models.Model):
-    """
-    Save information about information specifially for a user
+    Basic Provider Instance
     """
 
-    ui_name = "ui_name hasn't been overriden"
-
-    user = models.ForeignKey(User)
+    provider_path = models.TextField()
+    credentials = models.ForeignKey('BaseCredential')
 
     @property
-    def instance_info(self):
+    def provider(self):
         """
-        Return information about Instance
+        Return instance of provider saved
         """
-        return "instance_info hasn't been overriden"
+        path_parts = self.provider_path.split('.')
+        module = import_module('.'.join(path_parts[:-1]))
+        _class = getattr(module, path_parts[-1])
+        return _class(self.credentials)
+
+    def __str__(self):
+        return self.name

@@ -12,20 +12,18 @@ from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.forms.provider import NewCredentialForm, NewProviderForm
-from supervisr.core.models import BaseCredential
-from supervisr.core.providers.base import (BaseProvider, BaseProviderInstance,
-                                           ProviderInterfaceAction,
-                                           SetupProvider)
+from supervisr.core.models import BaseCredential, UserProductRelationship
+from supervisr.core.providers.base import BaseProvider, BaseProviderInstance
 from supervisr.core.views.wizard import BaseWizardView
 
 
 @login_required
-def index(req):
+def instance_index(req):
     """
     Show a n overview over all provider instances
     """
     user_providers = BaseProviderInstance.objects.filter(
-        user__in=[req.user])
+        userproductrelationship__user__in=[req.user])
     return render(req, 'provider/instance-index.html', {'providers': user_providers})
 
 # pylint: disable=too-many-ancestors
@@ -46,37 +44,13 @@ class ProviderNewView(BaseWizardView):
             step = self.steps.current
         if step == '0':
             providers = BaseProvider.walk_providers(BaseProvider)
+            creds = BaseCredential.objects.filter(owner=self.request.user)
             form.fields['provider'].choices = \
-                [('%s.%s' % (s.__module__, s.__name__), s.__name__) for s in providers]
+                [('%s.%s' % (s.__module__, s.__name__), s.ui_name) for s in providers]
+            form.fields['credentials'].choices = \
+                [(c.name, '%s: %s' % (c.cast().type(), c.name)) for c in creds]
+            form.request = self.request
         return form
-
-    def dispatch(self, req, *args, **kwargs):
-        print(req.session)
-        return super(ProviderNewView, self).dispatch(req, *args, **kwargs)
-
-    def process_step(self, form):
-        """
-        Dynamically add forms from provider's setup_ui
-        """
-        if form.__class__ == NewProviderForm:
-            # Import provider based on form
-            # also check in form if class exists and is subclass of BaseProvider
-            parts = form.cleaned_data.get('provider').split('.')
-            package = '.'.join(parts[:-1])
-            module = importlib.import_module(package)
-            _class = getattr(module, parts[-1])
-            if _class.setup_ui:
-                # create new provider instance
-                provider_inst = SetupProvider()
-                self.provider_setup_ui = _class.setup_ui(
-                    provider_inst, ProviderInterfaceAction.setup, self.request)
-                # Add forms to our list
-                for idx, _form in enumerate(self.provider_setup_ui.forms):
-                    next_idx = str(idx + int(self.steps.current) + 1)
-                    # self.form_list is turned into an ordered_dict
-                    # pylint: disable=no-member
-                    self.form_list.update({next_idx: _form})
-        return self.get_form_step_data(form)
 
     def get_form_initial(self, step):
         if step == '0':
@@ -86,17 +60,46 @@ class ProviderNewView(BaseWizardView):
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
-        # m_dom = Domain.objects.create(
-        #     name=form_dict['0'].cleaned_data.get('domain'),
-        #     registrar=form_dict['0'].cleaned_data.get('registrar'),
-        #     description='Domain %s' % form_dict['0'].cleaned_data.get('domain'),
-        #     )
-        # UserProductRelationship.objects.create(
-        #     product=m_dom,
-        #     user=self.request.user
-        #     )
+        creds = BaseCredential.objects.filter(name=form_dict['0'].cleaned_data.get('credentials'),
+                                              owner=self.request.user)
+        if not creds.exists():
+            raise Http404
+        r_creds = creds.first().cast()
+
+        prov_inst = BaseProviderInstance.objects.create(
+            name=form_dict['0'].cleaned_data.get('name'),
+            credentials=r_creds,
+            provider_path=form_dict['0'].cleaned_data.get('provider'))
+
+        UserProductRelationship.objects.create(
+            product=prov_inst,
+            user=self.request.user)
         messages.success(self.request, _('Provider Instance successfully created'))
-        return redirect(reverse('provider-instance-index'))
+        return redirect(reverse('instance-index'))
+
+@login_required
+# pylint: disable=invalid-name
+def instance_delete(req, pk):
+    """
+    Delete Instance
+    """
+    inst = BaseProviderInstance.objects.filter(pk=pk, userproductrelationship__user__in=[req.user])
+    if not inst.exists():
+        raise Http404
+    r_inst = inst.first()
+
+    if req.method == 'POST' and 'confirmdelete' in req.POST:
+        # User confirmed deletion
+        r_inst.delete()
+        messages.success(req, _('Instance successfully deleted'))
+        return redirect(reverse('instance-index'))
+
+    return render(req, 'core/generic_delete.html', {
+        'object': 'Instance %s' % r_inst.name,
+        'delete_url': reverse('instance-delete', kwargs={
+            'pk': r_inst.pk,
+            })
+        })
 
 @login_required
 def credential_index(req):

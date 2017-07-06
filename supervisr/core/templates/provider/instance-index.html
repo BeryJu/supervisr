@@ -9,7 +9,7 @@
 
 {% block content %}
 <div class="btn-group btn-link btn-icon-link">
-  <a href="{% url 'provider-instance-new' %}" class="btn">
+  <a href="{% url 'instance-new' %}" class="btn">
     <clr-icon shape="add"></clr-icon>
   </a>
   <a data-ctx-name="edit" class="btn">
@@ -19,20 +19,39 @@
     <clr-icon shape="trash"></clr-icon>
   </a>
 </div>
-<table class="table">
+<table class="table instances">
   <thead>
     <tr>
       <th>{% trans 'Name' %}</th>
-      <th>{% trans 'InstanceInfo' %}</th>
+      <th>{% trans 'Provider' %}</th>
+      <th>{% trans 'Credentials' %}</th>
+      <th>{% trans 'Authentication Status' %}</th>
     </tr>
   </thead>
   <tbody>
     {% for instance in providers %}
-    <tr data-selectable data-ctx-edit="{% url 'mail:mail-account-edit' account=account.address domain=account.domain.domain.name %}" data-ctx-trash="{% url 'mail:mail-account-delete' account=account.address domain=account.domain.domain.name %}">
-      <td>{{ instance.ui_name }}</td>
-      <td>{{ instance.instance_info }}</td>
+    <tr data-selectable data-ctx-edit="" data-ctx-trash="{% url 'instance-delete' pk=instance.pk %}">
+      <td>{{ instance.name }}</td>
+      <td>{{ instance.provider.ui_name }}</td>
+      <td>{{ instance.credentials.name }}</td>
+      <td>
+        {% with status=instance.provider.check_status %}
+          {% if status == True %}
+            <clr-icon shape="success-standard" class="is-success"></clr-icon>
+          {% else %}
+            <clr-icon shape="warning-standard" class="is-error"></clr-icon>
+            {{ status }}
+          {% endif %}
+        {% endwith %}
+      </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+{% endblock %}
+
+{% block scripts %}
+<script>
+clrTableSelect('.instances');
+</script>
 {% endblock %}
