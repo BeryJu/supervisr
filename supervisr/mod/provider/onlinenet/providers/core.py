@@ -2,13 +2,9 @@
 Supervisr OnlineNet Provider
 """
 
-import json
-
 import requests
 import slumber
-from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.db import models
 from slumber.exceptions import HttpClientError
 
 from supervisr.core.models import APIKeyCredential

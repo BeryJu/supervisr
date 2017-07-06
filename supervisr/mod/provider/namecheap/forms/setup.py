@@ -3,7 +3,6 @@ Supervisr Mod Namecheap Setup form
 """
 
 from django import forms
-from django.conf import settings
 from django.utils.translation import ugettext as _
 
 from supervisr.core.forms.provider import NewCredentialDetailMeta
