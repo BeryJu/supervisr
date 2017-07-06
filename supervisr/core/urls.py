@@ -4,13 +4,14 @@ supervisr core urls
 import importlib
 import logging
 
+from django.apps import apps
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin as admin_django
 
-from .utils import get_apps
-from .views import (about, account, admin, common, domain, product, provider,
-                    user)
+from supervisr.core.utils import get_apps
+from supervisr.core.views import (about, account, admin, common, domain,
+                                  product, user)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -41,16 +42,16 @@ urlpatterns = [
     # Domain views
     url(r'^domains/$', domain.index, name='domain-index'),
     url(r'^domains/new/$', domain.DomainNewView.as_view(), name='domain-new'),
-    # Provider views
-    url(r'^providers/$', provider.index, name='provider-index'),
-    url(r'^providers/new/$', provider.ProviderNewView.as_view(), name='provider-new'),
+    url(r'^domains/(?P<domain>[a-z0-9\-\.]+)/edit/$', domain.edit, name='domain-edit'),
+    url(r'^domains/(?P<domain>[a-z0-9\-\.]+)/delete/$', domain.delete, name='domain-delete'),
     # User views
     url(r'^user/$', user.index, name='user-index'),
     url(r'^user/events/$', user.events, name='user-events'),
     # Admin views
     url(r'^admin/$', admin.index, name='admin-index'),
     url(r'^admin/settings/$', admin.settings, name='admin-settings'),
-    url(r'^admin/mod/default/(?P<mod>[a-zA-Z0-9]+)/$', admin.mod_default, name='admin-mod_default'),
+    url(r'^admin/mod/default/(?P<mod>[a-zA-Z0-9/]+)/$',
+        admin.mod_default, name='admin-mod_default'),
     url(r'^admin/info/$', admin.info, name='admin-info'),
     url(r'^admin/events/$', admin.events, name='admin-events'),
     url(r'^admin/debug/$', admin.debug, name='admin-debug'),
@@ -60,24 +61,35 @@ urlpatterns = [
     # Include django-admin
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),
-    url(r'^api/oauth2/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    # General API Urls
     url(r'^api/', include('supervisr.core.views.api.urls')),
 ]
 
 # Load Urls for all sub apps
 for app in get_apps():
-    short_name = app.replace('supervisr.', '')
-    # Check if it's only a module or a full path
+    # Remove .apps.Supervisr stuff
     app = '.'.join(app.split('.')[:-2])
-    if 'mod' in app:
-        short_name = short_name.split('.')[1]
-    else:
-        short_name = short_name.split('.')[0]
+    # Check if app uses old or new label
+    namespace = None
+    try:
+        # Try new format first
+        # from supervisr.mod.auth.oauth.client
+        # to mod/auth/oauth/client
+        new_name = '/'.join(app.split('.'))
+        mount_path = new_name.replace('supervisr/', '')
+        app_config = apps.get_app_config(new_name)
+        namespace = new_name
+    except (KeyError, LookupError):
+        # Try old format afterwards
+        old_name = app.split('.')[-1]
+        app_config = apps.get_app_config(old_name)
+        namespace = old_name
+
     url_module = "%s.urls" % app
     # Only add if module could be loaded
     if importlib.util.find_spec(url_module) is not None:
         urlpatterns += [
-            url(r"^app/%s/" % short_name, include(url_module, namespace=short_name)),
+            url(r"^app/%s/" % mount_path, include(url_module, namespace=namespace)),
         ]
         LOGGER.info("Loaded %s", url_module)
 
