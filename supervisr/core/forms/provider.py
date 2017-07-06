@@ -2,6 +2,7 @@
 Supervisr Core Provider Forms
 """
 
+import logging
 from importlib import import_module
 
 from django import forms
@@ -12,16 +13,17 @@ from django.utils.translation import ugettext as _
 from supervisr.core.models import (APIKeyCredential, BaseCredential,
                                    UserPasswordCredential)
 
+LOGGER = logging.getLogger(__name__)
 
-class NewProviderForm(forms.Form):
+class ProviderForm(forms.Form):
     """
-    Form create a new Provider
+    Form create/edit a new Provider
     """
 
     title = 'General Information'
 
     name = forms.CharField(required=True, label=_('Instance Name'))
-    provider = forms.ChoiceField(choices=[], required=True, label=_('Provider'))
+    provider_path = forms.ChoiceField(choices=[], required=True, label=_('Provider'))
     credentials = forms.ChoiceField(choices=[], required=True, label=_('Credentials'))
 
     def clean_credentials(self):
@@ -41,12 +43,13 @@ class NewProviderForm(forms.Form):
         r_creds = creds.first().cast()
         # Check if credentials work with provider
         prov_inst = _class(r_creds)
+        LOGGER.info("About to provider.check_credentials")
         prov_inst.check_credentials(r_creds)
         return self.cleaned_data.get('credentials')
 
-class NewCredentialForm(forms.Form):
+class CredentialForm(forms.Form):
     """
-    Form create a new Credential
+    Form create/edit a new Credential
     """
 
     title = 'General Information'

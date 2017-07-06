@@ -12,12 +12,12 @@
 <div class="col-md-6 offset-md-3">
   <div class="card">
     <div class="card-header">
-      {{ title }}
+      {% trans title %}
     </div>
     <div class="card-block">
       <form role="form" method="POST">
         {% include 'blocks/block_form.html' with form=form %}
-        <button type="submit" class="btn btn-lg btn-block btn-primary">{{ primary_action }}</button>
+        <button type="submit" class="btn btn-lg btn-block btn-primary">{% trans primary_action|default:'Apply' %}</button>
       </form>
     </div>
   </div>

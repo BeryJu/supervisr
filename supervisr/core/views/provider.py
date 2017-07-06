@@ -11,7 +11,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.core.forms.provider import NewCredentialForm, NewProviderForm
+from supervisr.core.forms.provider import CredentialForm, ProviderForm
 from supervisr.core.models import BaseCredential, UserProductRelationship
 from supervisr.core.providers.base import BaseProvider, BaseProviderInstance
 from supervisr.core.views.wizard import BaseWizardView
@@ -33,30 +33,21 @@ class ProviderNewView(BaseWizardView):
     """
 
     title = _("New Provider")
-    form_list = [NewProviderForm]
-    registrars = None
-    provider = None
-    provider_setup_ui = None
+    form_list = [ProviderForm]
 
     def get_form(self, step=None, data=None, files=None):
         form = super(ProviderNewView, self).get_form(step, data, files)
         if step is None:
             step = self.steps.current
         if step == '0':
-            providers = BaseProvider.walk_providers(BaseProvider)
+            providers = BaseProvider.get_providers()
             creds = BaseCredential.objects.filter(owner=self.request.user)
-            form.fields['provider'].choices = \
+            form.fields['provider_path'].choices = \
                 [('%s.%s' % (s.__module__, s.__name__), s.ui_name) for s in providers]
             form.fields['credentials'].choices = \
                 [(c.name, '%s: %s' % (c.cast().type(), c.name)) for c in creds]
             form.request = self.request
         return form
-
-    def get_form_initial(self, step):
-        if step == '0':
-            return self.initial_dict.get(step, {})
-        else:
-            self.provider_setup_ui.get_form_initial(step)
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
@@ -69,7 +60,7 @@ class ProviderNewView(BaseWizardView):
         prov_inst = BaseProviderInstance.objects.create(
             name=form_dict['0'].cleaned_data.get('name'),
             credentials=r_creds,
-            provider_path=form_dict['0'].cleaned_data.get('provider'))
+            provider_path=form_dict['0'].cleaned_data.get('provider_path'))
 
         UserProductRelationship.objects.create(
             product=prov_inst,
@@ -78,12 +69,58 @@ class ProviderNewView(BaseWizardView):
         return redirect(reverse('instance-index'))
 
 @login_required
-# pylint: disable=invalid-name
-def instance_delete(req, pk):
+def instance_edit(req, uuid):
+    """
+    Edit Instance
+    """
+    inst = BaseProviderInstance.objects.filter(uuid=uuid,
+                                               userproductrelationship__user__in=[req.user])
+    if not inst.exists():
+        raise Http404
+    r_inst = inst.first()
+
+    providers = BaseProvider.get_providers()
+    creds = BaseCredential.objects.filter(owner=req.user)
+    form_providers = [('%s.%s' % (s.__module__, s.__name__), s.ui_name) for s in providers]
+    form_credentials = [(c.name, '%s: %s' % (c.cast().type(), c.name)) for c in creds]
+
+    if req.method == 'POST':
+        form = ProviderForm(req.POST)
+        form.request = req
+        form.fields['provider_path'].choices = form_providers
+        form.fields['credentials'].choices = form_credentials
+
+        if form.is_valid():
+
+            # for key in form.fields:
+            #     value = form.cleaned_data.get(key)
+            #     setattr(r_inst, key, value)
+            # r_inst.save()
+            messages.success(req, _('Successfully edited Instance'))
+            return redirect(reverse('instance-index'))
+        messages.error(req, _('Invalid Instance'))
+    else:
+        form = ProviderForm(initial={
+            'name': r_inst.name,
+            'provider_path': r_inst.provider_path,
+            'credentials': r_inst.credentials,
+            })
+        form.request = req
+        form.fields['provider_path'].choices = form_providers
+        form.fields['credentials'].choices = form_credentials
+
+    return render(req, 'core/generic_form.html', {
+        'form': form,
+        'title': 'Edit %s' % r_inst.name,
+        })
+
+@login_required
+def instance_delete(req, uuid):
     """
     Delete Instance
     """
-    inst = BaseProviderInstance.objects.filter(pk=pk, userproductrelationship__user__in=[req.user])
+    inst = BaseProviderInstance.objects.filter(uuid=uuid,
+                                               userproductrelationship__user__in=[req.user])
     if not inst.exists():
         raise Http404
     r_inst = inst.first()
@@ -96,8 +133,9 @@ def instance_delete(req, pk):
 
     return render(req, 'core/generic_delete.html', {
         'object': 'Instance %s' % r_inst.name,
+        'title': 'Delete %s' % r_inst.name,
         'delete_url': reverse('instance-delete', kwargs={
-            'pk': r_inst.pk,
+            'uuid': r_inst.uuid,
             })
         })
 
@@ -118,7 +156,7 @@ class CredentialNewView(BaseWizardView):
     """
 
     title = _("New Credentials")
-    form_list = [NewCredentialForm]
+    form_list = [CredentialForm]
     registrars = None
     provider = None
     provider_setup_ui = None
@@ -137,7 +175,7 @@ class CredentialNewView(BaseWizardView):
         """
         Dynamically add forms from provider's setup_ui
         """
-        if form.__class__ == NewCredentialForm:
+        if form.__class__ == CredentialForm:
             # Import provider based on form
             # also check in form if class exists and is subclass of BaseProvider
             parts = form.cleaned_data.get('credential_type').split('.')
@@ -174,6 +212,7 @@ def credential_delete(req, name):
 
     return render(req, 'core/generic_delete.html', {
         'object': 'Credential %s' % r_cred.name,
+        'title': 'Delete %s' % r_cred.name,
         'delete_url': reverse('credential-delete', kwargs={
             'name': r_cred.name,
             })

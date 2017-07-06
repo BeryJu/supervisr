@@ -2,13 +2,15 @@
 Supervisr Core Domain Provider
 """
 
-from .base import BaseProvider
+from supervisr.core.providers.base import BaseProvider
 
 
 class DomainProvider(BaseProvider):
     """
     Base Provider for all domains
     """
+
+    selectable = False
 
     def check_credentials(self, credentials=None):
         """

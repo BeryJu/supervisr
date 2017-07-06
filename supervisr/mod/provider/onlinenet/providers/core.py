@@ -9,6 +9,8 @@ from slumber.exceptions import HttpClientError
 
 from supervisr.core.models import APIKeyCredential
 from supervisr.core.providers.base import BaseProvider
+from supervisr.mod.provider.onlinenet.providers.domain import \
+    OnlineNetDomainProvider
 
 
 # pylint: disable=too-few-public-methods
@@ -18,6 +20,7 @@ class OnlineNetProvider(BaseProvider):
     """
     ui_name = "Online.net"
     api = None
+    domain_provider = OnlineNetDomainProvider
 
     def __init__(self, credentials):
         super(OnlineNetProvider, self).__init__(credentials)
