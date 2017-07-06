@@ -59,8 +59,8 @@ class SupervisrAppConfig(AppConfig):
         LOGGER.info("Loaded %s", self.name)
         for module in self.init_modules:
             try:
-                importlib.import_module("%s.%s" % (self.name, module))
                 LOGGER.info("Loaded %s.%s", self.name, module)
+                importlib.import_module("%s.%s" % (self.name, module))
             except ImportError:
                 pass # ignore non-existant modules
 

@@ -120,7 +120,7 @@ def isort(ctx):
     """
     Run isort
     """
-    ctx.run("isort -c -vb -sg env")
+    ctx.run("isort -c -vb -sg env -b importlib")
 
 @task()
 @shell

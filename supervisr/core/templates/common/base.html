@@ -12,6 +12,22 @@
     <a href="{% url 'domain-index' %}" class="nav-link {% is_active 'domain' %}">
     {% trans "Domains" %}
     </a>
+    <section class="nav-group">
+      <input id="provider_group" type="checkbox">
+      <label for="provider_group">{% trans "Provider" %}</label>
+      <ul class="nav-list">
+        <li>
+          <a href="{% url 'instance-index' %}" class="nav-link {% is_active 'instance' %}">
+          {% trans "Instances" %}
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'credential-index' %}" class="nav-link {% is_active 'credential' %}">
+          {% trans "Credentials" %}
+          </a>
+        </li>
+      </ul>
+    </section>
   </section>
 </nav>
 {% endblock %}
