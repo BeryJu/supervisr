@@ -1,5 +1,5 @@
 """
-Supervisr Core Markdown Templatettags
+Supervisr Static Markdown Templatettags
 """
 import logging
 
