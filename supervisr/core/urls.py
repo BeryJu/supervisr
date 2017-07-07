@@ -10,8 +10,8 @@ from django.conf.urls import include, url
 from django.contrib import admin as admin_django
 
 from supervisr.core.utils import get_apps
-from supervisr.core.views import (about, account, admin, common, domain,
-                                  product, provider, user)
+from supervisr.core.views import (account, admin, common, domain, product,
+                                  provider, user)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -71,9 +71,6 @@ urlpatterns = [
     url(r'^admin/info/$', admin.info, name='admin-info'),
     url(r'^admin/events/$', admin.events, name='admin-events'),
     url(r'^admin/debug/$', admin.debug, name='admin-debug'),
-    # About views
-    url(r'^about/changelog/$', about.changelog, name='about-changelog'),
-    url(r'^about/attributions/$', about.attributions, name='about-attributions'),
     # Include django-admin
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),
