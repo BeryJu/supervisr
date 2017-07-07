@@ -12,7 +12,7 @@
 {% load gravatar %}
 
 {% block body %}
-<div class="main-container">
+<div class="main-container clr-root-container">
   {% block main_container %}
   {% block messages %}
   {% if messages %}
@@ -31,6 +31,9 @@
   {% endif %}
   {% endblock %}
   <header class="header header-1">
+    <button class="header-hamburger-trigger" type="button">
+      <span></span>
+    </button>
     <div class="branding">
       <a class="logo-and-title" href="{% url 'common-index' %}">
         <img class="clr-icon clarity-logo" src="{% static 'img/icon.png' %}" alt="{% trans 'Logo' %}}">
@@ -63,12 +66,16 @@
       </label>
     </form>
     <div class="settings">
-      <span class="nav-link">
+      {% if user.is_authenticated %}
+      <span class="nav-link hidden-sm-down">
         <img class="branding" src="{% gravatar user.email %}" alt="">
       </span>
-      {% if user.is_authenticated %}
       <div class="dropdown bottom-right">
-        <button class="dropdown-toggle btn btn-primary" clrDropdown>
+        <button style="background:url('{% gravatar user.email %}') no-repeat center;background-size: cover;" class="dropdown-toggle btn btn-primary hidden-sm-up" clrDropdown>
+          {# hidden in sm and bigger #}
+        </button>
+        <button class="dropdown-toggle btn btn-primary hidden-sm-down" clrDropdown>
+          {# hidden in sm and smaller #}
           {{ user.userprofile.username }}
           <clr-icon shape="caret down"></clr-icon>
         </button>
@@ -83,6 +90,10 @@
       </div>
       {% endif %}
     </div>
+    <button class="header-overflow-trigger" type="button">
+      <span></span>
+    </button>
+    <div class="header-backdrop"></div>
   </header>
   <div class="content-container">
     <div class="content-area">
