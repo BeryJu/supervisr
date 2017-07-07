@@ -3,7 +3,7 @@ Supervisr Static Apps Config
 """
 import logging
 
-from django.db.utils import InternalError, OperationalError, ProgrammingError
+from django.db.utils import OperationalError, ProgrammingError
 
 from supervisr.core.apps import SupervisrAppConfig
 
