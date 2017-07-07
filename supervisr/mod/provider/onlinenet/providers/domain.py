@@ -27,7 +27,7 @@ class OnlineNetDomainProvider(DomainProvider):
         Check if a domain is already in use
         """
         LOGGER.info("check_available: %s", domain)
-        pass
+        return True
 
     def check_expiry(self, domain):
         """

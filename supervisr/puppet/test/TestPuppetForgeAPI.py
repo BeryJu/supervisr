@@ -53,5 +53,5 @@ class TestPuppetForgeAPI(TestCase):
         """
         # Import a module so the template is not empty
         importer = ForgeImporter()
-        importer.import_module('puppetlabs-ntp')
+        importer.import_module('beryju-windows_oem')
         self.assertEqual(test_request(forge_api.release_list).status_code, 200)

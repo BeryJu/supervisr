@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block content %}
+<h2>{% trans 'Domains' %}</h2>
 <div class="btn-group btn-link btn-icon-link">
   <a href="{% url 'domain-new' %}" class="btn">
     <clr-icon shape="add"></clr-icon>
@@ -23,7 +24,7 @@
   <thead>
     <tr>
       <th>{% trans 'Domain' %}</th>
-      <th>{% trans 'Registrar' %}</th>
+      <th>{% trans 'Provider (Registrar)' %}</th>
       <th>{% trans 'Is Managed?' %}</th>
       <th>{% trans 'Is Subdomain?' %}</th>
     </tr>
@@ -32,7 +33,7 @@
     {% for domain in domains %}
       <tr data-selectable data-ctx-edit="{% url 'domain-edit' domain=domain.domain %}" data-ctx-trash="{% url 'domain-delete' domain=domain.domain %}">
         <td>{{ domain.domain }}</td>
-        <td>{{ domain.registrar }}</td>
+        <td>{{ domain.provider.name }}</td>
         <td>
           {% if domain.managed %}
           <clr-icon shape="check"></clr-icon>

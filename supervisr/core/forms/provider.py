@@ -3,7 +3,6 @@ Supervisr Core Provider Forms
 """
 
 import logging
-from importlib import import_module
 
 from django import forms
 from django.forms import ModelForm
@@ -12,6 +11,7 @@ from django.utils.translation import ugettext as _
 
 from supervisr.core.models import (APIKeyCredential, BaseCredential,
                                    UserPasswordCredential)
+from supervisr.core.utils import path_to_class
 
 LOGGER = logging.getLogger(__name__)
 
@@ -32,9 +32,7 @@ class ProviderForm(forms.Form):
         """
         # Import provider based on form
         # also check in form if class exists and is subclass of BaseProvider
-        parts = self.cleaned_data.get('provider').split('.')
-        package = '.'.join(parts[:-1])
-        _class = getattr(import_module(package), parts[-1])
+        _class = path_to_class(self.cleaned_data.get('provider'))
         # Get credentials
         creds = BaseCredential.objects.filter(name=self.cleaned_data.get('credentials'),
                                               owner=self.request.user)
