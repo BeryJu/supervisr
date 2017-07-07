@@ -4,6 +4,7 @@ Supervisr Core utils
 
 import logging
 import socket
+from importlib import import_module
 from time import time as timestamp
 from uuid import uuid4
 
@@ -114,3 +115,12 @@ def time(statistic_key):
         return timed
 
     return outer_wrapper
+
+def path_to_class(path):
+    """
+    Import module and return class
+    """
+    parts = path.split('.')
+    package = '.'.join(parts[:-1])
+    _class = getattr(import_module(package), parts[-1])
+    return _class

@@ -50,7 +50,7 @@ class BaseProvider(object):
         raise NotImplementedError("This Method should be overwritten by subclasses")
 
     @staticmethod
-    def get_providers(filter_sub=None):
+    def get_providers(filter_sub=None, path=False):
         """
         Get all providers, and filter their sub providers
         """
@@ -83,6 +83,9 @@ class BaseProvider(object):
                         valid.append(provider)
                 else:
                     valid.append(provider)
+        # if path is True, convert classes to dotted path
+        if path:
+            return ['%s.%s' % (p.__module__, p.__name__) for p in valid]
         return valid
 
 class BaseProviderInstance(Product):

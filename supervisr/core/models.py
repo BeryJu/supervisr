@@ -329,7 +329,7 @@ class Domain(Product):
     This is also used for sub domains, hence the is_sub.
     """
     domain = models.CharField(max_length=253, unique=True)
-    registrar = models.TextField()
+    provider = models.ForeignKey('BaseProviderInstance')
     is_sub = models.BooleanField(default=False)
 
     def __str__(self):

@@ -92,10 +92,6 @@ def instance_edit(req, uuid):
 
         if form.is_valid():
 
-            # for key in form.fields:
-            #     value = form.cleaned_data.get(key)
-            #     setattr(r_inst, key, value)
-            # r_inst.save()
             messages.success(req, _('Successfully edited Instance'))
             return redirect(reverse('instance-index'))
         messages.error(req, _('Invalid Instance'))
