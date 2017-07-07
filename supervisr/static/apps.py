@@ -3,6 +3,8 @@ Supervisr Static Apps Config
 """
 import logging
 
+from django.db.utils import InternalError, OperationalError, ProgrammingError
+
 from supervisr.core.apps import SupervisrAppConfig
 
 LOGGER = logging.getLogger(__name__)
@@ -19,7 +21,10 @@ class SupervisrStaticConfig(SupervisrAppConfig):
 
     def ready(self):
         super(SupervisrStaticConfig, self).ready()
-        self.update_filepages()
+        try:
+            self.update_filepages()
+        except (OperationalError, ProgrammingError):
+            pass
 
     # pylint: disable=no-self-use
     def update_filepages(self):
