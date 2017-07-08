@@ -142,3 +142,9 @@ tr.selected {
         overflow-y: auto;
     }
 }
+
+.btn.btn-fab {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+}
