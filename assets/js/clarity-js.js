@@ -14,6 +14,11 @@ $('document').ready(function() {
   $('.clr-root-container button.header-hamburger-trigger').on('click', function (e) {
       $('.clr-root-container').toggleClass('open-hamburger-menu');
   });
+
+  $('.clr-root-container .header-backdrop').on('click', function (e) {
+    $('.clr-root-container').removeClass('open-overflow-menu');
+    $('.clr-root-container').removeClass('open-hamburger-menu');
+  });
 });
 
 var clrWizard = function (containerId, initialPage) {
