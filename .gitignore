@@ -170,3 +170,4 @@ typings/
 supervisr/puppet/modules/*.tgz
 supervisr/mod/ca/
 supervisr/cache/
+supervisr/mod/contrib/

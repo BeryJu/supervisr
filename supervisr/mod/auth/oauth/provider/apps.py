@@ -5,7 +5,7 @@ Supervisr auth oauth provider app config
 from supervisr.core.apps import SupervisrAppConfig
 
 
-class SupervisrModAuthOAuthProviderAppConfig(SupervisrAppConfig):
+class SupervisrModAuthOAuthProviderConfig(SupervisrAppConfig):
     """
     Supervisr auth oauth provider app config
     """

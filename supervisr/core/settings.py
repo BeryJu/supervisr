@@ -87,8 +87,8 @@ INSTALLED_APPS = [
     'supervisr.static.apps.SupervisrStaticConfig',
     'supervisr.mod.auth.ldap.apps.SupervisrModAuthLDAPConfig',
     'supervisr.mod.auth.saml.idp.apps.SupervisrModAuthSAMLProvider',
-    'supervisr.mod.auth.oauth.provider.apps.SupervisrModAuthOAuthProviderAppConfig',
-    'supervisr.mod.auth.oauth.client.apps.SupervisrModAuthOAuthClientAppConfig',
+    'supervisr.mod.auth.oauth.provider.apps.SupervisrModAuthOAuthProviderConfig',
+    'supervisr.mod.auth.oauth.client.apps.SupervisrModAuthOAuthClientConfig',
     'supervisr.mod.tfa.apps.SupervisrModTFAConfig',
     'supervisr.mod.stats.graphite.apps.SupervisrModStatGraphiteConfig',
     'supervisr.mod.provider.namecheap.apps.SupervisrModProviderNamecheapConfig',
@@ -186,6 +186,8 @@ DATABASES = {
     }
 }
 
+DATABASE_ROUTERS = []
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -200,6 +202,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+)
 
 EMAIL_FROM = 'Supervisr <supervisr@localhost>'
 
@@ -282,5 +289,6 @@ for app in INSTALLED_APPS:
             INSTALLED_APPS.extend(getattr(app_settings, 'INSTALLED_APPS', []))
             MIDDLEWARE.extend(getattr(app_settings, 'MIDDLEWARE', []))
             AUTHENTICATION_BACKENDS.extend(getattr(app_settings, 'AUTHENTICATION_BACKENDS', []))
+            DATABASE_ROUTERS.extend(getattr(app_settings, 'DATABASE_ROUTERS', []))
         except ImportError:
             pass

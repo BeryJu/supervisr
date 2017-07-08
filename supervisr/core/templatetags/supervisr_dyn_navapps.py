@@ -40,15 +40,16 @@ def supervisr_dyn_navapps(context):
             except LookupError:
                 mod = mod.split('.')[:-2][-1]
                 config = apps.get_app_config(mod)
+            view_prefix = mod.split('/')[-1]
             title = config.title_moddifier(config.label, context.request)
             if config.navbar_enabled(context.request):
                 mod = mod.replace('supervisr.', '')
-                index = '%s:%s-index' % (mod, mod)
+                index = '%s:%s-index' % (mod, view_prefix)
                 try:
                     reverse(index)
                     LOGGER.debug("Mod %s made it with '%s'", mod, index)
                     app_list.append({
-                        'short': mod,
+                        'short': view_prefix,
                         'title': title,
                         'index': index
                         })
