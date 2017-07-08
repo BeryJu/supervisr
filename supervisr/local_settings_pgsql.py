@@ -1,3 +1,4 @@
+# pylint: skip-file
 """
 Postgres Local settings
 """

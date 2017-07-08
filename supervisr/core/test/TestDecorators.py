@@ -69,6 +69,7 @@ class TestDecorators(TestCase):
             """
             Only run this function if app '_invalid-name' is present
             """
+            pass
 
         self.assertTrue(test_core())
         self.assertEqual(test_invalid(), None)

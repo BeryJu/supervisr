@@ -1,5 +1,3 @@
-# Supervisr Attributions
-
 ## Backend
 |                                                  |          |                                                                                                              |
 |--------------------------------------------------|----------|--------------------------------------------------------------------------------------------------------------|
@@ -23,7 +21,7 @@
 |                                                  |          |                                                                                                              |
 |--------------------------------------------------|----------|--------------------------------------------------------------------------------------------------------------|
 | [vmware-clarity](#vmware-clarity)                | MIT      | [https://github.com/vmware/clarity/](https://github.com/vmware/clarity/)                                     |
-| [jquery](#jquery)                                | MIT      | [https://jquery.com/](https://jquery.com/)                                                                   |
+| [jQuery](#jQuery)                                | MIT      | [https://jQuery.com/](https://jQuery.com/)                                                                   |
 
 <a name="django"></a>
 
@@ -694,15 +692,15 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-<a name="jquery"></a>
+<a name="jQuery"></a>
 
-## jquery
+## jQuery
 
 Copyright JS Foundation and other contributors, https://js.foundation/
 
 This software consists of voluntary contributions made by many
 individuals. For exact contribution history, see the revision history
-available at https://github.com/jquery/jquery
+available at https://github.com/jQuery/jQuery
 
 The following license applies to all parts of this software except as
 documented below:
