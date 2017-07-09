@@ -8,10 +8,7 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
 
-from supervisr.core.models import Event, UserProductRelationship
-from supervisr.core.providers.base import BaseProviderInstance
 from supervisr.core.utils import do_404, render_to_string
-from supervisr.core.views.api.utils import api_response
 
 
 @login_required
