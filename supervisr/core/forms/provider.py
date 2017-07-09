@@ -32,7 +32,7 @@ class ProviderForm(forms.Form):
         """
         # Import provider based on form
         # also check in form if class exists and is subclass of BaseProvider
-        _class = path_to_class(self.cleaned_data.get('provider'))
+        _class = path_to_class(self.cleaned_data.get('provider_path'))
         # Get credentials
         creds = BaseCredential.objects.filter(name=self.cleaned_data.get('credentials'),
                                               owner=self.request.user)

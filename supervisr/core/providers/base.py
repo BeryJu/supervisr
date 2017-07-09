@@ -86,7 +86,7 @@ class BaseProvider(object):
         # if path is True, convert classes to dotted path
         if path:
             return ['%s.%s' % (p.__module__, p.__name__) for p in valid]
-        return valid
+        return sorted(valid, key=lambda x: x.ui_name)
 
 class BaseProviderInstance(Product):
     """
