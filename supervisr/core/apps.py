@@ -12,6 +12,7 @@ import subprocess
 import pkg_resources
 from django.apps import AppConfig
 from django.conf import settings
+from django.core.cache import cache
 from pip.req import parse_requirements
 
 LOGGER = logging.getLogger(__name__)
@@ -32,7 +33,16 @@ class SupervisrAppConfig(AppConfig):
         self.check_requirements()
         self.load_init()
         self.merge_settings()
+        self.clear_cache()
         super(SupervisrAppConfig, self).ready()
+
+    # pylint: disable=no-self-use
+    def clear_cache(self):
+        """
+        Clear cache on startup
+        """
+        cache.clear()
+        LOGGER.info("Successfully cleared Cache")
 
     # pylint: disable=no-self-use
     def run_ensure_settings(self):
