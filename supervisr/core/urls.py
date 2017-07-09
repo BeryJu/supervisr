@@ -11,7 +11,7 @@ from django.contrib import admin as admin_django
 
 from supervisr.core.utils import get_apps
 from supervisr.core.views import (account, admin, common, domain, product,
-                                  provider, user)
+                                  provider, search, user)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ UUID_REGEX = r'[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]
 urlpatterns = [
     # Account views
     url(r'^$', common.index, name='common-index'),
-    url(r'^search/$', common.search, name='common-search'),
+    url(r'^search/$', search.search, name='search'),
     url(r'^accounts/login/$', account.login, name='account-login'),
     url(r'^accounts/login/reauth/$', account.reauth, name='account-reauth'),
     url(r'^accounts/signup/$', account.signup, name='account-signup'),

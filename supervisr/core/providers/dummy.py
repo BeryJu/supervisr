@@ -31,7 +31,7 @@ class DummyDomainProvider(DomainProvider):
     Dummy Domain Provider which serves to test
     """
 
-    selectable = True
+    selectable = False
     ui_name = 'Dummy Domain Provider'
 
     def check_credentials(self, credentials=None):

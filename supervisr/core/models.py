@@ -347,7 +347,7 @@ class Domain(Product):
     class Meta:
 
         default_related_name = 'domains'
-        sv_search_fields = ['name', 'registrar']
+        sv_search_fields = ['name', 'provider__name']
 
 class Event(CreatedUpdatedModel):
     """
