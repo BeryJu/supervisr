@@ -37,8 +37,12 @@ class FilePage(StaticPage):
         Read data from file and write to DB
         """
         with open(self.path, 'r') as file:
-            self.content = file.read()
-            self.save()
+            new_content = file.read()
+            if new_content != self.content:
+                self.content = new_content
+                self.save()
+                return True
+            return False
 
     def __str__(self):
         return "FilePage %s (slug=%s, path=%s)" % (self.title, self.slug, self.path)

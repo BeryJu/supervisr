@@ -3,7 +3,7 @@ Supervisr Static Apps Config
 """
 import logging
 
-from django.db.utils import OperationalError, ProgrammingError
+from django.db.utils import InternalError, OperationalError, ProgrammingError
 
 from supervisr.core.apps import SupervisrAppConfig
 
@@ -23,7 +23,7 @@ class SupervisrStaticConfig(SupervisrAppConfig):
         super(SupervisrStaticConfig, self).ready()
         try:
             self.update_filepages()
-        except (OperationalError, ProgrammingError):
+        except (OperationalError, ProgrammingError, InternalError):
             pass
 
     # pylint: disable=no-self-use
@@ -32,7 +32,9 @@ class SupervisrStaticConfig(SupervisrAppConfig):
         Update all FilePages from File
         """
         from supervisr.static.models import FilePage
+        count = 0
         for fpage in FilePage.objects.all():
-            fpage.update_from_file()
-            LOGGER.debug("Successfully updated %s with '%s'", fpage.title, fpage.path)
-        LOGGER.info("Successfully updated %d FilePages", len(FilePage.objects.all()))
+            if fpage.update_from_file():
+                LOGGER.debug("Successfully updated %s with '%s'", fpage.title, fpage.path)
+                count += 1
+        LOGGER.info("Successfully updated %d FilePages", count)
