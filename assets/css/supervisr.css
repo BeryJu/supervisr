@@ -148,3 +148,8 @@ tr.selected {
     right: 24px;
     bottom: 24px;
 }
+
+header.header form.active {
+    background: rgba(255,255,255,.15);
+    opacity: 1;
+}

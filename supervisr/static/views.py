@@ -14,7 +14,7 @@ def view(req, slug):
     """
     Render and show static page
     """
-    if req.user.is_authenticated():
+    if req.user.is_superuser:
         query = Q(slug=slug)
     else:
         query = Q(slug=slug) & Q(published=True)
@@ -22,7 +22,8 @@ def view(req, slug):
     if not page.exists():
         raise Http404
     r_page = page.first()
-
+    r_page.views += 1
+    r_page.save()
     return render(req, r_page.template, {
         'page': r_page,
         })
@@ -31,10 +32,11 @@ def feed(req):
     """
     Show a feed with all pages
     """
-    if req.user.is_authenticated():
-        all_pages = StaticPage.objects.all()
+    if req.user.is_superuser:
+        query = Q()
     else:
-        all_pages = StaticPage.objects.filter(published=True)
+        query = Q(published=True) & Q(listed=True)
+    all_pages = StaticPage.objects.filter(query)
     all_pages = all_pages.order_by('-created')
     paginator = Paginator(all_pages, 25) # Show 25 entries per page
 

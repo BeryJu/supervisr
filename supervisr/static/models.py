@@ -18,6 +18,10 @@ class StaticPage(CreatedUpdatedModel, CastableModel):
     slug = models.SlugField(unique=True)
     author = models.ForeignKey(User)
     published = models.BooleanField(default=False)
+    listed = models.BooleanField(default=True)
+    views = models.BigIntegerField(default=0)
+    has_markdown_enabled = models.BooleanField(default=True)
+    has_html_enabled = models.BooleanField(default=True)
 
     def __str__(self):
         return "StaticPage %s (slug=%s)" % (self.title, self.slug)

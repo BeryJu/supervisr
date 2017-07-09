@@ -62,7 +62,7 @@
     </div>
     <div class="divider"></div>
     {% if user.is_authenticated %}
-    <form class="search" method="GET" action="{% url 'common-search' %}">
+    <form class="search {% is_active 'search' %}" method="GET" action="{% url 'search' %}">
       <label for="search_input">
         <input id="search_input" name="q" placeholder="{% trans 'Search for keywords...' %}" type="text" {% if request.GET.q %} value="{{ request.GET.q }}" {% endif %}>
       </label>

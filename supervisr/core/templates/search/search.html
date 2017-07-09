@@ -1,0 +1,37 @@
+{% extends "core/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+
+{% block title %}
+{% supervisr_title 'Search' %}
+{% endblock %}
+
+{% block content %}
+<h1>{% trans 'Search' %}</h1>
+{% for app, results in results.items %}
+<div class="row">
+  <div class="card">
+    <div class="card-header">
+      {% trans app %}
+    </div>
+    {{ results }}
+  </div>
+</div>
+{% empty %}
+<div class="row">
+  <div class="card">
+    <div class="card-header">
+      {% trans 'Nothing' %}
+    </div>
+    <div class="card-block">
+      <div class="card-text">
+        {% trans 'Nothing found' %} <clr-icon shape="sad-face"></clr-icon>
+      </div>
+    </div>
+  </div>
+  <div>
+</div>
+{% endfor %}
+{% endblock %}
+
