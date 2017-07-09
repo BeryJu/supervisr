@@ -120,10 +120,10 @@ class SupervisrCoreConfig(SupervisrAppConfig):
 
     name = 'supervisr.core'
     init_modules = [
-        'signals'
-        'events'
-        'mailer'
-        'models'
+        'signals',
+        'events',
+        'mailer',
+        'models',
         'providers.base'
         'providers.domain',
         'providers.dummy',
