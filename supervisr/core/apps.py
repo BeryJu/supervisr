@@ -33,7 +33,6 @@ class SupervisrAppConfig(AppConfig):
         self.check_requirements()
         self.load_init()
         self.merge_settings()
-        self.clear_cache()
         super(SupervisrAppConfig, self).ready()
 
     # pylint: disable=no-self-use
@@ -149,3 +148,4 @@ class SupervisrCoreConfig(SupervisrAppConfig):
         except (OSError, IOError):
             settings.VERSION_HASH = b'dev'
         super(SupervisrCoreConfig, self).ready()
+        self.clear_cache()

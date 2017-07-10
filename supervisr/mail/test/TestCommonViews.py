@@ -9,8 +9,7 @@ from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
 from supervisr.core.models import get_system_user
-
-from ..views import mail
+from supervisr.mail.views import mail
 
 
 class TestCommonViews(TestCase):
@@ -26,7 +25,7 @@ class TestCommonViews(TestCase):
         """
         Test Index View (Anonymous)
         """
-        req = self.factory.get(reverse('mail:mail-index'))
+        req = self.factory.get(reverse('supervisr/mail:mail-index'))
         req.user = AnonymousUser()
         res = mail.index(req)
         self.assertEqual(res.status_code, 302)
@@ -35,7 +34,7 @@ class TestCommonViews(TestCase):
         """
         Test Index View (Authenticated)
         """
-        req = self.factory.get(reverse('mail:mail-index'))
+        req = self.factory.get(reverse('supervisr/mail:mail-index'))
         req.user = User.objects.get(pk=get_system_user())
         res = mail.index(req)
         self.assertEqual(res.status_code, 200)

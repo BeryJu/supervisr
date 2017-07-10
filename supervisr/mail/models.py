@@ -31,6 +31,7 @@ class MailDomain(Product):
         """
         Override save to set domain_raw
         """
+        print(self.domain.domain)
         if self.domain_raw is not self.domain.domain:
             self.domain_raw = self.domain.domain
         super(MailDomain, self).save(*args, **kwargs)
@@ -82,7 +83,7 @@ class MailAccount(Product):
         """
         Override save to set domain_raw and email_raw
         """
-        domain = str(self.domain.domain)
+        domain = str(self.domain.domain.domain)
         if self.domain_raw is not domain:
             self.domain_raw = domain
         if self.email_raw is not '%s@%s' % (self.address, domain):
