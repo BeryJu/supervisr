@@ -46,8 +46,8 @@
     <tbody>
       {% for account in acc_accounts %}
       <tr data-selectable data-ctx-edit="{% url 'mail:mail-account-edit' account=account.address domain=account.domain.domain.domain %}" data-ctx-trash="{% url 'mail:mail-account-delete' account=account.address domain=account.domain.domain.domain %}">
-        <td>{{ account.address }}@{{ account.domain.domain }}</td>
-        <td>{{ account.domain.domain }}</td>
+        <td>{{ account.address }}@{{ account.domain.domain.domain }}</td>
+        <td>{{ account.domain.domain.domain }}</td>
         <td>{{ account.users.all|join:"," }}</td>
         <td>
           {% if account.quota > 0 %}
