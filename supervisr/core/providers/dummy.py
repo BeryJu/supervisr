@@ -6,13 +6,13 @@ from supervisr.core.providers.base import BaseProvider
 from supervisr.core.providers.domain import DomainProvider
 
 
-class DummyBaseProvider(BaseProvider):
+class DummyDomainProvider(DomainProvider):
     """
-    Dummy Provider which serves to test
+    Dummy Domain Provider which serves to test
     """
 
-    selectable = True
-    ui_name = 'Dummy Provider'
+    selectable = False
+    ui_name = 'Dummy Domain Provider'
 
     def check_credentials(self, credentials=None):
         """
@@ -26,13 +26,14 @@ class DummyBaseProvider(BaseProvider):
         """
         return True
 
-class DummyDomainProvider(DomainProvider):
+class DummyBaseProvider(BaseProvider):
     """
-    Dummy Domain Provider which serves to test
+    Dummy Provider which serves to test
     """
 
-    selectable = False
-    ui_name = 'Dummy Domain Provider'
+    selectable = True
+    ui_name = 'Dummy Provider'
+    domain_provider = DummyDomainProvider
 
     def check_credentials(self, credentials=None):
         """
