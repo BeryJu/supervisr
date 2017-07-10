@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mail', '0005_remove_mailaccount_password_salt'),
+        ('supervisr/mail', '0005_remove_mailaccount_password_salt'),
     ]
 
     operations = [

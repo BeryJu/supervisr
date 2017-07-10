@@ -11,10 +11,10 @@ from django.utils.translation import ugettext as _
 from supervisr.core.models import UserProductRelationship
 from supervisr.core.utils import do_404
 from supervisr.core.views.wizard import BaseWizardView
-
-from ..forms.mail_account import (MailAccountForm, MailAccountFormCredentials,
-                                  MailAccountFormForwarder)
-from ..models import MailAccount, MailDomain, MailForwarder
+from supervisr.mail.forms.mail_account import (MailAccountForm,
+                                               MailAccountFormCredentials,
+                                               MailAccountFormForwarder)
+from supervisr.mail.models import MailAccount, MailDomain, MailForwarder
 
 
 @login_required
@@ -117,7 +117,7 @@ class AccountNewView(BaseWizardView):
                 destination=form_dict['2'].cleaned_data.get('forwarder_dest')
                 )
         messages.success(self.request, _('Mail Account successfully created'))
-        return redirect(reverse('mail:mail-index'))
+        return redirect(reverse('supervisr/mail:mail-index'))
 
 @login_required
 # pylint: disable=unused-argument
@@ -147,12 +147,12 @@ def account_delete(req, domain, account):
         # User confirmed deletion
         r_account.delete()
         messages.success(req, _('Account successfully deleted'))
-        return redirect(reverse('mail:mail-index'))
+        return redirect(reverse('supervisr/mail:mail-index'))
 
     return render(req, 'core/generic_delete.html', {
         'object': 'Account %s' % r_account.email_raw,
-        'delete_url': reverse('mail:mail-account-delete', kwargs={
-            'domain': r_domain.name,
+        'delete_url': reverse('supervisr/mail:mail-account-delete', kwargs={
+            'domain': r_domain.domain.domain,
             'account': r_account.address
             })
         })

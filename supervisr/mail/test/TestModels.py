@@ -7,8 +7,7 @@ from django.test import TestCase
 
 from supervisr.core.models import (Domain, UserProductRelationship,
                                    get_system_user)
-
-from ..models import MailAccount, MailDomain
+from supervisr.mail.models import MailAccount, MailDomain
 
 
 class TestModels(TestCase):

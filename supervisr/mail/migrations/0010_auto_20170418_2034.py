@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('puppet', '0004_puppetmodule_source_path'),
-        ('mail', '0009_maildomain_enabled'),
+        ('supervisr/mail', '0009_maildomain_enabled'),
     ]
 
     operations = [
