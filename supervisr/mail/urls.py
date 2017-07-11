@@ -6,7 +6,7 @@ from django.conf.urls import url
 
 from .views import mail
 
-EMAIL_ADDRESS_REGEX = r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+'
+EMAIL_ADDRESS_REGEX = r'[a-zA-Z0-9_.+-/]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+'
 
 urlpatterns = [
     url(r'^$', mail.index, name='mail-index'),
