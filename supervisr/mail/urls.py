@@ -15,4 +15,6 @@ urlpatterns = [
         mail.account_edit, name='mail-account-edit'),
     url(r'^(?P<account>[a-zA-Z0-9\-\.]+)\@(?P<domain>[a-z0-9\-\.]+)/delete/$',
         mail.account_delete, name='mail-account-delete'),
+    url(r'^(?P<domain>[a-z0-9\-\.]+)/(?P<dest>[a-zA-Z0-9\-\.\@]+)/delete/$',
+        mail.forwarder_delete, name='mail-forwarder-delete'),
 ]
