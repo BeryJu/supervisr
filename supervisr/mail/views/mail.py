@@ -114,7 +114,6 @@ class AccountNewView(BaseWizardView):
             )
         if form_dict['2'].cleaned_data.get('forwarder_dest') != []:
             for fwd_dest in form_dict['2'].cleaned_data.get('forwarder_dest'):
-                print(fwd_dest)
                 MailForwarder.objects.create(
                     account=m_acc,
                     destination=fwd_dest
