@@ -6,8 +6,8 @@ from django import forms
 from django.utils.translation import ugettext as _
 
 from supervisr.core.forms.core import check_password
-
-from ..models import MailAccount
+from supervisr.mail.fields import MultiEmailField
+from supervisr.mail.models import MailAccount
 
 
 class MailAccountForm(forms.Form):
@@ -64,4 +64,17 @@ class MailAccountFormForwarder(forms.Form):
 
     title = 'Forwarder Destination'
     help_text = 'This can be used to forward every email to this address. Optional.'
-    forwarder_dest = forms.EmailField(required=False, label=_('Forwarder Destination (optional)'))
+    forwarder_dest = MultiEmailField(required=False, label=_('Forwarder destination (optional)'))
+
+    def __init__(self, *args, **kwargs):
+        super(MailAccountFormForwarder, self).__init__(*args, **kwargs)
+        self.fields['forwarder_dest'].widget.attrs['placeholder'] = _("One destination per line")
+
+    def clean_forwarder_dest(self):
+        """
+        Check that no duplicated destination addresses were given
+        """
+        fwd_list = self.cleaned_data.get('forwarder_dest')
+        if len(fwd_list) != len(set(fwd_list)):
+            raise forms.ValidationError('List contains duplicates.')
+        return fwd_list

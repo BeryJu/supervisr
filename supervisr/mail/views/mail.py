@@ -23,11 +23,12 @@ def index(req):
     Mail Domain Index
     """
     domains = MailDomain.objects.filter(users__in=[req.user])
-    all_accounts = MailAccount.objects \
+    acc_accounts = MailAccount.objects \
         .filter(domain__in=domains, users__in=[req.user]) \
-        .order_by('domain')
-    acc_accounts = all_accounts.filter(mailforwarder__isnull=True)
-    fwd_accounts = all_accounts.filter(mailforwarder__isnull=False)
+        .order_by('domain', 'address')
+    fwd_accounts = MailForwarder.objects \
+        .filter(account__domain__in=domains, account__users__in=[req.user]) \
+        .order_by('account__domain', 'account__address')
 
     return render(req, 'mail/recipient-index.html', {
         'acc_accounts': acc_accounts,
@@ -111,11 +112,13 @@ class AccountNewView(BaseWizardView):
             product=m_acc,
             user=self.request.user
             )
-        if form_dict['2'].cleaned_data.get('forwarder_dest') != '':
-            MailForwarder.objects.create(
-                account=m_acc,
-                destination=form_dict['2'].cleaned_data.get('forwarder_dest')
-                )
+        if form_dict['2'].cleaned_data.get('forwarder_dest') != []:
+            for fwd_dest in form_dict['2'].cleaned_data.get('forwarder_dest'):
+                print(fwd_dest)
+                MailForwarder.objects.create(
+                    account=m_acc,
+                    destination=fwd_dest
+                    )
         messages.success(self.request, _('Mail Account successfully created'))
         return redirect(reverse('supervisr/mail:mail-index'))
 
@@ -154,5 +157,35 @@ def account_delete(req, domain, account):
         'delete_url': reverse('supervisr/mail:mail-account-delete', kwargs={
             'domain': r_domain.domain.domain,
             'account': r_account.address
+            })
+        })
+
+@login_required
+# pylint: disable=unused-argument
+def forwarder_delete(req, domain, dest):
+    """
+    Show view to delete account
+    """
+    domains = MailDomain.objects.filter(domain__domain=domain)
+    if not domains.exists():
+        raise Http404
+    r_domain = domains.first()
+
+    fwds = MailForwarder.objects.filter(account__domain=r_domain, destination=dest)
+    if not fwds.exists():
+        raise Http404
+    r_fwd = fwds.first()
+
+    if req.method == 'POST' and 'confirmdelete' in req.POST:
+        # User confirmed deletion
+        r_fwd.delete()
+        messages.success(req, _('Forwarder successfully deleted'))
+        return redirect(reverse('supervisr/mail:mail-index'))
+
+    return render(req, 'core/generic_delete.html', {
+        'object': 'Forwarder %s' % r_fwd.destination,
+        'delete_url': reverse('supervisr/mail:mail-forwarder-delete', kwargs={
+            'domain': r_domain.domain.domain,
+            'dest': r_fwd.destination
             })
         })

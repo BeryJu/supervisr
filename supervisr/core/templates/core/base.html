@@ -15,22 +15,22 @@
 {% block body %}
 <div class="main-container clr-root-container">
   {% block main_container %}
-  {% block messages %}
-  {% if messages %}
-  {% for msg in messages %}
-  <div class="alert alert-app-level alert-{{ msg.level_tag }}">
-    <button type="button" class="close" aria-label="Close" clrAlert>
-      <clr-icon aria-hidden="true" shape="close"></clr-icon>
-    </button>
-    <div class="alert-item">
-      <div class="alert-text">
-        {{ msg.message|safe }}
-      </div>
-    </div>
-  </div>
-  {% endfor %}
-  {% endif %}
-  {% endblock %}
+    {% block messages %}
+      {% if messages %}
+        {% for msg in messages %}
+        <div class="alert alert-app-level alert-{{ msg.level_tag }}">
+          <button type="button" class="close" aria-label="Close" clrAlert>
+            <clr-icon aria-hidden="true" shape="close"></clr-icon>
+          </button>
+          <div class="alert-item">
+            <div class="alert-text">
+              {{ msg.message|safe }}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% endif %}
+    {% endblock %}
   <header class="header header-1">
     <button class="header-hamburger-trigger" type="button">
       <span></span>
