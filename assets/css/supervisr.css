@@ -134,6 +134,7 @@ tr.selected {
 @media screen and (max-width: 768px) {
     .main-container .content-container .content-area {
         padding: 24px 0;
+        padding-top: 4px;
     }
     .container {
         padding: 0;
@@ -152,4 +153,24 @@ tr.selected {
 header.header form.active {
     background: rgba(255,255,255,.15);
     opacity: 1;
+}
+
+.main-container .content-container .content-area {
+    padding-top: 4px;
+}
+
+h1 > clr-icon {
+    margin-bottom: 8px;
+    margin-right: 8px;
+}
+
+h2 > clr-icon {
+    margin-bottom: 4px;
+    margin-right: 8px;
+}
+
+.card-header>h1,
+.card-header>h2,
+.card-header>h3 {
+    margin-top: 0;
 }
