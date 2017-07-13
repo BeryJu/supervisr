@@ -11,6 +11,7 @@
 {% endblock %}
 
 {% block content %}
+<h1><clr-icon shape="connect" size="48"></clr-icon>{% trans "OAuth2" %}</h1>
 <div class="row">
   <div class="col-md-12">
     <div class="card">
@@ -18,6 +19,7 @@
         {% trans "Connected Accounts" %}
       </div>
       <div class="card-footer">
+        {% if provider_state %}
         <table class="table">
           <thead>
             <th>
@@ -45,6 +47,9 @@
             {% endfor %}
           </tbody>
         </table>
+        {% else %}
+        <p>{% trans "No Providers configured!" %}</p>
+        {% endif %}
       </div>
     </div>
   </div>
