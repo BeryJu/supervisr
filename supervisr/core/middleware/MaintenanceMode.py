@@ -4,7 +4,7 @@ Supervisr Core Middleware to detect Maintenance Mode
 
 from django.shortcuts import render
 
-from ..models import Setting
+from supervisr.core.models import Setting
 
 
 def maintenance_mode(get_response):

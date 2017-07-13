@@ -1,15 +1,15 @@
 """
-Supervisr Mail Common Views
+Supervisr Mail Account Views
 """
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import Http404
 from django.shortcuts import redirect, render, reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.models import UserProductRelationship
-from supervisr.core.utils import do_404
 from supervisr.core.views.wizard import BaseWizardView
 from supervisr.mail.forms.mail_account import (MailAccountForm,
                                                MailAccountFormCredentials,
@@ -20,54 +20,26 @@ from supervisr.mail.models import MailAccount, MailDomain, MailForwarder
 @login_required
 def index(req):
     """
-    Mail Domain Index
+    Account Index
     """
     domains = MailDomain.objects.filter(users__in=[req.user])
     acc_accounts = MailAccount.objects \
         .filter(domain__in=domains, users__in=[req.user]) \
         .order_by('domain', 'address')
-    fwd_accounts = MailForwarder.objects \
-        .filter(account__domain__in=domains, account__users__in=[req.user]) \
-        .order_by('account__domain', 'account__address')
 
-    return render(req, 'mail/recipient-index.html', {
-        'acc_accounts': acc_accounts,
-        'fwd_accounts': fwd_accounts,
+    paginator = Paginator(acc_accounts, int(req.GET.get('per_page', 50)))
+
+    page = req.GET.get('page')
+    try:
+        accounts = paginator.page(page)
+    except PageNotAnInteger:
+        accounts = paginator.page(1)
+    except EmptyPage:
+        accounts = paginator.page(paginator.num_pages)
+
+    return render(req, 'mail/account/index.html', {
+        'acc_accounts': accounts,
         })
-
-@login_required
-def accounts(req):
-    """
-    Mail Account Index
-    """
-    domains = MailDomain.objects.filter(users__in=[req.user])
-    mail_accounts = MailAccount.objects \
-        .filter(domain__in=domains, users__in=[req.user]) \
-        .order_by('domain')
-    return render(req, 'mail/account-index.html', {'accounts': mail_accounts})
-
-@login_required
-def accounts_view(req, domain, account):
-    """
-    View a Mail Account
-    """
-    # Check if domain exists first
-    m_domain = MailDomain.objects.filter(domain__domain=domain)
-    if m_domain.exists() is False:
-        return do_404(req, message='Account not found')
-    # Check if account exists
-    m_account = MailAccount.objects.filter(
-        domain=m_domain.first(),
-        address=account)
-    if m_account.exists() is False:
-        return do_404(req, message='Account not found')
-    # Check if the current user has access
-    m_upr = UserProductRelationship.objects.filter(
-        user=req.user,
-        product=m_account.first())
-    if m_upr.exists() is False:
-        return do_404(req, message='Account not found')
-    return render(req, 'mail/view.html', {'account': m_account})
 
 @staticmethod
 def check_cred_form(wizard):
@@ -156,35 +128,5 @@ def account_delete(req, domain, account):
         'delete_url': reverse('supervisr/mail:mail-account-delete', kwargs={
             'domain': r_domain.domain.domain,
             'account': r_account.address
-            })
-        })
-
-@login_required
-# pylint: disable=unused-argument
-def forwarder_delete(req, domain, dest):
-    """
-    Show view to delete account
-    """
-    domains = MailDomain.objects.filter(domain__domain=domain)
-    if not domains.exists():
-        raise Http404
-    r_domain = domains.first()
-
-    fwds = MailForwarder.objects.filter(account__domain=r_domain, destination=dest)
-    if not fwds.exists():
-        raise Http404
-    r_fwd = fwds.first()
-
-    if req.method == 'POST' and 'confirmdelete' in req.POST:
-        # User confirmed deletion
-        r_fwd.delete()
-        messages.success(req, _('Forwarder successfully deleted'))
-        return redirect(reverse('supervisr/mail:mail-index'))
-
-    return render(req, 'core/generic_delete.html', {
-        'object': 'Forwarder %s' % r_fwd.destination,
-        'delete_url': reverse('supervisr/mail:mail-forwarder-delete', kwargs={
-            'domain': r_domain.domain.domain,
-            'dest': r_fwd.destination
             })
         })
