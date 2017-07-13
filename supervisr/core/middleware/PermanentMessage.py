@@ -4,7 +4,7 @@ Supervisr Core Middleware to add a banner message
 
 from django.contrib import messages
 
-from ..models import Setting
+from supervisr.core.models import Setting
 
 
 def permanent_message(get_response):
