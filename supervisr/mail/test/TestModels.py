@@ -24,7 +24,7 @@ class TestModels(TestCase):
         """
         usr = User.objects.get(pk=get_system_user())
         domain = Domain.objects.create(
-            name='beryjuorgtesting.xyz',
+            name='supervisr-unittest.beryju.org',
             invite_only=True,
             price=0)
         UserProductRelationship.objects.create(
@@ -37,7 +37,7 @@ class TestModels(TestCase):
         Test MailDomain's getter and setter
         """
         domain = Domain.objects.create(
-            name='beryjuorgtesting.xyz',
+            name='supervisr-unittest.beryju.org',
             invite_only=True,
             price=0)
         mx_domain = MailDomain.objects.get(domain=domain)
@@ -52,7 +52,7 @@ class TestModels(TestCase):
         Test MailAccount's getter and setter
         """
         domain = Domain.objects.create(
-            name='beryjuorgtesting.xyz',
+            name='supervisr-unittest.beryju.org',
             invite_only=True,
             price=0)
         mx_domain = MailDomain.objects.get(domain=domain)
@@ -69,7 +69,7 @@ class TestModels(TestCase):
         Test MailAccount's set_password
         """
         domain = Domain.objects.create(
-            name='beryjuorgtesting.xyz',
+            name='supervisr-unittest.beryju.org',
             invite_only=True,
             price=0)
         mx_domain = MailDomain.objects.get(domain=domain)

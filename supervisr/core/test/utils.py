@@ -9,6 +9,8 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.backends.cached_db import SessionStore
 from django.core.management import call_command
+from django.http import Http404
+from django.http.response import HttpResponseNotFound
 from django.test import RequestFactory
 from django.utils import timezone
 from oauth2_provider.models import AccessToken, Application
@@ -58,7 +60,10 @@ def test_request(view,
         user = User.objects.get(pk=user)
     req.user = user
 
-    return view(req, **url_kwargs)
+    try:
+        return view(req, **url_kwargs)
+    except Http404:
+        return HttpResponseNotFound('not found')
 
 def call_command_ret(*args, **kwargs):
     """
@@ -75,7 +80,7 @@ def oauth2_get_token(user):
     app = Application.objects.create(
         client_type=Application.CLIENT_CONFIDENTIAL,
         authorization_grant_type=Application.GRANT_AUTHORIZATION_CODE,
-        redirect_uris='https://www.none.com/oauth2/callback',
+        redirect_uris='https://supervisr-unittest.beryju.org/oauth2/callback',
         name='dummy',
         user=user
     )
