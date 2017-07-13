@@ -71,6 +71,7 @@ def login(req):
                 # and inform that, they need to check their emails
                 users = User.objects.filter(username=form.cleaned_data.get('email'))
                 if users.exists():
+                    # Check is maybe not confirmed yet
                     acc_confs = AccountConfirmation.objects.filter(user=users.first())
                     if acc_confs.exists() and not acc_confs.first().confirmed:
                         # Create url to resend email
@@ -79,10 +80,12 @@ def login(req):
                         messages.error(req, _(('Account not confirmed yet. Check your emails. '
                                                'Click <a href="%(url)s">here</a> to resend the '
                                                'email.')) % {'url': url})
-                else:
-                    messages.error(req, _("Invalid Login"))
-                    LOGGER.info("Failed to log in %s", form.cleaned_data.get('email'))
+                        return redirect(reverse('account-login'))
+                messages.error(req, _("Invalid Login"))
+                LOGGER.info("Failed to log in %s", form.cleaned_data.get('email'))
                 return redirect(reverse('account-login'))
+        else:
+            print("Form invalid")
     else:
         form = LoginForm()
     return render(req, 'account/login.html', {
