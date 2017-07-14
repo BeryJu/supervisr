@@ -4,6 +4,7 @@ Supervisr Bacula DB Router
 
 from django.conf import settings
 
+
 class BaculaRouter(object):
     """
     A router to control all database operations on models in the
