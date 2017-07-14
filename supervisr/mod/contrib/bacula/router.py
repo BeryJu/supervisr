@@ -2,11 +2,19 @@
 Supervisr Bacula DB Router
 """
 
+from django.conf import settings
+
 class BaculaRouter(object):
     """
     A router to control all database operations on models in the
     auth application.
     """
+
+    def __init__(self):
+        """
+        Check if there's a seperate Bacula Database
+        """
+        self._db = 'bacula' if 'bacula' in settings.DATABASES else None
 
     # pylint: disable=unused-argument, no-self-use
     def db_for_read(self, model, **hints):
@@ -14,7 +22,7 @@ class BaculaRouter(object):
         Attempts to read auth models go to bacula.
         """
         if model._meta.app_label == 'supervisr/mod/contrib/bacula':
-            return 'bacula'
+            return self._db
         return None
 
     # pylint: disable=unused-argument, no-self-use
@@ -23,7 +31,7 @@ class BaculaRouter(object):
         Attempts to write auth models go to bacula.
         """
         if model._meta.app_label == 'supervisr/mod/contrib/bacula':
-            return 'bacula'
+            return self._db
         return None
 
     # pylint: disable=unused-argument, no-self-use
@@ -43,5 +51,5 @@ class BaculaRouter(object):
         database.
         """
         if app_label == 'supervisr/mod/contrib/bacula':
-            return db == 'bacula'
+            return db == self._db
         return None
