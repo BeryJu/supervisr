@@ -1,0 +1,42 @@
+{% extends "mod/contrib/bacula/base.html" %}
+
+{% load i18n %}
+{% load static %}
+{% load supervisr_title %}
+{% load human_size %}
+
+{% block title %}
+  {% supervisr_title title %}
+{% endblock %}
+
+{% block header %}
+<style>
+  table p, .table p {
+    margin-top: 0;
+  }
+</style>
+{% endblock %}
+
+{% block content_area %}
+<div class="container">
+  <h1><clr-icon shape="search" size="48"></clr-icon>{% blocktrans with id=job.JobId name=job.Name %}Logs for Job {{ id }} ({{ name }}){% endblocktrans %}</h1>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <table class="table table-compact">
+      <thead>
+        <tr>
+          <th>{% trans 'Time' %}</th>
+          <th>{% trans 'Event' %}</th>
+        </tr>
+      </thead>
+      {% for log in logs %}
+        <tr>
+          <td><p>{{ log.Time }}</p></td>
+          <td class="left">{{ log.LogText|linebreaks }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -65,6 +65,7 @@ urlpatterns = [
     url(r'^user/events/$', user.events, name='user-events'),
     # Admin views
     url(r'^admin/$', admin.index, name='admin-index'),
+    url(r'^admin/users/$', admin.users, name='admin-users'),
     url(r'^admin/settings/$', admin.settings, name='admin-settings'),
     url(r'^admin/mod/default/(?P<mod>[a-zA-Z0-9/]+)/$',
         admin.mod_default, name='admin-mod_default'),
