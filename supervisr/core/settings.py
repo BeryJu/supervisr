@@ -144,6 +144,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
+    'supervisr.core.middleware.ImpersonateMiddleware.impersonate',
     'supervisr.core.middleware.MaintenanceMode.maintenance_mode',
     'supervisr.core.middleware.PermanentMessage.permanent_message',
 ]
