@@ -1,0 +1,41 @@
+{% extends "mod/contrib/bacula/base.html" %}
+
+{% load i18n %}
+{% load static %}
+{% load supervisr_title %}
+{% load human_size %}
+
+{% block title %}
+  {% supervisr_title title %}
+{% endblock %}
+
+{% block header %}
+<style>
+  table p, .table p {
+    margin-top: 0;
+  }
+</style>
+{% endblock %}
+
+{% block content_area %}
+<div class="container">
+  <h1><clr-icon shape="directory" size="48"></clr-icon>{% blocktrans with id=job.JobId name=job.Name %}Files for Job {{ id }} ({{ name }}){% endblocktrans %}</h1>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <table class="table table-compact">
+      <thead>
+        <tr>
+          <th>{% trans 'Path' %}</th>
+        </tr>
+      </thead>
+      {% for file in pages %}
+        <tr>
+          <td class="left">{{ file.PathId.Path }}{{ file.FilenameId.Name }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+  {% include 'blocks/block_pagination.html' %}
+</div>
+{% endblock %}

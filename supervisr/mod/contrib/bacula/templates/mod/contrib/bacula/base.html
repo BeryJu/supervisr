@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}
+
+{% load i18n %}
+{% load is_active %}
+
+{% block sidenav %}
+<nav class="sidenav clr-nav-level-2">
+  <section class="sidenav-content">
+    <a href="{% url 'supervisr/mod/contrib/bacula:bacula-index' %}" class="nav-link {% is_active 'supervisr/mod/contrib/bacula:bacula-index' %}">
+      {% trans "Overview" %}
+    </a>
+    <a href="{% url 'supervisr/mod/contrib/bacula:bacula-jobs' %}" class="nav-link {% is_active 'bacula-job' %}">
+      {% trans "Jobs" %}
+    </a>
+  </section>
+</nav>
+{% endblock %}
