@@ -13,7 +13,7 @@
   <h1><clr-icon shape="backup" size="48"></clr-icon>{% trans "Bacula Overview" %}</h1>
 </div>
 <div class="row">
-  <div class="col-md-1 col-xs-6">
+  <div class="col-md-2 col-xs-6">
     <div class="card">
       <div class="card-header">{% trans 'Clients' %}</div>
       <div class="card-block">
@@ -23,7 +23,7 @@
       </div>
     </div>
   </div>
-  <div class="col-md-1 col-xs-6">
+  <div class="col-md-2 col-xs-6">
     <div class="card">
       <div class="card-header">{% trans 'Jobs' %}</div>
       <div class="card-block">
@@ -63,7 +63,7 @@
       </div>
     </div>
   </div>
-  <div class="col-md-1 col-xs-6">
+  <div class="col-md-2 col-xs-6">
     <div class="card">
       <div class="card-header">{% trans 'Pool(s)' %}</div>
       <div class="card-block">
@@ -73,7 +73,7 @@
       </div>
     </div>
   </div>
-  <div class="col-md-1 col-xs-6">
+  <div class="col-md-2 col-xs-6">
     <div class="card">
       <div class="card-header">{% trans 'Volumes' %}</div>
       <div class="card-block">
@@ -119,6 +119,19 @@
 {% block scripts %}
 <script src="{% static 'js/Chart.min.js' %}"></script>
 <script>
+  var bytes2human = function(bytes) {
+    var thresh = 1024;
+    if(Math.abs(bytes) < thresh) {
+        return bytes + ' B';
+    }
+    var units = ['kB','MB','GB','TB','PB','EB','ZB','YB']
+    var u = -1;
+    do {
+        bytes /= thresh;
+        ++u;
+    } while(Math.abs(bytes) >= thresh && u < units.length - 1);
+    return bytes.toFixed(1)+' '+units[u];
+  };
   $.ajax({
     url: "{% url 'supervisr/mod/contrib/bacula:bacula-ajax_graph_job_status' %}",
     type: "get",
@@ -142,6 +155,13 @@
       type: 'bar',
       data: data,
       options: {
+        tooltips: {
+          callbacks: {
+            label: function (item, data) {
+              return bytes2human(item.yLabel);
+            }
+          }
+        },
         legend: {
           display: false,
         },
@@ -149,17 +169,7 @@
           yAxes: [{
             ticks: {
               callback: function(label, index, labels) {
-                var thresh = 1024;
-                if(Math.abs(label) < thresh) {
-                    return label + ' B';
-                }
-                var units = ['kB','MB','GB','TB','PB','EB','ZB','YB']
-                var u = -1;
-                do {
-                    label /= thresh;
-                    ++u;
-                } while(Math.abs(label) >= thresh && u < units.length - 1);
-                return label.toFixed(1)+' '+units[u];
+                return bytes2human(label);
               }
             },
           }]
