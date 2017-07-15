@@ -2,6 +2,8 @@
 Supervisr Mail Account Views
 """
 
+import logging
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -15,6 +17,8 @@ from supervisr.mail.forms.account import (MailAccountForm,
                                           MailAccountFormAlias,
                                           MailAccountFormCredentials)
 from supervisr.mail.models import MailAccount, MailAlias, MailDomain
+
+LOGGER = logging.getLogger(__name__)
 
 
 @login_required
@@ -73,13 +77,14 @@ class AccountNewView(BaseWizardView):
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
         m_acc = MailAccount.objects.create(
+            name="Mail Account %s" % form_dict['0'].cleaned_data.get('address'),
             address=form_dict['0'].cleaned_data.get('address'),
             domain=form_dict['0'].cleaned_data.get('domain'),
             can_send=form_dict['0'].cleaned_data.get('can_send'),
             can_receive=form_dict['0'].cleaned_data.get('can_receive'),
             is_catchall=form_dict['0'].cleaned_data.get('is_catchall'),
             )
-        m_acc.set_password(form_dict['1'].cleaned_data.get('password'))
+        m_acc.set_password(self.request.user, form_dict['1'].cleaned_data.get('password'))
         UserProductRelationship.objects.create(
             product=m_acc,
             user=self.request.user
@@ -91,7 +96,48 @@ class AccountNewView(BaseWizardView):
                     destination=alias_dest
                     )
         messages.success(self.request, _('Mail Account successfully created'))
-        return redirect(reverse('supervisr/mail:mail-index'))
+        return redirect(reverse('supervisr/mail:mail-account-index'))
+
+@login_required
+def account_set_password(req, domain, account):
+    """
+    Set password for account
+    """
+    domains = MailDomain.objects.filter(domain__domain=domain)
+    if not domains.exists():
+        raise Http404
+    r_domain = domains.first()
+
+    accounts = MailAccount.objects.filter(domain=r_domain, address=account)
+    if not accounts.exists():
+        raise Http404
+    r_account = accounts.first()
+
+    if req.method == 'POST':
+
+        form = MailAccountFormCredentials(req.POST)
+        form.fields['password'].required = True
+        form.fields['password_rep'].required = True
+
+        if form.is_valid():
+            r_account.set_password(req.user, form.cleaned_data.get('password'), request=req)
+            r_account.save()
+
+            messages.success(req, _('Successfully set password for %(account)s' \
+                             % {'account': r_account.email}))
+            LOGGER.info("Updated password for %s", r_account.email)
+            return redirect(reverse('supervisr/mail:mail-account-index'))
+
+    else:
+
+        form = MailAccountFormCredentials()
+        form.fields['password'].required = True
+        form.fields['password_rep'].required = True
+
+    return render(req, 'core/generic_form_modal.html', {
+        'form': form,
+        'title': _('Change password for %(account)s' % {'account': r_account.email})
+        })
 
 @login_required
 # pylint: disable=unused-argument

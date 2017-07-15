@@ -19,6 +19,14 @@
   <a data-ctx-name="trash" class="btn">
     <clr-icon shape="trash"></clr-icon>
   </a>
+  <div class="btn-group-overflow dropdown">
+    <button class="btn dropdown-toggle" clrDropdown>
+      <clr-icon shape="ellipsis-horizontal"></clr-icon>
+    </button>
+    <div class="dropdown-menu">
+      <a data-ctx-name="setpassword" class="btn">{% trans 'Set Password' %}</a>
+    </div>
+  </div>
 </div>
 <table class="table">
   <thead>
@@ -32,7 +40,7 @@
   </thead>
   <tbody>
     {% for account in acc_accounts %}
-    <tr data-selectable data-ctx-edit="{% url 'supervisr/mail:mail-account-edit' account=account.address domain=account.domain.domain.domain %}" data-ctx-trash="{% url 'supervisr/mail:mail-account-delete' account=account.address domain=account.domain.domain.domain %}">
+    <tr data-selectable data-ctx-edit="{% url 'supervisr/mail:mail-account-edit' account=account.address domain=account.domain.domain.domain %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr/mail:mail-account-delete' account=account.address domain=account.domain.domain.domain %}?back={{ request.get_full_path }}" data-ctx-setpassword="{% url 'supervisr/mail:mail-account-set-password' account=account.address domain=account.domain.domain.domain %}?back={{ request.get_full_path }}">
       <td>{{ account.address }}@{{ account.domain.domain.domain }}</td>
       <td>{{ account.domain.domain.domain }}</td>
       <td>{{ account.users.all|join:"," }}</td>
@@ -62,6 +70,6 @@
 
 {% block scripts %}
 <script>
-clrTableSelect('#panelAccounts');
+clrTableSelect('.container');
 </script>
 {% endblock %}

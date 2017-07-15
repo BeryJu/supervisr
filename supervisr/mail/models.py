@@ -8,7 +8,7 @@ from django.dispatch import receiver
 from django.utils.translation import ugettext as _
 from passlib.hash import sha512_crypt
 
-from supervisr.core.models import (CreatedUpdatedModel, Domain, Product,
+from supervisr.core.models import (CreatedUpdatedModel, Domain, Event, Product,
                                    UserProductRelationship)
 from supervisr.core.signals import (SIG_DOMAIN_CREATED,
                                     SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
@@ -36,7 +36,7 @@ class MailDomain(Product):
         super(MailDomain, self).save(*args, **kwargs)
 
     def __str__(self):
-        return str(self.domain)
+        return "Mail Domain %s" % self.domain
 
     @property
     def has_catchall(self):
@@ -70,12 +70,16 @@ class MailAccount(Product):
         """
         return self.email_raw
 
-    def set_password(self, new_password, salt=None):
+    def set_password(self, invoker, new_password, salt=None, request=None):
         """
         Sets a new password with a new salt
         """
         self.password = sha512_crypt.hash(new_password, salt=salt)
         LOGGER.info("Updated Password MailAccount %s", self.email)
+        Event.create(
+            user=invoker,
+            message=_("Changed Password for Mail Account %(account)s" % {'account':str(self)}),
+            request=request)
         self.save()
 
     def save(self, *args, **kwargs):
@@ -119,8 +123,8 @@ def mail_handle_domain_created(sender, signal, domain, **kwargs):
     Create a MailDomain when a Domain is created
     """
     MailDomain.objects.create(
-        name=domain.name,
-        description='MailDomain %s' % domain.domain,
+        name="Mail %s" % domain.name,
+        description='Mail %s' % domain.domain,
         domain=domain)
 
 @receiver(SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
