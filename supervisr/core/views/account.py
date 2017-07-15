@@ -295,7 +295,7 @@ def reset_password_confirm(req, uuid):
                         user=pass_conf.user,
                         was_reset=True,
                         req=req)
-                    LOGGER.debug("Successfully updated password for %s", req.user.email)
+                    LOGGER.debug("Successfully updated password for %s", pass_conf.user.email)
                     messages.success(req, _("Account successfully reset!"))
                     # invalidate confirmation
                     pass_conf.confirmed = True
