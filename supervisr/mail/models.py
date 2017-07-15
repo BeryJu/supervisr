@@ -89,7 +89,7 @@ class MailAccount(Product):
         super(MailAccount, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "%s@%s" % (self.address, self.domain)
+        return "%s@%s" % (self.address, self.domain.domain.domain)
 
     def search_title(self):
         """
@@ -101,7 +101,7 @@ class MailAccount(Product):
 
         sv_search_fields = ['address', 'email_raw']
 
-class MailForwarder(CreatedUpdatedModel):
+class MailAlias(CreatedUpdatedModel):
     """
     Record to save destinations to forward mail to
     """
