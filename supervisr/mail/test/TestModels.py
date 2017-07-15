@@ -79,7 +79,8 @@ class TestModels(TestCase):
             domain=mx_domain,
             price=0)
         self.assertEqual(mx_account.domain, mx_domain)
-        mx_account.set_password('test', salt='testtest')
+        usr = User.objects.get(pk=get_system_user())
+        mx_account.set_password(usr, 'test', salt='testtest')
         self.assertEqual(mx_account.password, ('$6$rounds=656000$testtest$CaN82QPQ6BrS4VJ7R8Nuxoow'
                                                'ctnCSXRhXnFE4je8MGWN7bIvPsU0yVZgG0ZrPAw44DzIi/NhDng'
                                                'vVkJ7w6B3M0'))
