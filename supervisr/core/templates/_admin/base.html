@@ -12,7 +12,7 @@
       <input id="admin_general" type="checkbox">
       <label for="admin_general">{% trans "General Settings" %}</label>
       <ul class="nav-list">
-        <li><a href="{% url 'admin-index' %}" class="nav-link {% is_active 'admin-index' %}">{% trans "Overview" %}</a></li>
+        <li><a href="{% url 'admin-index' %}" class="nav-link {% is_active 'admin-index' %}">{% trans "Dashboard" %}</a></li>
         <li><a href="{% url 'admin-users' %}" class="nav-link {% is_active 'admin-users' %}">{% trans "Users" %}</a></li>
         <li><a href="{% url 'admin-settings' %}" class="nav-link {% is_active 'admin-settings' %}">{% trans "Settings" %}</a></li>
       </ul>
