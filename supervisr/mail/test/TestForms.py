@@ -6,7 +6,7 @@ import os
 
 from django.test import TestCase
 
-from supervisr.mail.forms.mail_account import MailAccountFormCredentials
+from supervisr.mail.forms.account import MailAccountFormCredentials
 
 
 class TestForms(TestCase):

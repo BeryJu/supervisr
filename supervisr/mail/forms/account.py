@@ -57,24 +57,24 @@ class MailAccountFormCredentials(forms.Form):
         """
         return check_password(self, check_filter=False)
 
-class MailAccountFormForwarder(forms.Form):
+class MailAccountFormAlias(forms.Form):
     """
     Step 3 for Mail Account Creation
     """
 
-    title = 'Forwarder Destination'
+    title = 'Optional Forwarder'
     help_text = 'This can be used to forward every email to this address. Optional.'
-    forwarder_dest = MultiEmailField(required=False, label=_('Forwarder destination (optional)'))
+    alias_dest = MultiEmailField(required=False, label=_('Forwarder destination (optional)'))
 
     def __init__(self, *args, **kwargs):
-        super(MailAccountFormForwarder, self).__init__(*args, **kwargs)
-        self.fields['forwarder_dest'].widget.attrs['placeholder'] = _("One destination per line")
+        super(MailAccountFormAlias, self).__init__(*args, **kwargs)
+        self.fields['alias_dest'].widget.attrs['placeholder'] = _("One destination per line")
 
-    def clean_forwarder_dest(self):
+    def clean_alias_dest(self):
         """
         Check that no duplicated destination addresses were given
         """
-        fwd_list = self.cleaned_data.get('forwarder_dest')
+        fwd_list = self.cleaned_data.get('alias_dest')
         if len(fwd_list) != len(set(fwd_list)):
             raise forms.ValidationError('List contains duplicates.')
         return fwd_list

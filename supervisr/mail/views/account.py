@@ -11,10 +11,10 @@ from django.utils.translation import ugettext as _
 
 from supervisr.core.models import UserProductRelationship
 from supervisr.core.views.wizard import BaseWizardView
-from supervisr.mail.forms.mail_account import (MailAccountForm,
-                                               MailAccountFormCredentials,
-                                               MailAccountFormForwarder)
-from supervisr.mail.models import MailAccount, MailDomain, MailForwarder
+from supervisr.mail.forms.account import (MailAccountForm,
+                                          MailAccountFormAlias,
+                                          MailAccountFormCredentials)
+from supervisr.mail.models import MailAccount, MailAlias, MailDomain
 
 
 @login_required
@@ -56,7 +56,7 @@ class AccountNewView(BaseWizardView):
     """
 
     title = _('New Mail Account')
-    form_list = [MailAccountForm, MailAccountFormCredentials, MailAccountFormForwarder]
+    form_list = [MailAccountForm, MailAccountFormCredentials, MailAccountFormAlias]
     condition_dict = {
         '1': check_cred_form
     }
@@ -84,11 +84,11 @@ class AccountNewView(BaseWizardView):
             product=m_acc,
             user=self.request.user
             )
-        if form_dict['2'].cleaned_data.get('forwarder_dest') != []:
-            for fwd_dest in form_dict['2'].cleaned_data.get('forwarder_dest'):
-                MailForwarder.objects.create(
+        if form_dict['2'].cleaned_data.get('alias_dest') != []:
+            for alias_dest in form_dict['2'].cleaned_data.get('alias_dest'):
+                MailAlias.objects.create(
                     account=m_acc,
-                    destination=fwd_dest
+                    destination=alias_dest
                     )
         messages.success(self.request, _('Mail Account successfully created'))
         return redirect(reverse('supervisr/mail:mail-index'))

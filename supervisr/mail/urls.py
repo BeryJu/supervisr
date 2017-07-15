@@ -17,7 +17,8 @@ urlpatterns = [
     url(r'^(?P<domain>[a-z0-9\-\.]+)/(?P<account>[a-zA-Z0-9\-\.]+)/delete/$',
         account.account_delete, name='mail-account-delete'),
     url(r'^aliases/$', alias.index, name='mail-alias-index'),
+    url(r'^aliases/new/$', alias.AliasNewView.as_view(), name='mail-alias-new'),
     url(r'^(?P<domain>[a-z0-9\-\.]+)/$', domain.view, name='mail-domain-view'),
     url(r'^(?P<domain>[a-z0-9\-\.]+)/(?P<dest>%s)/delete/$' % EMAIL_ADDRESS_REGEX,
-        alias.forwarder_delete, name='mail-alias-delete'),
+        alias.alias_delete, name='mail-alias-delete'),
 ]
