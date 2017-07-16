@@ -14,17 +14,17 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RemoveField(
-            model_name='baseproviderinstance',
+            model_name='BaseProviderInstance',
             name='user',
         ),
         migrations.AddField(
-            model_name='baseproviderinstance',
+            model_name='BaseProviderInstance',
             name='credentials',
             field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='core.BaseCredential'),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='baseproviderinstance',
+            model_name='BaseProviderInstance',
             name='provider',
             field=models.TextField(default=None),
             preserve_default=False,

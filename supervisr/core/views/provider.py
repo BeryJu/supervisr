@@ -12,8 +12,9 @@ from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.forms.provider import CredentialForm, ProviderForm
-from supervisr.core.models import BaseCredential, UserProductRelationship
-from supervisr.core.providers.base import BaseProvider, BaseProviderInstance
+from supervisr.core.models import (BaseCredential, ProviderInstance,
+                                   UserProductRelationship)
+from supervisr.core.providers.base import BaseProvider
 from supervisr.core.views.wizard import BaseWizardView
 
 
@@ -22,7 +23,7 @@ def instance_index(req):
     """
     Show a n overview over all provider instances
     """
-    user_providers = BaseProviderInstance.objects.filter(
+    user_providers = ProviderInstance.objects.filter(
         userproductrelationship__user__in=[req.user])
     return render(req, 'provider/instance-index.html', {'providers': user_providers})
 
@@ -57,7 +58,7 @@ class ProviderNewView(BaseWizardView):
             raise Http404
         r_creds = creds.first().cast()
 
-        prov_inst = BaseProviderInstance.objects.create(
+        prov_inst = ProviderInstance.objects.create(
             name=form_dict['0'].cleaned_data.get('name'),
             credentials=r_creds,
             provider_path=form_dict['0'].cleaned_data.get('provider_path'))
@@ -73,8 +74,8 @@ def instance_edit(req, uuid):
     """
     Edit Instance
     """
-    inst = BaseProviderInstance.objects.filter(uuid=uuid,
-                                               userproductrelationship__user__in=[req.user])
+    inst = ProviderInstance.objects.filter(uuid=uuid,
+                                           serproductrelationship__user__in=[req.user])
     if not inst.exists():
         raise Http404
     r_inst = inst.first()
@@ -115,8 +116,8 @@ def instance_delete(req, uuid):
     """
     Delete Instance
     """
-    inst = BaseProviderInstance.objects.filter(uuid=uuid,
-                                               userproductrelationship__user__in=[req.user])
+    inst = ProviderInstance.objects.filter(uuid=uuid,
+                                           userproductrelationship__user__in=[req.user])
     if not inst.exists():
         raise Http404
     r_inst = inst.first()

@@ -2,6 +2,7 @@
 Supervisr Dummy Provider
 """
 
+from supervisr.core.decorators import ifapp
 from supervisr.core.providers.base import BaseProvider
 from supervisr.core.providers.domain import DomainProvider
 
@@ -46,3 +47,13 @@ class DummyBaseProvider(BaseProvider):
         Check connection status
         """
         return True
+
+@ifapp('supervisr/mail')
+def register_mail_internal():
+    """
+    if Mail app is installed, add Internal Mail Provider to dummy class
+    """
+    from supervisr.mail.providers.internal import InternalMailProvider
+    setattr(DummyBaseProvider, 'mail_provider', InternalMailProvider)
+
+register_mail_internal()

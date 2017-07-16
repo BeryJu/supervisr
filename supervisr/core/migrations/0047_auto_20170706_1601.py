@@ -16,12 +16,12 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RenameField(
-            model_name='baseproviderinstance',
+            model_name='BaseProviderInstance',
             old_name='provider',
             new_name='provider_path',
         ),
         migrations.AddField(
-            model_name='baseproviderinstance',
+            model_name='BaseProviderInstance',
             name='owner',
             field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
             preserve_default=False,

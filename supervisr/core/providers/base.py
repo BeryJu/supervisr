@@ -1,22 +1,6 @@
 """
 Supervisr Core Generic Provider
 """
-from enum import Enum
-from importlib import import_module
-
-from django.db import models
-
-from supervisr.core.models import Product
-
-
-class ProviderInterfaceAction(Enum):
-    """
-    Different Actions for Providers
-    """
-    create = 0
-    edit = 2
-    delete = 4
-    setup = 8
 
 # pylint: disable=too-few-public-methods
 class BaseProvider(object):
@@ -87,24 +71,3 @@ class BaseProvider(object):
         if path:
             return ['%s.%s' % (p.__module__, p.__name__) for p in valid]
         return sorted(valid, key=lambda x: x.ui_name)
-
-class BaseProviderInstance(Product):
-    """
-    Basic Provider Instance
-    """
-
-    provider_path = models.TextField()
-    credentials = models.ForeignKey('BaseCredential')
-
-    @property
-    def provider(self):
-        """
-        Return instance of provider saved
-        """
-        path_parts = self.provider_path.split('.')
-        module = import_module('.'.join(path_parts[:-1]))
-        _class = getattr(module, path_parts[-1])
-        return _class(self.credentials)
-
-    def __str__(self):
-        return self.name

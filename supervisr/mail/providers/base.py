@@ -2,15 +2,15 @@
 Supervisr Mail Provider
 """
 
-from .BaseMailProvider import BaseMailProvider
+from supervisr.core.providers.base import BaseProvider
 
 
-class InternalMailProvider(BaseMailProvider):
+class BaseMailProvider(BaseProvider):
     """
-    Provider for Internally managed mail.
+    Base Class for all Mail Providers
     """
 
-    name = 'InternalMailProvider'
+    name = 'BaseMailProvider'
 
     def create_account(self, address=None, **kwargs):
         raise NotImplementedError()

@@ -70,8 +70,9 @@ class SupervisrAppConfig(AppConfig):
             try:
                 LOGGER.info("Loaded %s.%s", self.name, module)
                 importlib.import_module("%s.%s" % (self.name, module))
-            except ImportError:
-                pass # ignore non-existant modules
+            except ImportError as exc:
+                if 'No' not in str(exc):
+                    raise # ignore non-existant modules
 
     def check_requirements(self):
         """
@@ -133,7 +134,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
         'events',
         'mailer',
         'models',
-        'providers.base'
+        'providers.base',
         'providers.domain',
         'providers.dummy',
     ]

@@ -11,8 +11,9 @@ from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.forms.domain import DomainForm
-from supervisr.core.models import Domain, UserProductRelationship
-from supervisr.core.providers.base import BaseProvider, BaseProviderInstance
+from supervisr.core.models import (Domain, ProviderInstance,
+                                   UserProductRelationship)
+from supervisr.core.providers.base import BaseProvider
 from supervisr.core.views.wizard import BaseWizardView
 
 
@@ -41,7 +42,7 @@ class DomainNewView(BaseWizardView):
             step = self.steps.current
         if step == '0':
             providers = BaseProvider.get_providers(filter_sub=['domain_provider'], path=True)
-            provider_instance = BaseProviderInstance.objects.filter(
+            provider_instance = ProviderInstance.objects.filter(
                 provider_path__in=providers,
                 userproductrelationship__user__in=[self.request.user])
             form.fields['provider'].choices = \
@@ -51,7 +52,7 @@ class DomainNewView(BaseWizardView):
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
-        provider = BaseProviderInstance.objects.filter(
+        provider = ProviderInstance.objects.filter(
             uuid=form_dict['0'].cleaned_data.get('provider'),
             userproductrelationship__user__in=[self.request.user])
         if not provider.exists():

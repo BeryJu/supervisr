@@ -18,6 +18,8 @@ urlpatterns = [
     url(r'^aliases/$', alias.index, name='mail-alias-index'),
     url(r'^aliases/new/$', alias.AliasNewView.as_view(), name='mail-alias-new'),
 
+    url(r'^domains/new/$', domain.DomainNewView.as_view(), name='mail-domain-new'),
+
     url(r'^(?P<domain>%s)/(?P<account>%s)/edit/$' % (DOMAIN_REGEX, ADDRESS_REGEX),
         account.account_edit, name='mail-account-edit'),
     url(r'^(?P<domain>%s)/(?P<account>%s)/delete/$' % (DOMAIN_REGEX, ADDRESS_REGEX),

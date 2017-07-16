@@ -6,20 +6,9 @@ from django.conf import settings
 from django.db import models
 from namecheap import Api
 
-from supervisr.core.providers.base import (BaseProvider, BaseProviderInstance,
-                                           BaseProviderUIInterface)
-from supervisr.mod.namecheap.forms.setup import SetupForm
+from supervisr.core.models import ProviderInstance
+from supervisr.core.providers.base import BaseProvider
 
-
-class NamecheapProviderSetupUI(BaseProviderUIInterface):
-    """
-    Frontend for Namecheap Provider (API Setup)
-    """
-
-    forms = [SetupForm]
-
-    def post_submit(self, form_data):
-        print(form_data)
 
 # pylint: disable=too-few-public-methods
 class NamecheapProvider(BaseProvider):
@@ -28,8 +17,6 @@ class NamecheapProvider(BaseProvider):
     """
 
     api = None
-    setup_ui = NamecheapProviderSetupUI
-
 
     def __init__(self, instance):
         super(NamecheapProvider, self).__init__(instance)
@@ -40,7 +27,7 @@ class NamecheapProvider(BaseProvider):
             '',
             sandbox=self.instance.sandbox)
 
-class NamecheapProviderInstance(BaseProviderInstance):
+class NamecheapProviderInstance(ProviderInstance):
     """
     Data to be saved with a Namecheap Provider instance
     """

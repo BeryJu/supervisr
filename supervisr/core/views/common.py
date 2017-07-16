@@ -5,8 +5,8 @@ Supervisr Core Common Views
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from supervisr.core.models import Event, UserProductRelationship
-from supervisr.core.providers.base import BaseProviderInstance
+from supervisr.core.models import (Event, ProviderInstance,
+                                   UserProductRelationship)
 from supervisr.core.views.api.utils import api_response
 
 
@@ -23,7 +23,7 @@ def index(req):
     events = Event.objects.filter(
         user=req.user, hidden=False) \
         .order_by('-create_date')[:15]
-    user_providers = BaseProviderInstance.objects.filter(
+    user_providers = ProviderInstance.objects.filter(
         userproductrelationship__user__in=[req.user])
     # domains = Domain.objects.filter(users__in=[req.user])
     return render(req, 'common/index.html', {

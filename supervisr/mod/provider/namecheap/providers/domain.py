@@ -2,29 +2,10 @@
 Supervisr Namecheap Domain Provider
 """
 
-from supervisr.core.providers.base import (BaseProviderUIInterface,
-                                           ProviderInterfaceAction)
 from supervisr.core.providers.domain import DomainProvider
-from supervisr.mod.namecheap.forms.domain import DoaminForm
 
-from .core import NamecheapProvider, NamecheapProviderSetupUI
+from .core import NamecheapProvider
 
-
-class NamecheapDomainProviderUIInterface(BaseProviderUIInterface):
-    """
-    Frontend for Namecheap Provider (Domain Setup)
-    """
-
-    def __init__(self, provider, action, request):
-        super(NamecheapDomainProviderUIInterface, self).__init__(provider, action, request)
-
-        if action == ProviderInterfaceAction.create:
-            domain_form = DoaminForm()
-            setattr(domain_form, 'provider', self.provider)
-            self.forms = [domain_form]
-
-    def post_submit(self, form_data):
-        print(form_data)
 
 class NamecheapDomainProvider(DomainProvider, NamecheapProvider):
     """
@@ -32,8 +13,6 @@ class NamecheapDomainProvider(DomainProvider, NamecheapProvider):
     """
 
     ui_name = 'Namecheap Domain'
-    interface_ui = NamecheapDomainProviderUIInterface
-    setup_ui = NamecheapProviderSetupUI
 
     def register(self, domain):
         pass
