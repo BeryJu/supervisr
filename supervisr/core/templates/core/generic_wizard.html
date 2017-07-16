@@ -71,7 +71,11 @@
                     </div>
                     {% endif %}
                     <div class="clr-wizard-btn-wrapper">
+                      {% if wizard.steps.current == wizard.steps.last %}
+                      <input type="submit" name="submit" class="btn clr-wizard-btn btn-success clr-wizard-btn--success" value="{% trans "Finish" %}"></input>
+                      {% else %}
                       <input type="submit" name="submit" class="btn clr-wizard-btn btn-primary clr-wizard-btn--primary" value="{% trans "Next" %}"></input>
+                      {% endif %}
                     </div>
                   </div>
                 </div>
@@ -83,4 +87,13 @@
     </div>
     <div aria-hidden="true" class="modal-backdrop"></div>
   </div>
-  {% endblock %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  $('[name="submit"].btn').on('click', function (e) {
+    $('.active.clr-wizard-page').append("<div class='spinner'></span>");
+    $('.active.clr-wizard-page').find('.form').hide();
+  })
+</script>
+{% endblock %}
