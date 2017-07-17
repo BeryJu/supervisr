@@ -25,7 +25,8 @@ class TestDomainViews(TestCase):
         self.ddomain = Domain.objects.create(domain=_domain, is_sub=True)
         self.user = User.objects.get(pk=get_system_user())
         UserProductRelationship.objects.create(user=self.user, product=self.ddomain)
-        self.domain = MailDomain.objects.get(domain__domain=_domain)
+        self.domain = MailDomain.objects.create(domain=self.ddomain)
+        UserProductRelationship.objects.create(user=self.user, product=self.domain)
 
     def test_domain_view(self):
         """

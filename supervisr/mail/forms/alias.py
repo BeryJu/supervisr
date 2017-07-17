@@ -10,7 +10,7 @@ from supervisr.mail.fields import MultiEmailField
 
 class MailAliasForm(forms.Form):
     """
-    Step 3 for Mail Account Creation
+    Create a Mail Alias
     """
 
     title = 'General Information'

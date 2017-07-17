@@ -10,6 +10,7 @@ import random
 import re
 import time
 import uuid
+from importlib import import_module
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -329,7 +330,7 @@ class Domain(Product):
     This is also used for sub domains, hence the is_sub.
     """
     domain = models.CharField(max_length=253, unique=True)
-    provider = models.ForeignKey('BaseProviderInstance', blank=True, null=True)
+    provider = models.ForeignKey('ProviderInstance', blank=True, null=True)
     is_sub = models.BooleanField(default=False)
 
     def __str__(self):
@@ -490,17 +491,26 @@ class UserPasswordCredential(BaseCredential):
         """
         return _('Username and Password')
 
-class ProviderInstance(CreatedUpdatedModel, CastableModel):
+class ProviderInstance(Product):
     """
-    Save an instance of a Provider
+    Basic Provider Instance
     """
-    provider_instance_id = models.AutoField(primary_key=True)
-    provider_app = models.CharField(max_length=255)
-    provider_module = models.CharField(max_length=255)
-    provider_class = models.CharField(max_length=255)
-    provider_name = models.TextField()
-    is_managed = models.BooleanField(max_length=255)
+
+    provider_path = models.TextField()
     credentials = models.ForeignKey('BaseCredential')
+
+    @property
+    def provider(self):
+        """
+        Return instance of provider saved
+        """
+        path_parts = self.provider_path.split('.')
+        module = import_module('.'.join(path_parts[:-1]))
+        _class = getattr(module, path_parts[-1])
+        return _class(self.credentials)
+
+    def __str__(self):
+        return self.name
 
 # class Service(CreatedUpdatedModel):
 #     """

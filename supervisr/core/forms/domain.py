@@ -8,7 +8,7 @@ import logging
 from django import forms
 from django.core.exceptions import ValidationError
 
-from supervisr.core.providers.base import BaseProviderInstance
+from supervisr.core.models import ProviderInstance
 
 LOGGER = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class DomainForm(forms.Form):
         """
         # Import provider based on form
         # also check in form if class exists and is subclass of BaseProvider
-        provider = BaseProviderInstance.objects.filter(
+        provider = ProviderInstance.objects.filter(
             uuid=self.cleaned_data.get('provider'),
             userproductrelationship__user__in=[self.request.user])
         if not provider.exists():
