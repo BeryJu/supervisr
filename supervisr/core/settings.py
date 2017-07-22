@@ -78,23 +78,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'captcha',
+    'oauth2_provider',
+    'corsheaders',
     'supervisr.core.apps.SupervisrCoreConfig',
     'supervisr.puppet.apps.SupervisrPuppetConfig',
-    'supervisr.dns.apps.SupervisrDNSConfig',
-    'supervisr.server.apps.SupervisrServerConfig',
-    'supervisr.web.apps.SupervisrWebConfig',
-    'supervisr.mail.apps.SupervisrMailConfig',
-    'supervisr.static.apps.SupervisrStaticConfig',
-    'supervisr.mod.auth.ldap.apps.SupervisrModAuthLDAPConfig',
-    'supervisr.mod.auth.saml.idp.apps.SupervisrModAuthSAMLProvider',
-    'supervisr.mod.auth.oauth.provider.apps.SupervisrModAuthOAuthProviderConfig',
-    'supervisr.mod.auth.oauth.client.apps.SupervisrModAuthOAuthClientConfig',
-    'supervisr.mod.tfa.apps.SupervisrModTFAConfig',
-    'supervisr.mod.stats.graphite.apps.SupervisrModStatGraphiteConfig',
-    'supervisr.mod.provider.onlinenet.apps.SupervisrModProviderOnlineNetConfig',
+    # All apps should be loaded here for migrations
     'formtools',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'supervisr.mod.apploader.apps.SupervisrModAppLoaderConfig',
 ]
 
 CHANGELOG = '' # This gets overwritten with ../../CHANGELOG.md on launch
@@ -121,7 +113,13 @@ INTERNAL_IPS = ['127.0.0.1']
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
+    'oauth2_provider.backends.OAuth2Backend',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
+REQUEST_APPROVAL_PROMPT = 'auto'
+
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'
 
 CACHES = {
     'default': {
@@ -146,6 +144,8 @@ MIDDLEWARE = [
     'supervisr.core.middleware.ImpersonateMiddleware.impersonate',
     'supervisr.core.middleware.MaintenanceMode.maintenance_mode',
     'supervisr.core.middleware.PermanentMessage.permanent_message',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 # Message Tag fix for bootstrap CSS Classes

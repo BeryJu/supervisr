@@ -6,3 +6,5 @@ django-recaptcha
 docutils
 pyyaml
 passlib
+django-oauth-toolkit
+django-cors-middleware

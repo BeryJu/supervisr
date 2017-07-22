@@ -122,7 +122,6 @@ class SupervisrAppConfig(AppConfig):
         except ImportError:
             pass # ignore non-existant modules
 
-
 class SupervisrCoreConfig(SupervisrAppConfig):
     """
     Supervisr core app config
