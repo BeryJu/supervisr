@@ -26,7 +26,8 @@ def zone_to_rec(data):
                 _rec = Record(
                     name='' if str(name) == '@' else str(name),
                     type=dns.rdatatype.to_text(dset.rdtype),
-                    content=str(dset_data))
+                    content=str(dset_data),
+                    ttl=dset.ttl)
                 if getattr(dset_data, 'preference', None):
                     _rec.prio = dset_data.preference
                 records.append(_rec)
