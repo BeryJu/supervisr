@@ -1,32 +1,31 @@
 """
-Supervisr DNS DNSZone Test
+Supervisr DNS DNSDomain Test
 """
 
 from django.test import TestCase
 
 from supervisr.core.models import Domain
+from supervisr.dns.models import DNSDomain
 
-from ..models import DNSZone
 
-
-class TestDNSZone(TestCase):
+class TestDNSDomain(TestCase):
     """
-    Supervisr DNS DNSZone Test
+    Supervisr DNS DNSDomain Test
     """
 
     def setUp(self):
         pass
 
-    def test_dnszone_get_set(self):
+    def test_dnsdomain_get_set(self):
         """
-        Test DNSZone's domain setter and getter
+        Test DNSDomain's domain setter and getter
         """
         domain = Domain.objects.create(
             name='beryjuorgtesting.xyz',
             slug='domain-beryjuorgtestingxyz',
             invite_only=True,
             price=0)
-        dns_domain = DNSZone.objects.create(
+        dns_domain = DNSDomain.objects.create(
             domain=domain,
             price=0)
         self.assertEqual(dns_domain.domain, domain)

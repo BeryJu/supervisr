@@ -1,0 +1,24 @@
+{% extends 'core/generic_wizard.html' %}
+
+{% load i18n %}
+
+{% block after_form %}
+<table class="table" style="table-layout:fixed;">
+  <thead>
+    <tr>
+      <th>{% trans 'Name' %}</th>
+      <th>{% trans 'Type' %}</th>
+      <th>{% trans 'Content' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in form.records %}
+      <tr>
+        <td>{{ r.name }}</td>
+        <td>{{ r.type }}</td>
+        <td>{{ r.content }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
