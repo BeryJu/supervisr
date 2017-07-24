@@ -1,14 +1,14 @@
 """
-Supervisr DNS DNSDomain Forms
+Supervisr DNS Zone Forms
 """
 
 from django import forms
 from django.utils.translation import ugettext as _
 
 
-class DNSDomainForm(forms.Form):
+class ZoneForm(forms.Form):
     """
-    Create a new DNSdomain
+    Create a new Zone
     """
 
     title = 'General Information'

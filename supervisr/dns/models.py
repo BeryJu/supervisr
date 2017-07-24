@@ -3,110 +3,62 @@ Supervisr DNS Models
 """
 
 from django.db import models
+from django.contrib.auth.models import User
 
-from supervisr.core.models import Domain, Product, ProviderInstance
+from supervisr.core.models import CreatedUpdatedModel, Domain, Product, ProviderInstance
 
 
-class Comments(models.Model):
-    """
-    PowerDNS Comments
-    """
-    domain = models.ForeignKey('DNSDomain')
+class Comment(CreatedUpdatedModel):
+    zone_id = models.ForeignKey('Zone')
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=10)
-    modified_at = models.IntegerField()
-    account = models.CharField(max_length=40, blank=True, null=True)
-    comment = models.CharField(max_length=65535)
+    user = models.ForeignKey(User)
+    account = models.CharField(max_length=40)
+    comment = models.TextField()
 
-    class Meta:
-        db_table = 'comments'
-
-
-class Cryptokeys(models.Model):
-    """
-    PowerDNS Cryptokeys
-    """
-    domain = models.ForeignKey('DNSDomain', blank=True, null=True)
+class CryptoKey(models.Model):
+    zone_id = models.ForeignKey('Zone')
     flags = models.IntegerField()
-    active = models.NullBooleanField()
-    content = models.TextField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'cryptokeys'
-
+    active = models.BooleanField()
+    content = models.TextField()
 
 class DomainMetadata(models.Model):
-    """
-    PowerDNS DomainMetadata
-    """
-    domain = models.ForeignKey('DNSDomain', blank=True, null=True)
-    kind = models.CharField(max_length=32, blank=True, null=True)
-    content = models.TextField(blank=True, null=True)
+    zone_id = models.ForeignKey('Zone')
+    kind = models.CharField(max_length=32)
+    content = models.TextField()
 
-    class Meta:
-        db_table = 'domainmetadata'
-
-
-class DNSDomain(Product):
-    """
-    PowerDNS Domains
-    """
-    domain = models.OneToOneField(Domain)
-    provider = models.ForeignKey(ProviderInstance, default=None)
-    master = models.CharField(max_length=128, blank=True, null=True)
-    last_check = models.IntegerField(blank=True, null=True)
+class Zone(Domain):
+    master = models.CharField(max_length=128)
+    last_check = models.IntegerField()
     type = models.CharField(max_length=6)
-    notified_serial = models.IntegerField(blank=True, null=True)
-    account = models.CharField(max_length=40, blank=True, null=True)
-
-    class Meta:
-        db_table = 'DNSDomain'
-
-    def __str__(self):
-        return "DNS Domain %s" % self.domain
-
+    notified_serial = models.IntegerField()
+    account = models.CharField(max_length=40)
 
 class Record(Product):
-    """
-    PowerDNS Records
-    """
-    domain = models.ForeignKey('DNSDomain', blank=True, null=True, db_column='domain_id')
-    type = models.CharField(max_length=10, blank=True, null=True)
-    content = models.CharField(max_length=65535, blank=True, null=True)
-    ttl = models.IntegerField(blank=True, null=True)
-    prio = models.IntegerField(blank=True, null=True)
-    change_date = models.IntegerField(blank=True, null=True)
-    disabled = models.NullBooleanField()
-    ordername = models.CharField(max_length=255, blank=True, null=True)
-    auth = models.NullBooleanField()
-
-    class Meta:
-        db_table = 'records'
+    domain = models.ForeignKey(Zone)
+    type = models.CharField(max_length=10)
+    content = models.TextField()
+    ttl = models.IntegerField(default=3600)
+    prio = models.IntegerField(default=0)
+    enabled = models.BooleanField(default=True)
+    ordername = models.CharField(max_length=255)
+    auth = models.IntegerField()
 
     def __str__(self):
-        return "%s.%s/%s@%s" % (self.name, self.domain.name, self.type, self.content)
+        return "Record %s" % self.name
 
-class SuperMasters(models.Model):
-    """
-    PowerDNS SuperMasters
-    """
-    # pylint: disable=invalid-name
-    ip = models.GenericIPAddressField(primary_key=True)
+class SuperMaster(models.Model):
+    ip = models.CharField(max_length=64)
     nameserver = models.CharField(max_length=255)
     account = models.CharField(max_length=40)
 
     class Meta:
-        db_table = 'supermasters'
         unique_together = (('ip', 'nameserver'),)
 
-class TSIGKeys(models.Model):
-    """
-    PowerDNS TSIGKeys
-    """
-    name = models.CharField(max_length=255, blank=True, null=True)
-    algorithm = models.CharField(max_length=50, blank=True, null=True)
-    secret = models.CharField(max_length=255, blank=True, null=True)
+class TSIGKey(models.Model):
+    name = models.CharField(max_length=255)
+    algorithm = models.CharField(max_length=50)
+    secret = models.CharField(max_length=255)
 
     class Meta:
-        db_table = 'tsigkeys'
         unique_together = (('name', 'algorithm'),)
