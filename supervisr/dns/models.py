@@ -2,10 +2,11 @@
 Supervisr DNS Models
 """
 
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 
-from supervisr.core.models import CreatedUpdatedModel, Domain, Product, ProviderInstance
+from supervisr.core.models import (CreatedUpdatedModel, Domain, Product,
+                                   ProviderInstance)
 
 
 class Comment(CreatedUpdatedModel):
@@ -27,12 +28,15 @@ class DomainMetadata(models.Model):
     kind = models.CharField(max_length=32)
     content = models.TextField()
 
-class Zone(Domain):
+class Zone(Product):
+    domain = models.OneToOneField(Domain)
+    provider = models.ForeignKey(ProviderInstance, default=None)
     master = models.CharField(max_length=128)
     last_check = models.IntegerField()
     type = models.CharField(max_length=6)
     notified_serial = models.IntegerField()
     account = models.CharField(max_length=40)
+    enabled = models.BooleanField(default=True)
 
 class Record(Product):
     domain = models.ForeignKey(Zone)
