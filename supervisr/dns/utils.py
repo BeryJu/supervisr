@@ -23,11 +23,16 @@ def zone_to_rec(data):
     for name in names:
         for dset in zone[name].rdatasets:
             for dset_data in dset:
+                r_name = '' if str(name) == '@' else str(name)
+                # Remove trailing dot since powerdns trims this too
+                if '.' in r_name and r_name[-1] == '.':
+                    r_name = r_name[:-1]
                 _rec = Record(
-                    name='' if str(name) == '@' else str(name),
+                    name=r_name,
                     type=dns.rdatatype.to_text(dset.rdtype),
                     content=str(dset_data),
                     ttl=dset.ttl)
+                # TODO: Remove Priority from content if set
                 if getattr(dset_data, 'preference', None):
                     _rec.prio = dset_data.preference
                 records.append(_rec)
