@@ -9,6 +9,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin as admin_django
 
+from supervisr.core.regex import DOMAIN_REGEX, EMAIL_REGEX, UUID_REGEX
 from supervisr.core.utils import get_apps
 from supervisr.core.views import (account, admin, common, domain, product,
                                   provider, search, user)
@@ -20,8 +21,6 @@ handler404 = 'supervisr.core.views.common.uncaught_404'
 # pylint: disable=invalid-name
 handler500 = 'supervisr.core.views.common.uncaught_500'
 
-UUID_REGEX = r'[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
-
 urlpatterns = [
     # Account views
     url(r'^$', common.index, name='common-index'),
@@ -30,13 +29,13 @@ urlpatterns = [
     url(r'^accounts/login/reauth/$', account.reauth, name='account-reauth'),
     url(r'^accounts/signup/$', account.signup, name='account-signup'),
     url(r'^accounts/logout/$', account.logout, name='account-logout'),
-    url(r'^accounts/confirm/(?P<uuid>[a-z0-9\-]{36})/$', account.confirm, name='account-confirm'),
-    url(r'^accounts/confirm/resend/(?P<email>[a-zA-Z0-9@\.]*)/$',
+    url(r'^accounts/confirm/(?P<uuid>%s)/$' % UUID_REGEX, account.confirm, name='account-confirm'),
+    url(r'^accounts/confirm/resend/(?P<email>%s)/$' % EMAIL_REGEX,
         account.confirmation_resend, name='account-confirmation_resend'),
     url(r'^accounts/password/change/$', account.change_password, name='account-change_password'),
     url(r'^accounts/password/reset/$', account.reset_password_init,
         name='account-reset_password_init'),
-    url(r'^accounts/password/reset/(?P<uuid>[a-z0-9\-]{36})/$',
+    url(r'^accounts/password/reset/(?P<uuid>%s)/$' % UUID_REGEX,
         account.reset_password_confirm, name='account-reset_password_confirm'),
     # Product views
     url(r'^products/$', product.index, name='product-index'),
@@ -44,8 +43,8 @@ urlpatterns = [
     # Domain views
     url(r'^domains/$', domain.index, name='domain-index'),
     url(r'^domains/new/$', domain.DomainNewView.as_view(), name='domain-new'),
-    url(r'^domains/(?P<domain>[a-z0-9\-\.]+)/edit/$', domain.edit, name='domain-edit'),
-    url(r'^domains/(?P<domain>[a-z0-9\-\.]+)/delete/$', domain.delete, name='domain-delete'),
+    url(r'^domains/(?P<domain>%s)/edit/$' % DOMAIN_REGEX, domain.edit, name='domain-edit'),
+    url(r'^domains/(?P<domain>%s)/delete/$' % DOMAIN_REGEX, domain.delete, name='domain-delete'),
     # Provider
     url(r'^providers/instances/$', provider.instance_index, name='instance-index'),
     url(r'^providers/instances/new/$', provider.ProviderNewView.as_view(),

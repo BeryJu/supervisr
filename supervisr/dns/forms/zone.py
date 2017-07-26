@@ -16,3 +16,4 @@ class ZoneForm(forms.Form):
                                     label=_('Domain'))
     provider = forms.ModelChoiceField(queryset=None, required=True,
                                       label=_('Provider'))
+    enabled = forms.BooleanField(required=False, initial=True, label=_('Enabled'))

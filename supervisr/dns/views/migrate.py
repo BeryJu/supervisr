@@ -10,8 +10,8 @@ from supervisr.core.models import (Domain, ProviderInstance,
                                    UserProductRelationship)
 from supervisr.core.providers.base import BaseProvider
 from supervisr.core.views.wizard import BaseWizardView
-from supervisr.dns.forms.domain import ZoneForm
 from supervisr.dns.forms.migrate import ZoneImportForm, ZoneImportPreviewForm
+from supervisr.dns.forms.zone import ZoneForm
 from supervisr.dns.models import Zone
 from supervisr.dns.utils import zone_to_rec
 
@@ -62,7 +62,8 @@ class BindZoneImportWizard(BaseWizardView):
             records = zone_to_rec(form_dict['1'].cleaned_data.get('zone_data'))
             m_dom = Zone.objects.create(
                 domain=form_dict['0'].cleaned_data.get('domain'),
-                provider=form_dict['0'].cleaned_data.get('provider'))
+                provider=form_dict['0'].cleaned_data.get('provider'),
+                enabled=form_dict['0'].cleaned_data.get('enabled'))
             UserProductRelationship.objects.create(
                 product=m_dom,
                 user=self.request.user)
@@ -73,5 +74,5 @@ class BindZoneImportWizard(BaseWizardView):
                                              '%(count)d Records imported.' % {
                                                  'count': len(records)}))
         else:
-            messages.error(self.request, _('Not created nuthin'))
+            messages.error(self.request, _('Created nothing'))
         return redirect(reverse('supervisr/dns:dns-domains'))
