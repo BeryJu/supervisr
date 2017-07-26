@@ -3,7 +3,6 @@ Supervisr Puppet View Test
 """
 
 import shutil
-from glob import glob
 
 from django.test import TestCase
 
