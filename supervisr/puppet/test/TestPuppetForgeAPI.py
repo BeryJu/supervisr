@@ -2,7 +2,7 @@
 Supervisr Puppet View Test
 """
 
-import os
+import shutil
 from glob import glob
 
 from django.test import TestCase
@@ -66,9 +66,4 @@ class TestPuppetForgeAPI(TestCase):
         Clean up after importer
         """
         if self.importer:
-            files = glob(self.importer.output_base+"/*", recursive=True)
-            for file in files:
-                try:
-                    os.remove(file)
-                except PermissionError:
-                    pass
+            shutil.rmtree(self.importer.output_base+"/*", ignore_errors=True)
