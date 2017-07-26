@@ -2,6 +2,9 @@
 Supervisr Puppet View Test
 """
 
+import os
+from glob import glob
+
 from django.test import TestCase
 
 from supervisr.core.test.utils import test_request
@@ -13,6 +16,8 @@ class TestPuppetForgeAPI(TestCase):
     """
     Supervisr Puppet View Test
     """
+
+    importer = None
 
     def test_module_list(self):
         """
@@ -52,6 +57,18 @@ class TestPuppetForgeAPI(TestCase):
         Test release_list view
         """
         # Import a module so the template is not empty
-        importer = ForgeImporter()
-        importer.import_module('beryju-windows_oem')
+        self.importer = ForgeImporter()
+        self.importer.import_module('beryju-windows_oem')
         self.assertEqual(test_request(forge_api.release_list).status_code, 200)
+
+    def tearDown(self):
+        """
+        Clean up after importer
+        """
+        if self.importer:
+            files = glob(self.importer.output_base+"/*", recursive=True)
+            for file in files:
+                try:
+                    os.remove(file)
+                except PermissionError:
+                    pass

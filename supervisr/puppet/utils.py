@@ -8,10 +8,11 @@ import os
 import shutil
 
 import requests
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files import File
 
-from .models import PuppetModule, PuppetModuleRelease
+from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 
 LOGGER = logging.getLogger(__name__)
 
@@ -22,6 +23,11 @@ class ForgeImporter(object):
 
     BASE_URL = 'https://forgeapi.puppetlabs.com'
     output_base = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'modules')
+
+    def __init__(self):
+        if settings.TEST:
+            self.output_base = os.path.join(self.output_base, 'test')
+        os.makedirs(self.output_base, exist_ok=True)
 
     def import_module(self, name):
         """
