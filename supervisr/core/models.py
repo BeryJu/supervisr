@@ -461,7 +461,6 @@ class BaseCredential(CreatedUpdatedModel, CastableModel):
     class Meta:
         unique_together = (('owner', 'name'),)
 
-
 class APIKeyCredential(BaseCredential):
     """
     Credential which work with an API Key
