@@ -50,7 +50,11 @@
                       <section class="form-block">
                         <p>{% trans form.help_text %}</p>
                         {{ wizard.management_form }}
+                        {% block before_form %}{% endblock %}
+                        {% block form %}
                         {% include 'blocks/block_form.html' with form=wizard.form %}
+                        {% endblock %}
+                        {% block after_form %}{% endblock %}
                       </section>
                     </div>
                   </div>
@@ -92,8 +96,16 @@
 {% block scripts %}
 <script>
   $('[name="submit"].btn').on('click', function (e) {
-    $('.active.clr-wizard-page').append("<div class='spinner'></span>");
-    $('.active.clr-wizard-page').find('.form').hide();
+    var hasErrors = false;
+    $(this).parents().closest('form').find('input, textarea, select').each(function (e) {
+      if ($(this).val() === '' && $(this).attr('required')) {
+        hasErrors = true;
+      }
+    });
+    if (!hasErrors) {
+      $('.active.clr-wizard-page').append("<div class='spinner'></span>");
+      $('.active.clr-wizard-page').find('.form').hide();
+    }
   })
 </script>
 {% endblock %}

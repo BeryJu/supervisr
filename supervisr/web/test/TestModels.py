@@ -5,9 +5,9 @@ Supervisr Web Model Test
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from supervisr.core.models import Domain, get_system_user
-
-from ..models import WebDomain
+from supervisr.core.models import (BaseCredential, Domain, ProviderInstance,
+                                   get_system_user)
+from supervisr.web.models import WebDomain
 
 
 class TestModels(TestCase):
@@ -16,7 +16,12 @@ class TestModels(TestCase):
     """
 
     def setUp(self):
-        pass
+        self.user = User.objects.get(pk=get_system_user())
+        self.provider_credentials = BaseCredential.objects.create(
+            owner=self.user, name='test-creds')
+        self.provider = ProviderInstance.objects.create(
+            provider_path='supervisr.core.providers.base.BaseProvider',
+            credentials=self.provider_credentials)
 
     def test_maildomain_get_set(self):
         """
@@ -24,8 +29,7 @@ class TestModels(TestCase):
         """
         domain = Domain.objects.create(
             name='beryjuorgtesting.xyz',
-            invite_only=True,
-            price=0)
+            provider=self.provider)
         web_domain = WebDomain.objects.create(
             domain_web=domain,
             profile=User.objects.get(pk=get_system_user()).userprofile)

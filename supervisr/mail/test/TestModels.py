@@ -5,7 +5,8 @@ Supervisr Mail Test
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from supervisr.core.models import Domain, get_system_user
+from supervisr.core.models import (BaseCredential, Domain, ProviderInstance,
+                                   get_system_user)
 from supervisr.mail.models import MailAccount, MailDomain
 
 
@@ -13,15 +14,23 @@ class TestModels(TestCase):
     """
     Supervisr Mail Test
     """
+
+    def setUp(self):
+        self.user = User.objects.get(pk=get_system_user())
+        self.provider_credentials = BaseCredential.objects.create(
+            owner=self.user, name='test-creds')
+        self.provider = ProviderInstance.objects.create(
+            provider_path='supervisr.core.providers.base.BaseProvider',
+            credentials=self.provider_credentials)
+
     def test_maildomain_get_set(self):
         """
         Test MailDomain's getter and setter
         """
         domain = Domain.objects.create(
             name='supervisr-unittest.beryju.org',
-            invite_only=True,
-            price=0)
-        mx_domain = MailDomain.objects.create(domain=domain)
+            provider=self.provider)
+        mx_domain = MailDomain.objects.create(domain=domain, provider=self.provider)
         self.assertEqual(mx_domain.domain, domain)
         mx_domain.domain = domain
         mx_domain.save()
@@ -34,9 +43,8 @@ class TestModels(TestCase):
         """
         domain = Domain.objects.create(
             name='supervisr-unittest.beryju.org',
-            invite_only=True,
-            price=0)
-        mx_domain = MailDomain.objects.create(domain=domain)
+            provider=self.provider)
+        mx_domain = MailDomain.objects.create(domain=domain, provider=self.provider)
         self.assertEqual(mx_domain.domain, domain)
         mx_account = MailAccount.objects.create(
             address='info',
@@ -51,9 +59,8 @@ class TestModels(TestCase):
         """
         domain = Domain.objects.create(
             name='supervisr-unittest.beryju.org',
-            invite_only=True,
-            price=0)
-        mx_domain = MailDomain.objects.create(domain=domain)
+            provider=self.provider)
+        mx_domain = MailDomain.objects.create(domain=domain, provider=self.provider)
         self.assertEqual(mx_domain.domain, domain)
         mx_account = MailAccount.objects.create(
             address='info',

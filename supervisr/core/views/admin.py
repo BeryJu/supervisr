@@ -38,7 +38,7 @@ def users(req):
     Show a list of all users
     """
     users = User.objects.all().order_by('date_joined').exclude(pk=get_system_user())
-    paginator = Paginator(users, int(req.GET.get('per_page', 50)))
+    paginator = Paginator(users, max(int(req.GET.get('per_page', 50)), 1))
 
     page = req.GET.get('page')
     try:

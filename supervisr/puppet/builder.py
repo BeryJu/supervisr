@@ -44,6 +44,10 @@ class ReleaseBuilder(object):
         if self.module.source_path:
             self.base_dir = self.module.source_path
         self.output_base = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'modules')
+        if conf.settings.TEST:
+            # Use test subfolder if we're running as unittest
+            self.output_base = os.path.join(self.output_base, 'test')
+        os.makedirs(self.output_base, exist_ok=True)
         # If version is None, just use the newest Release's ID + 1
         if version is None:
             releases = PuppetModuleRelease.objects.filter(module=module)

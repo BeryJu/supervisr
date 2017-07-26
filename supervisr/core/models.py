@@ -330,7 +330,7 @@ class Domain(Product):
     This is also used for sub domains, hence the is_sub.
     """
     domain = models.CharField(max_length=253, unique=True)
-    provider = models.ForeignKey('ProviderInstance', blank=True, null=True)
+    provider = models.ForeignKey('ProviderInstance')
     is_sub = models.BooleanField(default=False)
 
     def __str__(self):
@@ -460,7 +460,6 @@ class BaseCredential(CreatedUpdatedModel, CastableModel):
 
     class Meta:
         unique_together = (('owner', 'name'),)
-
 
 class APIKeyCredential(BaseCredential):
     """
