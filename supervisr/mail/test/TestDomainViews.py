@@ -22,14 +22,14 @@ class TestDomainViews(TestCase):
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
         _domain = 'supervisr-unittest.beryju.org'
-        self.ddomain = Domain.objects.create(domain=_domain, is_sub=True)
         self.user = User.objects.get(pk=get_system_user())
-        UserProductRelationship.objects.create(user=self.user, product=self.ddomain)
         self.provider_credentials = BaseCredential.objects.create(
             owner=self.user, name='test-creds')
         self.provider = ProviderInstance.objects.create(
             provider_path='supervisr.core.providers.base.BaseProvider',
             credentials=self.provider_credentials)
+        self.ddomain = Domain.objects.create(domain=_domain, is_sub=True, provider=self.provider)
+        UserProductRelationship.objects.create(user=self.user, product=self.ddomain)
         self.domain = MailDomain.objects.create(domain=self.ddomain, provider=self.provider)
         UserProductRelationship.objects.create(user=self.user, product=self.domain)
 

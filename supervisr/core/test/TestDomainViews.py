@@ -9,8 +9,8 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
-from ..models import get_system_user
-from ..views import domain
+from supervisr.core.models import get_system_user
+from supervisr.core.views import domain
 
 
 class TestDomainViews(TestCase):

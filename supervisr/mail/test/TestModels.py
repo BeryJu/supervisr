@@ -29,8 +29,7 @@ class TestModels(TestCase):
         """
         domain = Domain.objects.create(
             name='supervisr-unittest.beryju.org',
-            invite_only=True,
-            price=0)
+            provider=self.provider)
         mx_domain = MailDomain.objects.create(domain=domain, provider=self.provider)
         self.assertEqual(mx_domain.domain, domain)
         mx_domain.domain = domain
@@ -44,8 +43,7 @@ class TestModels(TestCase):
         """
         domain = Domain.objects.create(
             name='supervisr-unittest.beryju.org',
-            invite_only=True,
-            price=0)
+            provider=self.provider)
         mx_domain = MailDomain.objects.create(domain=domain, provider=self.provider)
         self.assertEqual(mx_domain.domain, domain)
         mx_account = MailAccount.objects.create(
@@ -61,8 +59,7 @@ class TestModels(TestCase):
         """
         domain = Domain.objects.create(
             name='supervisr-unittest.beryju.org',
-            invite_only=True,
-            price=0)
+            provider=self.provider)
         mx_domain = MailDomain.objects.create(domain=domain, provider=self.provider)
         self.assertEqual(mx_domain.domain, domain)
         mx_account = MailAccount.objects.create(
