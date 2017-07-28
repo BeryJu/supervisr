@@ -295,6 +295,7 @@ class Product(CreatedUpdatedModel, CastableModel):
     invite_only = models.BooleanField(default=True)
     auto_add = models.BooleanField(default=False)
     auto_all_add = models.BooleanField(default=False)
+    auto_generated = models.BooleanField(default=True)
     users = models.ManyToManyField(User, through='UserProductRelationship')
     revision = models.IntegerField(default=1)
     managed = models.BooleanField(default=True)
