@@ -264,6 +264,11 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
+        'tasks': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     }
 }
 
