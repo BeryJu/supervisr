@@ -12,6 +12,7 @@ import subprocess
 import pkg_resources
 from django.apps import AppConfig
 from django.conf import settings
+from django.core.cache import cache
 from pip.req import parse_requirements
 
 LOGGER = logging.getLogger(__name__)
@@ -33,6 +34,14 @@ class SupervisrAppConfig(AppConfig):
         self.load_init()
         self.merge_settings()
         super(SupervisrAppConfig, self).ready()
+
+    # pylint: disable=no-self-use
+    def clear_cache(self):
+        """
+        Clear cache on startup
+        """
+        cache.clear()
+        LOGGER.info("Successfully cleared Cache")
 
     # pylint: disable=no-self-use
     def run_ensure_settings(self):
@@ -59,10 +68,11 @@ class SupervisrAppConfig(AppConfig):
         LOGGER.info("Loaded %s", self.name)
         for module in self.init_modules:
             try:
-                importlib.import_module("%s.%s" % (self.name, module))
                 LOGGER.info("Loaded %s.%s", self.name, module)
-            except ImportError:
-                pass # ignore non-existant modules
+                importlib.import_module("%s.%s" % (self.name, module))
+            except ImportError as exc:
+                if 'No' not in str(exc):
+                    raise # ignore non-existant modules
 
     def check_requirements(self):
         """
@@ -119,7 +129,15 @@ class SupervisrCoreConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr.core'
-    init_modules = ['signals', 'events', 'mailer', 'models', 'providers.base']
+    init_modules = [
+        'signals',
+        'events',
+        'mailer',
+        'models',
+        'providers.base',
+        'providers.domain',
+        'providers.dummy',
+    ]
     navbar_title = 'Core'
 
     def ready(self):
@@ -131,3 +149,4 @@ class SupervisrCoreConfig(SupervisrAppConfig):
         except (OSError, IOError):
             settings.VERSION_HASH = b'dev'
         super(SupervisrCoreConfig, self).ready()
+        self.clear_cache()

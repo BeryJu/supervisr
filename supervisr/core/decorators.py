@@ -4,10 +4,14 @@ supervisr view decorators
 
 import time
 
+from django.apps import apps
 from django.conf import settings
+from django.core.cache import cache
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.http import urlencode
+
+from supervisr.core.utils import get_apps
 
 REAUTH_KEY = getattr(settings, 'REAUTH_KEY', 'supervisr_require_reauth_done')
 REAUTH_MARGIN = getattr(settings, 'REAUTH_MARGIN', 300)
@@ -64,26 +68,32 @@ def reauth_required(view_function):
     wrap.__name__ = view_function.__name__
     return wrap
 
-APP_CACHE = None
-
 def ifapp(app_name):
     """
     Only executes ifapp_func if app_name is installed
     """
-    # pylint: disable=global-statement
-    global APP_CACHE
-    # Make a list of all short names for all apps
-    if not APP_CACHE:
-        APP_CACHE = []
-        for app in settings.INSTALLED_APPS:
-            if '.' in app:
-                parts = app.split('.')
-                if parts[0] == 'supervisr':
-                    APP_CACHE.append(parts[1])
-                else:
-                    APP_CACHE.append(parts[0])
-            else:
-                APP_CACHE.append(app)
+    def get_app_labels():
+        """
+        Cache all installed apps and return the list
+        """
+        cache_key = 'ifapp_apps'
+        if not cache.get(cache_key):
+            # Make a list of all short names for all apps
+            app_cache = []
+            for app in get_apps():
+                try:
+                    mod_new = '/'.join(app.split('.')[:-2])
+                    config = apps.get_app_config(mod_new)
+                    mod = mod_new
+                except LookupError:
+                    mod = app.split('.')[:-2][-1]
+                    config = apps.get_app_config(mod)
+                app_cache.append(config.label)
+            cache.set(cache_key, app_cache, 1000)
+            return app_cache
+        return cache.get(cache_key)
+
+    app_cache = get_app_labels()
 
     def outer_wrap(ifapp_func):
         """
@@ -93,7 +103,7 @@ def ifapp(app_name):
             """
             Only executes ifapp_func if app_name is installed
             """
-            if app_name in APP_CACHE:
+            if app_name in app_cache or app_name == 'core' or app_name == 'supervisr/core':
                 return ifapp_func(*args, **kwargs)
             return
         wrap.__doc__ = ifapp_func.__doc__

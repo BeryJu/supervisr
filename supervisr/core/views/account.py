@@ -71,6 +71,7 @@ def login(req):
                 # and inform that, they need to check their emails
                 users = User.objects.filter(username=form.cleaned_data.get('email'))
                 if users.exists():
+                    # Check is maybe not confirmed yet
                     acc_confs = AccountConfirmation.objects.filter(user=users.first())
                     if acc_confs.exists() and not acc_confs.first().confirmed:
                         # Create url to resend email
@@ -79,15 +80,17 @@ def login(req):
                         messages.error(req, _(('Account not confirmed yet. Check your emails. '
                                                'Click <a href="%(url)s">here</a> to resend the '
                                                'email.')) % {'url': url})
-                else:
-                    messages.error(req, _("Invalid Login"))
-                    LOGGER.info("Failed to log in %s", form.cleaned_data.get('email'))
+                        return redirect(reverse('account-login'))
+                messages.error(req, _("Invalid Login"))
+                LOGGER.info("Failed to log in %s", form.cleaned_data.get('email'))
                 return redirect(reverse('account-login'))
+        else:
+            print("Form invalid")
     else:
         form = LoginForm()
-    return render(req, 'core/generic_form_login.html', {
+    return render(req, 'account/login.html', {
         'form': form,
-        'title': _("SSO - Login"),
+        'title': _("Login - SSO"),
         'primary_action': _("Login"),
         'extra_links': {
             'account-signup': 'Sign up for an account',
@@ -147,7 +150,7 @@ def signup(req):
         form = SignupForm()
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("SSO - Signup"),
+        'title': _("Signup - SSO"),
         'primary_action': _("Signup")
         })
 
@@ -185,7 +188,7 @@ def change_password(req):
         form = ChangePasswordForm()
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("SSO - Change Password"),
+        'title': _("Change Password - SSO"),
         'primary_action': _("Change Password")
         })
 
@@ -253,7 +256,7 @@ def reset_password_init(req):
         form = PasswordResetInitForm()
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("SSO - Reset your Password - Step 1/3"),
+        'title': _("Reset your Password - Step 1/3 - SSO"),
         'primary_action': _("Send Confirmation Email")
         })
 
@@ -292,7 +295,7 @@ def reset_password_confirm(req, uuid):
                         user=pass_conf.user,
                         was_reset=True,
                         req=req)
-                    LOGGER.debug("Successfully updated password for %s", req.user.email)
+                    LOGGER.debug("Successfully updated password for %s", pass_conf.user.email)
                     messages.success(req, _("Account successfully reset!"))
                     # invalidate confirmation
                     pass_conf.confirmed = True
@@ -307,7 +310,7 @@ def reset_password_confirm(req, uuid):
         form = PasswordResetFinishForm()
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("SSO - Reset your Password - Step 3/3"),
+        'title': _("Reset your Password - Step 3/3 - SSO"),
         'primary_action': _("Reset your Password")
         })
 
@@ -360,6 +363,6 @@ def reauth(req):
 
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("SSO - Re-Authenticate"),
+        'title': _("Re-Authenticate - SSO"),
         'primary_action': _("Login"),
         })

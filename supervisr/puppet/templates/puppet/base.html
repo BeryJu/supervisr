@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}
+
+{% load i18n %}
+{% load is_active %}
+
+{% block sidenav %}
+<nav class="sidenav clr-nav-level-2">
+  <section class="sidenav-content">
+    <a href="{% url 'puppet:puppet-index' %}" class="nav-link {% is_active 'puppet:puppet-index' %}">
+      {% trans "Overview" %}
+    </a>
+    <a href="{% url 'puppet:puppet-debug-render' %}" class="nav-link {% is_active 'puppet:puppet-debug-render' %}">
+      {% trans "Debug Renderer" %}
+    </a>
+  </section>
+</nav>
+{% endblock %}

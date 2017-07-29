@@ -4,10 +4,13 @@ Supervisr Core utils
 
 import logging
 import socket
+from importlib import import_module
 from time import time as timestamp
 from uuid import uuid4
 
+from django.apps import apps
 from django.conf import settings
+from django.core.cache import cache
 from django.shortcuts import render
 from django.template import loader
 from django.utils.translation import ugettext as _
@@ -89,6 +92,27 @@ def get_apps(mod_only=False):
                 app_list.append(app)
     return app_list
 
+def get_app_labels():
+    """
+    Cache all installed apps and return the list
+    """
+    cache_key = 'core:app_labels'
+    if not cache.get(cache_key):
+        # Make a list of all short names for all apps
+        app_cache = []
+        for app in get_apps():
+            try:
+                mod_new = '/'.join(app.split('.')[:-2])
+                config = apps.get_app_config(mod_new)
+                mod = mod_new
+            except LookupError:
+                mod = app.split('.')[:-2][-1]
+                config = apps.get_app_config(mod)
+            app_cache.append(config.label)
+        cache.set(cache_key, app_cache, 1000)
+        return app_cache
+    return cache.get(cache_key)
+
 def time(statistic_key):
     """
     Decorator to time a method call
@@ -114,3 +138,14 @@ def time(statistic_key):
         return timed
 
     return outer_wrapper
+
+def path_to_class(path):
+    """
+    Import module and return class
+    """
+    if not path:
+        return None
+    parts = path.split('.')
+    package = '.'.join(parts[:-1])
+    _class = getattr(import_module(package), parts[-1])
+    return _class

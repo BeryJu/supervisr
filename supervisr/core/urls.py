@@ -4,13 +4,14 @@ supervisr core urls
 import importlib
 import logging
 
+from django.apps import apps
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin as admin_django
 
 from supervisr.core.utils import get_apps
-from supervisr.core.views import (about, account, admin, common, domain,
-                                  oauth2, product, user)
+from supervisr.core.views import (account, admin, common, domain, product,
+                                  provider, search, user)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -19,10 +20,12 @@ handler404 = 'supervisr.core.views.common.uncaught_404'
 # pylint: disable=invalid-name
 handler500 = 'supervisr.core.views.common.uncaught_500'
 
+UUID_REGEX = r'[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+
 urlpatterns = [
     # Account views
     url(r'^$', common.index, name='common-index'),
-    url(r'^search/$', common.search, name='common-search'),
+    url(r'^search/$', search.search, name='search'),
     url(r'^accounts/login/$', account.login, name='account-login'),
     url(r'^accounts/login/reauth/$', account.reauth, name='account-reauth'),
     url(r'^accounts/signup/$', account.signup, name='account-signup'),
@@ -43,46 +46,64 @@ urlpatterns = [
     url(r'^domains/new/$', domain.DomainNewView.as_view(), name='domain-new'),
     url(r'^domains/(?P<domain>[a-z0-9\-\.]+)/edit/$', domain.edit, name='domain-edit'),
     url(r'^domains/(?P<domain>[a-z0-9\-\.]+)/delete/$', domain.delete, name='domain-delete'),
+    # Provider
+    url(r'^providers/instances/$', provider.instance_index, name='instance-index'),
+    url(r'^providers/instances/new/$', provider.ProviderNewView.as_view(),
+        name='instance-new'),
+    url(r'^providers/instances/(?P<uuid>%s)/edit/$' % UUID_REGEX, provider.instance_edit,
+        name='instance-edit'),
+    url(r'^providers/instances/(?P<uuid>%s)/delete/$' % UUID_REGEX, provider.instance_delete,
+        name='instance-delete'),
+    # Credentials
+    url(r'^providers/credentials/$', provider.credential_index, name='credential-index'),
+    url(r'^providers/credentials/new/$', provider.CredentialNewView.as_view(),
+        name='credential-new'),
+    url(r'^providers/credentials/(?P<name>[a-zA-Z0-9\-\.\_\s]+)/delete/$',
+        provider.credential_delete, name='credential-delete'),
     # User views
     url(r'^user/$', user.index, name='user-index'),
     url(r'^user/events/$', user.events, name='user-events'),
     # Admin views
     url(r'^admin/$', admin.index, name='admin-index'),
+    url(r'^admin/users/$', admin.users, name='admin-users'),
     url(r'^admin/settings/$', admin.settings, name='admin-settings'),
     url(r'^admin/mod/default/(?P<mod>[a-zA-Z0-9/]+)/$',
         admin.mod_default, name='admin-mod_default'),
     url(r'^admin/info/$', admin.info, name='admin-info'),
     url(r'^admin/events/$', admin.events, name='admin-events'),
     url(r'^admin/debug/$', admin.debug, name='admin-debug'),
-    # About views
-    url(r'^about/changelog/$', about.changelog, name='about-changelog'),
-    url(r'^about/attributions/$', about.attributions, name='about-attributions'),
     # Include django-admin
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),
-    # Custom OAuth 2 Authorize View
-    url(r'^api/oauth2/authorize/$', oauth2.SupervisrAuthorizationView.as_view(),
-        name="oauth2-authorize"),
-    # OAuth API
-    url(r'^api/oauth2/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     # General API Urls
     url(r'^api/', include('supervisr.core.views.api.urls')),
 ]
 
 # Load Urls for all sub apps
 for app in get_apps():
-    short_name = app.replace('supervisr.', '')
-    # Check if it's only a module or a full path
+    # Remove .apps.Supervisr stuff
     app = '.'.join(app.split('.')[:-2])
-    if 'mod' in app:
-        short_name = '/'.join(short_name.split('.')[1:-2])
-    else:
-        short_name = short_name.split('.')[0]
+    # Check if app uses old or new label
+    namespace = None
+    try:
+        # Try new format first
+        # from supervisr.mod.auth.oauth.client
+        # to mod/auth/oauth/client
+        new_name = '/'.join(app.split('.'))
+        mount_path = new_name.replace('supervisr/', '')
+        app_config = apps.get_app_config(new_name)
+        namespace = new_name
+    except (KeyError, LookupError):
+        # Try old format afterwards
+        old_name = app.split('.')[-1]
+        app_config = apps.get_app_config(old_name)
+        namespace = old_name
+
     url_module = "%s.urls" % app
     # Only add if module could be loaded
     if importlib.util.find_spec(url_module) is not None:
         urlpatterns += [
-            url(r"^app/%s/" % short_name, include(url_module, namespace=short_name)),
+            url(r"^app/%s/" % mount_path, include(url_module, namespace=namespace)),
         ]
         LOGGER.info("Loaded %s", url_module)
 

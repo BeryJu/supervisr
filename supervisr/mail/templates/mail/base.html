@@ -1,15 +1,32 @@
 {% extends "core/base.html" %}
 
 {% load i18n %}
+{% load mail_domains %}
 {% load is_active %}
+{% load is_active_url %}
 
 {% block sidenav %}
-<nav class="sidenav">
+<nav class="sidenav clr-nav-level-2">
   <section class="sidenav-content">
-    <a href="{% url 'mail:mail-index' %}" class="nav-link {% is_active 'mail-index' %}">
-    {% trans "Recipients" %}
+    <a href="{% url 'supervisr/mail:mail-index' %}" class="nav-link {% is_active 'mail-index' %}">
+    {% trans "Overview" %}
     </a>
-
+    <a href="{% url 'supervisr/mail:mail-account-index' %}" class="nav-link {% is_active 'mail-account-index' %}">
+    {% trans "Accounts" %}
+    </a>
+    <a href="{% url 'supervisr/mail:mail-alias-index' %}" class="nav-link {% is_active 'mail-alias-index' %}">
+    {% trans "Aliases" %}
+    </a>
+    <section class="nav-group">
+      <input id="mail_domains" type="checkbox">
+      <label for="mail_domains">{% trans "Domain Settings" %}</label>
+      <ul class="nav-list">
+        {% mail_domains as domains %}
+        {% for domain in domains %}
+        <li><a href="{% url 'supervisr/mail:mail-domain-view' domain=domain.domain.domain %}" class="nav-link {% is_active_url 'supervisr/mail:mail-domain-view' domain.domain.domain %}">{{ domain.domain.domain }}</a></li>
+        {% endfor %}
+      </ul>
+    </section>
   </section>
 </nav>
 {% endblock %}

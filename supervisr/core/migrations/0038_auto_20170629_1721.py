@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='domain',
             name='domain',
-            field=models.TextField(default='None', unique=False),
+            field=models.CharField(max_length=253, default='None', unique=False),
             preserve_default=False,
         ),
         migrations.AlterField(
@@ -35,6 +35,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='domain',
             name='domain',
-            field=models.TextField(unique=True),
+            field=models.CharField(max_length=253, unique=True),
         ),
     ]

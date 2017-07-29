@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mail', '0006_mailaccount_size'),
+        ('supervisr/mail', '0006_mailaccount_size'),
     ]
 
     operations = [
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateField(auto_now_add=True)),
                 ('last_updated', models.DateTimeField(auto_now=True)),
                 ('destination', models.EmailField(max_length=254)),
-                ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mail.MailAccount')),
+                ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/mail.MailAccount')),
             ],
             options={
                 'abstract': False,

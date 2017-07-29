@@ -1,13 +1,18 @@
 {% extends "_admin/mod_default.html" %}
 
 {% load i18n %}
+{% load supervisr_title %}
 
-{% block content %}
+{% block title %}
+{% supervisr_title "Overview" %}
+{% endblock %}
+
+{% block module_content %}
 <div class="row">
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        {% trans 'Graphite Connection Settings' %}
+        <h2><clr-icon shape="storage" size="32"></clr-icon>{% trans 'Graphite Connection Settings' %}</h2>
       </div>
       <form role="form" method="POST">
         <div class="card-block">

@@ -1,0 +1,26 @@
+{% load i18n %}
+
+<div class="card-block">
+  <div class="card-text">
+    {% for model, m_results in results.items %}
+    <table class="table table-condensed">
+      <thead>
+        <tr>
+          <th>{% trans model|title %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m_result in m_results %}
+          <tr>
+           {% if m_result.search_title %}
+             <td class="left">{{ m_result.search_title }}</td>
+           {% else %}
+             <td class="left">{{ m_result }}</td>
+           {% endif %}
+         </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endfor %}
+  </div>
+</div>

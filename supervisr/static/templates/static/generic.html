@@ -1,0 +1,51 @@
+{% extends "core/base.html" %}
+
+{% load i18n %}
+{% load markdown %}
+{% load supervisr_title %}
+
+{% block title %}
+  {% supervisr_title page.title %}
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <a name="_sv_top"></a>
+  <div class="card-header">
+    <h1>{{ page.title }}</h1>
+  </div>
+  <div class="card-block">
+    {% if user.is_superuser %}
+    <div class="alert {% if page.published %} alert-info {% else %} alert-warning {% endif %}">
+      <div class="alert-item">
+        <span class="alert-text">
+          {% blocktrans with state=page.published|yesno:"Yes,No" %}Published: {{ state }}{% endblocktrans %}
+        </span>
+      </div>
+    </div>
+    <div class="alert {% if page.listed %} alert-info {% else %} alert-warning {% endif %}">
+      <div class="alert-item">
+        <span class="alert-text">
+          {% blocktrans with listed=page.listed|yesno:"Yes,No" %}Listed: {{ listed }}{% endblocktrans %}
+        </span>
+      </div>
+    </div>
+    {% endif %}
+    <div class="card-title">
+      {% blocktrans with auth=page.author.first_name edit_date=page.last_updated crea_date=page.created %}
+      Created by {{ auth }} on {{ crea_date }}. Updated {{ edit_date }}.
+      {% endblocktrans %}
+    </div>
+    <div class="card-text">
+      {% if page.has_markdown_enabled %}
+      {% markdown page.content %}
+      {% elif page.has_html_enabled %}
+      {{ page.content|safe }}
+      {% else %}
+      {{ page.content }}
+      {% endif %}
+    </div>
+  </div>
+</div>
+<a class="btn btn-primary btn-fab" href="#_sv_top"><clr-icon size="32" shape="arrow"></clr-icon></a>
+{% endblock %}

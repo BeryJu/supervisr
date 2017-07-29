@@ -1,0 +1,19 @@
+{% load i18n %}
+
+<div class="btn-group">
+  {% if pages.has_previous %}
+    <a class="btn" href="?page={{ pages.previous_page_number }}"><clr-icon shape="caret left"></clr-icon></a>
+  {% else %}
+    <a class="btn disabled" href=""><clr-icon shape="caret left"></clr-icon></a>
+  {% endif %}
+  <span class="btn">
+    {% blocktrans with current=pages.number total=pages.paginator.num_pages %}
+    Page {{ current }} of {{ total }}
+    {% endblocktrans %}
+  </span>
+  {% if pages.has_next %}
+    <a class="btn" href="?page={{ pages.next_page_number }}"><clr-icon shape="caret right"></clr-icon></a>
+  {% else %}
+    <a class="btn disabled" href=""><clr-icon shape="caret right"></clr-icon></a>
+  {% endif %}
+</div>

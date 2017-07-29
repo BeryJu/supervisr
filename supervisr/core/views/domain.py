@@ -4,13 +4,16 @@ Supervisr Core Domain Views
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.forms.domain import DomainForm
-from supervisr.core.models import Domain, UserProductRelationship
+from supervisr.core.models import (Domain, ProviderInstance,
+                                   UserProductRelationship)
+from supervisr.core.providers.base import BaseProvider
 from supervisr.core.views.wizard import BaseWizardView
 
 
@@ -33,29 +36,33 @@ class DomainNewView(BaseWizardView):
     form_list = [DomainForm]
     registrars = None
 
-    # def handle_request(self, request):
-    #    Handle loading of registrars here
-    #    if self.domains is None:
-    #        self.domains = Domain.objects.filter(
-    #            users__in=[request.user], maildomain__isnull=True)
-    #    if not self.domains:
-    #        messages.error(request, _('No Domains available'))
-    #        return redirect(reverse('mail:mail-domains'))
-
-    # def get_form(self, step=None, data=None, files=None):
-    #     form = super(DomainNewView, self).get_form(step, data, files)
-    #     if step is None:
-    #         step = self.steps.current
-    #     if step == '0':
-    #         form.fields['domain'].queryset = self.domains
-    #     return form
+    def get_form(self, step=None, data=None, files=None):
+        form = super(DomainNewView, self).get_form(step, data, files)
+        if step is None:
+            step = self.steps.current
+        if step == '0':
+            providers = BaseProvider.get_providers(filter_sub=['domain_provider'], path=True)
+            provider_instance = ProviderInstance.objects.filter(
+                provider_path__in=providers,
+                userproductrelationship__user__in=[self.request.user])
+            form.fields['provider'].choices = \
+                [(s.uuid, s.name) for s in provider_instance]
+            form.request = self.request
+        return form
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
+        provider = ProviderInstance.objects.filter(
+            uuid=form_dict['0'].cleaned_data.get('provider'),
+            userproductrelationship__user__in=[self.request.user])
+        if not provider.exists():
+            raise ValidationError('Invalid Provider')
+        prov = provider.first()
+
         m_dom = Domain.objects.create(
             name='Domain %s' % form_dict['0'].cleaned_data.get('domain'),
             domain=form_dict['0'].cleaned_data.get('domain'),
-            registrar=form_dict['0'].cleaned_data.get('registrar'),
+            provider=prov,
             description='Domain %s' % form_dict['0'].cleaned_data.get('domain'),
             )
         UserProductRelationship.objects.create(

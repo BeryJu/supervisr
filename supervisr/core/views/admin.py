@@ -8,16 +8,15 @@ import sys
 
 from django import get_version as django_version
 from django.conf import settings as django_settings
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from ..models import Event
-from ..signals import SIG_GET_MOD_INFO
-from ..utils import get_reverse_dns
+from supervisr.core.models import Event, get_system_user
+from supervisr.core.signals import SIG_GET_MOD_INFO
+from supervisr.core.utils import get_reverse_dns
 
 
 @login_required
@@ -30,6 +29,26 @@ def index(req):
     user_count = User.objects.all().count() -1
     return render(req, '_admin/index.html', {
         'user_count': user_count,
+        })
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def users(req):
+    """
+    Show a list of all users
+    """
+    users = User.objects.all().order_by('date_joined').exclude(pk=get_system_user())
+    paginator = Paginator(users, max(int(req.GET.get('per_page', 50)), 1))
+
+    page = req.GET.get('page')
+    try:
+        accounts = paginator.page(page)
+    except PageNotAnInteger:
+        accounts = paginator.page(1)
+    except EmptyPage:
+        accounts = paginator.page(paginator.num_pages)
+    return render(req, '_admin/users.html', {
+        'users': accounts,
         })
 
 @login_required
@@ -109,17 +128,3 @@ def debug(req):
     Show some misc debug buttons
     """
     return render(req, '_admin/debug.html')
-
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def debug_puppet_build(req):
-    """
-    Run Puppet Build
-    """
-    from supervisr.puppet.builder import ReleaseBuilder
-    from supervisr.puppet.models import PuppetModule
-    module = PuppetModule.objects.filter(name='supervisr_mail').first()
-    rel_builder = ReleaseBuilder(module)
-    rel_builder.build()
-    messages.success(req, 'Successfully built')
-    return redirect(reverse('admin-debug'))

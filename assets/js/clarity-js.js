@@ -1,10 +1,23 @@
 $('document').ready(function() {
   $('[clrDropdown]').on('click', function (e) {
-      $(e.target).parent().toggleClass('open');
+      $(e.target).closest('div.dropdown').toggleClass('open');
   });
 
   $('[clrAlert]').on('click', function (e) {
       $(e.target).closest('.alert.alert-app-level').remove();
+  });
+
+  $('.clr-root-container button.header-overflow-trigger').on('click', function (e) {
+      $('.clr-root-container').toggleClass('open-overflow-menu');
+  });
+
+  $('.clr-root-container button.header-hamburger-trigger').on('click', function (e) {
+      $('.clr-root-container').toggleClass('open-hamburger-menu');
+  });
+
+  $('.clr-root-container .header-backdrop').on('click', function (e) {
+    $('.clr-root-container').removeClass('open-overflow-menu');
+    $('.clr-root-container').removeClass('open-hamburger-menu');
   });
 });
 

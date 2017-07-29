@@ -44,12 +44,16 @@ class ReleaseBuilder(object):
         if self.module.source_path:
             self.base_dir = self.module.source_path
         self.output_base = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'modules')
+        if conf.settings.TEST:
+            # Use test subfolder if we're running as unittest
+            self.output_base = os.path.join(self.output_base, 'test')
+        os.makedirs(self.output_base, exist_ok=True)
         # If version is None, just use the newest Release's ID + 1
         if version is None:
             releases = PuppetModuleRelease.objects.filter(module=module)
             if releases.exists():
                 # Create semantic version from pk with .0.0 appended
-                self.version = '1.0.0+build' + str(releases.order_by('-pk').first().pk + 1)
+                self.version = '1.0.' + str(releases.order_by('-pk').first().pk + 1)
             else:
                 self.version = '1.0.0'
         else:
@@ -79,14 +83,8 @@ class ReleaseBuilder(object):
         Convert text to a in-memory file/tarinfo
         """
         # First off render the template
-        tmpl = loader.get_template(template)
-        rendered = tmpl.render(ctx)
-        # If it's a json file now, check if it's valid
-        if rel_path.endswith('.json'):
-            self.validate_json(rendered)
-            LOGGER.info('Successfully validated %s', rel_path)
         # Convert it to bytes, create a TarInfo object and add it to the main archive
-        byteio = io.BytesIO(rendered.encode('utf-8'))
+        byteio = io.BytesIO(self.render_template(template, ctx).encode('utf-8'))
         byteio.seek(0, io.SEEK_END)
         tar_info = tarfile.TarInfo(name=rel_path)
         tar_info.size = byteio.tell()
@@ -134,6 +132,21 @@ class ReleaseBuilder(object):
             for file in files:
                 matches.append(os.path.join(root, file))
         return matches
+
+    def render_template(self, path, context=None, check_json=True):
+        """
+        Render template and return as string
+        """
+        LOGGER.debug("About to render '%s' for puppet", path)
+        if not context:
+            context = self.make_context({})
+        tmpl = loader.get_template(path)
+        rendered = tmpl.render(context)
+        # If it's a json file now, check if it's valid
+        if path.endswith('.json') and check_json:
+            self.validate_json(rendered)
+            LOGGER.info('Successfully validated %s', path)
+        return rendered
 
     @time(statistic_key='puppet.builder.build')
     def build(self, context=None, db_add=True, force_rebuild=False):

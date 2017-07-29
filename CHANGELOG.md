@@ -1,5 +1,3 @@
-# Changelog
-
 ## Version 0.03
 
  - Move LDAP into submodule

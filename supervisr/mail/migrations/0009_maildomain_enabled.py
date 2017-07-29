@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mail', '0008_auto_20170325_1321'),
+        ('supervisr/mail', '0008_auto_20170325_1321'),
     ]
 
     operations = [

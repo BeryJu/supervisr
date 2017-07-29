@@ -2,9 +2,9 @@ hide mysql_servers = SUPERVISR_MYSQL_HOST/SUPERVISR_MYSQL_DB/SUPERVISR_MYSQL_USE
 SUPERVISR_DOMAIN     = SELECT domain_raw \
                        FROM mail_maildomain \
                        WHERE domain_raw = '${quote_mysql:$domain}'
-SUPERVISR_ALIAS      = SELECT `mail_mailforwarder`.`destination` \
-                       FROM `mail_mailforwarder` \
-                       WHERE `mail_mailforwarder`.`account_id` = \
+SUPERVISR_MAILALIAS  = SELECT `mail_mailalias`.`destination` \
+                       FROM `mail_mailalias` \
+                       WHERE `mail_mailalias`.`account_id` = \
                            (SELECT `mail_mailaccount`.`product_ptr_id` \
                             FROM `mail_mailaccount` \
                             WHERE (`mail_mailaccount`.`email_raw` = '${quote_mysql:$local_part}@${quote_mysql:$domain}') \
@@ -20,4 +20,4 @@ SUPERVISR_AUTH_LOGIN = SELECT password \
                        FROM mail_mailaccount \
                        WHERE email_raw = '${quote_mysql:$1}'
 
-domainlist supervisr_domain = mysql;SUPERVISR_DOMAIN
+domainlist SUPERVISR_DOMAIN = mysql;SUPERVISR_DOMAIN

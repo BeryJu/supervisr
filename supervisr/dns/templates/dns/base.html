@@ -1,0 +1,21 @@
+{% extends "core/base.html" %}
+
+{% load i18n %}
+{% load is_active %}
+{% load is_active_url %}
+
+{% block sidenav %}
+<nav class="sidenav clr-nav-level-2">
+  <section class="sidenav-content">
+    <a href="{% url 'supervisr/dns:dns-index' %}" class="nav-link {% is_active 'dns-index' %}">
+    {% trans "Overview" %}
+    </a>
+    <a href="{% url 'supervisr/dns:dns-domains' %}" class="nav-link {% is_active 'dns-domains' %}">
+    {% trans "Domains" %}
+    </a>
+    <a href="" class="nav-link">
+    {% trans "TSIG" %}
+    </a>
+  </section>
+</nav>
+{% endblock %}

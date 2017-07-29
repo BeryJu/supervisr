@@ -10,6 +10,7 @@ import random
 import re
 import time
 import uuid
+from importlib import import_module
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -17,14 +18,14 @@ from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Max, options
 from django.db.models.signals import pre_delete
-from django.db.utils import OperationalError
+from django.db.utils import InternalError, OperationalError, ProgrammingError
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
-from oauth2_provider.models import Application
 
+from supervisr.core import fields
 from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_USER_POST_SIGN_UP,
                                     SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
                                     SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
@@ -42,7 +43,7 @@ def make_username(username):
     """
     Return username cut to 32 chars, also make POSIX conform
     """
-    return re.sub(r'([^a-zA-Z0-9\.\s-])', '_', str(username)[:32])
+    return (re.sub(r'([^a-zA-Z0-9\.\s-])', '_', str(username))[:32]).lower()
 
 def get_random_string(length=10):
     """
@@ -66,7 +67,13 @@ def get_userid():
     try:
         highest = UserProfile.objects.all().aggregate(Max('unix_userid'))['unix_userid__max']
         return highest + 1 if highest is not None else settings.USER_PROFILE_ID_START
-    except (AppRegistryNotReady, ObjectDoesNotExist, OperationalError):
+    except (AppRegistryNotReady, ObjectDoesNotExist,
+            OperationalError, InternalError, ProgrammingError):
+        # Handle Postgres transaction revert
+        if 'postgresql' in settings.DATABASES['default']['ENGINE']:
+            from django.db import connection
+            # pylint: disable=protected-access
+            connection._rollback()
         return settings.USER_PROFILE_ID_START
 
 def get_system_user():
@@ -78,6 +85,27 @@ def get_system_user():
     if system_users.exists():
         return system_users.first().id
     return 1 # Django starts AutoField's with 1 not 0
+
+class CastableModel(models.Model):
+    """
+    Base Model for Models using Inheritance to cast them
+    """
+
+    def cast(self):
+        """
+        This method converts "self" into its correct child class.
+        """
+        for name in dir(self):
+            try:
+                attr = getattr(self, name)
+                if isinstance(attr, self.__class__):
+                    return attr
+            except (AttributeError, ObjectDoesNotExist):
+                pass
+        return self
+
+    class Meta:
+        abstract = True
 
 class CreatedUpdatedModel(models.Model):
     """
@@ -146,7 +174,7 @@ class Setting(CreatedUpdatedModel):
                 key=key,
                 defaults={'value': default})[0]
             return setting.value
-        except OperationalError:
+        except (OperationalError, ProgrammingError):
             return default
 
     @staticmethod
@@ -241,7 +269,7 @@ def upr_pre_delete(sender, instance, **kwargs):
             sender=UserProductRelationship,
             upr=instance)
 
-class ProductExtension(CreatedUpdatedModel):
+class ProductExtension(CreatedUpdatedModel, CastableModel):
     """
     This class can be used by extension to associate Data with a Product
     """
@@ -252,22 +280,14 @@ class ProductExtension(CreatedUpdatedModel):
     def __str__(self):
         return "ProductExtension %s" % self.extension_name
 
-class ProductExtensionOAuth2(ProductExtension):
-    """
-    Associate an OAuth2 Application with a Product
-    """
 
-    application = models.ForeignKey(Application)
-
-    def __str__(self):
-        return "ProductExtenstion OAuth %s" % self.application.name
-
-class Product(CreatedUpdatedModel):
+class Product(CreatedUpdatedModel, CastableModel):
     """
     Information about the Main Product itself. This instances of this classes
     are assumed to be managed services.
     """
     product_id = models.AutoField(primary_key=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     name = models.TextField()
     slug = models.SlugField(blank=True)
     description = models.TextField(blank=True)
@@ -310,11 +330,11 @@ class Domain(Product):
     This is also used for sub domains, hence the is_sub.
     """
     domain = models.CharField(max_length=253, unique=True)
-    registrar = models.TextField()
+    provider = models.ForeignKey('ProviderInstance')
     is_sub = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return self.domain
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         _first = self.pk is None
@@ -328,7 +348,7 @@ class Domain(Product):
     class Meta:
 
         default_related_name = 'domains'
-        sv_search_fields = ['name', 'registrar']
+        sv_search_fields = ['name', 'provider__name']
 
 class Event(CreatedUpdatedModel):
     """
@@ -416,19 +436,80 @@ class Event(CreatedUpdatedModel):
     def __str__(self):
         return "Event '%s' '%s'" % (self.user.username, self.message)
 
-class ProviderInstance(CreatedUpdatedModel):
+class BaseCredential(CreatedUpdatedModel, CastableModel):
     """
-    Save an instance of a Provider
+    Basic set of credentials
     """
-    provider_instance_id = models.AutoField(primary_key=True)
-    provider_app = models.CharField(max_length=255)
-    provider_module = models.CharField(max_length=255)
-    provider_class = models.CharField(max_length=255)
-    provider_name = models.TextField()
-    is_managed = models.BooleanField(max_length=255)
-    user_id = models.TextField()
-    user_password = models.TextField()
-    salt = models.CharField(max_length=128)
+    owner = models.ForeignKey(User)
+    name = models.TextField()
+    form = '' # form class which is used for setup
+
+    @staticmethod
+    def all_types():
+        """
+        Return all subclasses
+        """
+        return BaseCredential.__subclasses__()
+
+    @staticmethod
+    def type():
+        """
+        Return type
+        """
+        return 'BaseCredential'
+
+    class Meta:
+        unique_together = (('owner', 'name'),)
+
+class APIKeyCredential(BaseCredential):
+    """
+    Credential which work with an API Key
+    """
+    api_key = fields.EncryptedField()
+    form = 'supervisr.core.forms.provider.NewCredentialAPIForm'
+
+    @staticmethod
+    def type():
+        """
+        Return type
+        """
+        return _('API Key')
+
+class UserPasswordCredential(BaseCredential):
+    """
+    Credentials which need a Username and Password
+    """
+    username = models.TextField()
+    password = fields.EncryptedField()
+    form = 'supervisr.core.forms.provider.NewCredentialUserPasswordForm'
+
+    @staticmethod
+    def type():
+        """
+        Return type
+        """
+        return _('Username and Password')
+
+class ProviderInstance(Product):
+    """
+    Basic Provider Instance
+    """
+
+    provider_path = models.TextField()
+    credentials = models.ForeignKey('BaseCredential')
+
+    @property
+    def provider(self):
+        """
+        Return instance of provider saved
+        """
+        path_parts = self.provider_path.split('.')
+        module = import_module('.'.join(path_parts[:-1]))
+        _class = getattr(module, path_parts[-1])
+        return _class(self.credentials)
+
+    def __str__(self):
+        return self.name
 
 # class Service(CreatedUpdatedModel):
 #     """

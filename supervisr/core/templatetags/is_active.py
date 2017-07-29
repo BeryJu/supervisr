@@ -1,10 +1,13 @@
 """
 Supervisr Core navbar Templatetag
 """
+import logging
 
 from django import template
 
 register = template.Library()
+
+LOGGER = logging.getLogger(__name__)
 
 @register.simple_tag(takes_context=True)
 def is_active(context, *args):

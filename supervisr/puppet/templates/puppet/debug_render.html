@@ -1,0 +1,46 @@
+{% extends "puppet/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+{% load setting %}
+
+{% block title %}
+{% supervisr_title "Debug Renderer" %}
+{% endblock %}
+
+{% block content %}
+<h1><clr-icon shape="file" size="48"></clr-icon>{% trans "Debug Renderer" %}</h1>
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        {% trans "Template" %}
+      </div>
+      <div class="card-block">
+        <form method="POST">
+          {% csrf_token %}
+          <div class="card-text">
+            <div class="form-group">
+              <label for="templatepath">{% trans "Template Path" %}</label>
+              <input type="text" name="templatepath" value="{{ path }}">
+            </div>
+            <button type="submit" class="btn btn-primary">{% trans "Render" %}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% if rendered %}
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          {% trans "Result" %}
+        </div>
+        <div class="card-block">
+          <pre>{{ rendered }}</pre>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
