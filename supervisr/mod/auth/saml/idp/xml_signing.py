@@ -12,26 +12,25 @@ from lxml import etree
 from signxml import XMLSigner
 from signxml.util import strip_pem_header
 
+from supervisr.core.models import Setting
 from supervisr.core.utils import render_to_string
-from supervisr.mod.auth.saml.idp import saml2idp_metadata as smd
 
 LOGGER = logging.getLogger(__name__)
 
-def load_certificate(config, strip=True):
+def load_certificate(strip=False):
     """
     Get Public key from config
     """
-    if smd.CERTIFICATE_DATA in config:
-        if strip:
-            return strip_pem_header(config.get(smd.CERTIFICATE_DATA, '')).replace('\n', '')
-        return config.get(smd.CERTIFICATE_DATA, '')
+    cert = Setting.get('mod:auth:saml:idp:certificate')
+    if strip:
+        return strip_pem_header(cert).replace('\n', '')
+    return cert
 
-def load_private_key(config):
+def load_private_key():
     """
     Get Private Key from config
     """
-    if smd.PRIVATE_KEY_DATA in config:
-        return config.get(smd.PRIVATE_KEY_DATA)
+    return Setting.get('mod:auth:saml:idp:private_key')
 
 def sign_with_signxml(private_key, data, cert, reference_uri=None):
     """

@@ -12,5 +12,24 @@ class SupervisrModAuthSAMLProvider(SupervisrAppConfig):
 
     name = 'supervisr.mod.auth.saml.idp'
     label = 'supervisr/mod/auth/saml/idp'
+    verbose_name = 'Supervisr SAML2 IDP'
     title_moddifier = lambda self, title, request: 'SAML2/IDP'
     admin_url_name = 'supervisr/mod/auth/saml/idp:admin_settings'
+    init_modules = [
+        'processors.demo',
+        'processors.shib',
+        'processors.salesforce',
+        'processors.google_apps',
+        'models',
+        ]
+
+    def ensure_settings(self):
+        from supervisr.core.models import Setting
+        domain = Setting.get('core:domain')
+        return {
+            'mod:auth:saml:idp:issuer': domain,
+            'mod:auth:saml:idp:certificate': '',
+            'mod:auth:saml:idp:private_key': '',
+            'mod:auth:saml:idp:signing': True,
+            'mod:auth:saml:idp:autosubmit': True,
+        }

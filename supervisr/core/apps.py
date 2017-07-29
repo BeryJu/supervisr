@@ -33,6 +33,7 @@ class SupervisrAppConfig(AppConfig):
         #self.check_requirements()
         self.load_init()
         self.merge_settings()
+        self.run_ensure_settings()
         super(SupervisrAppConfig, self).ready()
 
     # pylint: disable=no-self-use

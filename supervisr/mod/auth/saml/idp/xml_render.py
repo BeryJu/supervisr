@@ -7,7 +7,6 @@ from __future__ import absolute_import
 import logging
 
 from supervisr.core.utils import render_to_string
-from supervisr.mod.auth.saml.idp import saml2idp_metadata as smd
 from supervisr.mod.auth.saml.idp.xml_signing import (get_signature_xml,
                                                      load_certificate,
                                                      load_private_key,
@@ -53,7 +52,10 @@ def _get_subject(params):
     """
     params['SUBJECT_STATEMENT'] = render_to_string('saml/xml/subject.xml', params)
 
-def _get_assertion_xml(template, parameters, signed=False):
+def get_assertion_xml(template, parameters, signed=False):
+    """
+    Get XML for Assertion
+    """
     # Reset signature.
     params = {}
     params.update(parameters)
@@ -72,24 +74,6 @@ def _get_assertion_xml(template, parameters, signed=False):
     signature_xml = get_signature_xml()
     params['ASSERTION_SIGNATURE'] = signature_xml
     return render_to_string(template, params)
-
-def get_assertion_googleapps_xml(parameters, signed=False):
-    """
-    Get Assertion XML for Google Apps
-    """
-    return _get_assertion_xml('saml/xml/assertions/google_apps.xml', parameters, signed)
-
-def get_assertion_salesforce_xml(parameters, signed=False):
-    """
-    Get Assertion XML for Salesforce
-    """
-    return _get_assertion_xml('saml/xml/assertions/salesforce.xml', parameters, signed)
-
-def get_assertion_generic_xml(parameters, signed=True):
-    """
-    Get Assertion XML for Generic
-    """
-    return _get_assertion_xml('saml/xml/assertions/generic.xml', parameters, signed)
 
 def get_response_xml(parameters, signed=False, assertion_id=''):
     """
@@ -113,10 +97,9 @@ def get_response_xml(parameters, signed=False, assertion_id=''):
         params['RESPONSE_SIGNATURE'] = signature_xml
         raw_response = render_to_string('saml/xml/response.xml', params)
         # LOGGER.debug("Raw response: %s", raw_response)
-        cfg = smd.SAML2IDP_CONFIG
-        raw_cert = load_certificate(cfg, strip=False)
+        raw_cert = load_certificate()
         signed = sign_with_signxml(
-            load_private_key(cfg), raw_response, raw_cert, reference_uri=assertion_id) \
+            load_private_key(), raw_response, raw_cert, reference_uri=assertion_id) \
             .decode("utf-8")
         LOGGER.debug('Signed: %s', signed)
         return signed

@@ -57,5 +57,3 @@ zcepulF4OHOf+b2vKPmgN/HoQQyISw6l7SwuOH0gQI+SOxyBNuIIqN0=
     'issuer': 'http://localhost:8000',
     'signing': True,
 }
-
-SAML2IDP_REMOTES = {}
