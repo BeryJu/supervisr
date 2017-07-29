@@ -7,10 +7,14 @@ import shutil
 from functools import wraps
 from glob import glob
 
-import django
-from django.db.utils import IntegrityError
 from invoke import task
 from invoke.platform import WINDOWS
+
+try:
+    import django
+    from django.db.utils import IntegrityError
+except ImportError:
+    print("Django could not be imported")
 
 if WINDOWS:
     PYTHON_EXEC = 'python'
