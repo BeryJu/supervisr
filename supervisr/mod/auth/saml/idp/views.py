@@ -9,13 +9,14 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.urlresolvers import reverse
 from django.core.validators import URLValidator
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.http import (HttpResponse, HttpResponseBadRequest,
+                         HttpResponseRedirect)
 from django.shortcuts import redirect, render
-from django.template import loader
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
 
+from supervisr.core.utils import render_to_string
 from supervisr.mod.auth.saml.idp import (exceptions, metadata, registry,
                                          saml2idp_metadata, xml_signing)
 
@@ -172,7 +173,10 @@ def descriptor(request):
         'slo_url': slo_url,
         'sso_url': sso_url
     }
-    return render_xml(request, 'saml/xml/metadata.xml', ctx)
+    metadata = render_to_string('saml/xml/metadata.xml', ctx)
+    response = HttpResponse(metadata, content_type='application/xml')
+    response['Content-Disposition'] = 'attachment; filename="sv_metadata.xml'
+    return response
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -191,9 +195,7 @@ def admin_settings(req, mod):
         'slo_url': slo_url,
         'sso_url': sso_url
     }
-    template = loader.get_template('saml/xml/metadata.xml')
-
-    metadata = template.render(ctx)
+    metadata = render_to_string('saml/xml/metadata.xml', ctx)
     return render(req, 'saml/idp/settings.html', {
         'metadata': escape(metadata),
         'mod': mod

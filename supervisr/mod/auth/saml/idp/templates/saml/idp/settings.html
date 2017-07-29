@@ -19,6 +19,7 @@
           <section class="form-block">
             <pre lang="xml" >{{ metadata }}</pre>
           </section>
+          <a href="{% url 'supervisr/mod/auth/saml/idp:metadata_xml' %}" class="btn btn-primary"><clr-icon shape="download"></clr-icon>{% trans 'Download Metadata' %}</a>
         </div>
       </form>
     </div>
