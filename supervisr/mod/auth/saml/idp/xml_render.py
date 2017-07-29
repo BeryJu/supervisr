@@ -7,7 +7,11 @@ from __future__ import absolute_import
 import logging
 
 from supervisr.core.utils import render_to_string
-from supervisr.mod.auth.saml.idp.xml_signing import get_signature_xml
+from supervisr.mod.auth.saml.idp import saml2idp_metadata as smd
+from supervisr.mod.auth.saml.idp.xml_signing import (get_signature_xml,
+                                                     load_certificate,
+                                                     load_private_key,
+                                                     sign_with_signxml)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -60,17 +64,14 @@ def _get_assertion_xml(template, parameters, signed=False):
     _get_attribute_statement(params)
 
     unsigned = render_to_string(template, params)
-    LOGGER.debug('Unsigned: %s', unsigned)
+    # LOGGER.debug('Unsigned: %s', unsigned)
     if not signed:
         return unsigned
 
     # Sign it.
-    signature_xml = get_signature_xml(unsigned, params['ASSERTION_ID'])
+    signature_xml = get_signature_xml()
     params['ASSERTION_SIGNATURE'] = signature_xml
-    signed = render_to_string(template, params)
-
-    LOGGER.debug('Signed: %s', signed)
-    return signed
+    return render_to_string(template, params)
 
 def get_assertion_googleapps_xml(parameters, signed=False):
     """
@@ -90,7 +91,7 @@ def get_assertion_generic_xml(parameters, signed=True):
     """
     return _get_assertion_xml('saml/xml/assertions/generic.xml', parameters, signed)
 
-def get_response_xml(parameters, signed=False):
+def get_response_xml(parameters, signed=False, assertion_id=''):
     """
     Returns XML for response, with signatures, if signed is True.
     """
@@ -102,14 +103,21 @@ def get_response_xml(parameters, signed=False):
 
     unsigned = render_to_string('saml/xml/response.xml', params)
 
-    LOGGER.debug('Unsigned: %s', unsigned)
+    # LOGGER.debug('Unsigned: %s', unsigned)
     if not signed:
         return unsigned
 
     # Sign it.
-    signature_xml = get_signature_xml(unsigned, params['RESPONSE_ID'])
-    params['RESPONSE_SIGNATURE'] = signature_xml
-    signed = render_to_string('saml/xml/response.xml', params)
-
-    LOGGER.debug('Signed: %s', signed)
-    return signed
+    if signed:
+        signature_xml = get_signature_xml()
+        params['RESPONSE_SIGNATURE'] = signature_xml
+        raw_response = render_to_string('saml/xml/response.xml', params)
+        # LOGGER.debug("Raw response: %s", raw_response)
+        cfg = smd.SAML2IDP_CONFIG
+        raw_cert = load_certificate(cfg, strip=False)
+        signed = sign_with_signxml(
+            load_private_key(cfg), raw_response, raw_cert, reference_uri=assertion_id) \
+            .decode("utf-8")
+        LOGGER.debug('Signed: %s', signed)
+        return signed
+    return render_to_string('saml/xml/response.xml', params)
