@@ -30,7 +30,7 @@ class SupervisrAppConfig(AppConfig):
     title_moddifier = lambda self, label, request: label.title()
 
     def ready(self):
-        self.check_requirements()
+        #self.check_requirements()
         self.load_init()
         self.merge_settings()
         super(SupervisrAppConfig, self).ready()
