@@ -42,7 +42,7 @@ def sign_with_signxml(private_key, data, cert, reference_uri=None):
         password=None, backend=default_backend())
     # pylint: disable=no-member
     root = etree.fromstring(data)
-    signer = XMLSigner()
+    signer = XMLSigner(c14n_algorithm='http://www.w3.org/2001/10/xml-exc-c14n#')
     # pylint: disable=no-member
     return etree.tostring(signer.sign(root, key=key, cert=cert, reference_uri=reference_uri))
 
