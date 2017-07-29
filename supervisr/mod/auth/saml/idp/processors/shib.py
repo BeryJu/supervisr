@@ -3,15 +3,17 @@ Shib Processor
 """
 
 from supervisr.mod.auth.saml.idp.base import Processor
-from supervisr.mod.auth.saml.idp.xml_render import get_assertion_salesforce_xml
+from supervisr.mod.auth.saml.idp.xml_render import get_assertion_xml
 
 
 class ShibProcessor(Processor):
     """
     Shib-specific Processor
     """
+
     def _format_assertion(self):
-        self._assertion_xml = get_assertion_salesforce_xml(self._assertion_params, signed=True)
+        self._assertion_xml = get_assertion_xml(
+            'saml/xml/assertions/generic.xml', self._assertion_params, signed=True)
 
     def _determine_audience(self):
         """

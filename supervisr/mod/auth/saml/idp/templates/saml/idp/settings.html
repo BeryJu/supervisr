@@ -8,19 +8,38 @@
 {% endblock %}
 
 {% block module_content %}
+<h2><clr-icon shape="application" size="32"></clr-icon>{% trans 'SAML2 IDP' %}</h2>
 <div class="row">
   <div class="col-md-12">
     <div class="card">
       <div class="card-header">
-        <h2><clr-icon shape="bank" size="32"></clr-icon>{% trans 'SAML IDP Metadata' %}</h2>
+        <h2><clr-icon shape="settings" size="32"></clr-icon>{% trans 'Settings' %}</h2>
       </div>
       <form role="form" method="POST">
         <div class="card-block">
-          <section class="form-block">
-            <pre lang="xml" >{{ metadata }}</pre>
-          </section>
+          {% include 'blocks/block_form.html' with form=settings_form %}
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-primary">{% trans 'Update' %}</button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h2><clr-icon shape="bank" size="32"></clr-icon>{% trans 'Metadata' %}</h2>
+      </div>
+      <div class="card-block">
+        <section class="form-block">
+          <pre lang="xml" >{{ metadata }}</pre>
+        </section>
+      </div>
+      <div class="card-footer">
+        <a href="{% url 'supervisr/mod/auth/saml/idp:metadata_xml' %}" class="btn btn-primary"><clr-icon shape="download"></clr-icon>{% trans 'Download Metadata' %}</a>
+      </div>
     </div>
   </div>
 </div>
