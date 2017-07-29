@@ -30,5 +30,4 @@ def find_processor(request):
             # Log these, but keep looking.
             LOGGER.debug('%s %s', proc, exc)
 
-    raise CannotHandleAssertion(
-        'None of the processors in SAML2IDP_REMOTES could handle this request.')
+    raise CannotHandleAssertion('No Processors to handle this request.')
