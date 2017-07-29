@@ -14,7 +14,7 @@ class SAMLRemote(CreatedUpdatedModel):
     Model to save information about a Remote SAML Endpoint
     """
 
-    name = models.TextField(unique=True)
+    name = models.CharField(max_length=255, unique=True)
     acs_url = models.URLField()
     processor_path = models.CharField(max_length=255, choices=[])
 

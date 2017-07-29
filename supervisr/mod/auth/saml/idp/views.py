@@ -19,6 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from supervisr.core.models import Setting
 from supervisr.core.utils import render_to_string
+from supervisr.core.views.common import error_response
 from supervisr.mod.auth.saml.idp import exceptions, registry, xml_signing
 from supervisr.mod.auth.saml.idp.forms.settings import SettingsForm
 
@@ -96,7 +97,10 @@ def login_process(request):
     """
     LOGGER.debug("Request: %s", request)
     proc = registry.find_processor(request)
-    return _generate_response(request, proc)
+    try:
+        return _generate_response(request, proc)
+    except exceptions.CannotHandleAssertion as exc:
+        return error_response(request, str(exc))
 
 @csrf_exempt
 def logout(request):

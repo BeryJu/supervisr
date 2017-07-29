@@ -51,3 +51,12 @@ def uncaught_500(req):
         # return a json/xml/yaml message if this was an api call
         return api_response(req, {'message': 'unexpected_error'})
     return render(req, 'common/error.html', {'code': 500})
+
+def error_response(req, message):
+    """
+    Show an error view with message
+    """
+    if 'api' in req.path:
+        # return a json/xml/yaml message if this was an api call
+        return api_response(req, {'message': message})
+    return render(req, 'common/error.html', {'code': 500, 'message': message})
