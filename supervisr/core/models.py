@@ -173,6 +173,8 @@ class Setting(CreatedUpdatedModel):
             setting = Setting.objects.get_or_create(
                 key=key,
                 defaults={'value': default})[0]
+            if setting.value == 'True':
+                return True
             return setting.value
         except (OperationalError, ProgrammingError):
             return default

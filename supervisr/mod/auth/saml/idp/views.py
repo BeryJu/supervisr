@@ -4,20 +4,23 @@ Supervisr SAML IDP Views
 import logging
 import os
 
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.exceptions import ImproperlyConfigured, ValidationError
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.core.validators import URLValidator
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.http import (HttpResponse, HttpResponseBadRequest,
+                         HttpResponseRedirect)
 from django.shortcuts import redirect, render
-from django.template import loader
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.html import escape
+from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
-from supervisr.mod.auth.saml.idp import (exceptions, metadata, registry,
-                                         saml2idp_metadata, xml_signing)
+from supervisr.core.models import Setting
+from supervisr.core.utils import render_to_string
+from supervisr.mod.auth.saml.idp import exceptions, registry, xml_signing
+from supervisr.mod.auth.saml.idp.forms.settings import SettingsForm
 
 LOGGER = logging.getLogger(__name__)
 
@@ -83,32 +86,7 @@ def login_begin(request):
         return HttpResponseBadRequest('the SAML request payload is missing')
 
     request.session['RelayState'] = source.get('RelayState', '')
-    return redirect(reverse('idp:saml_login_process'))
-
-
-@login_required
-def login_init(request, resource, **kwargs):
-    """
-    Initiates an IdP-initiated link to a simple SP resource/target URL.
-    """
-    name, sp_config = metadata.get_config_for_resource(resource)
-    proc = registry.get_processor(name, sp_config)
-
-    try:
-        linkdict = dict(metadata.get_links(sp_config))
-        pattern = linkdict[resource]
-    except KeyError:
-        raise ImproperlyConfigured(
-            'Cannot find link resource in SAML2IDP_REMOTE setting: "%s"' % resource)
-    is_simple_link = ('/' not in resource)
-    if is_simple_link:
-        simple_target = kwargs['target']
-        url = pattern % simple_target
-    else:
-        url = pattern % kwargs
-    proc.init_deep_link(request, sp_config, url)
-    return _generate_response(request, proc)
-
+    return redirect(reverse('supervisr/mod/auth/saml/idp:saml_login_process'))
 
 @login_required
 def login_process(request):
@@ -161,40 +139,49 @@ def descriptor(request):
     """
     Replies with the XML Metadata IDSSODescriptor.
     """
-    idp_config = saml2idp_metadata.SAML2IDP_CONFIG
-    entity_id = idp_config['issuer']
-    slo_url = request.build_absolute_uri(reverse('idp:saml_logout'))
-    sso_url = request.build_absolute_uri(reverse('idp:saml_login_begin'))
-    pubkey = xml_signing.load_certificate(idp_config)
+    entity_id = Setting.get('mod:auth:saml:idp:issuer')
+    slo_url = request.build_absolute_uri(reverse('supervisr/mod/auth/saml/idp:saml_logout'))
+    sso_url = request.build_absolute_uri(reverse('supervisr/mod/auth/saml/idp:saml_login_begin'))
+    pubkey = xml_signing.load_certificate(strip=True)
     ctx = {
         'entity_id': entity_id,
         'cert_public_key': pubkey,
         'slo_url': slo_url,
         'sso_url': sso_url
     }
-    return render_xml(request, 'saml/xml/metadata.xml', ctx)
+    metadata = render_to_string('saml/xml/metadata.xml', ctx)
+    response = HttpResponse(metadata, content_type='application/xml')
+    response['Content-Disposition'] = 'attachment; filename="sv_metadata.xml'
+    return response
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def admin_settings(req, mod):
+def admin_settings(request, mod):
     """
     Show view with metadata xml
     """
-    idp_config = saml2idp_metadata.SAML2IDP_CONFIG
-    entity_id = idp_config['issuer']
-    slo_url = req.build_absolute_uri(reverse('idp:saml_logout'))
-    sso_url = req.build_absolute_uri(reverse('idp:saml_login_begin'))
-    pubkey = xml_signing.load_certificate(idp_config)
-    ctx = {
-        'entity_id': entity_id,
-        'cert_public_key': pubkey,
-        'slo_url': slo_url,
-        'sso_url': sso_url
-    }
-    template = loader.get_template('saml/xml/metadata.xml')
+    metadata = descriptor(request).content
 
-    metadata = template.render(ctx)
-    return render(req, 'saml/idp/settings.html', {
+    keys = ['issuer', 'certificate', 'private_key', 'signing']
+    base = 'mod:auth:saml:idp'
+    initial_data = {}
+    for key in keys:
+        initial_data[key] = Setting.get('%s:%s' % (base, key))
+    if request.method == 'POST':
+        settings_form = SettingsForm(request.POST)
+        print(settings_form.errors)
+        if settings_form.is_valid():
+            for key in keys:
+                Setting.set('%s:%s' % (base, key), settings_form.cleaned_data.get(key))
+            Setting.objects.update()
+            messages.success(request, _('Settings successfully updated'))
+        else:
+            messages.error(request, _('Failed to update settings'))
+        return redirect(reverse('supervisr/mod/auth/saml/idp:admin_settings', kwargs={'mod': mod}))
+    else:
+        settings_form = SettingsForm(initial=initial_data)
+    return render(request, 'saml/idp/settings.html', {
         'metadata': escape(metadata),
-        'mod': mod
+        'mod': mod,
+        'settings_form': settings_form
         })
