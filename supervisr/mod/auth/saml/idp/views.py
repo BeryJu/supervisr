@@ -2,14 +2,13 @@
 Supervisr SAML IDP Views
 """
 import logging
-import os
 
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.core.validators import URLValidator
-from django.http import (HttpResponse, HttpResponseBadRequest,
+from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
                          HttpResponseRedirect)
 from django.shortcuts import redirect, render
 from django.utils.datastructures import MultiValueDictKeyError
@@ -17,7 +16,7 @@ from django.utils.html import escape
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
-from supervisr.core.models import Setting
+from supervisr.core.models import Setting, UserProductRelationship
 from supervisr.core.utils import render_to_string
 from supervisr.core.views.common import error_response
 from supervisr.mod.auth.saml.idp import exceptions, registry, xml_signing
@@ -35,32 +34,18 @@ except TypeError:
 BASE_TEMPLATE_DIR = 'saml/idp/'
 
 
-def _get_template_names(filename, processor=None):
-    """
-    Create a list of template names to use based on the processor name. This
-    makes it possible to have processor-specific templates.
-    """
-    specific_templates = []
-    if processor and processor.name:
-        specific_templates = [
-            os.path.join(BASE_TEMPLATE_DIR, processor.name, filename)]
-
-    return specific_templates + [os.path.join(BASE_TEMPLATE_DIR, filename)]
-
-
-def _generate_response(request, processor):
+def _generate_response(request, processor, remote):
     """
     Generate a SAML response using processor and return it in the proper Django
     response.
     """
     try:
         ctx = processor.generate_response()
+        ctx['remote'] = remote
     except exceptions.UserNotAuthorized:
-        template_names = _get_template_names('invalid_user.html', processor)
-        return render(request, template_names)
+        return render(request, 'saml/idp/invalid_user.html')
 
-    template_names = _get_template_names('login.html', processor)
-    return render(request, template_names, ctx)
+    return render(request, 'saml/idp/login.html', ctx)
 
 
 def render_xml(request, template, ctx):
@@ -97,8 +82,19 @@ def login_process(request):
     """
     LOGGER.debug("Request: %s", request)
     try:
-        proc = registry.find_processor(request)
-        return _generate_response(request, proc)
+        proc, remote = registry.find_processor(request)
+        full_res = _generate_response(request, proc, remote)
+        if remote.productextensionsaml2_set.exists() and \
+            remote.productextensionsaml2_set.first().product_set.exists():
+            # Only check if there is a connection from OAuth2 Application to product
+            product = remote.productextensionsaml2_set.first().product_set.first()
+            upr = UserProductRelationship.objects.filter(user=request.user, product=product)
+            # Product is invite_only = True and no relation with user exists
+            if product.invite_only and not upr.exists():
+                LOGGER.error("User '%s' has no invitation to '%s'", request.user, product)
+                messages.error(request, "You have no access to '%s'" % product.name)
+                raise Http404
+        return full_res
     except exceptions.CannotHandleAssertion as exc:
         return error_response(request, str(exc))
 
