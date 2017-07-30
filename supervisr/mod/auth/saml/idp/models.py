@@ -4,7 +4,7 @@ Supervisr Auth SAML IDP Models
 
 from django.db import models
 
-from supervisr.core.models import CreatedUpdatedModel
+from supervisr.core.models import CreatedUpdatedModel, ProductExtension
 from supervisr.core.utils import class_to_path
 from supervisr.mod.auth.saml.idp.base import Processor
 
@@ -25,3 +25,13 @@ class SAMLRemote(CreatedUpdatedModel):
 
     def __str__(self):
         return "SAMLRemote %s (processor=%s)" % (self.name, self.processor_path)
+
+class ProductExtensionSAML2(ProductExtension):
+    """
+    Associate a SAML2 Remote with a Product
+    """
+
+    saml_remote = models.ForeignKey(SAMLRemote)
+
+    def __str__(self):
+        return "ProductExtenstion SAML2 %s" % self.saml_remote.name

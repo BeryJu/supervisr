@@ -1,34 +1,46 @@
-{% extends "saml/idp/base.html" %}
+{% extends "core/skel.html" %}
+
+{% load supervisr_title %}
+{% load supervisr_setting %}
+{% load crispy_forms_tags %}
 {% load i18n %}
-{% block content %}
-<div id="logged_in_message">
-{% blocktrans %}You are now signed in at the Identity Provider.{% endblocktrans %}
-<br />
-<span id="logged_in_message_continue">
-{% blocktrans %}Click Continue to return to the Service Provider.{% endblocktrans %}
-</span>
-<span id="logged_in_message_automatic" style="display:none">
-{% blocktrans %}You will now be automatically redirected to the Service Provider.{% endblocktrans %}
-</span>
-</div>
-<form id="logged_in_post_form" method="post" action="{{ acs_url }}">
+
+{% block header %}
+<title>{% supervisr_title 'SSO - SAML2' %}</title>
+{% endblock %}
+
+{% block body %}
+<div class="login-wrapper">
+  <form class="login" method="post" action="{{ acs_url }}">
     <input type="hidden" name="RelayState" value="{{ relay_state }}" />
     <input type="hidden" name="SAMLResponse" value="{{ saml_response }}" />
-    <input id="logged_in_button_continue" type="submit" value="{% trans "Continue" %}" />
-</form>
-{% if autosubmit %}
-<script language="javascript">
-<!--
-/* Hide the submit button and message and automatically submit the form. */
-var msg = document.getElementById('logged_in_message_continue'),
-    aut = document.getElementById('logged_in_message_automatic'),
-    btn = document.getElementById('logged_in_button_continue'),
-    frm = document.getElementById('logged_in_post_form');
-msg.style.display = 'none';
-aut.style.display = 'block';
-btn.style.display = 'none';
-frm.submit();
-//-->
-</script>
-{% endif %}
-{% endblock content %}
+    <label class="title">
+      <clr-icon shape="supervisr" class="is-info" size="48"></clr-icon>
+      {% supervisr_setting 'branding' %}
+    </label>
+    <label class="subtitle">
+      {% trans 'SSO - SAML2' %}
+    </label>
+    <div class="login-group">
+      <p class="subtitle">
+      {% blocktrans with remote=remote.name %}
+        You're about to sign into {{ remote }}
+      {% endblocktrans %}
+      </p>
+      {% if autosubmit %}
+      {% trans 'You will now be automatically redirected to the Service Provider.' %}
+      {% else %}
+      {% trans 'Click Continue to continue.' %}
+      {% endif %}
+      <div class="row">
+        <div class="col-md-6">
+          <input class="btn btn-success btn-block" type="submit" value="{% trans "Continue" %}" />
+        </div>
+        <div class="col-md-6">
+          <a href="{% url 'common-index' %}" class="btn btn-outline btn-block">{% trans "Cancel" %}</a>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

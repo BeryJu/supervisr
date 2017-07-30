@@ -25,7 +25,7 @@ def find_processor(request):
         proc = get_processor(remote)
         try:
             if proc.can_handle(request):
-                return proc
+                return proc, remote
         except CannotHandleAssertion as exc:
             # Log these, but keep looking.
             LOGGER.debug('%s %s', proc, exc)
