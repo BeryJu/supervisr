@@ -21,6 +21,7 @@ class SupervisrModAuthSAMLProvider(SupervisrAppConfig):
         'processors.salesforce',
         'processors.google_apps',
         'processors.generic',
+        'processors.nextcloud',
         'models',
         ]
 
