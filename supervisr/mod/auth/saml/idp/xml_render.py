@@ -22,7 +22,7 @@ def _get_attribute_statement(params):
     PRE-REQ: params['SUBJECT'] has already been created (usually by a call to
     _get_subject().
     """
-    attributes = params.get('ATTRIBUTES', {})
+    attributes = params.get('ATTRIBUTES', [])
     if len(attributes) < 1:
         params['ATTRIBUTE_STATEMENT'] = ''
         return

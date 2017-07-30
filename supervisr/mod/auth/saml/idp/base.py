@@ -177,6 +177,28 @@ class Processor(object):
         """
         Formats _assertion_params as _assertion_xml.
         """
+        self._assertion_params['ATTRIBUTES'] = [
+            {
+                'FriendlyName': 'eduPersonPrincipalName',
+                'Name': 'urn:oid:1.3.6.1.4.1.5923.1.1.1.6',
+                'Value': self._django_request.user.email,
+            },
+            {
+                'FriendlyName': 'cn',
+                'Name': 'urn:oid:2.5.4.3',
+                'Value': self._django_request.user.first_name,
+            },
+            {
+                'FriendlyName': 'mail',
+                'Name': 'urn:oid:0.9.2342.19200300.100.1.3',
+                'Value': self._django_request.user.email,
+            },
+            {
+                'FriendlyName': 'displayName',
+                'Name': 'urn:oid:2.16.840.1.113730.3.1.241',
+                'Value': self._django_request.user.userprofile.username,
+            },
+        ]
         self._assertion_xml = xml_render.get_assertion_xml(
             'saml/xml/assertions/generic.xml', self._assertion_params, signed=True)
 

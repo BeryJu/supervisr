@@ -23,7 +23,7 @@ def load_certificate(strip=False):
     """
     cert = Setting.get('mod:auth:saml:idp:certificate')
     if strip:
-        return strip_pem_header(cert).replace('\n', '')
+        return strip_pem_header(cert.replace('\r', '')).replace('\n', '')
     return cert
 
 def load_private_key():

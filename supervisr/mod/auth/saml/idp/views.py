@@ -96,8 +96,8 @@ def login_process(request):
     Presents a SAML 2.0 Assertion for POSTing back to the Service Provider.
     """
     LOGGER.debug("Request: %s", request)
-    proc = registry.find_processor(request)
     try:
+        proc = registry.find_processor(request)
         return _generate_response(request, proc)
     except exceptions.CannotHandleAssertion as exc:
         return error_response(request, str(exc))
