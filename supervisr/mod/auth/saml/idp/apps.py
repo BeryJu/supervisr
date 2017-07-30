@@ -20,6 +20,7 @@ class SupervisrModAuthSAMLProvider(SupervisrAppConfig):
         'processors.shib',
         'processors.salesforce',
         'processors.google_apps',
+        'processors.generic',
         'models',
         ]
 
