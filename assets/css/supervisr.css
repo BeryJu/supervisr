@@ -7,6 +7,10 @@
     margin: 0;
 }
 
+.login-wrapper {
+    background: url('../img/login_bg.jpg') !important;
+}
+
 .login-wrapper .form-group {
     padding-left: 0 !important;
 }
