@@ -88,7 +88,8 @@ def login_process(request):
             user=request.user,
             message=_('You authenticated %s (via SAML)' % remote.name),
             request=request,
-            current=False)
+            current=False,
+            hidden=False)
         # Return redirect form
         url = request.POST.get('ACSUrl')
         attrs = {

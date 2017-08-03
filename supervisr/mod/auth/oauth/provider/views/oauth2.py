@@ -48,5 +48,6 @@ class SupervisrAuthorizationView(AuthorizationView):
             user=request.user,
             message=_('You authenticated %s (via OAuth)' % app.name),
             request=request,
-            current=False)
+            current=False,
+            hidden=False)
         return super(SupervisrAuthorizationView, self).post(request, *args, **kwargs)
