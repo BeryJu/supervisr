@@ -131,8 +131,6 @@ def time(statistic_key):
             time_end = timestamp()
 
             stat_set(statistic_key, (time_end - time_start) * 1000)
-            LOGGER.info("'%s' took %2.2f to run", statistic_key, time_end-time_start)
-
             return result
 
         return timed

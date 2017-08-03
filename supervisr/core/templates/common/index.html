@@ -1,11 +1,43 @@
 {% extends "common/base.html" %}
 
+{% load b64 %}
 {% load supervisr_title %}
 {% load i18n %}
 {% load gravatar %}
 
 {% block title %}
 {% supervisr_title "Overview" %}
+{% endblock %}
+
+{% block header %}
+<style>
+  .apps ul {
+    background: #fff;
+    margin: 0;
+    overflow: hidden;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .apps ul li {
+    width: 33%;
+    color: black;
+    padding: 18px 0;
+    text-align: center;
+  }
+
+  .apps ul li a {
+    color: black;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .apps ul li a img {
+    max-width: 64px;
+    margin: auto;
+  }
+</style>
 {% endblock %}
 
 {% block content_area %}
@@ -107,24 +139,28 @@
         {% trans "Quicklaunch" %}
       </div>
       <div class="card-block">
-        <div class="card-text">
-          {% if hosted_applications %}
-          <table class="table table-noborder table-compact table-card">
-            <tbody>
-              {% for app in hosted_applications %}
-              <tr>
-                <td>{{ app.name }}</td>
-                <td><a href="{{ app.product.management_url }}" class="btn btn-primary btn-sm">{% trans "Open" %}</a></td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-          {% else %}
-          <div class="card-text">
-            <p>{% trans "No Hosted Applications yet!" %}</p>
-          </div>
-          {% endif %}
+        {% if hosted_applications %}
+         <div class="launcher">
+           <div class="app-launcher">
+             <div class="apps">
+               <ul>
+                  {% for app in hosted_applications %}
+                  <li>
+                    <a href="{{ app.product.management_url }}">
+                      <img src="data:image/png;base64,{{ app.product.icon.file|b64encode }}" alt="{{ app.name }} Icon">
+                      {{ app.name }}
+                    </a>
+                  </li>
+                  {% endfor %}
+               </ul>
+             </div>
+            </div>
         </div>
+        {% else %}
+        <div class="card-text">
+          <p>{% trans "No Hosted Applications yet!" %}</p>
+        </div>
+        {% endif %}
       </div>
     </div>
   </div>

@@ -100,7 +100,7 @@ class CastableModel(models.Model):
                 attr = getattr(self, name)
                 if isinstance(attr, self.__class__):
                     return attr
-            except (AttributeError, ObjectDoesNotExist):
+            except (AttributeError, ObjectDoesNotExist, OperationalError):
                 pass
         return self
 
@@ -302,9 +302,10 @@ class Product(CreatedUpdatedModel, CastableModel):
     managed = models.BooleanField(default=True)
     management_url = models.URLField(max_length=1000, blank=True, null=True)
     extensions = models.ManyToManyField(ProductExtension, blank=True)
+    icon = models.ImageField(blank=True, default='')
 
     def __str__(self):
-        return "%s %s (%s)" % (self.__class__.__name__, self.name, self.description)
+        return "%s %s (%s)" % (self.cast().__class__.__name__, self.name, self.description)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # Auto generate slug
