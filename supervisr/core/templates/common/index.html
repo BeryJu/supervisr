@@ -33,7 +33,8 @@
     flex-direction: column;
   }
 
-  .apps ul li a img {
+  .apps ul li a img,
+  .apps ul li a clr-icon {
     max-width: 64px;
     margin: auto;
   }
@@ -147,7 +148,11 @@
                   {% for app in hosted_applications %}
                   <li>
                     <a href="{{ app.product.management_url }}">
+                      {% if app.product.icon %}
                       <img src="data:image/png;base64,{{ app.product.icon.file|b64encode }}" alt="{{ app.name }} Icon">
+                      {% else %}
+                      <clr-icon shape="application" size="64"></clr-icon>
+                      {% endif %}
                       {{ app.name }}
                     </a>
                   </li>
