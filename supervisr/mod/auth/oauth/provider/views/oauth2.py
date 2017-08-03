@@ -6,9 +6,9 @@ import logging
 
 from django.contrib import messages
 from django.http import Http404
-from oauth2_provider.views.base import AuthorizationView
-from oauth2_provider.models import get_application_model
 from django.utils.translation import ugettext as _
+from oauth2_provider.models import get_application_model
+from oauth2_provider.views.base import AuthorizationView
 
 from supervisr.core.models import Event, UserProductRelationship
 
