@@ -112,6 +112,7 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 LOGIN_REDIRECT_URL = 'user-index'
 
 # Settings are taken from DB, these are needed for django-recaptcha to work
