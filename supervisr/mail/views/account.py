@@ -11,7 +11,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render, reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.core.models import UserProductRelationship
+from supervisr.core.models import Event, UserProductRelationship
 from supervisr.core.views.wizard import BaseWizardView
 from supervisr.mail.forms.account import (MailAccountForm,
                                           MailAccountFormAlias,
@@ -125,6 +125,11 @@ def account_set_password(req, domain, account):
 
             messages.success(req, _('Successfully set password for %(account)s' \
                              % {'account': r_account.email}))
+            Event.create(
+                user=req.user,
+                message=_('You reset the password for %(account)s' % {'account': r_account.email}),
+                request=req,
+                current=False)
             LOGGER.info("Updated password for %s", r_account.email)
             return redirect(reverse('supervisr/mail:mail-account-index'))
 
