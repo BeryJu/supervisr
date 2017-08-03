@@ -6,3 +6,4 @@ django-recaptcha
 docutils
 pyyaml
 passlib
+Pillow
