@@ -16,7 +16,7 @@ from django.utils.html import escape
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
-from supervisr.core.models import Setting, UserProductRelationship
+from supervisr.core.models import Event, Setting, UserProductRelationship
 from supervisr.core.utils import render_to_string
 from supervisr.core.views.common import error_response
 from supervisr.mod.auth.saml.idp import exceptions, registry, xml_signing
@@ -81,22 +81,40 @@ def login_process(request):
     Presents a SAML 2.0 Assertion for POSTing back to the Service Provider.
     """
     LOGGER.debug("Request: %s", request)
-    try:
-        proc, remote = registry.find_processor(request)
-        full_res = _generate_response(request, proc, remote)
-        if remote.productextensionsaml2_set.exists() and \
-            remote.productextensionsaml2_set.first().product_set.exists():
-            # Only check if there is a connection from OAuth2 Application to product
-            product = remote.productextensionsaml2_set.first().product_set.first()
-            upr = UserProductRelationship.objects.filter(user=request.user, product=product)
-            # Product is invite_only = True and no relation with user exists
-            if product.invite_only and not upr.exists():
-                LOGGER.error("User '%s' has no invitation to '%s'", request.user, product)
-                messages.error(request, "You have no access to '%s'" % product.name)
-                raise Http404
-        return full_res
-    except exceptions.CannotHandleAssertion as exc:
-        return error_response(request, str(exc))
+    proc, remote = registry.find_processor(request)
+    if request.method == 'POST' and request.POST.get('ACSUrl', None):
+        # User accepted request
+        Event.create(
+            user=request.user,
+            message=_('You authenticated %s (via SAML)' % remote.name),
+            request=request,
+            current=False)
+        # Return redirect form
+        url = request.POST.get('ACSUrl')
+        attrs = {
+            'SAMLResponse': request.POST.get('SAMLResponse'),
+            'RelayState': request.POST.get('RelayState')
+        }
+        return render(request, 'core/autosubmit_form.html', {
+            'url': url,
+            'attrs': attrs
+            })
+    else:
+        try:
+            full_res = _generate_response(request, proc, remote)
+            if remote.productextensionsaml2_set.exists() and \
+                remote.productextensionsaml2_set.first().product_set.exists():
+                # Only check if there is a connection from OAuth2 Application to product
+                product = remote.productextensionsaml2_set.first().product_set.first()
+                upr = UserProductRelationship.objects.filter(user=request.user, product=product)
+                # Product is invite_only = True and no relation with user exists
+                if product.invite_only and not upr.exists():
+                    LOGGER.error("User '%s' has no invitation to '%s'", request.user, product)
+                    messages.error(request, "You have no access to '%s'" % product.name)
+                    raise Http404
+            return full_res
+        except exceptions.CannotHandleAssertion as exc:
+            return error_response(request, str(exc))
 
 @csrf_exempt
 def logout(request):

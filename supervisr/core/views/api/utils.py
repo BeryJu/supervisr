@@ -36,6 +36,8 @@ def api_response_openid(data):
     remap_table = {
         'id': 'sub',
         'pk': 'sub',
+        'first_name': 'name',
+        'username': 'preferred_username',
     }
     for init_key, dest_key in remap_table.items():
         if init_key in data:
