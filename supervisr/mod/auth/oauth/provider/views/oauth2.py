@@ -5,7 +5,7 @@ Supervisr OAuth2 Views
 import logging
 
 from django.contrib import messages
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from oauth2_provider.models import get_application_model
 from oauth2_provider.views.base import AuthorizationView
@@ -37,6 +37,14 @@ class SupervisrAuthorizationView(AuthorizationView):
                     LOGGER.error("User '%s' has no invitation to '%s'", request.user, product)
                     messages.error(request, "You have no access to '%s'" % product.name)
                     raise Http404
+            if isinstance(full_res, HttpResponseRedirect):
+                # Application has skip authorization on
+                Event.create(
+                    user=request.user,
+                    message=_('You authenticated %s (via OAuth) (skipped Authz)' % app.name),
+                    request=request,
+                    current=False,
+                    hidden=False)
         return full_res
 
     def post(self, request, *args, **kwargs):

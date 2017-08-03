@@ -1,6 +1,5 @@
 {% extends "common/base.html" %}
 
-{% load b64 %}
 {% load supervisr_title %}
 {% load i18n %}
 {% load gravatar %}
@@ -35,7 +34,8 @@
 
   .apps ul li a img,
   .apps ul li a clr-icon {
-    max-width: 64px;
+    width: 64px;
+    height: 64px;
     margin: auto;
   }
 </style>
@@ -149,7 +149,7 @@
                   <li>
                     <a href="{{ app.product.management_url }}">
                       {% if app.product.icon %}
-                      <img src="data:image/png;base64,{{ app.product.icon.file|b64encode }}" alt="{{ app.name }} Icon">
+                      <img src="data:image/png;base64,{{ app.product.icon_b64 }}" alt="{{ app.name }} Icon">
                       {% else %}
                       <clr-icon shape="application" size="64"></clr-icon>
                       {% endif %}
