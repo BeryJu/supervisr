@@ -14,7 +14,6 @@ from importlib import import_module
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.cache import cache
 from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Max, options
@@ -311,17 +310,12 @@ class Product(CreatedUpdatedModel, CastableModel):
     @property
     def icon_b64(self):
         """
-        Return cached base64 version of icon
+        Return base64 version of icon
         """
-        key = '%s-icon' % self.uuid
-        if not cache.get(key):
-            try:
-                b64 = base64.b64encode(self.icon.read())
-                cache.set(key, b64)
-                return b64
-            except ValueError:
-                return ''
-        return cache.get(key)
+        try:
+            return base64.b64encode(self.icon.read())
+        except ValueError:
+            return ''
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # Auto generate slug
