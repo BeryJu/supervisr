@@ -289,7 +289,7 @@ class Product(CreatedUpdatedModel, CastableModel):
     are assumed to be managed services.
     """
     product_id = models.AutoField(primary_key=True)
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     name = models.TextField()
     slug = models.SlugField(blank=True)
     description = models.TextField(blank=True)

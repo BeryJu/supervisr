@@ -22,7 +22,11 @@
       {% if message %}
       <p>{{ message }}</p>
       {% else %}
-      <p>Well, that wasn't supposed to happen. Tell <a href="https://twitter.com/BeryJu">@BeryJu</a> he fucked up.</p>
+        {% if code == 404 %}
+        <p>{% trans 'Not found.' %}</p>
+        {% else %}
+        <p>{% trans 'An unexpected Error occurred. The Admin team has been notified.' %}</p>
+        {% endif %}
       {% endif %}
       <small>Error Code: {{ code }}</small>
     </div>
