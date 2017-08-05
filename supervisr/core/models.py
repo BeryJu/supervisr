@@ -314,7 +314,7 @@ class Product(CreatedUpdatedModel, CastableModel):
         Return base64 version of icon
         """
         try:
-            return base64.b64encode(self.icon.read())
+            return 'data:image/png;base64,%s' % base64.b64encode(self.icon.read()).decode('utf-8')
         except ValueError:
             return ''
 
