@@ -152,7 +152,7 @@
                     <a href="{{ app.product.management_url }}">
                       {% if app.product.icon %}
                       {% cache 600 app app.product.uuid %}
-                      <img src="data:image/png;base64,{{ app.product.icon_b64 }}" alt="{{ app.name }} Icon">
+                      <img src="{{ app.product.icon_b64 }}" alt="{{ app.name }} Icon">
                       {% endcache %}
                       {% else %}
                       <clr-icon shape="application" size="64"></clr-icon>
