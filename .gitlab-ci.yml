@@ -26,36 +26,54 @@ coverage:
   script:
     - "inv coverage"
   stage: test
+  cache:
+    paths:
+      - env/
 isort:
   except:
     - prod
   script:
     - "inv isort"
   stage: test
+  cache:
+    paths:
+      - env/
 migrations:
   except:
     - prod
   script:
     - "inv migrate"
   stage: test
+  cache:
+    paths:
+      - env/
 prospector:
   except:
     - prod
   script:
     - "inv prospector"
   stage: test
+  cache:
+    paths:
+      - env/
 pylint:
   except:
     - prod
   script:
     - "inv lint"
   stage: test
+  cache:
+    paths:
+      - env/
 unittest:
   except:
     - prod
   script:
     - "inv unittest"
   stage: test
+  cache:
+    paths:
+      - env/
 
 # Database tests
 unittest_mysql:
@@ -73,6 +91,9 @@ unittest_mysql:
   only:
     - db-*
     - release-*
+  cache:
+    paths:
+      - env/
 unittest_pgsql:
   services:
     - postgres:latest
@@ -88,6 +109,9 @@ unittest_pgsql:
   only:
     - db-*
     - release-*
+  cache:
+    paths:
+      - env/
 
 # Release test
 bundle_release:
