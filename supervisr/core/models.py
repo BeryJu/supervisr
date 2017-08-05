@@ -100,7 +100,7 @@ class CastableModel(models.Model):
                 attr = getattr(self, name)
                 if isinstance(attr, self.__class__):
                     return attr
-            except (AttributeError, ObjectDoesNotExist):
+            except (AttributeError, ObjectDoesNotExist, OperationalError):
                 pass
         return self
 
@@ -173,6 +173,8 @@ class Setting(CreatedUpdatedModel):
             setting = Setting.objects.get_or_create(
                 key=key,
                 defaults={'value': default})[0]
+            if setting.value == 'True':
+                return True
             return setting.value
         except (OperationalError, ProgrammingError):
             return default
@@ -287,7 +289,7 @@ class Product(CreatedUpdatedModel, CastableModel):
     are assumed to be managed services.
     """
     product_id = models.AutoField(primary_key=True)
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     name = models.TextField()
     slug = models.SlugField(blank=True)
     description = models.TextField(blank=True)
@@ -295,14 +297,26 @@ class Product(CreatedUpdatedModel, CastableModel):
     invite_only = models.BooleanField(default=True)
     auto_add = models.BooleanField(default=False)
     auto_all_add = models.BooleanField(default=False)
+    auto_generated = models.BooleanField(default=True)
     users = models.ManyToManyField(User, through='UserProductRelationship')
     revision = models.IntegerField(default=1)
     managed = models.BooleanField(default=True)
     management_url = models.URLField(max_length=1000, blank=True, null=True)
     extensions = models.ManyToManyField(ProductExtension, blank=True)
+    icon = models.ImageField(blank=True, default='')
 
     def __str__(self):
-        return "%s %s (%s)" % (self.__class__.__name__, self.name, self.description)
+        return "%s %s (%s)" % (self.cast().__class__.__name__, self.name, self.description)
+
+    @property
+    def icon_b64(self):
+        """
+        Return base64 version of icon
+        """
+        try:
+            return 'data:image/png;base64,%s' % base64.b64encode(self.icon.read()).decode('utf-8')
+        except ValueError:
+            return ''
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # Auto generate slug
@@ -330,7 +344,7 @@ class Domain(Product):
     This is also used for sub domains, hence the is_sub.
     """
     domain = models.CharField(max_length=253, unique=True)
-    provider = models.ForeignKey('ProviderInstance', blank=True, null=True)
+    provider = models.ForeignKey('ProviderInstance')
     is_sub = models.BooleanField(default=False)
 
     def __str__(self):
@@ -460,7 +474,6 @@ class BaseCredential(CreatedUpdatedModel, CastableModel):
 
     class Meta:
         unique_together = (('owner', 'name'),)
-
 
 class APIKeyCredential(BaseCredential):
     """

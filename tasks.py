@@ -1,21 +1,29 @@
 """
 Supervisr Invoke Tasks
 """
-try:
-    from invoke import task
-    from invoke.platform import WINDOWS
-except ImportError:
-    print("Could not import pyinvoke. Please install by running 'sudo pip3 install invoke'")
-
+import logging
 import os
 import shutil
 from functools import wraps
 from glob import glob
 
+from invoke import task
+from invoke.platform import WINDOWS
+
+try:
+    import django
+    from django.db.utils import IntegrityError
+except ImportError:
+    print("Django could not be imported")
+
 if WINDOWS:
     PYTHON_EXEC = 'python'
 else:
     PYTHON_EXEC = 'python3'
+LOGGER = logging.getLogger(__name__)
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
+os.environ.setdefault("SUPERVISR_LOCAL_SETTINGS", "supervisr.local_settings")
 
 def shell(func):
     """
@@ -40,7 +48,7 @@ def clean(ctx):
     files = glob("**/**/**/*.pyc")
     for file in files:
         os.remove(file)
-    print("Removed %i files" % len(files))
+    LOGGER.info("Removed %i files", len(files))
 
 @task
 def install(ctx, dev=False):
@@ -158,7 +166,45 @@ def docs(ctx):
         os.remove(gen)
     os.remove('docs/source/modules.rst')
     shutil.rmtree('docs/build', ignore_errors=True)
-    print("Cleaned!")
+    LOGGER.info("Cleaned!")
     for module in glob('supervisr/**/'):
         ctx.run('sphinx-apidoc -o docs/source %s' % module)
     ctx.run('sphinx-build -b html docs/source docs/build')
+
+@task
+# pylint: disable=unused-argument
+def sv_list_users(ctx):
+    """
+    Show a list of all users
+    """
+    django.setup()
+    from django.contrib.auth.models import User
+    users = User.objects.all().order_by('pk')
+    LOGGER.info("Listing users...")
+    for user in users:
+        LOGGER.info("id=%d username=%s", user.pk, user.username)
+
+@task
+# pylint: disable=unused-argument
+def sv_make_superuser(ctx, uid):
+    """
+    Make User with uid superuser.
+    This should be run after `./manage.py createsuperuser` or
+    after you sign up on the webinterface as first user
+    """
+    django.setup()
+    from supervisr.core.models import UserProfile
+    from django.contrib.auth.models import User
+    user = User.objects.filter(pk=uid).first()
+    LOGGER.info("About to make '%s' superuser...", user.username)
+    user.is_staff = True
+    user.is_superuser = True
+    user.is_active = True
+    user.save()
+    try:
+        # UserProfile might already exist
+        # if user signed up with webinterface
+        UserProfile.objects.create(user=user)
+    except IntegrityError:
+        pass
+    LOGGER.info("Done!")

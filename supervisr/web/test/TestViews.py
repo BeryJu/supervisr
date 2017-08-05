@@ -23,7 +23,7 @@ class TestWebViews(TestCase):
         """
         Test module_list view
         """
-        req = self.factory.get(reverse('web:web-index'))
+        req = self.factory.get(reverse('supervisr/web:web-index'))
         req.user = User.objects.get(pk=get_system_user())
         res = web.index(req)
         self.assertEqual(res.status_code, 200)

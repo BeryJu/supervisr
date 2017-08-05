@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 
-from ..models import Product, UserProductRelationship
+from supervisr.core.decorators import ifapp
+from supervisr.core.models import Product, UserProductRelationship
 
 
 @login_required
@@ -24,6 +25,16 @@ def view(req, slug):
     """
     Show more specific Information about a product
     """
+    @ifapp('supervisr/static')
+    def redirect_to_static(req, slug):
+        """
+        if static app is installed, use static's productpage
+        """
+        from supervisr.static.views import view
+        return view(req, slug)
+    static = redirect_to_static(req, slug)
+    if static:
+        return static
     product = get_object_or_404(Product, slug=slug)
     # If the product is not invite_only
     # and the user is not associated with the product

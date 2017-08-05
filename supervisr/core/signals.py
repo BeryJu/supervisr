@@ -85,3 +85,11 @@ def crypt6_handle_user_change_pass(signal, user, password, **kwargs):
     upro = user.userprofile
     upro.crypt6_password = sha512_crypt.hash(password)
     upro.save()
+
+@receiver(SIG_SET_STAT)
+# pylint: disable=unused-argument
+def stat_output_verbose(signal, key, value, **kwargs):
+    """
+    Output stats to LOGGER
+    """
+    LOGGER.info("Stats: '%s': '%s'", key, value)

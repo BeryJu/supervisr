@@ -2,6 +2,8 @@
 Supervisr Puppet View Test
 """
 
+import shutil
+
 from django.test import TestCase
 
 from supervisr.core.test.utils import test_request
@@ -13,6 +15,8 @@ class TestPuppetForgeAPI(TestCase):
     """
     Supervisr Puppet View Test
     """
+
+    importer = None
 
     def test_module_list(self):
         """
@@ -52,6 +56,13 @@ class TestPuppetForgeAPI(TestCase):
         Test release_list view
         """
         # Import a module so the template is not empty
-        importer = ForgeImporter()
-        importer.import_module('beryju-windows_oem')
+        self.importer = ForgeImporter()
+        self.importer.import_module('beryju-windows_oem')
         self.assertEqual(test_request(forge_api.release_list).status_code, 200)
+
+    def tearDown(self):
+        """
+        Clean up after importer
+        """
+        if self.importer:
+            shutil.rmtree(self.importer.output_base+"/*", ignore_errors=True)

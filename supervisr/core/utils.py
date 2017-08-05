@@ -131,13 +131,17 @@ def time(statistic_key):
             time_end = timestamp()
 
             stat_set(statistic_key, (time_end - time_start) * 1000)
-            LOGGER.info("'%s' took %2.2f to run", statistic_key, time_end-time_start)
-
             return result
 
         return timed
 
     return outer_wrapper
+
+def class_to_path(cls):
+    """
+    Turn Class (Class or instance) into module path
+    """
+    return '%s.%s' % (cls.__module__, cls.__name__)
 
 def path_to_class(path):
     """

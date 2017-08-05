@@ -5,7 +5,7 @@ Supervisr Static Models
 from django.contrib.auth.models import User
 from django.db import models
 
-from supervisr.core.models import CastableModel, CreatedUpdatedModel
+from supervisr.core.models import CastableModel, CreatedUpdatedModel, Product
 
 
 class StaticPage(CreatedUpdatedModel, CastableModel):
@@ -15,16 +15,20 @@ class StaticPage(CreatedUpdatedModel, CastableModel):
     content = models.TextField()
     template = models.TextField(default='static/generic.html')
     title = models.TextField()
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField()
     author = models.ForeignKey(User)
     published = models.BooleanField(default=False)
     listed = models.BooleanField(default=True)
     views = models.BigIntegerField(default=0)
     has_markdown_enabled = models.BooleanField(default=True)
     has_html_enabled = models.BooleanField(default=True)
+    language = models.CharField(max_length=7, default='en')
 
     def __str__(self):
         return "StaticPage %s (slug=%s)" % (self.title, self.slug)
+
+    class Meta:
+        unique_together = (('slug', 'language',),)
 
 class FilePage(StaticPage):
     """
@@ -46,3 +50,12 @@ class FilePage(StaticPage):
 
     def __str__(self):
         return "FilePage %s (slug=%s, path=%s)" % (self.title, self.slug, self.path)
+
+class ProductPage(StaticPage):
+    """
+    A Page specific for a product
+    """
+    product = models.ForeignKey(Product)
+
+    def __str__(self):
+        return "ProductPage %s (slug=%s, product=%s)" % (self.title, self.slug, self.product)
