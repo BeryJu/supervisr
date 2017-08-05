@@ -262,6 +262,9 @@
         {% else %}
         {{ page.content }}
         {% endif %}
+        {% if page.cast.product and page.cast.product.management_url and user.is_authenticated %}
+        <a href="{{ page.cast.product.management_url }}" class="btn btn-primary">{% trans 'Open' %}</a>
+        {% endif %}
       </div>
     </div>
   </div>
