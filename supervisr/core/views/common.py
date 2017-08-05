@@ -2,6 +2,8 @@
 Supervisr Core Common Views
 """
 
+import sys
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
@@ -47,7 +49,21 @@ def uncaught_500(req):
     """
     Handle an uncaught 500
     """
+    exc = sys.exc_info()
+    message = None
+    if exc:
+        message = exc[1]
+
     if 'api' in req.path:
         # return a json/xml/yaml message if this was an api call
         return api_response(req, {'message': 'unexpected_error'})
-    return render(req, 'common/error.html', {'code': 500})
+    return render(req, 'common/error.html', {'code': 500, 'exc_message': message})
+
+def error_response(req, message):
+    """
+    Show an error view with message
+    """
+    if 'api' in req.path:
+        # return a json/xml/yaml message if this was an api call
+        return api_response(req, {'message': message})
+    return render(req, 'common/error.html', {'code': 500, 'message': message})

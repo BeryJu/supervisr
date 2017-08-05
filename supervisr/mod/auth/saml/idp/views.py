@@ -2,22 +2,25 @@
 Supervisr SAML IDP Views
 """
 import logging
-import os
 
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.exceptions import ImproperlyConfigured, ValidationError
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.core.validators import URLValidator
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
+                         HttpResponseRedirect)
 from django.shortcuts import redirect, render
-from django.template import loader
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.html import escape
+from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
-from supervisr.mod.auth.saml.idp import (exceptions, metadata, registry,
-                                         saml2idp_metadata, xml_signing)
+from supervisr.core.models import Event, Setting, UserProductRelationship
+from supervisr.core.utils import render_to_string
+from supervisr.core.views.common import error_response
+from supervisr.mod.auth.saml.idp import exceptions, registry, xml_signing
+from supervisr.mod.auth.saml.idp.forms.settings import SettingsForm
 
 LOGGER = logging.getLogger(__name__)
 
@@ -31,32 +34,18 @@ except TypeError:
 BASE_TEMPLATE_DIR = 'saml/idp/'
 
 
-def _get_template_names(filename, processor=None):
-    """
-    Create a list of template names to use based on the processor name. This
-    makes it possible to have processor-specific templates.
-    """
-    specific_templates = []
-    if processor and processor.name:
-        specific_templates = [
-            os.path.join(BASE_TEMPLATE_DIR, processor.name, filename)]
-
-    return specific_templates + [os.path.join(BASE_TEMPLATE_DIR, filename)]
-
-
-def _generate_response(request, processor):
+def _generate_response(request, processor, remote):
     """
     Generate a SAML response using processor and return it in the proper Django
     response.
     """
     try:
         ctx = processor.generate_response()
+        ctx['remote'] = remote
     except exceptions.UserNotAuthorized:
-        template_names = _get_template_names('invalid_user.html', processor)
-        return render(request, template_names)
+        return render(request, 'saml/idp/invalid_user.html')
 
-    template_names = _get_template_names('login.html', processor)
-    return render(request, template_names, ctx)
+    return render(request, 'saml/idp/login.html', ctx)
 
 
 def render_xml(request, template, ctx):
@@ -83,32 +72,7 @@ def login_begin(request):
         return HttpResponseBadRequest('the SAML request payload is missing')
 
     request.session['RelayState'] = source.get('RelayState', '')
-    return redirect(reverse('idp:saml_login_process'))
-
-
-@login_required
-def login_init(request, resource, **kwargs):
-    """
-    Initiates an IdP-initiated link to a simple SP resource/target URL.
-    """
-    name, sp_config = metadata.get_config_for_resource(resource)
-    proc = registry.get_processor(name, sp_config)
-
-    try:
-        linkdict = dict(metadata.get_links(sp_config))
-        pattern = linkdict[resource]
-    except KeyError:
-        raise ImproperlyConfigured(
-            'Cannot find link resource in SAML2IDP_REMOTE setting: "%s"' % resource)
-    is_simple_link = ('/' not in resource)
-    if is_simple_link:
-        simple_target = kwargs['target']
-        url = pattern % simple_target
-    else:
-        url = pattern % kwargs
-    proc.init_deep_link(request, sp_config, url)
-    return _generate_response(request, proc)
-
+    return redirect(reverse('supervisr/mod/auth/saml/idp:saml_login_process'))
 
 @login_required
 def login_process(request):
@@ -117,8 +81,41 @@ def login_process(request):
     Presents a SAML 2.0 Assertion for POSTing back to the Service Provider.
     """
     LOGGER.debug("Request: %s", request)
-    proc = registry.find_processor(request)
-    return _generate_response(request, proc)
+    proc, remote = registry.find_processor(request)
+    if request.method == 'POST' and request.POST.get('ACSUrl', None):
+        # User accepted request
+        Event.create(
+            user=request.user,
+            message=_('You authenticated %s (via SAML)' % remote.name),
+            request=request,
+            current=False,
+            hidden=False)
+        # Return redirect form
+        url = request.POST.get('ACSUrl')
+        attrs = {
+            'SAMLResponse': request.POST.get('SAMLResponse'),
+            'RelayState': request.POST.get('RelayState')
+        }
+        return render(request, 'core/autosubmit_form.html', {
+            'url': url,
+            'attrs': attrs
+            })
+    else:
+        try:
+            full_res = _generate_response(request, proc, remote)
+            if remote.productextensionsaml2_set.exists() and \
+                remote.productextensionsaml2_set.first().product_set.exists():
+                # Only check if there is a connection from OAuth2 Application to product
+                product = remote.productextensionsaml2_set.first().product_set.first()
+                upr = UserProductRelationship.objects.filter(user=request.user, product=product)
+                # Product is invite_only = True and no relation with user exists
+                if product.invite_only and not upr.exists():
+                    LOGGER.error("User '%s' has no invitation to '%s'", request.user, product)
+                    messages.error(request, "You have no access to '%s'" % product.name)
+                    raise Http404
+            return full_res
+        except exceptions.CannotHandleAssertion as exc:
+            return error_response(request, str(exc))
 
 @csrf_exempt
 def logout(request):
@@ -161,40 +158,49 @@ def descriptor(request):
     """
     Replies with the XML Metadata IDSSODescriptor.
     """
-    idp_config = saml2idp_metadata.SAML2IDP_CONFIG
-    entity_id = idp_config['issuer']
-    slo_url = request.build_absolute_uri(reverse('idp:saml_logout'))
-    sso_url = request.build_absolute_uri(reverse('idp:saml_login_begin'))
-    pubkey = xml_signing.load_certificate(idp_config)
+    entity_id = Setting.get('mod:auth:saml:idp:issuer')
+    slo_url = request.build_absolute_uri(reverse('supervisr/mod/auth/saml/idp:saml_logout'))
+    sso_url = request.build_absolute_uri(reverse('supervisr/mod/auth/saml/idp:saml_login_begin'))
+    pubkey = xml_signing.load_certificate(strip=True)
     ctx = {
         'entity_id': entity_id,
         'cert_public_key': pubkey,
         'slo_url': slo_url,
         'sso_url': sso_url
     }
-    return render_xml(request, 'saml/xml/metadata.xml', ctx)
+    metadata = render_to_string('saml/xml/metadata.xml', ctx)
+    response = HttpResponse(metadata, content_type='application/xml')
+    response['Content-Disposition'] = 'attachment; filename="sv_metadata.xml'
+    return response
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def admin_settings(req, mod):
+def admin_settings(request, mod):
     """
     Show view with metadata xml
     """
-    idp_config = saml2idp_metadata.SAML2IDP_CONFIG
-    entity_id = idp_config['issuer']
-    slo_url = req.build_absolute_uri(reverse('idp:saml_logout'))
-    sso_url = req.build_absolute_uri(reverse('idp:saml_login_begin'))
-    pubkey = xml_signing.load_certificate(idp_config)
-    ctx = {
-        'entity_id': entity_id,
-        'cert_public_key': pubkey,
-        'slo_url': slo_url,
-        'sso_url': sso_url
-    }
-    template = loader.get_template('saml/xml/metadata.xml')
+    metadata = descriptor(request).content
 
-    metadata = template.render(ctx)
-    return render(req, 'saml/idp/settings.html', {
+    keys = ['issuer', 'certificate', 'private_key', 'signing']
+    base = 'mod:auth:saml:idp'
+    initial_data = {}
+    for key in keys:
+        initial_data[key] = Setting.get('%s:%s' % (base, key))
+    if request.method == 'POST':
+        settings_form = SettingsForm(request.POST)
+        print(settings_form.errors)
+        if settings_form.is_valid():
+            for key in keys:
+                Setting.set('%s:%s' % (base, key), settings_form.cleaned_data.get(key))
+            Setting.objects.update()
+            messages.success(request, _('Settings successfully updated'))
+        else:
+            messages.error(request, _('Failed to update settings'))
+        return redirect(reverse('supervisr/mod/auth/saml/idp:admin_settings', kwargs={'mod': mod}))
+    else:
+        settings_form = SettingsForm(initial=initial_data)
+    return render(request, 'saml/idp/settings.html', {
         'metadata': escape(metadata),
-        'mod': mod
+        'mod': mod,
+        'settings_form': settings_form
         })

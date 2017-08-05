@@ -13,9 +13,11 @@
 <div class="login-wrapper">
   <form class="login" method="post">
     {% csrf_token %}
-    <input type="hidden" name="ACSUrl" value="{{ acs_url }}">
-    <input type="hidden" name="RelayState" value="{{ relay_state }}" />
-    <input type="hidden" name="SAMLResponse" value="{{ saml_response }}" />
+    {% for field in form %}
+      {% if field.is_hidden %}
+        {{ field }}
+      {% endif %}
+    {% endfor %}
     <label class="title">
       <clr-icon shape="supervisr" class="is-info" size="48"></clr-icon>
       {% supervisr_setting 'branding' %}
@@ -25,10 +27,20 @@
     </label>
     <div class="login-group">
       <p class="subtitle">
-        {% blocktrans with remote=remote.name %}
+        {% blocktrans with remote=application.name %}
           You're about to sign into {{ remote }}
         {% endblocktrans %}
       </p>
+      <p>{% trans "Application requires following permissions" %}</p>
+      <ul>
+        {% for scope in scopes_descriptions %}
+          <li>{{ scope }}</li>
+        {% endfor %}
+      </ul>
+
+      {{ form.errors }}
+      {{ form.non_field_errors }}
+
       <p>
         {% blocktrans with user=user %}
           You are logged in as {{ user }}. Not you?
@@ -37,7 +49,7 @@
       </p>
       <div class="row">
         <div class="col-md-6">
-          <input class="btn btn-success btn-block" type="submit" value="{% trans "Continue" %}" />
+          <input class="btn btn-success btn-block" name="allow" value="Authorize" type="submit" value="{% trans "Continue" %}" />
         </div>
         <div class="col-md-6">
           <a href="{% url 'common-index' %}" class="btn btn-outline btn-block">{% trans "Cancel" %}</a>

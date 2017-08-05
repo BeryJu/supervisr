@@ -101,6 +101,7 @@ CHANGELOG = '' # This gets overwritten with ../../CHANGELOG.md on launch
 VERSION_HASH = None # This gets overwritten with the current commit's hash on launch
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))+"/static"
+MEDIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/media"
 SECRET_KEY = '_k*@6h2u2@q-dku57hhgzb7tnx*ba9wodcb^s9g0j59@=y(@_o' # noqa Debug SECRET_KEY
 DEBUG = True
 ALLOWED_HOSTS = ['*']
@@ -111,6 +112,7 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 LOGIN_REDIRECT_URL = 'user-index'
 
 # Settings are taken from DB, these are needed for django-recaptcha to work
@@ -262,6 +264,11 @@ LOGGING = {
         'django': {
             'handlers': ['console', 'syslog', 'mail_admins'],
             'level': 'INFO',
+            'propagate': True,
+        },
+        'tasks': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
             'propagate': True,
         },
     }

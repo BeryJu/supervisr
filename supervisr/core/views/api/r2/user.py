@@ -15,5 +15,6 @@ def account_me(req):
     data = {}
     for field in ['pk', 'first_name', 'email']:
         data[field] = getattr(req.user, field)
+    data['username'] = req.user.userprofile.username
     data['id'] = req.user.pk
     return api_response(req, data)

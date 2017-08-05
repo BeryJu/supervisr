@@ -22,7 +22,7 @@ class ForgeImporter(object):
     """
 
     BASE_URL = 'https://forgeapi.puppetlabs.com'
-    output_base = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'modules')
+    output_base = os.path.join(settings.MEDIA_ROOT, 'puppet', 'modules')
 
     def __init__(self):
         if settings.TEST:

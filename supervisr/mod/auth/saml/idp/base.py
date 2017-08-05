@@ -7,10 +7,9 @@ import time
 import uuid
 
 from bs4 import BeautifulSoup
-from django.core.exceptions import ImproperlyConfigured
 
-from supervisr.mod.auth.saml.idp import (codex, exceptions, saml2idp_metadata,
-                                         xml_render)
+from supervisr.core.models import Setting
+from supervisr.mod.auth.saml.idp import codex, exceptions, xml_render
 
 MINUTES = 60
 HOURS = 60 * MINUTES
@@ -61,7 +60,7 @@ class Processor(object):
     _subject = None
     _subject_format = 'urn:oasis:names:tc:SAML:2.0:nameid-format:email'
     _system_params = {
-        'ISSUER': saml2idp_metadata.SAML2IDP_CONFIG['issuer'],
+        'ISSUER': Setting.get('mod:auth:saml:idp:issuer'),
     }
 
     @property
@@ -73,23 +72,10 @@ class Processor(object):
             module=self.__module__,
             class_name=self.__class__.__name__)
 
-    def __init__(self, config, name=None):
-        self.name = name
-        self._config = config.copy()
+    def __init__(self, remote):
+        self.name = remote.name
+        self._remote = remote
         self._logger = logging.getLogger(__name__)
-
-        processor_path = self._config.get('processor', 'invalid')
-
-        self._logger.info('initializing processor')
-
-        if processor_path != self.dotted_path:
-            raise ImproperlyConfigured(
-                "config is invalid for this processor: {}".format(self._config))
-
-        if 'acs_url' not in self._config:
-            raise ImproperlyConfigured(
-                "no ACS URL specified in SP configuration: {}".format(
-                    self._config))
 
         self._logger.info('processor configured')
 
@@ -191,15 +177,40 @@ class Processor(object):
         """
         Formats _assertion_params as _assertion_xml.
         """
-        self._assertion_xml = xml_render.get_assertion_generic_xml(
-            self._assertion_params, signed=True)
+        self._assertion_params['ATTRIBUTES'] = [
+            {
+                'FriendlyName': 'eduPersonPrincipalName',
+                'Name': 'urn:oid:1.3.6.1.4.1.5923.1.1.1.6',
+                'Value': self._django_request.user.email,
+            },
+            {
+                'FriendlyName': 'cn',
+                'Name': 'urn:oid:2.5.4.3',
+                'Value': self._django_request.user.first_name,
+            },
+            {
+                'FriendlyName': 'mail',
+                'Name': 'urn:oid:0.9.2342.19200300.100.1.3',
+                'Value': self._django_request.user.email,
+            },
+            {
+                'FriendlyName': 'displayName',
+                'Name': 'urn:oid:2.16.840.1.113730.3.1.241',
+                'Value': self._django_request.user.userprofile.username,
+            },
+        ]
+        self._assertion_xml = xml_render.get_assertion_xml(
+            'saml/xml/assertions/generic.xml', self._assertion_params, signed=True)
 
     def _format_response(self):
         """
         Formats _response_params as _response_xml.
         """
-        sign_it = saml2idp_metadata.SAML2IDP_CONFIG['signing']
-        self._response_xml = xml_render.get_response_xml(self._response_params, signed=sign_it)
+        sign_it = Setting.get('mod:auth:saml:idp:signing')
+        self._response_xml = xml_render.get_response_xml(self._response_params,
+                                                         signed=sign_it,
+                                                         assertion_id=
+                                                         self._assertion_params['ASSERTION_ID'])
 
     def _get_django_response_params(self):
         """
@@ -209,7 +220,7 @@ class Processor(object):
             'acs_url': self._request_params['ACS_URL'],
             'saml_response': self._saml_response,
             'relay_state': self._relay_state,
-            'autosubmit': saml2idp_metadata.SAML2IDP_CONFIG['autosubmit'],
+            'autosubmit': Setting.get('mod:auth:saml:idp:autosubmit'),
         }
 
     def _parse_request(self):
@@ -254,7 +265,7 @@ class Processor(object):
         self._subject = sp_config
         self._subject_format = 'urn:oasis:names:tc:SAML:2.0:nameid-format:email'
         self._system_params = {
-            'ISSUER': saml2idp_metadata.SAML2IDP_CONFIG['issuer'],
+            'ISSUER': Setting.get('mod:auth:saml:idp:issuer'),
         }
 
     def _validate_request(self):
@@ -269,7 +280,7 @@ class Processor(object):
         """
         request_acs_url = self._request_params['ACS_URL']
 
-        if self._config['acs_url'] != request_acs_url:
+        if self._remote.acs_url != request_acs_url:
             msg = ("couldn't find ACS url '{}' in SAML2IDP_REMOTES "
                    "setting.".format(request_acs_url))
             self._logger.info(msg)
@@ -333,7 +344,7 @@ class Processor(object):
         deep-linked URL.
         """
         self._reset(request, sp_config)
-        acs_url = self._config['acs_url']
+        acs_url = self._remote['acs_url']
         # NOTE: The following request params are made up. Some are blank,
         # because they comes over in the AuthnRequest, but we don't have an
         # AuthnRequest in this case:
