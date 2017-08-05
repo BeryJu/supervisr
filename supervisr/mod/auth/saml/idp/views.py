@@ -74,6 +74,18 @@ def login_begin(request):
     request.session['RelayState'] = source.get('RelayState', '')
     return redirect(reverse('supervisr/mod/auth/saml/idp:saml_login_process'))
 
+def redirect_to_sp(request, acs_url, saml_response, relay_state):
+    """
+    Return autosubmit form
+    """
+    return render(request, 'core/autosubmit_form.html', {
+        'url': acs_url,
+        'attrs': {
+            'SAMLResponse': saml_response,
+            'RelayState': relay_state
+            }
+        })
+
 @login_required
 def login_process(request):
     """
@@ -82,6 +94,22 @@ def login_process(request):
     """
     LOGGER.debug("Request: %s", request)
     proc, remote = registry.find_processor(request)
+    # Check if we should just autosubmit
+    if remote.skip_authorization:
+        # full_res = _generate_response(request, proc, remote)
+        ctx = proc.generate_response()
+        # User accepted request
+        Event.create(
+            user=request.user,
+            message=_('You authenticated %s (via SAML) (skipped Authz)' % remote.name),
+            request=request,
+            current=False,
+            hidden=True)
+        return redirect_to_sp(
+            request=request,
+            acs_url=ctx['acs_url'],
+            saml_response=ctx['saml_response'],
+            relay_state=ctx['relay_state'])
     if request.method == 'POST' and request.POST.get('ACSUrl', None):
         # User accepted request
         Event.create(
@@ -89,17 +117,12 @@ def login_process(request):
             message=_('You authenticated %s (via SAML)' % remote.name),
             request=request,
             current=False,
-            hidden=False)
-        # Return redirect form
-        url = request.POST.get('ACSUrl')
-        attrs = {
-            'SAMLResponse': request.POST.get('SAMLResponse'),
-            'RelayState': request.POST.get('RelayState')
-        }
-        return render(request, 'core/autosubmit_form.html', {
-            'url': url,
-            'attrs': attrs
-            })
+            hidden=True)
+        return redirect_to_sp(
+            request=request,
+            acs_url=request.POST.get('ACSUrl'),
+            saml_response=request.POST.get('SAMLResponse'),
+            relay_state=request.POST.get('RelayState'))
     else:
         try:
             full_res = _generate_response(request, proc, remote)

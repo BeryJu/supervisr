@@ -44,7 +44,7 @@ class SupervisrAuthorizationView(AuthorizationView):
                     message=_('You authenticated %s (via OAuth) (skipped Authz)' % app.name),
                     request=request,
                     current=False,
-                    hidden=False)
+                    hidden=True)
         return full_res
 
     def post(self, request, *args, **kwargs):
@@ -57,5 +57,5 @@ class SupervisrAuthorizationView(AuthorizationView):
             message=_('You authenticated %s (via OAuth)' % app.name),
             request=request,
             current=False,
-            hidden=False)
+            hidden=True)
         return super(SupervisrAuthorizationView, self).post(request, *args, **kwargs)
