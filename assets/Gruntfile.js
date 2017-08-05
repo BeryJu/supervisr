@@ -59,6 +59,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-npm-command');
   grunt.loadNpmTasks('grunt-contrib-copy');
 
-  grunt.registerTask('default', ['npm-command', 'uglify', 'cssmin', 'copy']);
+  grunt.registerTask('default', ['uglify', 'cssmin', 'copy']);
 
 };

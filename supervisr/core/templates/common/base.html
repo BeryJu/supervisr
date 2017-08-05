@@ -28,6 +28,9 @@
         </li>
       </ul>
     </section>
+    <a href="{% url 'product-index' %}" class="nav-link {% is_active 'product' %}">
+      {% trans 'Products' %}
+    </a>
   </section>
 </nav>
 {% endblock %}
