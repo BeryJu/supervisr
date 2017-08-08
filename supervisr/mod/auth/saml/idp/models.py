@@ -17,6 +17,7 @@ class SAMLRemote(CreatedUpdatedModel):
     name = models.CharField(max_length=255, unique=True)
     acs_url = models.URLField()
     processor_path = models.CharField(max_length=255, choices=[])
+    skip_authorization = models.BooleanField(default=False)
 
     def __init__(self, *args, **kwargs):
         super(SAMLRemote, self).__init__(*args, **kwargs)

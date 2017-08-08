@@ -30,7 +30,7 @@ def permanent_message(get_response):
                 if message.message == m_text:
                     m_exists = True
             storage.used = False
-            if not m_exists:
+            if not m_exists and req.user.is_authenticated:
                 messages.add_message(req, getattr(messages, m_level.upper()), m_text)
         response = get_response(req)
         return response
