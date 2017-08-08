@@ -151,7 +151,7 @@ class Job(models.Model):
     Name = models.TextField(db_column='Name')
     Type = models.CharField(db_column='Type', max_length=1)
     Level = models.CharField(db_column='Level', max_length=1)
-    ClientId = models.IntegerField(db_column='ClientId', blank=True, null=True)
+    ClientId = models.ForeignKey('Client', db_column='ClientId', blank=True, null=True)
     JobStatus = models.CharField(db_column='JobStatus', max_length=1)
     SchedTime = models.DateTimeField(db_column='SchedTime', blank=True, null=True)
     StartTime = models.DateTimeField(db_column='StartTime', blank=True, null=True)
@@ -366,7 +366,7 @@ class Media(models.Model):
     MediaId = models.AutoField(db_column='MediaId', primary_key=True)
     VolumeName = models.TextField(db_column='VolumeName', unique=True)
     Slot = models.IntegerField(db_column='Slot', blank=True, null=True)
-    PoolId = models.IntegerField(db_column='PoolId', blank=True, null=True)
+    PoolId = models.ForeignKey('Pool', db_column='PoolId', blank=True, null=True)
     MediaType = models.TextField(db_column='MediaType')
     MediaTypeId = models.IntegerField(db_column='MediaTypeId', blank=True, null=True)
     LabelType = models.IntegerField(db_column='LabelType', blank=True, null=True)
@@ -497,6 +497,9 @@ class Pool(models.Model):
                                                 null=True)
     MigrationLowBytes = models.BigIntegerField(db_column='MigrationLowBytes', blank=True, null=True)
     MigrationTime = models.BigIntegerField(db_column='MigrationTime', blank=True, null=True)
+
+    def __str__(self):
+        return "Pool %s" % self.Name
 
     class Meta:
         managed = False
