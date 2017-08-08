@@ -34,19 +34,21 @@
       <th>{% trans 'Domain' %}</th>
       <th>{% trans 'Owner' %}</th>
       <th>{% trans 'Records' %}</th>
+      <th>{% trans 'Enabled' %}</th>
     </tr>
   </thead>
   <tbody>
-    {% for dom in domains %}
-    <tr data-selectable>
+    {% for dom in zones %}
+    <tr data-selectable data-ctx-edit="{% url 'supervisr/dns:dns-zone-edit' zone=dom.domain %}" data-ctx-trash="{% url 'supervisr/dns:dns-zone-delete' zone=dom.domain %}">
       <td>{{ dom.domain }}</td>
       <td>{{ dom.users.all|join:"," }}</td>
       <td>{{ dom.record_set.all|length }}</td>
+      <td>{{ dom.enabled }}</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
-{% include 'blocks/block_pagination.html' with pages=domains %}
+{% include 'blocks/block_pagination.html' with pages=zones %}
 {% endblock %}
 
 {% block scripts %}

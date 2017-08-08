@@ -80,57 +80,57 @@ class ZoneNewView(BaseWizardView):
         return redirect(reverse('supervisr/dns:dns-domains'))
 
 @login_required
-def edit(req, domain):
+def edit(req, zone):
     """
-    Edit a domain
+    Edit a zone
     """
-    domains = Zone.objects.filter(name=domain)
-    if not domains.exists():
+    # Check if zone exists before doing anything else
+    zones = Zone.objects.filter(domain__domain=zone, users__in=[req.user])
+    if not zones.exists():
         raise Http404
-    r_domain = domains.first()
+    r_zone = zones.first()
+    # Create list of all possible provider instances
+    providers = BaseProvider.get_providers(filter_sub=['dns_provider'], path=True)
+    provider_instance = ProviderInstance.objects.filter(
+        provider_path__in=providers,
+        userproductrelationship__user__in=[req.user])
+
     if req.method == 'POST':
-        form = ZoneForm(req.POST)
-
+        form = ZoneForm(req.POST, instance=r_zone)
+        form.fields['provider'].queryset = provider_instance
         if form.is_valid():
-            r_domain.name = form.cleaned_data.get('name')
-            r_domain.type = form.cleaned_data.get('type')
-            r_domain.master = form.cleaned_data.get('master')
-            r_domain.account = form.cleaned_data.get('account')
-            r_domain.save()
-            messages.success(req, _('Successfully added Domain'))
-            return redirect(reverse('domains-overview'))
-        messages.error(req, _("Invalid Domain"))
-        return redirect(reverse('domains-overview'))
+            r_zone.save()
+            messages.success(req, _('Successfully edited Zone'))
+            return redirect(reverse('supervisr/dns:dns-zones'))
+        messages.error(req, _("Invalid Zone"))
+        return redirect(reverse('supervisr/dns:dns-zones'))
     else:
-        form = ZoneForm(initial={
-            'name': r_domain.name,
-            'type': r_domain.type,
-            'master': r_domain.master,
-            'account': r_domain.account,
-            })
-
-    return render(req, 'core/generic_form.html', {
+        form = ZoneForm(instance=r_zone)
+        form.fields['provider'].queryset = provider_instance
+    return render(req, 'core/generic_form_modal.html', {
         'form': form,
-        'primary_action': 'Edit',
-        'title': 'Domains Edit'
+        'primary_action': 'Save',
+        'title': 'Zone Edit'
         })
 
 @login_required
-def delete(req, domain):
+def delete(req, zone):
     """
-    Delete a domain
+    Delete a zone
     """
-    domains = Zone.objects.filter(name=domain)
-    if not domains.exists():
+    # Check if zone exists before doing anything else
+    zones = Zone.objects.filter(domain__domain=zone, users__in=[req.user])
+    if not zones.exists():
         raise Http404
-    r_domain = domains.first()
+    r_zone = zones.first()
+
     if req.method == 'POST' and 'confirmdelete' in req.POST:
         # User confirmed deletion
-        r_domain.delete()
-        messages.success(req, _('Domain successfully deleted'))
-        return redirect(reverse('domains-overview'))
+        r_zone.delete()
+        messages.success(req, _('Zone successfully deleted'))
+        return redirect(reverse('supervisr/dns:dns-zones'))
 
     return render(req, 'core/generic_delete.html', {
-        'object': 'Domain %s' % domains.first().name,
-        'delete_url': reverse('domains-delete', kwargs={'domain': r_domain.name})
+        'object': 'Zone %s' % r_zone.domain,
+        'delete_url': reverse('supervisr/dns:dns-zone-delete', kwargs={'zone': r_zone.domain})
         })
