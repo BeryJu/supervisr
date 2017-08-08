@@ -94,8 +94,18 @@ def login_process(request):
     """
     LOGGER.debug("Request: %s", request)
     proc, remote = registry.find_processor(request)
+    # Check if user has access
+    access = True
+    if remote.productextensionsaml2_set.exists() and \
+        remote.productextensionsaml2_set.first().product_set.exists():
+        # Only check if there is a connection from OAuth2 Application to product
+        product = remote.productextensionsaml2_set.first().product_set.first()
+        upr = UserProductRelationship.objects.filter(user=request.user, product=product)
+        # Product is invite_only = True and no relation with user exists
+        if product.invite_only and not upr.exists():
+            access = False
     # Check if we should just autosubmit
-    if remote.skip_authorization:
+    if remote.skip_authorization and access:
         # full_res = _generate_response(request, proc, remote)
         ctx = proc.generate_response()
         # User accepted request
@@ -110,7 +120,7 @@ def login_process(request):
             acs_url=ctx['acs_url'],
             saml_response=ctx['saml_response'],
             relay_state=ctx['relay_state'])
-    if request.method == 'POST' and request.POST.get('ACSUrl', None):
+    if request.method == 'POST' and request.POST.get('ACSUrl', None) and access:
         # User accepted request
         Event.create(
             user=request.user,
@@ -126,16 +136,10 @@ def login_process(request):
     else:
         try:
             full_res = _generate_response(request, proc, remote)
-            if remote.productextensionsaml2_set.exists() and \
-                remote.productextensionsaml2_set.first().product_set.exists():
-                # Only check if there is a connection from OAuth2 Application to product
-                product = remote.productextensionsaml2_set.first().product_set.first()
-                upr = UserProductRelationship.objects.filter(user=request.user, product=product)
-                # Product is invite_only = True and no relation with user exists
-                if product.invite_only and not upr.exists():
-                    LOGGER.error("User '%s' has no invitation to '%s'", request.user, product)
-                    messages.error(request, "You have no access to '%s'" % product.name)
-                    raise Http404
+            if not access:
+                LOGGER.error("User '%s' has no invitation to '%s'", request.user, product)
+                messages.error(request, "You have no access to '%s'" % product.name)
+                raise Http404
             return full_res
         except exceptions.CannotHandleAssertion as exc:
             return error_response(request, str(exc))

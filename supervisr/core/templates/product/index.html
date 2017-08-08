@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load cache %}
+{% load supervisr_title %}
 
 {% block header %}
 <style>
@@ -13,36 +14,38 @@
 </style>
 {% endblock %}
 
+{% block title %}
+  {% supervisr_title 'Products' %}
+{% endblock %}
+
 {% block content %}
 <div class="row">
-  <div class="container">
-    {% for product in products %}
-    <div class="col-md-3">
-      <div class="card">
-        <div class="card-img">
-          {% if product.icon %}
-          {% cache 600 app product.uuid %}
-          <img src="{{ product.icon_b64 }}" alt="{{ name }} Icon">
-          {% endcache %}
-          {% else %}
-          <clr-icon shape="application" size="64"></clr-icon>
-          {% endif %}
-        </div>
-        <div class="card-block">
-          <p class="card-text">
-            <h3 class="card-title">{{ product.name }}</h3>
-            <p>{{ product.description }}</p>
-          </p>
-        </div>
-        <div class="card-footer">
-          <a href="{% url 'product-view' slug=product.slug %}" class="btn btn-sm btn-link">{% trans 'Details' %}</a>
-          {% if product.management_url %}
-          <a href="{{ product.management_url }}" class="btn btn-sm btn-link">{% trans 'Open' %}</a>
-          {% endif %}
-        </div>
+  {% for product in products %}
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-img">
+        {% if product.icon %}
+        {% cache 600 app product.uuid %}
+        <img src="{{ product.icon_b64 }}" alt="{{ name }} Icon">
+        {% endcache %}
+        {% else %}
+        <clr-icon shape="application" size="64"></clr-icon>
+        {% endif %}
+      </div>
+      <div class="card-block">
+        <p class="card-text">
+          <h3 class="card-title">{{ product.name }}</h3>
+          <p>{{ product.description }}</p>
+        </p>
+      </div>
+      <div class="card-footer">
+        <a href="{% url 'product-view' slug=product.slug %}" class="btn btn-sm btn-link">{% trans 'Details' %}</a>
+        {% if product.management_url %}
+        <a href="{{ product.management_url }}" class="btn btn-sm btn-link">{% trans 'Open' %}</a>
+        {% endif %}
       </div>
     </div>
-    {% endfor %}
   </div>
+  {% endfor %}
 </div>
 {% endblock %}
