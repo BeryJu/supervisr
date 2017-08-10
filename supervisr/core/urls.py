@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^accounts/signup/$', account.signup, name='account-signup'),
     url(r'^accounts/logout/$', account.logout, name='account-logout'),
     url(r'^accounts/confirm/(?P<uuid>[a-z0-9\-]{36})/$', account.confirm, name='account-confirm'),
-    url(r'^accounts/confirm/resend/(?P<email>[a-zA-Z0-9@\.]*)/$',
+    url(r'^accounts/confirm/resend/(?P<email>[a-zA-Z0-9@\.\-]*)/$',
         account.confirmation_resend, name='account-confirmation_resend'),
     url(r'^accounts/password/change/$', account.change_password, name='account-change_password'),
     url(r'^accounts/password/reset/$', account.reset_password_init,
