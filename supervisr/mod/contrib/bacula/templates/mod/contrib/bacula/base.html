@@ -12,6 +12,9 @@
     <a href="{% url 'supervisr/mod/contrib/bacula:bacula-jobs' %}" class="nav-link {% is_active 'bacula-job' %}">
       {% trans "Jobs" %}
     </a>
+    <a href="{% url 'supervisr/mod/contrib/bacula:bacula-volumes' %}" class="nav-link {% is_active 'bacula-volumes' %}">
+      {% trans "Volumes" %}
+    </a>
   </section>
 </nav>
 {% endblock %}

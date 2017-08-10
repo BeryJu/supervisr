@@ -70,9 +70,13 @@ class BindZoneImportWizard(BaseWizardView):
             for rec in records:
                 rec.domain = m_dom
                 rec.save()
+                UserProductRelationship.objects.create(
+                    product=rec,
+                    user=self.request.user)
             messages.success(self.request, _('DNS Domain successfully created and '
                                              '%(count)d Records imported.' % {
                                                  'count': len(records)}))
-        else:
-            messages.error(self.request, _('Created nothing'))
-        return redirect(reverse('supervisr/dns:dns-domains'))
+            return redirect(reverse('supervisr/dns:dns-record-list',
+                                    kwargs={'zone': m_dom.domain.domain}))
+        messages.error(self.request, _('Created nothing'))
+        return redirect(reverse('supervisr/dns:dns-zones'))

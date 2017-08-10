@@ -6,10 +6,11 @@ from datetime import timedelta
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.db.models import Sum
+from django.db.models import Q, Sum
 from django.shortcuts import render
 from django.utils import timezone
 
+from supervisr.mod.contrib.bacula.forms.filter import JobFilterForm
 from supervisr.mod.contrib.bacula.models import (Client, File, Job, Log, Media,
                                                  Pool)
 from supervisr.mod.contrib.bacula.utils import db_size, size_human
@@ -50,7 +51,18 @@ def jobs(req):
     """
     Return a list of all jobs, paginated
     """
-    all_jobs = Job.objects.all().order_by('-JobId')
+    filter_form = JobFilterForm(req.GET)
+    query = Q()
+
+    if filter_form.is_valid():
+        if filter_form.cleaned_data.get('client', None):
+            query = query & Q(ClientId=filter_form.cleaned_data.get('client'))
+        if filter_form.cleaned_data.get('level', None):
+            query = query & Q(Level=filter_form.cleaned_data.get('level'))
+        if filter_form.cleaned_data.get('pool', None):
+            query = query & Q(Pool=filter_form.cleaned_data.get('pool'))
+
+    all_jobs = Job.objects.filter(query).order_by('-JobId')
     paginator = Paginator(all_jobs, 50)
 
     page = req.GET.get('page')
@@ -64,6 +76,30 @@ def jobs(req):
         pages = paginator.page(paginator.num_pages)
 
     return render(req, 'mod/contrib/bacula/jobs.html', {
+        'pages': pages,
+        'filter_form': filter_form,
+        })
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def volumes(req):
+    """
+    Return a list of all volumes
+    """
+    all_volumes = Media.objects.all().order_by('-MediaId')
+    paginator = Paginator(all_volumes, 50)
+
+    page = req.GET.get('page')
+    try:
+        pages = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        pages = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        pages = paginator.page(paginator.num_pages)
+
+    return render(req, 'mod/contrib/bacula/volumes.html', {
         'pages': pages,
         })
 

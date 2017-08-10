@@ -35,7 +35,7 @@ def index(req):
     except EmptyPage:
         zones = paginator.page(paginator.num_pages)
 
-    return render(req, 'dns/zone/index.html', {
+    return render(req, 'dns/zones/index.html', {
         'zones': zones
         })
 
@@ -77,7 +77,7 @@ class ZoneNewView(BaseWizardView):
             product=m_dom,
             user=self.request.user)
         messages.success(self.request, _('DNS Domain successfully created'))
-        return redirect(reverse('supervisr/dns:dns-domains'))
+        return redirect(reverse('supervisr/dns:dns-zones'))
 
 @login_required
 def edit(req, zone):

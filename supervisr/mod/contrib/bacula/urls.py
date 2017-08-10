@@ -11,6 +11,7 @@ urlpatterns = [
         name='bacula-ajax_graph_job_status'),
     url(r'^ajax/graph/stored_bytes\.json$', ajax.ajax_graph_stored_bytes,
         name='bacula-ajax_graph_stored_bytes'),
+    url(r'^volumes/$', core.volumes, name='bacula-volumes'),
     url(r'^job/$', core.jobs, name='bacula-jobs'),
     url(r'^job/(?P<jobid>\d+)/logs/$', core.job_log, name='bacula-job-log'),
     url(r'^job/(?P<jobid>\d+)/files/$', core.job_file, name='bacula-job-file'),
