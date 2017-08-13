@@ -122,7 +122,7 @@ class ModelAPI(View):
         # pylint: disable=not-callable
         model = self.model()
         for field in model._meta.get_fields():
-            if not field.name in data and hasattr(field, 'default'):
+            if field.name not in data and hasattr(field, 'default'):
                 if field.default != NOT_PROVIDED:
                     if callable(field.default):
                         data[field.name] = field.default()
