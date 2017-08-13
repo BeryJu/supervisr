@@ -59,7 +59,8 @@ class BindZoneImportWizard(BaseWizardView):
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
         if form_dict['2'].cleaned_data.get('accept'):
-            records = zone_to_rec(form_dict['1'].cleaned_data.get('zone_data'))
+            records = zone_to_rec(form_dict['1'].cleaned_data.get('zone_data'),
+                                  root_zone='.' + form_dict['0'].cleaned_data.get('domain').domain)
             m_dom = Zone.objects.create(
                 domain=form_dict['0'].cleaned_data.get('domain'),
                 provider=form_dict['0'].cleaned_data.get('provider'),

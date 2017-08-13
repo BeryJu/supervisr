@@ -12,11 +12,6 @@ def api_response(req, data):
     Prase data in correct format extracted from request
     """
     selected_format = 'json'
-    # Check if format is set as a GET Param
-    format_keys = ['type', 'format']
-    for key in format_keys:
-        if key in req.GET:
-            selected_format = req.GET.get(key)
     # Check if it is set as file extension
     ext_format = os.path.splitext(req.path)[1][1:]
     if ext_format != '':
@@ -50,8 +45,8 @@ def api_response_json(data):
     Pass dict to django and let it handle the encoding etc
     """
     import json
-    return HttpResponse(json.dumps(data, sort_keys=True, indent=4),
-                        content_type='application/json')
+    data = json.dumps(data, sort_keys=True, indent=4)
+    return HttpResponse(data, content_type='application/json')
 
 def api_response_yaml(data):
     """
