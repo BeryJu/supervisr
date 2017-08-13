@@ -6,6 +6,7 @@ ignore-paths:
   - env
   - migrations
   - docs
+  - node_modules
 
 uses:
  - django

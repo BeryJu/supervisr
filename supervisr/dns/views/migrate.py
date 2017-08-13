@@ -62,6 +62,7 @@ class BindZoneImportWizard(BaseWizardView):
             records = zone_to_rec(form_dict['1'].cleaned_data.get('zone_data'),
                                   root_zone='.' + form_dict['0'].cleaned_data.get('domain').domain)
             m_dom = Zone.objects.create(
+                name=form_dict['0'].cleaned_data.get('domain'),
                 domain=form_dict['0'].cleaned_data.get('domain'),
                 provider=form_dict['0'].cleaned_data.get('provider'),
                 enabled=form_dict['0'].cleaned_data.get('enabled'))
