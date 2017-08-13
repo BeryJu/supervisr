@@ -27,6 +27,8 @@ def zone_to_rec(data, root_zone=''):
                 # Remove trailing dot since powerdns trims this too
                 if '.' in r_name and r_name[-1] == '.':
                     r_name = r_name[:-1]
+                if r_name == '':
+                    r_name = '@'
                 _rec = Record(
                     name=r_name,
                     type=dns.rdatatype.to_text(dset.rdtype),
