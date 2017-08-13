@@ -180,3 +180,24 @@ h2 > clr-icon {
 .card-header>h3 {
     margin-top: 0;
 }
+
+
+.sidenav .nav-group > a.nav-link {
+    color: #313131;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 24px;
+    font-family: Metropolis,"Avenir Next","Helvetica Neue",Arial,sans-serif;
+    letter-spacing: normal;
+    padding-left: 12px;
+    margin: 0 0 0 30px;
+}
+
+.sidenav .nav-group > a.nav-link:hover {
+    background: #eee;
+}
+
+.sidenav .nav-group > a.nav-link.active {
+    background: #d9e4ea;
+    color: #000;
+}

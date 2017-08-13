@@ -56,4 +56,13 @@ def register_mail_internal():
     from supervisr.mail.providers.internal import InternalMailProvider
     setattr(DummyBaseProvider, 'mail_provider', InternalMailProvider)
 
+@ifapp('supervisr/dns')
+def register_dns_internal():
+    """
+    if dns app is installed, add Internal dns Provider to dummy class
+    """
+    from supervisr.dns.providers.internal import InternalDNSProvider
+    setattr(DummyBaseProvider, 'dns_provider', InternalDNSProvider)
+
 register_mail_internal()
+register_dns_internal()

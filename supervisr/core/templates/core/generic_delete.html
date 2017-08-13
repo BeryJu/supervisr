@@ -10,7 +10,7 @@
 
 {% block content %}
 <div class="modal">
-  <div class="modal-dialog" role="dialog" aria-hidden="true">
+  <div class="modal-dialog {% if size %}modal-{{ size }}{% endif %}" role="dialog" aria-hidden="true">
     <div class="modal-content">
       <div class="modal-header">
         <a href="{% back %}" aria-label="Close" class="close" >
