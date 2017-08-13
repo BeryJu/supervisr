@@ -8,6 +8,48 @@ from django.db import models
 from supervisr.core.models import (CreatedUpdatedModel, Domain, Product,
                                    ProviderInstance)
 
+RECORD_TYPES = (
+    ('A', 'A'),
+    ('AAAA', 'AAAA'),
+    ('AFSDB', 'AFSDB'),
+    ('APL', 'APL'),
+    ('CAA', 'CAA'),
+    ('CDNSKEY', 'CDNSKEY'),
+    ('CDS', 'CDS'),
+    ('CERT', 'CERT'),
+    ('CNAME', 'CNAME'),
+    ('DHCID', 'DHCID'),
+    ('DLV', 'DLV'),
+    ('DNAME', 'DNAME'),
+    ('DNSKEY', 'DNSKEY'),
+    ('DS', 'DS'),
+    ('HIP', 'HIP'),
+    ('IPSECKEY', 'IPSECKEY'),
+    ('KEY', 'KEY'),
+    ('KX', 'KX'),
+    ('LOC', 'LOC'),
+    ('MX', 'MX'),
+    ('NAPTR', 'NAPTR'),
+    ('NS', 'NS'),
+    ('NSEC', 'NSEC'),
+    ('NSEC3', 'NSEC3'),
+    ('NSEC3PARAM', 'NSEC3PARAM'),
+    ('OPENPGPKEY', 'OPENPGPKEY'),
+    ('PTR', 'PTR'),
+    ('RRSIG', 'RRSIG'),
+    ('RP', 'RP'),
+    ('SIG', 'SIG'),
+    ('SOA', 'SOA'),
+    ('SRV', 'SRV'),
+    ('SSHFP', 'SSHFP'),
+    ('TA', 'TA'),
+    ('TKEY', 'TKEY'),
+    ('TLSA', 'TLSA'),
+    ('TSIG', 'TSIG'),
+    ('TXT', 'TXT'),
+    ('URI', 'URI'),
+)
+
 
 class Comment(CreatedUpdatedModel):
     """
@@ -50,12 +92,15 @@ class Zone(Product):
     account = models.CharField(max_length=40)
     enabled = models.BooleanField(default=True)
 
+    def __str__(self):
+        return "Zone %s" % self.domain.domain
+
 class Record(Product):
     """
     DNS Record
     """
     domain = models.ForeignKey(Zone)
-    type = models.CharField(max_length=10)
+    type = models.CharField(max_length=10, choices=RECORD_TYPES)
     content = models.TextField()
     ttl = models.IntegerField(default=3600)
     prio = models.IntegerField(default=0)

@@ -13,7 +13,7 @@ from supervisr.core.models import (Domain, ProviderInstance,
                                    UserProductRelationship)
 from supervisr.core.providers.base import BaseProvider
 from supervisr.core.views.wizard import BaseWizardView
-from supervisr.dns.forms.zone import ZoneForm
+from supervisr.dns.forms.zones import ZoneForm
 from supervisr.dns.models import Zone
 
 
