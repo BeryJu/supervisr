@@ -4,11 +4,8 @@ Supervisr Mail URLs
 
 from django.conf.urls import url
 
+from supervisr.core.regex import DOMAIN_REGEX, EMAIL_ADDRESS_REGEX, EMAIL_REGEX
 from supervisr.mail.views import account, alias, core, domain
-
-ADDRESS_REGEX = r'[a-zA-Z0-9_.+-/]+'
-DOMAIN_REGEX = r'[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+'
-FULL_ADDRESS_REGEX = r'[a-zA-Z0-9_.+-/]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+'
 
 urlpatterns = [
     url(r'^$', core.index, name='mail-index'),
@@ -20,14 +17,14 @@ urlpatterns = [
 
     url(r'^domains/new/$', domain.DomainNewView.as_view(), name='mail-domain-new'),
 
-    url(r'^(?P<domain>%s)/(?P<account>%s)/edit/$' % (DOMAIN_REGEX, ADDRESS_REGEX),
+    url(r'^(?P<domain>%s)/(?P<account>%s)/edit/$' % (DOMAIN_REGEX, EMAIL_ADDRESS_REGEX),
         account.account_edit, name='mail-account-edit'),
-    url(r'^(?P<domain>%s)/(?P<account>%s)/delete/$' % (DOMAIN_REGEX, ADDRESS_REGEX),
+    url(r'^(?P<domain>%s)/(?P<account>%s)/delete/$' % (DOMAIN_REGEX, EMAIL_ADDRESS_REGEX),
         account.account_delete, name='mail-account-delete'),
-    url(r'^(?P<domain>%s)/(?P<account>%s)/password/set/$' % (DOMAIN_REGEX, ADDRESS_REGEX),
+    url(r'^(?P<domain>%s)/(?P<account>%s)/password/set/$' % (DOMAIN_REGEX, EMAIL_ADDRESS_REGEX),
         account.account_set_password, name='mail-account-set-password'),
 
     url(r'^(?P<domain>%s)/$' % DOMAIN_REGEX, domain.view, name='mail-domain-view'),
-    url(r'^(?P<domain>%s)/(?P<dest>%s)/delete/$' % (DOMAIN_REGEX, FULL_ADDRESS_REGEX),
+    url(r'^(?P<domain>%s)/(?P<dest>%s)/delete/$' % (DOMAIN_REGEX, EMAIL_REGEX),
         alias.alias_delete, name='mail-alias-delete'),
 ]

@@ -2,13 +2,15 @@
 Supervisr Core Domain Forms
 """
 
-
 import logging
+import re
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext as _
 
 from supervisr.core.models import ProviderInstance
+from supervisr.core.regex import DOMAIN_REGEX
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,6 +28,9 @@ class DomainForm(forms.Form):
         """
         Import Provider and check if domain can be created
         """
+        # Check if domain matches domain_regex
+        if not re.match(DOMAIN_REGEX, self.cleaned_data.get('domain')):
+            raise forms.ValidationError(_('Domain name is not valid'))
         # Import provider based on form
         # also check in form if class exists and is subclass of BaseProvider
         provider = ProviderInstance.objects.filter(

@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load is_active %}
 {% load is_active_url %}
+{% load dns_zones %}
 
 {% block sidenav %}
 <nav class="sidenav clr-nav-level-2">
@@ -10,9 +11,15 @@
     <a href="{% url 'supervisr/dns:dns-index' %}" class="nav-link {% is_active 'dns-index' %}">
     {% trans "Overview" %}
     </a>
-    <a href="{% url 'supervisr/dns:dns-domains' %}" class="nav-link {% is_active 'dns-domains' %}">
-    {% trans "Domains" %}
-    </a>
+    <section class="nav-group">
+      <a href="{% url 'supervisr/dns:dns-zones' %}" class="nav-link {% is_active 'dns-zones' %}">{% trans "Zones" %}</a>
+      <ul class="nav-list">
+        {% dns_zones as zones %}
+        {% for z in zones %}
+        <li><a href="{% url 'supervisr/dns:dns-record-list' zone=z.domain %}" class="nav-link {% is_active_url 'supervisr/dns:dns-record-list' zone=z.domain %}">{{ z.domain }}</a></li>
+        {% endfor %}
+      </ul>
+    </section>
     <a href="" class="nav-link">
     {% trans "TSIG" %}
     </a>
