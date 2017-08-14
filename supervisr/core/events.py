@@ -48,8 +48,9 @@ def event_handle_upr_created(sender, signal, upr, **kwargs):
     """
     Event.create(
         user=upr.user,
-        message=_("You gained access to %(name)s" % {
+        message=_("You gained access to %(class)s %(name)s" % {
             'name': upr.name,
+            'class': upr.product.cast().__class__.__name__,
             }),
         current=True)
 
