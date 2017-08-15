@@ -9,7 +9,8 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin as admin_django
 
-from supervisr.core.regex import DOMAIN_REGEX, EMAIL_REGEX, UUID_REGEX
+from supervisr.core.regex import (DOMAIN_REGEX, EMAIL_REGEX, MOD_REGEX,
+                                  UUID_REGEX)
 from supervisr.core.utils import get_apps
 from supervisr.core.views import (account, admin, common, domain, product,
                                   provider, search, user)
@@ -66,7 +67,7 @@ urlpatterns = [
     url(r'^admin/$', admin.index, name='admin-index'),
     url(r'^admin/users/$', admin.users, name='admin-users'),
     url(r'^admin/settings/$', admin.settings, name='admin-settings'),
-    url(r'^admin/mod/default/(?P<mod>[a-zA-Z0-9/]+)/$',
+    url(r'^admin/mod/default/(?P<mod>%s)/$' % MOD_REGEX,
         admin.mod_default, name='admin-mod_default'),
     url(r'^admin/info/$', admin.info, name='admin-info'),
     url(r'^admin/events/$', admin.events, name='admin-events'),
@@ -104,7 +105,7 @@ for app in get_apps():
         urlpatterns += [
             url(r"^app/%s/" % mount_path, include(url_module, namespace=namespace)),
         ]
-        LOGGER.info("Loaded %s", url_module)
+        LOGGER.info("Loaded %s (namespace=%s)", url_module, namespace)
 
 if settings.DEBUG or settings.TEST:
     import debug_toolbar

@@ -3,8 +3,8 @@ Supervisr OnlineNet Provider
 """
 
 import requests
-import slumber
 from django.core.exceptions import ValidationError
+from slumber import API
 from slumber.exceptions import HttpClientError
 
 from supervisr.core.models import APIKeyCredential
@@ -29,7 +29,7 @@ class OnlineNetProvider(BaseProvider):
     def _init_api(self, cred):
         api_session = requests.session()
         api_session.headers['Authorization'] = 'Bearer %s' % cred.api_key
-        self.api = slumber.API('https://api.online.net/api/v1', session=api_session)
+        self.api = API('https://api.online.net/api/v1', session=api_session)
 
     def check_credentials(self, credentials=None):
         """
@@ -43,7 +43,7 @@ class OnlineNetProvider(BaseProvider):
         try:
             self.api.user.info.get()
             return True
-        except HttpClientError as e:
+        except HttpClientError:
             raise ValidationError("Invalid Credentials")
 
     def check_status(self):
@@ -53,17 +53,5 @@ class OnlineNetProvider(BaseProvider):
         try:
             self.api.user.info.get()
             return True
-        except HttpClientError as e:
-            return str(e)
-
-    def test(self):
-        pass
-        # failovers = api.server.failover.get()
-        # print(failovers)
-
-        # # edit a failover IP
-        # move_failover = api.server.failover.edit.post({
-        #     'source': '10.0.0.42',
-        #     'destination': '10.0.0.1'
-        # })
-        # print(move_failover)
+        except HttpClientError as exc:
+            return str(exc)
