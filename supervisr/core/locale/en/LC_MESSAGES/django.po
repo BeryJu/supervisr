@@ -1,0 +1,691 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-15 19:14+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\events.py:25
+msgid "You Signed up"
+msgstr ""
+
+#: .\events.py:38
+msgid "non-reset"
+msgstr ""
+
+#: .\events.py:38
+msgid "reset"
+msgstr ""
+
+#: .\events.py:37
+#, python-format
+msgid "You changed your Password (%(kind)s)"
+msgstr ""
+
+#: .\events.py:51
+#, python-format
+msgid "You gained access to %(class)s %(name)s"
+msgstr ""
+
+#: .\events.py:65
+#, python-format
+msgid "You lost access to %(name)s"
+msgstr ""
+
+#: .\events.py:78 .\events.py:91
+msgid "You logged in"
+msgstr ""
+
+#: .\forms\account.py:25 .\forms\account.py:102
+msgid "Mail"
+msgstr ""
+
+#: .\forms\account.py:26 .\forms\account.py:41 .\forms\account.py:88
+#: .\forms\account.py:113 .\forms\account.py:128
+msgid "Password"
+msgstr ""
+
+#: .\forms\account.py:27
+msgid "Remember"
+msgstr ""
+
+#: .\forms\account.py:38 .\templates\_admin\users.html:17
+#: .\templates\provider\credentials-index.html:26
+#: .\templates\provider\instance-index.html:26
+msgid "Name"
+msgstr ""
+
+#: .\forms\account.py:39 .\templates\_admin\users.html:18
+msgid "Username"
+msgstr ""
+
+#: .\forms\account.py:40 .\forms\account.py:127
+#: .\templates\_admin\users.html:16
+msgid "Email"
+msgstr ""
+
+#: .\forms\account.py:42 .\forms\account.py:89 .\forms\account.py:114
+msgid "Repeat Password"
+msgstr ""
+
+#: .\forms\account.py:47
+msgid "I accept the Terms of service"
+msgstr ""
+
+#: .\forms\account.py:56
+msgid "Username alrexy exists"
+msgstr ""
+
+#: .\forms\account.py:67 .\forms\account.py:74
+msgid "Email already exists"
+msgstr ""
+
+#: .\forms\core.py:39
+msgid "You must confirm your password"
+msgstr ""
+
+#: .\forms\core.py:41
+msgid "Your passwords do not match"
+msgstr ""
+
+#: .\forms\core.py:46
+#, python-format
+msgid "Password has to contain %(desc)s"
+msgstr ""
+
+#: .\forms\domain.py:33
+msgid "Domain name is not valid"
+msgstr ""
+
+#: .\forms\provider.py:25
+msgid "Instance Name"
+msgstr ""
+
+#: .\forms\provider.py:26 .\templates\common\base.html:17
+#: .\templates\common\index.html:73 .\templates\provider\instance-index.html:27
+msgid "Provider"
+msgstr ""
+
+#: .\forms\provider.py:27 .\templates\common\base.html:26
+#: .\templates\provider\credentials-index.html:11
+#: .\templates\provider\instance-index.html:28
+msgid "Credentials"
+msgstr ""
+
+#: .\forms\provider.py:56
+msgid "Credential Type"
+msgstr ""
+
+#: .\mailer.py:77
+#, python-format
+msgid "Confirm your account on %(branding)s"
+msgstr ""
+
+#: .\mailer.py:110
+#, python-format
+msgid "Step 2/3 - Reset your Password on %(branding)s"
+msgstr ""
+
+#: .\middleware\ImpersonateMiddleware.py:15
+msgid "Stop Impersonating"
+msgstr ""
+
+#: .\models.py:207
+msgid "Sign up"
+msgstr ""
+
+#: .\models.py:208
+msgid "Password Reset"
+msgstr ""
+
+#: .\models.py:249
+#, python-format
+msgid "UserProductRelationship %(product)s %(user)s"
+msgstr ""
+
+#: .\models.py:379
+msgid "Urgent"
+msgstr ""
+
+#: .\models.py:380
+msgid "Important"
+msgstr ""
+
+#: .\models.py:381
+msgid "Medium"
+msgstr ""
+
+#: .\models.py:382
+msgid "Notice"
+msgstr ""
+
+#: .\models.py:383
+msgid "Information"
+msgstr ""
+
+#: .\models.py:433
+#, python-format
+msgid "%(days)d day(s) ago"
+msgstr ""
+
+#: .\models.py:435
+#, python-format
+msgid "%(hours)d hour(s) ago"
+msgstr ""
+
+#: .\models.py:436
+#, python-format
+msgid "%(minutes)d minute(s) ago"
+msgstr ""
+
+#: .\models.py:490
+msgid "API Key"
+msgstr ""
+
+#: .\models.py:505
+msgid "Username and Password"
+msgstr ""
+
+#: .\templates\_admin\base.html:13
+msgid "General Settings"
+msgstr ""
+
+#: .\templates\_admin\base.html:15
+msgid "Dashboard"
+msgstr ""
+
+#: .\templates\_admin\base.html:16 .\templates\_admin\index.html:17
+#: .\templates\_admin\users.html:12 .\templates\account\index.html:16
+msgid "Users"
+msgstr ""
+
+#: .\templates\_admin\base.html:17 .\templates\account\base.html:13
+msgid "Settings"
+msgstr ""
+
+#: .\templates\_admin\base.html:22 .\templates\_admin\mod_default.html:11
+msgid "Module Settings"
+msgstr ""
+
+#: .\templates\_admin\base.html:31 .\templates\_admin\info.html:14
+msgid "System Information"
+msgstr ""
+
+#: .\templates\_admin\base.html:34 .\templates\user\base.html:14
+#: .\templates\user\events.html:15
+msgid "Events"
+msgstr ""
+
+#: .\templates\_admin\base.html:38
+msgid "Django Builtins"
+msgstr ""
+
+#: .\templates\_admin\base.html:42 .\templates\account\base.html:16
+msgid "Admin Interface"
+msgstr ""
+
+#: .\templates\_admin\base.html:47 .\templates\account\base.html:19
+msgid "Admin Docs"
+msgstr ""
+
+#: .\templates\_admin\base.html:53 .\templates\_admin\debug.html:12
+msgid "Debug"
+msgstr ""
+
+#: .\templates\_admin\events.html:15
+msgid "Global Events"
+msgstr ""
+
+#: .\templates\_admin\events.html:19 .\templates\user\events.html:19
+msgid "User"
+msgstr ""
+
+#: .\templates\_admin\events.html:20 .\templates\user\events.html:20
+msgid "Invoker"
+msgstr ""
+
+#: .\templates\_admin\events.html:21 .\templates\common\index.html:110
+#: .\templates\user\events.html:21
+msgid "Description"
+msgstr ""
+
+#: .\templates\_admin\events.html:22 .\templates\common\index.html:111
+#: .\templates\user\events.html:22
+msgid "Age"
+msgstr ""
+
+#: .\templates\_admin\events.html:23 .\templates\common\index.html:112
+#: .\templates\user\events.html:23
+msgid "Action"
+msgstr ""
+
+#: .\templates\_admin\events.html:24 .\templates\user\events.html:24
+msgid "Remote IP"
+msgstr ""
+
+#: .\templates\_admin\events.html:48
+msgid "Previous"
+msgstr ""
+
+#: .\templates\_admin\events.html:51 .\templates\core\generic_wizard.html:81
+msgid "Next"
+msgstr ""
+
+#: .\templates\_admin\events.html:55
+#: .\templates\blocks\block_pagination.html:10
+#, python-format
+msgid ""
+"\n"
+"    Page %(current)s of %(total)s\n"
+"    "
+msgstr ""
+
+#: .\templates\_admin\index.html:12
+msgid "Administrator Dashboard"
+msgstr ""
+
+#: .\templates\_admin\index.html:29 .\templates\account\index.html:28
+msgid "Version"
+msgstr ""
+
+#: .\templates\_admin\info.html:18
+msgid "Key"
+msgstr ""
+
+#: .\templates\_admin\info.html:19
+msgid "Value"
+msgstr ""
+
+#: .\templates\_admin\mod_default.html:14
+msgid "This Module does not have a settings Page."
+msgstr ""
+
+#: .\templates\_admin\users.html:19
+msgid "Signup Date"
+msgstr ""
+
+#: .\templates\_admin\users.html:20 .\templates\_admin\users.html:32
+msgid "Impersonate"
+msgstr ""
+
+#: .\templates\account\base.html:10 .\templates\common\base.html:10
+#: .\templates\common\index.html:48 .\templates\user\base.html:11
+msgid "Overview"
+msgstr ""
+
+#: .\templates\admin\base.html:13 .\templates\core\base.html:48
+msgid "Home"
+msgstr ""
+
+#: .\templates\common\base.html:13 .\templates\domain\index.html:11
+msgid "Domains"
+msgstr ""
+
+#: .\templates\common\base.html:21
+msgid "Instances"
+msgstr ""
+
+#: .\templates\common\base.html:32
+msgid "Products"
+msgstr ""
+
+#: .\templates\common\error.html:19
+msgid "Whops"
+msgstr ""
+
+#: .\templates\common\error.html:26
+msgid "Not found."
+msgstr ""
+
+#: .\templates\common\error.html:28
+msgid "An unexpected Error occurred. The Admin team has been notified."
+msgstr ""
+
+#: .\templates\common\error.html:31
+msgid "Additional Information:"
+msgstr ""
+
+#: .\templates\common\index.html:58
+#, python-format
+msgid "Hey, %(name)s"
+msgstr ""
+
+#: .\templates\common\index.html:66
+msgid "Provider Instance Status"
+msgstr ""
+
+#: .\templates\common\index.html:72
+msgid "Instance"
+msgstr ""
+
+#: .\templates\common\index.html:74
+msgid "Status"
+msgstr ""
+
+#: .\templates\common\index.html:84 .\templates\provider\instance-index.html:41
+msgid "OK"
+msgstr ""
+
+#: .\templates\common\index.html:96
+msgid "No Provders"
+msgstr ""
+
+#: .\templates\common\index.html:103
+msgid "Recent Events"
+msgstr ""
+
+#: .\templates\common\index.html:133
+msgid "No Current Events!"
+msgstr ""
+
+#: .\templates\common\index.html:142
+msgid "Quicklaunch"
+msgstr ""
+
+#: .\templates\common\index.html:170
+msgid "No Hosted Applications yet!"
+msgstr ""
+
+#: .\templates\common\maintenance.html:19
+msgid "Maintenance Mode"
+msgstr ""
+
+#: .\templates\common\maintenance.html:22
+msgid ""
+"We're currently upgrading supervisr. Try again in a few minutes or shoot us "
+"an email at <a href=\"mailto:support@beryju.org\">support@beryju.org</a>."
+msgstr ""
+
+#: .\templates\core\base.html:58
+msgid "Admin"
+msgstr ""
+
+#: .\templates\core\base.html:67
+msgid "Search for keywords..."
+msgstr ""
+
+#: .\templates\core\base.html:86
+msgid "Profile"
+msgstr ""
+
+#: .\templates\core\base.html:87 .\views\account.py:192
+msgid "Change Password"
+msgstr ""
+
+#: .\templates\core\base.html:91
+msgid "Attributions"
+msgstr ""
+
+#: .\templates\core\base.html:94
+msgid "Logout"
+msgstr ""
+
+#: .\templates\core\base.html:99 .\views\account.py:94 .\views\account.py:367
+msgid "Login"
+msgstr ""
+
+#: .\templates\core\generic_delete.html:19
+msgid "Attention"
+msgstr ""
+
+#: .\templates\core\generic_delete.html:22
+#, python-format
+msgid "Are you sure you want to delete %(object)s"
+msgstr ""
+
+#: .\templates\core\generic_delete.html:25
+#: .\templates\core\generic_form_modal.html:27
+#: .\templates\core\generic_wizard.html:69
+msgid "Cancel"
+msgstr ""
+
+#: .\templates\core\generic_wizard.html:26
+#, python-format
+msgid "Step %(curr_step)s"
+msgstr ""
+
+#: .\templates\core\generic_wizard.html:74
+msgid "Back"
+msgstr ""
+
+#: .\templates\core\generic_wizard.html:79
+msgid "Finish"
+msgstr ""
+
+#: .\templates\domain\index.html:26
+msgid "Domain"
+msgstr ""
+
+#: .\templates\domain\index.html:27
+msgid "Provider (Registrar)"
+msgstr ""
+
+#: .\templates\domain\index.html:28
+msgid "Is Managed?"
+msgstr ""
+
+#: .\templates\domain\index.html:29
+msgid "Is Subdomain?"
+msgstr ""
+
+#: .\templates\product\index.html:42
+msgid "Details"
+msgstr ""
+
+#: .\templates\product\index.html:44
+msgid "Open"
+msgstr ""
+
+#: .\templates\provider\credentials-index.html:27
+msgid "Used by"
+msgstr ""
+
+#: .\templates\provider\credentials-index.html:28
+msgid "Type"
+msgstr ""
+
+#: .\templates\provider\instance-index.html:11
+msgid "Provider Instances"
+msgstr ""
+
+#: .\templates\provider\instance-index.html:29
+msgid "Authentication Status"
+msgstr ""
+
+#: .\templates\search\search.html:11
+msgid "Search"
+msgstr ""
+
+#: .\templates\search\search.html:25
+msgid "Nothing"
+msgstr ""
+
+#: .\templates\search\search.html:29
+msgid "Nothing found"
+msgstr ""
+
+#: .\templates\user\index.html:13
+msgid "User Profile"
+msgstr ""
+
+#: .\templatetags\supervisr_title.py:36
+#, python-format
+msgid "%(title)s - %(app)s %(branding)s"
+msgstr ""
+
+#: .\utils.py:68
+#, python-format
+msgid "Supervisr Error %(exception)s"
+msgstr ""
+
+#: .\views\account.py:59
+msgid "Successfully logged in!"
+msgstr ""
+
+#: .\views\account.py:84
+msgid "Invalid Login"
+msgstr ""
+
+#: .\views\account.py:93
+msgid "SSO - Login"
+msgstr ""
+
+#: .\views\account.py:143
+msgid "Failed to sign up."
+msgstr ""
+
+#: .\views\account.py:145
+msgid "Successfully signed up!"
+msgstr ""
+
+#: .\views\account.py:153
+msgid "SSO - Signup"
+msgstr ""
+
+#: .\views\account.py:154
+msgid "Signup"
+msgstr ""
+
+#: .\views\account.py:182
+msgid "Successfully changed password!"
+msgstr ""
+
+#: .\views\account.py:184
+msgid "Failed to change password"
+msgstr ""
+
+#: .\views\account.py:191
+msgid "SSO - Change Password"
+msgstr ""
+
+#: .\views\account.py:205
+msgid "Successfully logged out!"
+msgstr ""
+
+#: .\views\account.py:219
+msgid "Account already confirmed!"
+msgstr ""
+
+#: .\views\account.py:222
+msgid "Confirmation expired"
+msgstr ""
+
+#: .\views\account.py:235
+msgid "Account successfully activated!"
+msgstr ""
+
+#: .\views\account.py:254
+msgid "Reset Link sent successfully"
+msgstr ""
+
+#: .\views\account.py:259
+msgid "SSO - Reset your Password - Step 1/3"
+msgstr ""
+
+#: .\views\account.py:260
+msgid "Send Confirmation Email"
+msgstr ""
+
+#: .\views\account.py:277
+msgid "Link already used!"
+msgstr ""
+
+#: .\views\account.py:280
+msgid "Link expired!"
+msgstr ""
+
+#: .\views\account.py:299
+msgid "Account successfully reset!"
+msgstr ""
+
+#: .\views\account.py:305
+msgid "Failed to reset Password. Please try again later."
+msgstr ""
+
+#: .\views\account.py:313
+msgid "SSO - Reset your Password - Step 3/3"
+msgstr ""
+
+#: .\views\account.py:314
+msgid "Reset your Password"
+msgstr ""
+
+#: .\views\account.py:337
+msgid "Successfully resent confirmation email"
+msgstr ""
+
+#: .\views\account.py:353
+msgid "Successfully Re-Authenticated"
+msgstr ""
+
+#: .\views\account.py:360
+msgid "Failed to Re-Authenticate"
+msgstr ""
+
+#: .\views\account.py:366
+msgid "SSO - Re-Authenticate"
+msgstr ""
+
+#: .\views\domain.py:35
+msgid "New Domain"
+msgstr ""
+
+#: .\views\domain.py:72
+msgid "Domain successfully created"
+msgstr ""
+
+#: .\views\domain.py:93
+msgid "Successfully edited Domain"
+msgstr ""
+
+#: .\views\domain.py:95
+msgid "Invalid Domain"
+msgstr ""
+
+#: .\views\domain.py:124
+msgid "Domain successfully deleted"
+msgstr ""
+
+#: .\views\provider.py:36
+msgid "New Provider"
+msgstr ""
+
+#: .\views\provider.py:69
+msgid "Provider Instance successfully created"
+msgstr ""
+
+#: .\views\provider.py:96
+msgid "Successfully edited Instance"
+msgstr ""
+
+#: .\views\provider.py:98
+msgid "Invalid Instance"
+msgstr ""
+
+#: .\views\provider.py:128
+msgid "Instance successfully deleted"
+msgstr ""
+
+#: .\views\provider.py:155
+msgid "New Credentials"
+msgstr ""
+
+#: .\views\provider.py:191
+msgid "Credentials successfully created"
+msgstr ""
+
+#: .\views\provider.py:207
+msgid "Credential successfully deleted"
+msgstr ""

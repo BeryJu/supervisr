@@ -102,7 +102,6 @@ VERSION_HASH = None # This gets overwritten with the current commit's hash on la
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))+"/static"
 MEDIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/media"
-LOCALE_PATHS = (os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/locale",)
 SECRET_KEY = '_k*@6h2u2@q-dku57hhgzb7tnx*ba9wodcb^s9g0j59@=y(@_o' # noqa Debug SECRET_KEY
 DEBUG = True
 ALLOWED_HOSTS = ['*']

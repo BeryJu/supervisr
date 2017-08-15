@@ -1,0 +1,184 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-15 19:26+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\forms\migrate.py:7 .\forms\migrate.py:9
+msgid "Zone Data"
+msgstr ""
+
+#: .\forms\migrate.py:13
+msgid "Preview Results"
+msgstr ""
+
+#: .\forms\migrate.py:15
+msgid "Accept Import"
+msgstr ""
+
+#: .\forms\records.py:17 .\forms\zones.py:16
+msgid "General Information"
+msgstr ""
+
+#: .\forms\records.py:36 .\templates\dns\records\index.html:47
+msgid "Priority"
+msgstr ""
+
+#: .\templates\dns\alias\index.html:11
+msgid "Aliases"
+msgstr ""
+
+#: .\templates\dns\alias\index.html:26
+msgid "Address"
+msgstr ""
+
+#: .\templates\dns\alias\index.html:27
+msgid "Forwarder Destination"
+msgstr ""
+
+#: .\templates\dns\alias\index.html:28 .\templates\dns\zones\index.html:35
+msgid "Owner"
+msgstr ""
+
+#: .\templates\dns\alias\index.html:29
+msgid "Is Catchall?"
+msgstr ""
+
+#: .\templates\dns\base.html:12
+msgid "Overview"
+msgstr ""
+
+#: .\templates\dns\base.html:15 .\templates\dns\index.html:54
+#: .\templates\dns\zones\index.html:11
+msgid "Zones"
+msgstr ""
+
+#: .\templates\dns\base.html:24
+msgid "TSIG"
+msgstr ""
+
+#: .\templates\dns\index.html:11
+msgid "DNS"
+msgstr ""
+
+#: .\templates\dns\index.html:13
+msgid "Unclaimed Domains"
+msgstr ""
+
+#: .\templates\dns\index.html:18 .\templates\dns\zones\index.html:34
+msgid "Domain"
+msgstr ""
+
+#: .\templates\dns\index.html:19
+msgid "Provider"
+msgstr ""
+
+#: .\templates\dns\index.html:20
+msgid "Actions"
+msgstr ""
+
+#: .\templates\dns\index.html:34
+msgid "Blank Zone"
+msgstr ""
+
+#: .\templates\dns\index.html:35 .\templates\dns\records\index.html:37
+#: .\templates\dns\zones\index.html:27
+msgid "Import from Bind Zone"
+msgstr ""
+
+#: .\templates\dns\index.html:48 .\templates\dns\zones\index.html:36
+msgid "Records"
+msgstr ""
+
+#: .\templates\dns\migrate\preview.html:9 .\templates\dns\records\index.html:45
+msgid "Name"
+msgstr ""
+
+#: .\templates\dns\migrate\preview.html:10
+#: .\templates\dns\records\index.html:46
+msgid "Type"
+msgstr ""
+
+#: .\templates\dns\migrate\preview.html:11
+#: .\templates\dns\records\index.html:50
+msgid "Content"
+msgstr ""
+
+#: .\templates\dns\records\index.html:21
+#, python-format
+msgid "Records for %(z)s"
+msgstr ""
+
+#: .\templates\dns\records\index.html:48
+msgid "TTL"
+msgstr ""
+
+#: .\templates\dns\records\index.html:49 .\templates\dns\zones\index.html:37
+msgid "Enabled"
+msgstr ""
+
+#: .\views\migrate.py:30
+msgid "Import Bind Zone"
+msgstr ""
+
+#: .\views\migrate.py:78
+#, python-format
+msgid "DNS Domain successfully created and %(count)d Records imported."
+msgstr ""
+
+#: .\views\migrate.py:83
+msgid "Created nothing"
+msgstr ""
+
+#: .\views\records.py:52
+msgid "New Record"
+msgstr ""
+
+#: .\views\records.py:73
+msgid "DNS Record successfully created"
+msgstr ""
+
+#: .\views\records.py:103
+msgid "Successfully edited Record"
+msgstr ""
+
+#: .\views\records.py:105
+msgid "Invalid Record"
+msgstr ""
+
+#: .\views\records.py:137
+msgid "Record successfully deleted"
+msgstr ""
+
+#: .\views\zones.py:48
+msgid "New Zone"
+msgstr ""
+
+#: .\views\zones.py:79
+msgid "DNS Domain successfully created"
+msgstr ""
+
+#: .\views\zones.py:103
+msgid "Successfully edited Zone"
+msgstr ""
+
+#: .\views\zones.py:105
+msgid "Invalid Zone"
+msgstr ""
+
+#: .\views\zones.py:130
+msgid "Zone successfully deleted"
+msgstr ""
