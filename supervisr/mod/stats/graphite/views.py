@@ -24,7 +24,7 @@ def admin_settings(req, mod):
         'host': Setting.get('mod:stats:graphite:host'),
         'port': Setting.get('mod:stats:graphite:port'),
         'prefix': Setting.get('mod:stats:graphite:prefix'),
-        'enabled': Setting.get('mod:stats:graphite:enabled') == 'True',
+        'enabled': Setting.get('mod:stats:graphite:enabled'),
     }
     if req.method == 'POST':
         form = SettingsForm(req.POST)
@@ -40,7 +40,7 @@ def admin_settings(req, mod):
             with GraphiteClient() as client:
                 client.write("test", 128)
             messages.success(req, _('Successfully Sent test message'))
-        return redirect(reverse('stats/graphite:admin_settings', kwargs={'mod': mod}))
+        return redirect(reverse('supervisr/mod/stats/graphite:admin_settings', kwargs={'mod': mod}))
     else:
         form = SettingsForm(initial=initial_data)
     return render(req, 'stats/graphite/settings.html', {

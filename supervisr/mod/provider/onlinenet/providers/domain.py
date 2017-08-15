@@ -6,10 +6,12 @@ import logging
 
 from supervisr.core.providers.domain import DomainProvider
 
+from supervisr.mod.provider.onlinenet.providers.core import OnlineNetProvider
+
 LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=too-few-public-methods
-class OnlineNetDomainProvider(DomainProvider):
+class OnlineNetDomainProvider(OnlineNetProvider, DomainProvider):
     """
     OnlineNet provider
     """
@@ -20,7 +22,6 @@ class OnlineNetDomainProvider(DomainProvider):
         Register method, used to register a new domain.
         """
         LOGGER.info("register: %s %s", domain, kwargs)
-        pass
 
     def check_available(self, domain):
         """
@@ -34,11 +35,9 @@ class OnlineNetDomainProvider(DomainProvider):
         Check when a domain is expiring
         """
         LOGGER.info("check_expiry: %s", domain)
-        pass
 
     def import_domains(self):
         """
         Import domains from provider
         """
         LOGGER.info("import_domains:")
-        pass

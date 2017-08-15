@@ -91,6 +91,7 @@ INSTALLED_APPS = [
     'supervisr.mod.auth.oauth.client.apps.SupervisrModAuthOAuthClientConfig',
     'supervisr.mod.tfa.apps.SupervisrModTFAConfig',
     'supervisr.mod.stats.graphite.apps.SupervisrModStatGraphiteConfig',
+    'supervisr.mod.provider.google.apps.SupervisrModProviderGoogleConfig',
     'supervisr.mod.provider.onlinenet.apps.SupervisrModProviderOnlineNetConfig',
     'formtools',
     'django.contrib.admin',

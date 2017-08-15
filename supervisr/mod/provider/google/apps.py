@@ -5,9 +5,11 @@ Supervisr module google app config
 from supervisr.core.apps import SupervisrAppConfig
 
 
-class SupervisrModGoogleConfig(SupervisrAppConfig):
+class SupervisrModProviderGoogleConfig(SupervisrAppConfig):
     """
     Supervisr module google app config
     """
 
-    name = 'supervisr.mod.google'
+    name = 'supervisr.mod.provider.google'
+    label = 'supervisr/mod/provider/google'
+    title_moddifier = lambda self, title, request: 'Provider/Google'

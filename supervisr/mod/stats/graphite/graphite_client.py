@@ -33,8 +33,11 @@ class GraphiteClient(object):
         """
         Connect to graphite socket
         """
-        self._socket = socket.socket()
-        self._socket.connect((self.host, self.port))
+        try:
+            self._socket = socket.socket()
+            self._socket.connect((self.host, self.port))
+        except ConnectionRefusedError:
+            raise GraphiteException('Connection refused')
 
     def write(self, key, value):
         """
@@ -56,3 +59,9 @@ class GraphiteClient(object):
     # pylint: disable=unused-argument
     def __exit__(self, _type, value, _tb):
         self._socket.close()
+
+class GraphiteException(Exception):
+    """
+    Exception wrapper to make catching easier
+    """
+    pass
