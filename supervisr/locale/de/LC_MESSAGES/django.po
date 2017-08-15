@@ -1,0 +1,1563 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-15 13:40+0000\n"
+"PO-Revision-Date: 2017-08-15 16:19+0200\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: Jens Langhammer <jens.langhammer@beryju.org>\n"
+"Language-Team: \n"
+"X-Generator: Poedit 2.0.3\n"
+
+#: supervisr/core/events.py:25
+msgid "You Signed up"
+msgstr "Sie sind nun registriert"
+
+#: supervisr/core/events.py:38
+msgid "non-reset"
+msgstr ""
+
+#: supervisr/core/events.py:38
+msgid "reset"
+msgstr ""
+
+#: supervisr/core/events.py:37
+#, python-format
+msgid "You changed your Password (%(kind)s)"
+msgstr ""
+
+#: supervisr/core/events.py:51
+#, python-format
+msgid "You gained access to %(class)s %(name)s"
+msgstr ""
+
+#: supervisr/core/events.py:65
+#, python-format
+msgid "You lost access to %(name)s"
+msgstr ""
+
+#: supervisr/core/events.py:78 supervisr/core/events.py:91
+msgid "You logged in"
+msgstr "﻿Sie wurden angemeldet"
+
+#: supervisr/core/forms/account.py:25 supervisr/core/forms/account.py:102
+#: supervisr/mail/templates/mail/index.html:11
+msgid "Mail"
+msgstr "E-Mail"
+
+#: supervisr/core/forms/account.py:26 supervisr/core/forms/account.py:41
+#: supervisr/core/forms/account.py:88 supervisr/core/forms/account.py:113
+#: supervisr/core/forms/account.py:128 supervisr/mail/forms/account.py:50
+msgid "Password"
+msgstr "Passwort"
+
+#: supervisr/core/forms/account.py:27
+msgid "Remember"
+msgstr "Merken"
+
+#: supervisr/core/forms/account.py:38
+#: supervisr/core/templates/_admin/users.html:17
+#: supervisr/core/templates/provider/credentials-index.html:26
+#: supervisr/core/templates/provider/instance-index.html:26
+#: supervisr/dns/templates/dns/migrate/preview.html:9
+#: supervisr/dns/templates/dns/records/index.html:45
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:32
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/volumes.html:22
+msgid "Name"
+msgstr "Name"
+
+#: supervisr/core/forms/account.py:39
+#: supervisr/core/templates/_admin/users.html:18
+msgid "Username"
+msgstr "Benutzername"
+
+#: supervisr/core/forms/account.py:40 supervisr/core/forms/account.py:127
+#: supervisr/core/templates/_admin/users.html:16
+msgid "Email"
+msgstr "E-Mail Adresse"
+
+#: supervisr/core/forms/account.py:42 supervisr/core/forms/account.py:89
+#: supervisr/core/forms/account.py:114 supervisr/mail/forms/account.py:52
+msgid "Repeat Password"
+msgstr "Passwort wiederholen"
+
+#: supervisr/core/forms/account.py:47
+msgid "I accept the Terms of service"
+msgstr "Ich akzeptiere die Nutzungsbedingungen"
+
+#: supervisr/core/forms/account.py:56
+msgid "Username alrexy exists"
+msgstr "Benutzername schon vergeben"
+
+#: supervisr/core/forms/account.py:67 supervisr/core/forms/account.py:74
+msgid "Email already exists"
+msgstr "E-Mail existiert bereits"
+
+#: supervisr/core/forms/core.py:39
+msgid "You must confirm your password"
+msgstr "Sie müssen Ihr Passwort bestätigen"
+
+#: supervisr/core/forms/core.py:41
+msgid "Your passwords do not match"
+msgstr "Ihre Kennwörter stimmen nicht überein"
+
+#: supervisr/core/forms/core.py:46
+#, python-format
+msgid "Password has to contain %(desc)s"
+msgstr "Passwort muss %(desc)s enthalten"
+
+#: supervisr/core/forms/domain.py:33
+msgid "Domain name is not valid"
+msgstr ""
+
+#: supervisr/core/forms/provider.py:25
+msgid "Instance Name"
+msgstr "Instanz Name"
+
+#: supervisr/core/forms/provider.py:26
+#: supervisr/core/templates/common/base.html:17
+#: supervisr/core/templates/common/index.html:73
+#: supervisr/core/templates/provider/instance-index.html:27
+#: supervisr/dns/templates/dns/index.html:19 supervisr/mail/forms/domain.py:18
+#: supervisr/mail/templates/mail/index.html:19
+#: supervisr/mod/auth/oauth/client/templates/mod/auth/oauth/client/settings.html:26
+msgid "Provider"
+msgstr "Anbieter"
+
+#: supervisr/core/forms/provider.py:27
+#: supervisr/core/templates/common/base.html:26
+#: supervisr/core/templates/provider/credentials-index.html:11
+#: supervisr/core/templates/provider/instance-index.html:28
+msgid "Credentials"
+msgstr "Zugangsdaten"
+
+#: supervisr/core/forms/provider.py:56
+msgid "Credential Type"
+msgstr "Zugangs Art"
+
+#: supervisr/core/mailer.py:77
+#, python-format
+msgid "Confirm your account on %(branding)s"
+msgstr ""
+
+#: supervisr/core/mailer.py:110
+#, python-format
+msgid "Step 2/3 - Reset your Password on %(branding)s"
+msgstr ""
+
+#: supervisr/core/middleware/ImpersonateMiddleware.py:15
+msgid "Stop Impersonating"
+msgstr "Aufhören, zu verkörpern"
+
+#: supervisr/core/models.py:207
+msgid "Sign up"
+msgstr "Registrieren"
+
+#: supervisr/core/models.py:208
+msgid "Password Reset"
+msgstr "Passwort zurücksetzen"
+
+#: supervisr/core/models.py:249
+#, python-format
+msgid "UserProductRelationship %(product)s %(user)s"
+msgstr "Nutzer Produkt Beziehung %(product)s %(user)s"
+
+#: supervisr/core/models.py:379
+msgid "Urgent"
+msgstr "Dringend"
+
+#: supervisr/core/models.py:380
+msgid "Important"
+msgstr "Wichtig"
+
+#: supervisr/core/models.py:381
+msgid "Medium"
+msgstr "Mittel"
+
+#: supervisr/core/models.py:382
+msgid "Notice"
+msgstr "Hinweis"
+
+#: supervisr/core/models.py:383
+msgid "Information"
+msgstr "Information"
+
+#: supervisr/core/models.py:433
+#, python-format
+msgid "%(days)d day(s) ago"
+msgstr ""
+
+#: supervisr/core/models.py:435
+#, python-format
+msgid "%(hours)d hour(s) ago"
+msgstr ""
+
+#: supervisr/core/models.py:436
+#, python-format
+msgid "%(minutes)d minute(s) ago"
+msgstr ""
+
+#: supervisr/core/models.py:490
+msgid "API Key"
+msgstr "API-Key"
+
+#: supervisr/core/models.py:505
+msgid "Username and Password"
+msgstr "Benutzername und Passwort"
+
+#: supervisr/core/templates/_admin/base.html:13
+#: supervisr/mail/templates/mail/domain/view.html:22
+msgid "General Settings"
+msgstr ""
+
+#: supervisr/core/templates/_admin/base.html:15
+msgid "Dashboard"
+msgstr ""
+
+#: supervisr/core/templates/_admin/base.html:16
+#: supervisr/core/templates/_admin/index.html:17
+#: supervisr/core/templates/_admin/users.html:12
+#: supervisr/core/templates/account/index.html:16
+msgid "Users"
+msgstr ""
+
+#: supervisr/core/templates/_admin/base.html:17
+#: supervisr/core/templates/account/base.html:13
+#: supervisr/mod/auth/saml/idp/templates/saml/idp/settings.html:16
+msgid "Settings"
+msgstr ""
+
+#: supervisr/core/templates/_admin/base.html:22
+#: supervisr/core/templates/_admin/mod_default.html:11
+msgid "Module Settings"
+msgstr ""
+
+#: supervisr/core/templates/_admin/base.html:31
+#: supervisr/core/templates/_admin/info.html:14
+msgid "System Information"
+msgstr ""
+
+#: supervisr/core/templates/_admin/base.html:34
+#: supervisr/core/templates/user/base.html:14
+#: supervisr/core/templates/user/events.html:15
+msgid "Events"
+msgstr ""
+
+#: supervisr/core/templates/_admin/base.html:38
+msgid "Django Builtins"
+msgstr ""
+
+#: supervisr/core/templates/_admin/base.html:42
+#: supervisr/core/templates/account/base.html:16
+msgid "Admin Interface"
+msgstr ""
+
+#: supervisr/core/templates/_admin/base.html:47
+#: supervisr/core/templates/account/base.html:19
+msgid "Admin Docs"
+msgstr ""
+
+#: supervisr/core/templates/_admin/base.html:53
+#: supervisr/core/templates/_admin/debug.html:12
+#: supervisr/puppet/templates/puppet/index.html:41
+msgid "Debug"
+msgstr ""
+
+#: supervisr/core/templates/_admin/events.html:15
+msgid "Global Events"
+msgstr ""
+
+#: supervisr/core/templates/_admin/events.html:19
+#: supervisr/core/templates/user/events.html:19
+msgid "User"
+msgstr ""
+
+#: supervisr/core/templates/_admin/events.html:20
+#: supervisr/core/templates/user/events.html:20
+msgid "Invoker"
+msgstr ""
+
+#: supervisr/core/templates/_admin/events.html:21
+#: supervisr/core/templates/common/index.html:110
+#: supervisr/core/templates/user/events.html:21
+msgid "Description"
+msgstr ""
+
+#: supervisr/core/templates/_admin/events.html:22
+#: supervisr/core/templates/common/index.html:111
+#: supervisr/core/templates/user/events.html:22
+msgid "Age"
+msgstr ""
+
+#: supervisr/core/templates/_admin/events.html:23
+#: supervisr/core/templates/common/index.html:112
+#: supervisr/core/templates/user/events.html:23
+#: supervisr/mod/auth/oauth/client/templates/mod/auth/oauth/client/settings.html:28
+msgid "Action"
+msgstr ""
+
+#: supervisr/core/templates/_admin/events.html:24
+#: supervisr/core/templates/user/events.html:24
+msgid "Remote IP"
+msgstr ""
+
+#: supervisr/core/templates/_admin/events.html:48
+msgid "Previous"
+msgstr ""
+
+#: supervisr/core/templates/_admin/events.html:51
+#: supervisr/core/templates/core/generic_wizard.html:81
+msgid "Next"
+msgstr ""
+
+#: supervisr/core/templates/_admin/events.html:55
+#: supervisr/core/templates/blocks/block_pagination.html:10
+#, python-format
+msgid ""
+"\n"
+"    Page %(current)s of %(total)s\n"
+"    "
+msgstr ""
+
+#: supervisr/core/templates/_admin/index.html:12
+msgid "Administrator Dashboard"
+msgstr ""
+
+#: supervisr/core/templates/_admin/index.html:29
+#: supervisr/core/templates/account/index.html:28
+msgid "Version"
+msgstr ""
+
+#: supervisr/core/templates/_admin/info.html:18
+msgid "Key"
+msgstr ""
+
+#: supervisr/core/templates/_admin/info.html:19
+msgid "Value"
+msgstr ""
+
+#: supervisr/core/templates/_admin/mod_default.html:14
+msgid "This Module does not have a settings Page."
+msgstr ""
+
+#: supervisr/core/templates/_admin/users.html:19
+msgid "Signup Date"
+msgstr ""
+
+#: supervisr/core/templates/_admin/users.html:20
+#: supervisr/core/templates/_admin/users.html:32
+msgid "Impersonate"
+msgstr ""
+
+#: supervisr/core/templates/account/base.html:10
+#: supervisr/core/templates/common/base.html:10
+#: supervisr/core/templates/common/index.html:48
+#: supervisr/core/templates/user/base.html:11
+#: supervisr/dns/templates/dns/base.html:12
+#: supervisr/mail/templates/mail/base.html:12
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/base.html:10
+#: supervisr/puppet/templates/puppet/base.html:10
+msgid "Overview"
+msgstr ""
+
+#: supervisr/core/templates/admin/base.html:13
+#: supervisr/core/templates/core/base.html:48
+msgid "Home"
+msgstr ""
+
+#: supervisr/core/templates/common/base.html:13
+#: supervisr/core/templates/domain/index.html:11
+#: supervisr/mail/templates/mail/index.html:38
+msgid "Domains"
+msgstr ""
+
+#: supervisr/core/templates/common/base.html:21
+msgid "Instances"
+msgstr ""
+
+#: supervisr/core/templates/common/base.html:32
+msgid "Products"
+msgstr ""
+
+#: supervisr/core/templates/common/error.html:19
+msgid "Whops"
+msgstr ""
+
+#: supervisr/core/templates/common/error.html:26
+msgid "Not found."
+msgstr ""
+
+#: supervisr/core/templates/common/error.html:28
+msgid "An unexpected Error occurred. The Admin team has been notified."
+msgstr ""
+
+#: supervisr/core/templates/common/error.html:31
+msgid "Additional Information:"
+msgstr ""
+
+#: supervisr/core/templates/common/index.html:58
+#, python-format
+msgid "Hey, %(name)s"
+msgstr ""
+
+#: supervisr/core/templates/common/index.html:66
+msgid "Provider Instance Status"
+msgstr ""
+
+#: supervisr/core/templates/common/index.html:72
+msgid "Instance"
+msgstr ""
+
+#: supervisr/core/templates/common/index.html:74
+#: supervisr/mod/auth/oauth/client/templates/mod/auth/oauth/client/settings.html:27
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:30
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/volumes.html:23
+#: supervisr/mod/tfa/templates/tfa/user_settings.html:19
+msgid "Status"
+msgstr ""
+
+#: supervisr/core/templates/common/index.html:84
+#: supervisr/core/templates/provider/instance-index.html:41
+msgid "OK"
+msgstr ""
+
+#: supervisr/core/templates/common/index.html:96
+msgid "No Provders"
+msgstr ""
+
+#: supervisr/core/templates/common/index.html:103
+msgid "Recent Events"
+msgstr ""
+
+#: supervisr/core/templates/common/index.html:133
+msgid "No Current Events!"
+msgstr ""
+
+#: supervisr/core/templates/common/index.html:142
+msgid "Quicklaunch"
+msgstr ""
+
+#: supervisr/core/templates/common/index.html:170
+msgid "No Hosted Applications yet!"
+msgstr ""
+
+#: supervisr/core/templates/common/maintenance.html:19
+msgid "Maintenance Mode"
+msgstr ""
+
+#: supervisr/core/templates/common/maintenance.html:22
+msgid ""
+"We're currently upgrading supervisr. Try again in a few minutes or shoot us "
+"an email at <a href=\"mailto:support@beryju.org\">support@beryju.org</a>."
+msgstr ""
+
+#: supervisr/core/templates/core/base.html:58
+msgid "Admin"
+msgstr ""
+
+#: supervisr/core/templates/core/base.html:67
+msgid "Search for keywords..."
+msgstr ""
+
+#: supervisr/core/templates/core/base.html:86
+msgid "Profile"
+msgstr ""
+
+#: supervisr/core/templates/core/base.html:87
+#: supervisr/core/views/account.py:192
+msgid "Change Password"
+msgstr ""
+
+#: supervisr/core/templates/core/base.html:91
+msgid "Attributions"
+msgstr ""
+
+#: supervisr/core/templates/core/base.html:94
+#: supervisr/mod/auth/oauth/provider/templates/oauth2_provider/authorize.html:48
+#: supervisr/mod/auth/saml/idp/templates/saml/idp/login.html:36
+msgid "Logout"
+msgstr ""
+
+#: supervisr/core/templates/core/base.html:99
+#: supervisr/core/views/account.py:94 supervisr/core/views/account.py:367
+msgid "Login"
+msgstr ""
+
+#: supervisr/core/templates/core/generic_delete.html:19
+msgid "Attention"
+msgstr ""
+
+#: supervisr/core/templates/core/generic_delete.html:22
+#, python-format
+msgid "Are you sure you want to delete %(object)s"
+msgstr ""
+
+#: supervisr/core/templates/core/generic_delete.html:25
+#: supervisr/core/templates/core/generic_form_modal.html:27
+#: supervisr/core/templates/core/generic_wizard.html:69
+#: supervisr/mod/auth/oauth/provider/templates/oauth2_provider/authorize.html:55
+#: supervisr/mod/auth/saml/idp/templates/saml/idp/login.html:43
+msgid "Cancel"
+msgstr ""
+
+#: supervisr/core/templates/core/generic_wizard.html:26
+#, python-format
+msgid "Step %(curr_step)s"
+msgstr ""
+
+#: supervisr/core/templates/core/generic_wizard.html:74
+msgid "Back"
+msgstr ""
+
+#: supervisr/core/templates/core/generic_wizard.html:79
+msgid "Finish"
+msgstr ""
+
+#: supervisr/core/templates/domain/index.html:26
+#: supervisr/dns/templates/dns/index.html:18
+#: supervisr/dns/templates/dns/zones/index.html:34
+#: supervisr/mail/forms/account.py:20 supervisr/mail/forms/domain.py:16
+#: supervisr/mail/templates/mail/account/index.html:35
+#: supervisr/mail/templates/mail/index.html:18
+#: supervisr/mod/auth/ldap/forms/settings.py:31
+msgid "Domain"
+msgstr ""
+
+#: supervisr/core/templates/domain/index.html:27
+msgid "Provider (Registrar)"
+msgstr ""
+
+#: supervisr/core/templates/domain/index.html:28
+msgid "Is Managed?"
+msgstr ""
+
+#: supervisr/core/templates/domain/index.html:29
+msgid "Is Subdomain?"
+msgstr ""
+
+#: supervisr/core/templates/product/index.html:42
+msgid "Details"
+msgstr ""
+
+#: supervisr/core/templates/product/index.html:44
+#: supervisr/static/templates/static/generic.html:266
+msgid "Open"
+msgstr ""
+
+#: supervisr/core/templates/provider/credentials-index.html:27
+msgid "Used by"
+msgstr ""
+
+#: supervisr/core/templates/provider/credentials-index.html:28
+#: supervisr/dns/templates/dns/migrate/preview.html:10
+#: supervisr/dns/templates/dns/records/index.html:46
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:33
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/volumes.html:25
+msgid "Type"
+msgstr ""
+
+#: supervisr/core/templates/provider/instance-index.html:11
+msgid "Provider Instances"
+msgstr ""
+
+#: supervisr/core/templates/provider/instance-index.html:29
+msgid "Authentication Status"
+msgstr ""
+
+#: supervisr/core/templates/search/search.html:11
+msgid "Search"
+msgstr ""
+
+#: supervisr/core/templates/search/search.html:25
+msgid "Nothing"
+msgstr ""
+
+#: supervisr/core/templates/search/search.html:29
+msgid "Nothing found"
+msgstr ""
+
+#: supervisr/core/templates/user/index.html:13
+msgid "User Profile"
+msgstr ""
+
+#: supervisr/core/templatetags/supervisr_title.py:36
+#, python-format
+msgid "%(title)s - %(app)s %(branding)s"
+msgstr ""
+
+#: supervisr/core/utils.py:68
+#, python-format
+msgid "Supervisr Error %(exception)s"
+msgstr ""
+
+#: supervisr/core/views/account.py:59
+msgid "Successfully logged in!"
+msgstr ""
+
+#: supervisr/core/views/account.py:84
+msgid "Invalid Login"
+msgstr ""
+
+#: supervisr/core/views/account.py:93
+msgid "SSO - Login"
+msgstr ""
+
+#: supervisr/core/views/account.py:143
+msgid "Failed to sign up."
+msgstr ""
+
+#: supervisr/core/views/account.py:145
+msgid "Successfully signed up!"
+msgstr ""
+
+#: supervisr/core/views/account.py:153
+msgid "SSO - Signup"
+msgstr ""
+
+#: supervisr/core/views/account.py:154
+msgid "Signup"
+msgstr ""
+
+#: supervisr/core/views/account.py:182
+msgid "Successfully changed password!"
+msgstr ""
+
+#: supervisr/core/views/account.py:184
+msgid "Failed to change password"
+msgstr ""
+
+#: supervisr/core/views/account.py:191
+msgid "SSO - Change Password"
+msgstr ""
+
+#: supervisr/core/views/account.py:205
+msgid "Successfully logged out!"
+msgstr ""
+
+#: supervisr/core/views/account.py:219
+msgid "Account already confirmed!"
+msgstr ""
+
+#: supervisr/core/views/account.py:222
+msgid "Confirmation expired"
+msgstr ""
+
+#: supervisr/core/views/account.py:235
+msgid "Account successfully activated!"
+msgstr ""
+
+#: supervisr/core/views/account.py:254
+msgid "Reset Link sent successfully"
+msgstr ""
+
+#: supervisr/core/views/account.py:259
+msgid "SSO - Reset your Password - Step 1/3"
+msgstr ""
+
+#: supervisr/core/views/account.py:260
+msgid "Send Confirmation Email"
+msgstr ""
+
+#: supervisr/core/views/account.py:277
+msgid "Link already used!"
+msgstr ""
+
+#: supervisr/core/views/account.py:280
+msgid "Link expired!"
+msgstr ""
+
+#: supervisr/core/views/account.py:299
+msgid "Account successfully reset!"
+msgstr ""
+
+#: supervisr/core/views/account.py:305
+msgid "Failed to reset Password. Please try again later."
+msgstr ""
+
+#: supervisr/core/views/account.py:313
+msgid "SSO - Reset your Password - Step 3/3"
+msgstr ""
+
+#: supervisr/core/views/account.py:314
+msgid "Reset your Password"
+msgstr ""
+
+#: supervisr/core/views/account.py:337
+msgid "Successfully resent confirmation email"
+msgstr ""
+
+#: supervisr/core/views/account.py:353
+msgid "Successfully Re-Authenticated"
+msgstr ""
+
+#: supervisr/core/views/account.py:360
+msgid "Failed to Re-Authenticate"
+msgstr ""
+
+#: supervisr/core/views/account.py:366
+msgid "SSO - Re-Authenticate"
+msgstr ""
+
+#: supervisr/core/views/domain.py:35
+msgid "New Domain"
+msgstr ""
+
+#: supervisr/core/views/domain.py:72
+msgid "Domain successfully created"
+msgstr ""
+
+#: supervisr/core/views/domain.py:93
+msgid "Successfully edited Domain"
+msgstr ""
+
+#: supervisr/core/views/domain.py:95
+msgid "Invalid Domain"
+msgstr ""
+
+#: supervisr/core/views/domain.py:124
+msgid "Domain successfully deleted"
+msgstr ""
+
+#: supervisr/core/views/provider.py:36
+msgid "New Provider"
+msgstr ""
+
+#: supervisr/core/views/provider.py:69
+msgid "Provider Instance successfully created"
+msgstr ""
+
+#: supervisr/core/views/provider.py:96
+msgid "Successfully edited Instance"
+msgstr ""
+
+#: supervisr/core/views/provider.py:98
+msgid "Invalid Instance"
+msgstr ""
+
+#: supervisr/core/views/provider.py:128
+msgid "Instance successfully deleted"
+msgstr ""
+
+#: supervisr/core/views/provider.py:155
+msgid "New Credentials"
+msgstr ""
+
+#: supervisr/core/views/provider.py:191
+msgid "Credentials successfully created"
+msgstr ""
+
+#: supervisr/core/views/provider.py:207
+msgid "Credential successfully deleted"
+msgstr ""
+
+#: supervisr/dns/forms/migrate.py:7 supervisr/dns/forms/migrate.py:9
+msgid "Zone Data"
+msgstr ""
+
+#: supervisr/dns/forms/migrate.py:13
+msgid "Preview Results"
+msgstr ""
+
+#: supervisr/dns/forms/migrate.py:15
+msgid "Accept Import"
+msgstr ""
+
+#: supervisr/dns/forms/records.py:17 supervisr/dns/forms/zones.py:16
+msgid "General Information"
+msgstr ""
+
+#: supervisr/dns/forms/records.py:36
+#: supervisr/dns/templates/dns/records/index.html:47
+msgid "Priority"
+msgstr ""
+
+#: supervisr/dns/templates/dns/alias/index.html:11
+#: supervisr/mail/templates/mail/alias/index.html:11
+#: supervisr/mail/templates/mail/base.html:18
+#: supervisr/mail/templates/mail/index.html:50
+msgid "Aliases"
+msgstr ""
+
+#: supervisr/dns/templates/dns/alias/index.html:26
+#: supervisr/mail/forms/account.py:21
+#: supervisr/mail/templates/mail/alias/index.html:26
+msgid "Address"
+msgstr ""
+
+#: supervisr/dns/templates/dns/alias/index.html:27
+#: supervisr/mail/templates/mail/alias/index.html:27
+msgid "Forwarder Destination"
+msgstr ""
+
+#: supervisr/dns/templates/dns/alias/index.html:28
+#: supervisr/dns/templates/dns/zones/index.html:35
+#: supervisr/mail/templates/mail/account/index.html:36
+#: supervisr/mail/templates/mail/alias/index.html:28
+msgid "Owner"
+msgstr ""
+
+#: supervisr/dns/templates/dns/alias/index.html:29
+#: supervisr/mail/templates/mail/account/index.html:38
+#: supervisr/mail/templates/mail/alias/index.html:29
+msgid "Is Catchall?"
+msgstr ""
+
+#: supervisr/dns/templates/dns/base.html:15
+#: supervisr/dns/templates/dns/index.html:54
+#: supervisr/dns/templates/dns/zones/index.html:11
+msgid "Zones"
+msgstr ""
+
+#: supervisr/dns/templates/dns/base.html:24
+msgid "TSIG"
+msgstr ""
+
+#: supervisr/dns/templates/dns/index.html:11
+msgid "DNS"
+msgstr ""
+
+#: supervisr/dns/templates/dns/index.html:13
+#: supervisr/mail/templates/mail/index.html:13
+msgid "Unclaimed Domains"
+msgstr ""
+
+#: supervisr/dns/templates/dns/index.html:20
+msgid "Actions"
+msgstr ""
+
+#: supervisr/dns/templates/dns/index.html:34
+msgid "Blank Zone"
+msgstr ""
+
+#: supervisr/dns/templates/dns/index.html:35
+#: supervisr/dns/templates/dns/records/index.html:37
+#: supervisr/dns/templates/dns/zones/index.html:27
+msgid "Import from Bind Zone"
+msgstr ""
+
+#: supervisr/dns/templates/dns/index.html:48
+#: supervisr/dns/templates/dns/zones/index.html:36
+msgid "Records"
+msgstr ""
+
+#: supervisr/dns/templates/dns/migrate/preview.html:11
+#: supervisr/dns/templates/dns/records/index.html:50
+msgid "Content"
+msgstr ""
+
+#: supervisr/dns/templates/dns/records/index.html:21
+#, python-format
+msgid "Records for %(z)s"
+msgstr ""
+
+#: supervisr/dns/templates/dns/records/index.html:48
+msgid "TTL"
+msgstr ""
+
+#: supervisr/dns/templates/dns/records/index.html:49
+#: supervisr/dns/templates/dns/zones/index.html:37
+#: supervisr/mail/forms/domain.py:19
+#: supervisr/mod/auth/ldap/forms/settings.py:17
+#: supervisr/mod/stats/graphite/forms/settings.py:17
+msgid "Enabled"
+msgstr ""
+
+#: supervisr/dns/views/migrate.py:30
+msgid "Import Bind Zone"
+msgstr ""
+
+#: supervisr/dns/views/migrate.py:78
+#, python-format
+msgid "DNS Domain successfully created and %(count)d Records imported."
+msgstr ""
+
+#: supervisr/dns/views/migrate.py:83
+msgid "Created nothing"
+msgstr ""
+
+#: supervisr/dns/views/records.py:52
+msgid "New Record"
+msgstr ""
+
+#: supervisr/dns/views/records.py:73
+msgid "DNS Record successfully created"
+msgstr ""
+
+#: supervisr/dns/views/records.py:103
+msgid "Successfully edited Record"
+msgstr ""
+
+#: supervisr/dns/views/records.py:105
+msgid "Invalid Record"
+msgstr ""
+
+#: supervisr/dns/views/records.py:137
+msgid "Record successfully deleted"
+msgstr ""
+
+#: supervisr/dns/views/zones.py:48
+msgid "New Zone"
+msgstr ""
+
+#: supervisr/dns/views/zones.py:79
+msgid "DNS Domain successfully created"
+msgstr ""
+
+#: supervisr/dns/views/zones.py:103
+msgid "Successfully edited Zone"
+msgstr ""
+
+#: supervisr/dns/views/zones.py:105
+msgid "Invalid Zone"
+msgstr ""
+
+#: supervisr/dns/views/zones.py:130
+msgid "Zone successfully deleted"
+msgstr ""
+
+#: supervisr/mail/fields.py:15
+msgid "Enter valid email addresses."
+msgstr ""
+
+#: supervisr/mail/forms/account.py:23
+msgid "Can Send Emails"
+msgstr ""
+
+#: supervisr/mail/forms/account.py:25
+msgid "Can Receive Emails"
+msgstr ""
+
+#: supervisr/mail/forms/account.py:27
+msgid "Mark as Catch-all Account"
+msgstr ""
+
+#: supervisr/mail/forms/account.py:67
+msgid "Forwarder destination (optional)"
+msgstr ""
+
+#: supervisr/mail/forms/account.py:71 supervisr/mail/forms/alias.py:24
+msgid "One destination per line"
+msgstr ""
+
+#: supervisr/mail/forms/alias.py:19
+msgid "Source Account"
+msgstr ""
+
+#: supervisr/mail/forms/alias.py:20
+msgid "Alias destination"
+msgstr ""
+
+#: supervisr/mail/models.py:23 supervisr/mail/models.py:58
+#: supervisr/mail/models.py:60
+msgid "This field is automatically generatedby Django to make queries easier."
+msgstr ""
+
+#: supervisr/mail/models.py:78
+#, python-format
+msgid "Changed Password for Mail Account %(account)s"
+msgstr ""
+
+#: supervisr/mail/templates/mail/account/index.html:11
+#: supervisr/mail/templates/mail/base.html:15
+#: supervisr/mail/templates/mail/index.html:44
+msgid "Accounts"
+msgstr ""
+
+#: supervisr/mail/templates/mail/account/index.html:27
+msgid "Set Password"
+msgstr ""
+
+#: supervisr/mail/templates/mail/account/index.html:34
+msgid "Full Address"
+msgstr ""
+
+#: supervisr/mail/templates/mail/account/index.html:37
+msgid "Usage"
+msgstr ""
+
+#: supervisr/mail/templates/mail/base.html:22
+msgid "Domain Settings"
+msgstr ""
+
+#: supervisr/mail/templates/mail/domain/view.html:18
+msgid "Details "
+msgstr ""
+
+#: supervisr/mail/templates/mail/domain/view.html:26
+msgid "Spam Settings"
+msgstr ""
+
+#: supervisr/mail/templates/mail/domain/view.html:30
+msgid "DKIM Settings"
+msgstr ""
+
+#: supervisr/mail/templates/mail/domain/view.html:37
+msgid "Created"
+msgstr ""
+
+#: supervisr/mail/templates/mail/domain/view.html:41
+msgid "Domain Provider"
+msgstr ""
+
+#: supervisr/mail/templates/mail/index.html:28
+msgid "Pursue"
+msgstr ""
+
+#: supervisr/mail/views/account.py:62
+msgid "New Mail Account"
+msgstr ""
+
+#: supervisr/mail/views/account.py:98
+msgid "Mail Account successfully created"
+msgstr ""
+
+#: supervisr/mail/views/account.py:126
+#, python-format
+msgid "Successfully set password for %(account)s"
+msgstr ""
+
+#: supervisr/mail/views/account.py:130
+#, python-format
+msgid "You reset the password for %(account)s"
+msgstr ""
+
+#: supervisr/mail/views/account.py:144
+#, python-format
+msgid "Change password for %(account)s"
+msgstr ""
+
+#: supervisr/mail/views/account.py:174
+msgid "Account successfully deleted"
+msgstr ""
+
+#: supervisr/mail/views/alias.py:46
+msgid "New Mail Alias"
+msgstr ""
+
+#: supervisr/mail/views/alias.py:70
+msgid "Mail Aliases successfully created"
+msgstr ""
+
+#: supervisr/mail/views/alias.py:92
+msgid "Alias successfully deleted"
+msgstr ""
+
+#: supervisr/mail/views/domain.py:41
+msgid "New Mail Domain"
+msgstr ""
+
+#: supervisr/mail/views/domain.py:72
+msgid "Mail Domain successfully created"
+msgstr ""
+
+#: supervisr/mod/auth/ldap/forms/settings.py:18
+#: supervisr/mod/stats/graphite/forms/settings.py:18
+msgid "Hostname"
+msgstr ""
+
+#: supervisr/mod/auth/ldap/forms/settings.py:21
+msgid "Base DN"
+msgstr ""
+
+#: supervisr/mod/auth/ldap/forms/settings.py:24
+msgid "Create Base DN"
+msgstr ""
+
+#: supervisr/mod/auth/ldap/forms/settings.py:27
+msgid "Bind User"
+msgstr ""
+
+#: supervisr/mod/auth/ldap/forms/settings.py:30
+msgid "Bind Password"
+msgstr ""
+
+#: supervisr/mod/auth/ldap/templates/ldap/settings.html:15
+msgid "LDAP Connection Settings"
+msgstr ""
+
+#: supervisr/mod/auth/ldap/templates/ldap/settings.html:24
+#: supervisr/mod/auth/saml/idp/templates/saml/idp/settings.html:23
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:74
+#: supervisr/mod/stats/graphite/templates/stats/graphite/settings.html:24
+msgid "Update"
+msgstr ""
+
+#: supervisr/mod/auth/ldap/views.py:42 supervisr/mod/auth/saml/idp/views.py:223
+#: supervisr/mod/stats/graphite/views.py:37
+msgid "Settings successfully updated"
+msgstr ""
+
+#: supervisr/mod/auth/oauth/client/templates/account/dyn_extra/facebook.html:7
+msgid "Login with Facebook"
+msgstr ""
+
+#: supervisr/mod/auth/oauth/client/templates/account/dyn_extra/github.html:7
+msgid "Login with GitHub"
+msgstr ""
+
+#: supervisr/mod/auth/oauth/client/templates/account/dyn_extra/twitter.html:7
+msgid "Login with Twitter"
+msgstr ""
+
+#: supervisr/mod/auth/oauth/client/templates/mod/auth/oauth/client/settings.html:14
+msgid "OAuth2"
+msgstr ""
+
+#: supervisr/mod/auth/oauth/client/templates/mod/auth/oauth/client/settings.html:19
+msgid "Connected Accounts"
+msgstr ""
+
+#: supervisr/mod/auth/oauth/client/templates/mod/auth/oauth/client/settings.html:29
+msgid "ID"
+msgstr ""
+
+#: supervisr/mod/auth/oauth/client/templates/mod/auth/oauth/client/settings.html:51
+msgid "No Providers configured!"
+msgstr ""
+
+#: supervisr/mod/auth/oauth/client/views/core.py:135
+#, python-format
+msgid "Successfully linked %(provider)s!"
+msgstr ""
+
+#: supervisr/mod/auth/oauth/client/views/core.py:177
+msgid "Authenication Failed."
+msgstr ""
+
+#: supervisr/mod/auth/oauth/client/views/core.py:207
+msgid "Connection successfully deleted"
+msgstr ""
+
+#: supervisr/mod/auth/oauth/provider/templates/oauth2_provider/authorize.html:26
+#: supervisr/mod/auth/saml/idp/templates/saml/idp/login.html:24
+msgid "SSO - Authorize External Source"
+msgstr ""
+
+#: supervisr/mod/auth/oauth/provider/templates/oauth2_provider/authorize.html:30
+#: supervisr/mod/auth/saml/idp/templates/saml/idp/login.html:28
+#, python-format
+msgid ""
+"\n"
+"          You're about to sign into %(remote)s\n"
+"        "
+msgstr ""
+
+#: supervisr/mod/auth/oauth/provider/templates/oauth2_provider/authorize.html:34
+msgid "Application requires following permissions"
+msgstr ""
+
+#: supervisr/mod/auth/oauth/provider/templates/oauth2_provider/authorize.html:45
+#: supervisr/mod/auth/saml/idp/templates/saml/idp/login.html:33
+#, python-format
+msgid ""
+"\n"
+"          You are logged in as %(user)s. Not you?\n"
+"        "
+msgstr ""
+
+#: supervisr/mod/auth/oauth/provider/templates/oauth2_provider/authorize.html:52
+#: supervisr/mod/auth/saml/idp/templates/saml/idp/login.html:40
+msgid "Continue"
+msgstr ""
+
+#: supervisr/mod/auth/oauth/provider/views/oauth2.py:44
+#, python-format
+msgid "You authenticated %s (via OAuth) (skipped Authz)"
+msgstr ""
+
+#: supervisr/mod/auth/oauth/provider/views/oauth2.py:57
+#, python-format
+msgid "You authenticated %s (via OAuth)"
+msgstr ""
+
+#: supervisr/mod/auth/saml/idp/forms/settings.py:17
+msgid "Issuer"
+msgstr ""
+
+#: supervisr/mod/auth/saml/idp/forms/settings.py:18
+msgid "Signing"
+msgstr ""
+
+#: supervisr/mod/auth/saml/idp/forms/settings.py:19
+msgid "Auto-Submit"
+msgstr ""
+
+#: supervisr/mod/auth/saml/idp/forms/settings.py:20
+msgid "Certificate"
+msgstr ""
+
+#: supervisr/mod/auth/saml/idp/forms/settings.py:21
+msgid "Private Key"
+msgstr ""
+
+#: supervisr/mod/auth/saml/idp/templates/saml/idp/invalid_user.html:4
+msgid "You have logged in, but your user account is not enabled for SAML 2.0."
+msgstr ""
+
+#: supervisr/mod/auth/saml/idp/templates/saml/idp/logged_out.html:4
+msgid "You have successfully logged out of the Identity Provider."
+msgstr ""
+
+#: supervisr/mod/auth/saml/idp/templates/saml/idp/settings.html:11
+msgid "SAML2 IDP"
+msgstr ""
+
+#: supervisr/mod/auth/saml/idp/templates/saml/idp/settings.html:33
+msgid "Metadata"
+msgstr ""
+
+#: supervisr/mod/auth/saml/idp/templates/saml/idp/settings.html:41
+msgid "Download Metadata"
+msgstr ""
+
+#: supervisr/mod/auth/saml/idp/views.py:114
+#, python-format
+msgid "You authenticated %s (via SAML) (skipped Authz)"
+msgstr ""
+
+#: supervisr/mod/auth/saml/idp/views.py:127
+#, python-format
+msgid "You authenticated %s (via SAML)"
+msgstr ""
+
+#: supervisr/mod/auth/saml/idp/views.py:225
+msgid "Failed to update settings"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/forms/filter.py:11
+#: supervisr/mod/contrib/bacula/forms/filter.py:22
+#: supervisr/mod/contrib/bacula/forms/filter.py:26
+msgid "---"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/forms/filter.py:12
+msgid "Full"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/forms/filter.py:13
+msgid "Delta"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/forms/filter.py:14
+msgid "Incremental"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/forms/filter.py:22
+msgid "Client"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/forms/filter.py:24
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:37
+msgid "Level"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/forms/filter.py:26
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:41
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/volumes.html:24
+msgid "Pool"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/base.html:13
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/index.html:28
+msgid "Jobs"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/base.html:16
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/index.html:78
+msgid "Volumes"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/index.html:13
+msgid "Bacula Overview"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/index.html:18
+msgid "Clients"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/index.html:38
+msgid "Total Size"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/index.html:48
+msgid "Total Files"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/index.html:58
+msgid "Database Size"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/index.html:68
+msgid "Pool(s)"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/index.html:88
+msgid "Volume Size"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/index.html:100
+msgid "Job status"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/index.html:109
+msgid "Stored Bytes (last 7 days)"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/job_file.html:22
+#, python-format
+msgid "Files for Job %(id)s (%(name)s)"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/job_file.html:29
+msgid "Path"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/job_log.html:22
+#, python-format
+msgid "Logs for Job %(id)s (%(name)s)"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/job_log.html:29
+msgid "Time"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/job_log.html:30
+msgid "Event"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:23
+msgid "All Jobs"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:31
+msgid "Job ID"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:34
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/volumes.html:26
+msgid "Start Time"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:35
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/volumes.html:27
+msgid "End Time"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:36
+msgid "Elapsed Time"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:38
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/volumes.html:28
+msgid "Size"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:39
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:43
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/volumes.html:29
+msgid "Files"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:40
+msgid "Speed"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:42
+msgid "Log"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/jobs.html:69
+msgid "Filter"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/volumes.html:14
+msgid "All Volumes"
+msgstr ""
+
+#: supervisr/mod/contrib/bacula/templates/mod/contrib/bacula/volumes.html:21
+msgid "Media ID"
+msgstr ""
+
+#: supervisr/mod/stats/graphite/forms/settings.py:21
+msgid "Port"
+msgstr ""
+
+#: supervisr/mod/stats/graphite/forms/settings.py:23
+msgid "Prefix"
+msgstr ""
+
+#: supervisr/mod/stats/graphite/templates/stats/graphite/settings.html:15
+msgid "Graphite Connection Settings"
+msgstr ""
+
+#: supervisr/mod/stats/graphite/templates/stats/graphite/settings.html:25
+msgid "Test"
+msgstr ""
+
+#: supervisr/mod/stats/graphite/views.py:42
+msgid "Successfully Sent test message"
+msgstr ""
+
+#: supervisr/mod/tfa/forms/tfa.py:13
+msgid "Only alpha-numeric characters are allowed."
+msgstr ""
+
+#: supervisr/mod/tfa/forms/tfa.py:30 supervisr/mod/tfa/forms/tfa.py:46
+msgid "Code"
+msgstr ""
+
+#: supervisr/mod/tfa/forms/tfa.py:41 supervisr/mod/tfa/views/tfa.py:122
+msgid "Set up 2FA"
+msgstr ""
+
+#: supervisr/mod/tfa/forms/tfa.py:45
+msgid "Scan this Code with your 2FA App."
+msgstr ""
+
+#: supervisr/mod/tfa/forms/tfa.py:55
+msgid "2FA Code does not match"
+msgstr ""
+
+#: supervisr/mod/tfa/templates/tfa/user_settings.html:14
+msgid "2-Factor Authentication"
+msgstr ""
+
+#: supervisr/mod/tfa/templates/tfa/user_settings.html:23
+#, python-format
+msgid ""
+"\n"
+"          Status: %(state)s\n"
+"          "
+msgstr ""
+
+#: supervisr/mod/tfa/templates/tfa/user_settings.html:34
+msgid "Enable 2FA"
+msgstr ""
+
+#: supervisr/mod/tfa/templates/tfa/user_settings.html:36
+msgid "Disable 2FA"
+msgstr ""
+
+#: supervisr/mod/tfa/templates/tfa/user_settings.html:45
+msgid "Your Backup tokens:"
+msgstr ""
+
+#: supervisr/mod/tfa/views/tfa.py:48
+msgid "You don't have 2-Factor Authentication set up."
+msgstr ""
+
+#: supervisr/mod/tfa/views/tfa.py:55
+msgid "Successfully validated 2FA Token."
+msgstr ""
+
+#: supervisr/mod/tfa/views/tfa.py:62
+msgid "Invalid 2-Factor Token."
+msgstr ""
+
+#: supervisr/mod/tfa/views/tfa.py:68
+msgid "SSO - Two-factor verification"
+msgstr ""
+
+#: supervisr/mod/tfa/views/tfa.py:69
+msgid "Verify"
+msgstr ""
+
+#: supervisr/mod/tfa/views/tfa.py:109
+msgid "You disabled 2FA."
+msgstr ""
+
+#: supervisr/mod/tfa/views/tfa.py:139
+msgid "You already have 2FA enabled!"
+msgstr ""
+
+#: supervisr/mod/tfa/views/tfa.py:196
+msgid "You activated 2FA."
+msgstr ""
+
+#: supervisr/puppet/templates/puppet/base.html:13
+#: supervisr/puppet/templates/puppet/debug_render.html:12
+msgid "Debug Renderer"
+msgstr ""
+
+#: supervisr/puppet/templates/puppet/debug_render.html:17
+msgid "Template"
+msgstr ""
+
+#: supervisr/puppet/templates/puppet/debug_render.html:24
+msgid "Template Path"
+msgstr ""
+
+#: supervisr/puppet/templates/puppet/debug_render.html:27
+msgid "Render"
+msgstr ""
+
+#: supervisr/puppet/templates/puppet/debug_render.html:37
+msgid "Result"
+msgstr ""
+
+#: supervisr/puppet/templates/puppet/index.html:12
+msgid "Puppet Overview"
+msgstr ""
+
+#: supervisr/puppet/templates/puppet/index.html:17
+msgid "Modules"
+msgstr ""
+
+#: supervisr/puppet/templates/puppet/index.html:29
+msgid "Downloads"
+msgstr ""
+
+#: supervisr/server/models.py:43
+#, python-format
+msgid "%(make)s %(model)s @ %(frequency)s (%(cores)s Cores)"
+msgstr ""
+
+#: supervisr/server/models.py:68
+#, python-format
+msgid "%(make)s %(model)s %(capacity)sGB (%(rpm)srpm, is_flash: %(is_flash)s)"
+msgstr ""
+
+#: supervisr/server/models.py:85
+#, python-format
+msgid "Generic NIC @ %(speed)s Mbits"
+msgstr ""
+
+#: supervisr/static/templates/static/feed.html:20
+#, python-format
+msgid ""
+"\n"
+"          Created by %(auth)s on %(edit_date)s\n"
+"          "
+msgstr ""
+
+#: supervisr/static/templates/static/feed.html:24
+#: supervisr/static/templates/static/generic.html:228
+#, python-format
+msgid "Published: %(state)s"
+msgstr ""
+
+#: supervisr/static/templates/static/generic.html:235
+#, python-format
+msgid "Listed: %(listed)s"
+msgstr ""
+
+#: supervisr/static/templates/static/generic.html:244
+msgid "Also available in the following languages: "
+msgstr ""
+
+#: supervisr/static/templates/static/generic.html:253
+#, python-format
+msgid ""
+"\n"
+"        Created by %(auth)s on %(crea_date)s. Updated %(edit_date)s.\n"
+"        "
+msgstr ""
