@@ -6,6 +6,7 @@ import importlib
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -185,6 +186,8 @@ class CredentialNewView(BaseWizardView):
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
+        if not '1' in form_dict:
+            raise ValidationError(_('No type selected'))
         cred = form_dict['1'].save(commit=False)
         cred.owner = self.request.user
         cred.save()
