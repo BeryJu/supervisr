@@ -69,12 +69,10 @@ class ZoneNewView(BaseWizardView):
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
-        m_dom = Zone.objects.create(
-            domain=form_dict['0'].cleaned_data.get('domain'),
-            provider=form_dict['0'].cleaned_data.get('provider'),
-            enabled=form_dict['0'].cleaned_data.get('enabled'))
+        zone = form_dict['0'].save(commit=False)
+        zone.save()
         UserProductRelationship.objects.create(
-            product=m_dom,
+            product=zone,
             user=self.request.user)
         messages.success(self.request, _('DNS Domain successfully created'))
         return redirect(reverse('supervisr/dns:dns-zones'))
@@ -99,11 +97,9 @@ def edit(req, zone):
         form = ZoneForm(req.POST, instance=r_zone)
         form.fields['provider'].queryset = provider_instance
         if form.is_valid():
-            r_zone.save()
+            form.save()
             messages.success(req, _('Successfully edited Zone'))
             return redirect(reverse('supervisr/dns:dns-zones'))
-        messages.error(req, _("Invalid Zone"))
-        return redirect(reverse('supervisr/dns:dns-zones'))
     else:
         form = ZoneForm(instance=r_zone)
         form.fields['provider'].queryset = provider_instance

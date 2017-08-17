@@ -4,7 +4,6 @@ Supervisr Core Domain Views
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -45,30 +44,18 @@ class DomainNewView(BaseWizardView):
             provider_instance = ProviderInstance.objects.filter(
                 provider_path__in=providers,
                 userproductrelationship__user__in=[self.request.user])
-            form.fields['provider'].choices = \
-                [(s.uuid, s.name) for s in provider_instance]
+            form.fields['provider'].queryset = provider_instance
             form.request = self.request
         return form
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
-        provider = ProviderInstance.objects.filter(
-            uuid=form_dict['0'].cleaned_data.get('provider'),
-            userproductrelationship__user__in=[self.request.user])
-        if not provider.exists():
-            raise ValidationError('Invalid Provider')
-        prov = provider.first()
-
-        m_dom = Domain.objects.create(
-            name='Domain %s' % form_dict['0'].cleaned_data.get('domain'),
-            domain=form_dict['0'].cleaned_data.get('domain'),
-            provider=prov,
-            description='Domain %s' % form_dict['0'].cleaned_data.get('domain'),
-            )
+        domain = form_dict['0'].save(commit=False)
+        domain.name = domain.domain
+        domain.save()
         UserProductRelationship.objects.create(
-            product=m_dom,
-            user=self.request.user
-            )
+            product=domain,
+            user=self.request.user)
         messages.success(self.request, _('Domain successfully created'))
         return redirect(reverse('domain-index'))
 
@@ -83,27 +70,27 @@ def edit(req, domain):
         raise Http404
     r_domain = domains.first()
 
-    if req.method == 'POST':
-        form = DomainForm(req.POST)
+    # Create list of all possible provider instances
+    providers = BaseProvider.get_providers(filter_sub=['domain_provider'], path=True)
+    provider_instance = ProviderInstance.objects.filter(
+        provider_path__in=providers,
+        userproductrelationship__user__in=[req.user])
 
+    if req.method == 'POST':
+        form = DomainForm(req.POST, instance=r_domain)
+        form.fields['provider'].queryset = provider_instance
+        form.request = req
         if form.is_valid():
-            r_domain.domain = form.cleaned_data.get('domain')
-            r_domain.registrar = form.cleaned_data.get('registrar')
             r_domain.save()
             messages.success(req, _('Successfully edited Domain'))
             return redirect(reverse('domain-index'))
-        messages.error(req, _("Invalid Domain"))
-        return redirect(reverse('domain-index'))
-
     else:
-        form = DomainForm(initial={
-            'domain': r_domain.domain,
-            'registrar': r_domain.registrar
-            })
-
-    return render(req, 'core/generic_form.html', {
+        form = DomainForm(instance=r_domain)
+        form.fields['provider'].queryset = provider_instance
+        form.request = req
+    return render(req, 'core/generic_form_modal.html', {
         'title': "Edit Domain '%s'" % domain,
-        'primary_action': 'Apply',
+        'primary_action': 'Save',
         'form': form
         })
 

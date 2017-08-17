@@ -27,6 +27,8 @@ class OnlineNetProvider(BaseProvider):
         self._init_api(self.credentials)
 
     def _init_api(self, cred):
+        if not isinstance(cred, APIKeyCredential):
+            raise ValidationError("Credentials must be of Type 'API Key'")
         api_session = requests.session()
         api_session.headers['Authorization'] = 'Bearer %s' % cred.api_key
         self.api = API('https://api.online.net/api/v1', session=api_session)
@@ -37,8 +39,6 @@ class OnlineNetProvider(BaseProvider):
         """
         if not credentials:
             credentials = self.credentials
-        if not isinstance(credentials, APIKeyCredential):
-            raise ValidationError("Credentials must be of Type 'API Key'")
         self._init_api(credentials)
         try:
             self.api.user.info.get()

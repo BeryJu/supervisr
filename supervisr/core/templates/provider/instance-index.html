@@ -31,7 +31,7 @@
   </thead>
   <tbody>
     {% for instance in providers %}
-    <tr data-selectable data-ctx-edit="{% url 'instance-edit' uuid=instance.uuid %}" data-ctx-trash="{% url 'instance-delete' uuid=instance.uuid %}?back={{ request.get_full_path }}">
+    <tr data-selectable data-ctx-edit="{% url 'instance-edit' uuid=instance.uuid %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'instance-delete' uuid=instance.uuid %}?back={{ request.get_full_path }}">
       <td><span>{{ instance.name }}</span></td>
       <td><span>{{ instance.provider.ui_name }}</span></td>
       <td><span>{{ instance.credentials.name }}</span></td>

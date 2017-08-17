@@ -6,6 +6,7 @@ import importlib
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -75,14 +76,15 @@ def instance_edit(req, uuid):
     Edit Instance
     """
     inst = ProviderInstance.objects.filter(uuid=uuid,
-                                           serproductrelationship__user__in=[req.user])
+                                           userproductrelationship__user__in=[req.user])
     if not inst.exists():
         raise Http404
     r_inst = inst.first()
 
     providers = BaseProvider.get_providers()
     creds = BaseCredential.objects.filter(owner=req.user)
-    form_providers = [('%s.%s' % (s.__module__, s.__name__), s.ui_name) for s in providers]
+    form_providers = [('%s.%s' % (s.__module__, s.__name__),
+                       '%s (%s)' % (s.ui_name, s.__name__)) for s in providers]
     form_credentials = [(c.name, '%s: %s' % (c.cast().type(), c.name)) for c in creds]
 
     if req.method == 'POST':
@@ -106,7 +108,7 @@ def instance_edit(req, uuid):
         form.fields['provider_path'].choices = form_providers
         form.fields['credentials'].choices = form_credentials
 
-    return render(req, 'core/generic_form.html', {
+    return render(req, 'core/generic_form_modal.html', {
         'form': form,
         'title': 'Edit %s' % r_inst.name,
         })
@@ -185,6 +187,8 @@ class CredentialNewView(BaseWizardView):
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
+        if '1' not in form_dict:
+            raise ValidationError(_('No type selected'))
         cred = form_dict['1'].save(commit=False)
         cred.owner = self.request.user
         cred.save()
