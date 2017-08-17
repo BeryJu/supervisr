@@ -186,7 +186,7 @@ class CredentialNewView(BaseWizardView):
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
-        if not '1' in form_dict:
+        if '1' not in form_dict:
             raise ValidationError(_('No type selected'))
         cred = form_dict['1'].save(commit=False)
         cred.owner = self.request.user
