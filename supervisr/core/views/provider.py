@@ -76,14 +76,15 @@ def instance_edit(req, uuid):
     Edit Instance
     """
     inst = ProviderInstance.objects.filter(uuid=uuid,
-                                           serproductrelationship__user__in=[req.user])
+                                           userproductrelationship__user__in=[req.user])
     if not inst.exists():
         raise Http404
     r_inst = inst.first()
 
     providers = BaseProvider.get_providers()
     creds = BaseCredential.objects.filter(owner=req.user)
-    form_providers = [('%s.%s' % (s.__module__, s.__name__), s.ui_name) for s in providers]
+    form_providers = [('%s.%s' % (s.__module__, s.__name__),
+                       '%s (%s)' % (s.ui_name, s.__name__)) for s in providers]
     form_credentials = [(c.name, '%s: %s' % (c.cast().type(), c.name)) for c in creds]
 
     if req.method == 'POST':
@@ -107,7 +108,7 @@ def instance_edit(req, uuid):
         form.fields['provider_path'].choices = form_providers
         form.fields['credentials'].choices = form_credentials
 
-    return render(req, 'core/generic_form.html', {
+    return render(req, 'core/generic_form_modal.html', {
         'form': form,
         'title': 'Edit %s' % r_inst.name,
         })
