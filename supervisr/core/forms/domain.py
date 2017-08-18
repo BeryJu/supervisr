@@ -27,7 +27,7 @@ class DomainForm(forms.ModelForm):
         """
         # Check if domain matches domain_regex
         if not re.match(r'^%s$' % DOMAIN_REGEX, self.cleaned_data.get('domain')):
-            LOGGER.error("Doamin didn't match regex")
+            LOGGER.info("Domain didn't match regex")
             raise forms.ValidationError(_('Domain name is not valid'))
         # Import provider based on form
         # also check in form if class exists and is subclass of BaseProvider
@@ -35,7 +35,7 @@ class DomainForm(forms.ModelForm):
             pk=self.cleaned_data.get('provider'),
             userproductrelationship__user__in=[self.request.user])
         if not provider.exists():
-            LOGGER.error("Invalid Provider Instance")
+            LOGGER.info("Invalid Provider Instance")
             raise ValidationError("Invalid Provider Instance")
         r_prov_inst = provider.first().provider
         r_prov_dom_inst = r_prov_inst.domain_provider(provider.first().credentials)
