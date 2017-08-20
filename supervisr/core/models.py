@@ -179,12 +179,14 @@ class Setting(CreatedUpdatedModel):
             Setting._init_allowed()
         if namespace == '':
             namespace = inspect.getmodule(inspect.stack()[1][0]).__name__
-        # print(namespace)
         for name in Setting._ALLOWED_NAMESPACES:
             if namespace.startswith(name):
                 namespace = name
-        namespace = get_close_matches(namespace, Setting._ALLOWED_NAMESPACES)[0]
-        # print("key=%s, namespace=%s" % (key, namespace))
+        namespace_matches = get_close_matches(namespace, Setting._ALLOWED_NAMESPACES)
+        if len(namespace_matches) < 1:
+            return default
+        else:
+            namespace = namespace_matches[0]
         try:
             setting = Setting.objects.get_or_create(
                 key=key,
