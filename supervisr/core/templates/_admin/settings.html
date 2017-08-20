@@ -12,18 +12,16 @@
   .main-container .content-container .content-area {
     padding: 0;
   }
-  .clr-vertical-nav {
-    height: 100%;
-  }
-  .content-container {
-    height: 100%;
-  }
+
 </style>
 {% endblock %}
 
 {% block messages %}{% endblock %}
 
 {% block content_area %}
+<div class="container">
+  <h1><clr-icon shape="cog" size="48"></clr-icon>{% trans "Settings" %}</h1>
+</div>
 <div class="content-container">
   <div class="content-area">
     <div class="content">

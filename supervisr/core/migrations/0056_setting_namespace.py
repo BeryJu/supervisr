@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='setting',
             name='namespace',
-            field=models.TextField(default=''),
+            field=models.CharField(max_length=255, default=''),
         ),
     ]

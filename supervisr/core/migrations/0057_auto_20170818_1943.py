@@ -29,16 +29,16 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AlterField(
+            model_name='setting',
+            name='key',
+            field=models.CharField(max_length=255),
+        ),
         migrations.AddField(
             model_name='setting',
             name='setting_id',
             field=models.AutoField(default=None, primary_key=True, serialize=False),
             preserve_default=False,
-        ),
-        migrations.AlterField(
-            model_name='setting',
-            name='key',
-            field=models.CharField(max_length=255),
         ),
         migrations.AlterUniqueTogether(
             name='setting',

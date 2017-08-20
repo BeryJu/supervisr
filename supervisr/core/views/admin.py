@@ -79,6 +79,7 @@ def settings(req, namespace):
                     update_counter += 1
                     setting.value = value
                     setting.save()
+        Setting.objects.update()
         messages.success(req, _('Updated %d settings' % update_counter))
     return render(req, '_admin/settings.html', {
         'settings': all_settings,
