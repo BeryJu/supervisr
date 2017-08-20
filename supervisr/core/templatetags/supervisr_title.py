@@ -15,7 +15,7 @@ def supervisr_title(context, title=None):
     """
     Return either just branding or title - branding
     """
-    branding = Setting.get('core:branding')
+    branding = Setting.get('branding')
     if title is None or title == '':
         return branding
     # Include App Title in title

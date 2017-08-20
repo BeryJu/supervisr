@@ -9,9 +9,8 @@ from ..models import Setting
 register = template.Library()
 
 @register.simple_tag
-def supervisr_setting(key, default=''):
+def supervisr_setting(key, namespace='supervisr.core', default=''):
     """
     Get a setting from the database. Returns default is setting doesn't exist.
     """
-    return Setting.get(
-        "core:%s" % key, default)
+    return Setting.get(key=key, namespace=namespace, default=default)

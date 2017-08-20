@@ -8,8 +8,8 @@ from django.db import migrations
 def update_settings(apps, schema_editor):
     Setting = apps.get_model('core', 'Setting')
     settings = {
-        'core:password:filter:description': 'Minimum 8 characters at least 1 Uppercase Alphabet, 1 Lowercase Alphabet, 1 Number and 1 Special Character',
-        'core:password:filter': "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}",
+        'password:filter:description': 'Minimum 8 characters at least 1 Uppercase Alphabet, 1 Lowercase Alphabet, 1 Number and 1 Special Character',
+        'password:filter': "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}",
     }
     for key, value in settings.items():
         Setting.objects.get_or_create(

@@ -27,8 +27,8 @@ class LoginForm(InlineForm):
     remember = forms.BooleanField(required=False, label=_('Remember'))
     captcha = ReCaptchaField(
         required=(not settings.DEBUG and not settings.TEST),
-        private_key=Setting.get('core:recaptcha:private'),
-        public_key=Setting.get('core:recaptcha:public'))
+        private_key=Setting.get('recaptcha:private'),
+        public_key=Setting.get('recaptcha:public'))
 
 class SignupForm(InlineForm):
     """
@@ -42,8 +42,8 @@ class SignupForm(InlineForm):
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
     captcha = ReCaptchaField(
         required=(not settings.DEBUG and not settings.TEST),
-        private_key=Setting.get('core:recaptcha:private'),
-        public_key=Setting.get('core:recaptcha:public'))
+        private_key=Setting.get('recaptcha:private'),
+        public_key=Setting.get('recaptcha:public'))
     tos_accept = forms.BooleanField(required=True, label=_('I accept the Terms of service'))
 
     def clean_username(self):
@@ -102,8 +102,8 @@ class PasswordResetInitForm(InlineForm):
     email = forms.EmailField(label=_('Mail'))
     captcha = ReCaptchaField(
         required=(not settings.DEBUG),
-        private_key=Setting.get('core:recaptcha:private'),
-        public_key=Setting.get('core:recaptcha:public'))
+        private_key=Setting.get('recaptcha:private'),
+        public_key=Setting.get('recaptcha:public'))
 
 class PasswordResetFinishForm(InlineForm):
     """

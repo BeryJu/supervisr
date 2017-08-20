@@ -66,7 +66,8 @@ urlpatterns = [
     # Admin views
     url(r'^admin/$', admin.index, name='admin-index'),
     url(r'^admin/users/$', admin.users, name='admin-users'),
-    url(r'^admin/settings/$', admin.settings, name='admin-settings'),
+    url(r'^admin/settings/(?P<namespace>%s)/$' % MOD_REGEX,
+        admin.settings, name='admin-settings'),
     url(r'^admin/mod/default/(?P<mod>%s)/$' % MOD_REGEX,
         admin.mod_default, name='admin-mod_default'),
     url(r'^admin/info/$', admin.info, name='admin-info'),

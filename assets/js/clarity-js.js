@@ -4,7 +4,7 @@ $('document').ready(function() {
   });
 
   $('[clrAlert]').on('click', function (e) {
-      $(e.target).closest('.alert.alert-app-level').remove();
+      $(e.target).closest('.alert').remove();
   });
 
   $('.clr-root-container button.header-overflow-trigger').on('click', function (e) {

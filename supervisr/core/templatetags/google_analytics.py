@@ -14,16 +14,16 @@ def google_analytics(context):
     """
     Returns the GA Script with tracking_id inserted
     """
-    if Setting.objects.get(pk='core:analytics:ga:enabled').value_bool is False:
+    if Setting.get('analytics:ga:enabled') is False:
         # Google Analytics is not enabled
         return ''
-    tracking_id = Setting.get('core:analytics:ga:tracking_id')
+    tracking_id = Setting.get('analytics:ga:tracking_id')
     # Check if we're signed in and pass the user through
-    req = context['request']
-    if req.user.is_authenticated:
-        user_id = req.user.pk
-    else:
-        user_id = 'Anonymous'
+    user_id = 'Anonymous'
+    if 'request' in context and 'user' in context['request']:
+        req = context['request']
+        if req.user.is_authenticated:
+            user_id = req.user.pk
     return mark_safe("""
     <script>
     window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
@@ -32,7 +32,7 @@ def google_analytics(context):
     });
     ga('send', 'pageview');
     </script>
-    <script async src='https://www.google-analytics.com/analytics.js'></script>
+    <script async src='//www.google-analytics.com/analytics.js'></script>
     """ % {
         'tracking_id': tracking_id,
         'user_id': user_id

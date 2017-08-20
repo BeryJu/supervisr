@@ -25,9 +25,9 @@ class GraphiteClient(object):
         """
         Load settings form DB
         """
-        self.host = Setting.get('mod:stats:graphite:host')
-        self.port = int(Setting.get('mod:stats:graphite:port'))
-        self.prefix = Setting.get('mod:stats:graphite:prefix')
+        self.host = Setting.get('host')
+        self.port = int(Setting.get('port'))
+        self.prefix = Setting.get('prefix')
 
     def connect(self):
         """

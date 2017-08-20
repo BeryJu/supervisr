@@ -21,7 +21,7 @@ def load_certificate(strip=False):
     """
     Get Public key from config
     """
-    cert = Setting.get('mod:auth:saml:idp:certificate')
+    cert = Setting.get('certificate')
     if strip:
         return strip_pem_header(cert.replace('\r', '')).replace('\n', '')
     return cert
@@ -30,7 +30,7 @@ def load_private_key():
     """
     Get Private Key from config
     """
-    return Setting.get('mod:auth:saml:idp:private_key')
+    return Setting.get('private_key')
 
 def sign_with_signxml(private_key, data, cert, reference_uri=None):
     """

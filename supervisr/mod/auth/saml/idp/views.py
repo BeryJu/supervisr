@@ -185,7 +185,7 @@ def descriptor(request):
     """
     Replies with the XML Metadata IDSSODescriptor.
     """
-    entity_id = Setting.get('mod:auth:saml:idp:issuer')
+    entity_id = Setting.get('issuer')
     slo_url = request.build_absolute_uri(reverse('supervisr/mod/auth/saml/idp:saml_logout'))
     sso_url = request.build_absolute_uri(reverse('supervisr/mod/auth/saml/idp:saml_login_begin'))
     pubkey = xml_signing.load_certificate(strip=True)
@@ -209,16 +209,14 @@ def admin_settings(request, mod):
     metadata = descriptor(request).content
 
     keys = ['issuer', 'certificate', 'private_key', 'signing']
-    base = 'mod:auth:saml:idp'
     initial_data = {}
     for key in keys:
-        initial_data[key] = Setting.get('%s:%s' % (base, key))
+        initial_data[key] = Setting.get(key)
     if request.method == 'POST':
         settings_form = SettingsForm(request.POST)
-        print(settings_form.errors)
         if settings_form.is_valid():
             for key in keys:
-                Setting.set('%s:%s' % (base, key), settings_form.cleaned_data.get(key))
+                Setting.set(key, settings_form.cleaned_data.get(key))
             Setting.objects.update()
             messages.success(request, _('Settings successfully updated'))
         else:

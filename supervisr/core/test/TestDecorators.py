@@ -22,7 +22,7 @@ class TestDecorators(TestCase):
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
-        Setting.set('core:analytics:ga:enabled', True)
+        Setting.set('analytics:ga:enabled', True)
 
     def test_anonymous_required(self):
         """

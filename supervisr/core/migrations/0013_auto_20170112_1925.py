@@ -10,10 +10,10 @@ from django.db import migrations
 def create_settings(apps, schema_editor):
     Setting = apps.get_model('core', 'Setting')
     settings = {
-        'core:recaptcha:private': '',
-        'core:recaptcha:public': '',
-        'core:domain': 'http://localhost/',
-        'core:branding': 'supervisr',
+        'recaptcha:private': '',
+        'recaptcha:public': '',
+        'domain': 'http://localhost/',
+        'branding': 'supervisr',
     }
     for key, value in settings.items():
         Setting.objects.get_or_create(

@@ -12,7 +12,7 @@ def maintenance_mode(get_response):
     Middleware to detect Maintenance Mode
     """
     setting = Setting.objects.get_or_create(
-        key='core:maintenancemode',
+        key='maintenancemode',
         defaults={'value': 'False'})[0]
 
     def middleware(req):

@@ -68,8 +68,8 @@ def mail_handle_user_signed_up(sender, signal, user, req, **kwargs):
     else:
         return
     # Make URL for confirmation email
-    domain = Setting.get('core:domain')
-    branding = Setting.get('core:branding')
+    domain = Setting.get('domain')
+    branding = Setting.get('branding')
     url = domain + reverse('account-confirm',
                            kwargs={'uuid': acc_conf.pk})
     return send_message(
@@ -101,8 +101,8 @@ def mail_handle_pass_reset_init(sender, signal, user, **kwargs):
     else:
         return
     # Make URL for confirmation email
-    domain = Setting.get('core:domain')
-    branding = Setting.get('core:branding')
+    domain = Setting.get('domain')
+    branding = Setting.get('branding')
     url = domain + reverse('account-reset_password_confirm',
                            kwargs={'uuid': acc_conf.pk})
     return send_message(

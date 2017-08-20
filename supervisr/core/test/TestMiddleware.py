@@ -30,7 +30,7 @@ class TestMiddleware(TestCase):
         """
         Test Enabled Maintenance Mode
         """
-        Setting.set('core:maintenancemode', True)
+        Setting.set('maintenancemode', True)
         req = self.factory.get(reverse('account-login'))
         req.user = AnonymousUser()
         res = maintenance_mode(account.login)(req)
@@ -40,7 +40,7 @@ class TestMiddleware(TestCase):
         """
         Test Disabled Maintenance Mode
         """
-        Setting.set('core:maintenancemode', False)
+        Setting.set('maintenancemode', False)
         req = self.factory.get(reverse('account-login'))
         req.user = AnonymousUser()
         res = maintenance_mode(account.login)(req)
@@ -51,9 +51,9 @@ class TestMiddleware(TestCase):
         Test Permanent Message Middleware
         """
         test_message = 'Test Message'
-        Setting.set('core:banner:enabled', True)
-        Setting.set('core:banner:message', test_message)
-        Setting.set('core:banner:level', 'info')
+        Setting.set('banner:enabled', namespace='supervisr.core', value=True)
+        Setting.set('banner:message', namespace='supervisr.core', value=test_message)
+        Setting.set('banner:level', namespace='supervisr.core', value='info')
         req = self.factory.get(reverse('common-index'))
         # Fix django.contrib.messages.api.MessageFailure
         # because this request doesn't have a session or anything
@@ -71,9 +71,9 @@ class TestMiddleware(TestCase):
         """
         test_message = 'Test Message'
         test_level = 'info'
-        Setting.set('core:banner:enabled', True)
-        Setting.set('core:banner:message', test_message)
-        Setting.set('core:banner:level', test_level)
+        Setting.set('banner:enabled', namespace='supervisr.core', value=True)
+        Setting.set('banner:message', namespace='supervisr.core', value=test_message)
+        Setting.set('banner:level', namespace='supervisr.core', value=test_level)
         req = self.factory.get(reverse('common-index'))
         # Fix django.contrib.messages.api.MessageFailure
         # because this request doesn't have a session or anything
