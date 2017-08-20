@@ -49,7 +49,7 @@ class SupervisrModStatGraphiteConfig(SupervisrAppConfig):
         from supervisr.core.models import Setting
         from supervisr.mod.stats.graphite.graphite_client import GraphiteClient
 
-        if Setting.get('enabled', 'False') != 'False':
+        if Setting.get('enabled', default='False') != 'False':
             if settings.DEBUG:
                 LOGGER.info("Not starting StatsThread because DEBUG")
             elif 'DJANGO_MODE_WSGI' not in os.environ:

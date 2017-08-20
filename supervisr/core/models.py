@@ -149,7 +149,7 @@ class Setting(CreatedUpdatedModel):
     """
     setting_id = models.AutoField(primary_key=True)
     key = models.CharField(max_length=255)
-    namespace = models.TextField(default='')
+    namespace = models.CharField(max_length=255, default='')
     value = models.TextField()
 
     _ALLOWED_NAMESPACES = []
