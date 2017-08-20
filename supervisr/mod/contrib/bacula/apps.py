@@ -44,4 +44,4 @@ class SupervisrModContribBaculaConfig(SupervisrAppConfig):
         Only show in navbar if enabled and superuser
         """
         from supervisr.core.models import Setting
-        return request.user.is_superuser and Setting.get('enabled') == 'True'
+        return request.user.is_superuser and Setting.get('enabled') == True
