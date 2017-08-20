@@ -1,6 +1,6 @@
 {% load supervisr_setting %}
 {% load pick %}
-{% supervisr_setting 'mail:debug' as debug %}
+{% supervisr_setting 'debug' as debug %}
 # Enable TLS and set let's encrypt fullchain
 # MAIN_TLS_ENABLE             = yes
 # MAIN_TLS_CERTIFICATE        = /etc/letsencrypt/fullchain.pem

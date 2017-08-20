@@ -12,11 +12,14 @@ def permanent_message(get_response):
     Middleware Permenently add a message
     """
     m_enabled = Setting.objects.get(
-        key='core:banner:enabled').value_bool
+        key='banner:enabled',
+        namespace='supervisr.core').value_bool
     m_text = Setting.objects.get(
-        key='core:banner:message').value
+        key='banner:message',
+        namespace='supervisr.core').value
     m_level = Setting.objects.get(
-        key='core:banner:level').value
+        key='banner:level',
+        namespace='supervisr.core').value
 
     def middleware(req):
         """

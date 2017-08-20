@@ -18,5 +18,5 @@ class SupervisrMailConfig(SupervisrAppConfig):
 
     def ensure_settings(self):
         return {
-            'mail:debug': False,
+            'debug': False,
         }

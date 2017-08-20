@@ -24,9 +24,10 @@ class Command(BaseCommand):
         value = options['state'].lower() in ('on', 'true', 'yes')
 
         setting = Setting.objects.get_or_create(
-            key='core:maintenancemode',
+            key='maintenancemode',
+            namespace='supervisr.core',
             defaults={'value': 'False'})[0]
-        setting.set_bool(value)
+        setting.value = value
         setting.save()
         word = 'Enabled' if value is True else 'Disabled'
         LOGGER.info("%s maintenance mode.", word)

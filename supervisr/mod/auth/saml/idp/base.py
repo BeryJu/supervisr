@@ -60,7 +60,7 @@ class Processor(object):
     _subject = None
     _subject_format = 'urn:oasis:names:tc:SAML:2.0:nameid-format:email'
     _system_params = {
-        'ISSUER': Setting.get('mod:auth:saml:idp:issuer'),
+        'ISSUER': Setting.get('issuer'),
     }
 
     @property
@@ -206,7 +206,7 @@ class Processor(object):
         """
         Formats _response_params as _response_xml.
         """
-        sign_it = Setting.get('mod:auth:saml:idp:signing')
+        sign_it = Setting.get('signing')
         self._response_xml = xml_render.get_response_xml(self._response_params,
                                                          signed=sign_it,
                                                          assertion_id=
@@ -220,7 +220,7 @@ class Processor(object):
             'acs_url': self._request_params['ACS_URL'],
             'saml_response': self._saml_response,
             'relay_state': self._relay_state,
-            'autosubmit': Setting.get('mod:auth:saml:idp:autosubmit'),
+            'autosubmit': Setting.get('autosubmit'),
         }
 
     def _parse_request(self):
@@ -265,7 +265,7 @@ class Processor(object):
         self._subject = sp_config
         self._subject_format = 'urn:oasis:names:tc:SAML:2.0:nameid-format:email'
         self._system_params = {
-            'ISSUER': Setting.get('mod:auth:saml:idp:issuer'),
+            'ISSUER': Setting.get('issuer'),
         }
 
     def _validate_request(self):

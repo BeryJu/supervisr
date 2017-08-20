@@ -4,12 +4,14 @@ Core Modules for supervisr
 from __future__ import unicode_literals
 
 import base64
+import inspect
 import json
 import math
 import random
 import re
 import time
 import uuid
+from difflib import get_close_matches
 from importlib import import_module
 
 from django.conf import settings
@@ -145,8 +147,18 @@ class Setting(CreatedUpdatedModel):
     """
     Save key-value settings to db
     """
-    key = models.CharField(max_length=255, primary_key=True)
+    setting_id = models.AutoField(primary_key=True)
+    key = models.CharField(max_length=255)
+    namespace = models.TextField(default='')
     value = models.TextField()
+
+    _ALLOWED_NAMESPACES = []
+
+    @staticmethod
+    def _init_allowed():
+        from supervisr.core.utils import get_apps
+        Setting._ALLOWED_NAMESPACES = ['.'.join(x.split('.')[:-2]) for x in get_apps()]
+        Setting._ALLOWED_NAMESPACES.append('supervisr.core')
 
     @property
     def value_bool(self):
@@ -155,23 +167,30 @@ class Setting(CreatedUpdatedModel):
         """
         return self.value.lower() == 'true'
 
-    def set_bool(self, value):
-        """
-        Set value from boolean
-        """
-        self.value = str(value)
-
     def __str__(self):
-        return "Setting %s" % self.key
+        return "Setting %s/%s" % (self.namespace, self.key)
 
     @staticmethod
-    def get(key, default=''):
+    def get(key, namespace='', default=''):
         """
         Get value, when Setting doesn't exist, it's created with default
         """
+        if not Setting._ALLOWED_NAMESPACES:
+            Setting._init_allowed()
+        if namespace == '':
+            namespace = inspect.getmodule(inspect.stack()[1][0]).__name__
+        for name in Setting._ALLOWED_NAMESPACES:
+            if namespace.startswith(name):
+                namespace = name
+        namespace_matches = get_close_matches(namespace, Setting._ALLOWED_NAMESPACES)
+        if len(namespace_matches) < 1:
+            return default
+        else:
+            namespace = namespace_matches[0]
         try:
             setting = Setting.objects.get_or_create(
                 key=key,
+                namespace=namespace,
                 defaults={'value': default})[0]
             if setting.value == 'True':
                 return True
@@ -180,13 +199,22 @@ class Setting(CreatedUpdatedModel):
             return default
 
     @staticmethod
-    def set(key, value,):
+    def set(key, value, namespace=''):
         """
         Set value, when Setting doesn't exist, it's created with value
         """
+        if not Setting._ALLOWED_NAMESPACES:
+            Setting._init_allowed()
+        if namespace == '':
+            namespace = inspect.getmodule(inspect.stack()[1][0]).__name__
+        for name in Setting._ALLOWED_NAMESPACES:
+            if namespace.startswith(name):
+                namespace = name
+        namespace = get_close_matches(namespace, Setting._ALLOWED_NAMESPACES)[0]
         try:
             setting, created = Setting.objects.get_or_create(
                 key=key,
+                namespace=namespace,
                 defaults={'value': value})
             if created is False:
                 setting.value = value
@@ -194,6 +222,10 @@ class Setting(CreatedUpdatedModel):
             return True
         except OperationalError:
             return False
+
+    class Meta:
+
+        unique_together = (('key', 'namespace'), )
 
 
 class AccountConfirmation(CreatedUpdatedModel):

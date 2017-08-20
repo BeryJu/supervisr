@@ -8,13 +8,14 @@ import sys
 
 from django import get_version as django_version
 from django.conf import settings as django_settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.shortcuts import redirect, render
-from django.urls import reverse
+from django.shortcuts import render
+from django.utils.translation import ugettext as _
 
-from supervisr.core.models import Event, get_system_user
+from supervisr.core.models import Event, Setting, get_system_user
 from supervisr.core.signals import SIG_GET_MOD_INFO
 from supervisr.core.utils import get_reverse_dns
 
@@ -54,11 +55,36 @@ def users(req):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 # pylint: disable=unused-argument
-def settings(req):
+def settings(req, namespace):
     """
     Admin settings
     """
-    return redirect(reverse('admin-index'))
+    all_settings = Setting.objects.filter(namespace=namespace).order_by('key')
+    namespaces = Setting.objects.all() \
+        .values_list('namespace', flat=True) \
+        .distinct() \
+        .order_by('namespace')
+    # Update settings when posted
+    if req.method == 'POST':
+        update_counter = 0
+        for name_key, value in req.POST.items():
+            # Names are formatted <namespace>/<key>
+            if '/' in name_key:
+                namespace, key = name_key.split('/')
+                settings = Setting.objects.filter(namespace=namespace, key=key)
+                if not settings.exists():
+                    continue
+                setting = settings.first()
+                if value != setting.value:
+                    update_counter += 1
+                    setting.value = value
+                    setting.save()
+        messages.success(req, _('Updated %d settings' % update_counter))
+    return render(req, '_admin/settings.html', {
+        'settings': all_settings,
+        'namespaces': namespaces,
+        'current_namespace': namespace
+        })
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)

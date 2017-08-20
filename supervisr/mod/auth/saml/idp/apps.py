@@ -27,11 +27,11 @@ class SupervisrModAuthSAMLProvider(SupervisrAppConfig):
 
     def ensure_settings(self):
         from supervisr.core.models import Setting
-        domain = Setting.get('core:domain')
+        domain = Setting.get('domain')
         return {
-            'mod:auth:saml:idp:issuer': domain,
-            'mod:auth:saml:idp:certificate': '',
-            'mod:auth:saml:idp:private_key': '',
-            'mod:auth:saml:idp:signing': True,
-            'mod:auth:saml:idp:autosubmit': True,
+            'issuer': domain,
+            'certificate': '',
+            'private_key': '',
+            'signing': True,
+            'autosubmit': True,
         }

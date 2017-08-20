@@ -2,9 +2,6 @@
 Supervisr Bacula DB Router
 """
 
-from django.conf import settings
-
-
 class BaculaRouter(object):
     """
     A router to control all database operations on models in the
@@ -15,7 +12,7 @@ class BaculaRouter(object):
         """
         Check if there's a seperate Bacula Database
         """
-        self._db = 'bacula' if 'bacula' in settings.DATABASES else None
+        self._db = 'bacula'
 
     # pylint: disable=unused-argument, no-self-use
     def db_for_read(self, model, **hints):

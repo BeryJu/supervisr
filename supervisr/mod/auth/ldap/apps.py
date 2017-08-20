@@ -11,16 +11,17 @@ class SupervisrModAuthLDAPConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr.mod.auth.ldap'
-    title_moddifier = lambda self, title, request: title.upper()
-    admin_url_name = 'ldap:admin_settings'
+    label = 'supervisr/mod/auth/ldap'
+    title_moddifier = lambda self, title, request: 'LDAP'
+    admin_url_name = 'supervisr/mod/auth/ldap:admin_settings'
 
     def ensure_settings(self):
         return {
-            'mod:ldap:enabled': False,
-            'mod:ldap:server': '',
-            'mod:ldap:base': '',
-            'mod:ldap:create_base': '',
-            'mod:ldap:bind:user': '',
-            'mod:ldap:bind:password': '',
-            'mod:ldap:domain': '',
+            'enabled': False,
+            'server': '',
+            'base': '',
+            'create_base': '',
+            'bind:user': '',
+            'bind:password': '',
+            'domain': '',
         }
