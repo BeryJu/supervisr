@@ -2,15 +2,15 @@
 Supervisr Mail Provider
 """
 
-from supervisr.core.providers.base import BaseProvider
+from django.utils.translation import ugettext as _
+
+from supervisr.core.providers.base import BaseProvider, ProviderMetadata
 
 
 class BaseMailProvider(BaseProvider):
     """
     Base Class for all Mail Providers
     """
-
-    name = 'BaseMailProvider'
 
     def create_account(self, address=None, **kwargs):
         raise NotImplementedError()
@@ -35,3 +35,10 @@ class BaseMailProvider(BaseProvider):
 
     def delete_domain(self, domain=None, **kwargs):
         raise NotImplementedError()
+
+    class Meta(ProviderMetadata):
+
+        def __init__(self, provider):
+            super(BaseMailProvider.Meta, self).__init__(provider)
+            self.selectable = False
+            self.ui_name = _('BaseMailProvider')

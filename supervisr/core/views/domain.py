@@ -12,7 +12,7 @@ from django.utils.translation import ugettext as _
 from supervisr.core.forms.domain import DomainForm
 from supervisr.core.models import (Domain, ProviderInstance,
                                    UserProductRelationship)
-from supervisr.core.providers.base import BaseProvider
+from supervisr.core.providers.base import get_providers
 from supervisr.core.views.wizard import BaseWizardView
 
 
@@ -40,7 +40,7 @@ class DomainNewView(BaseWizardView):
         if step is None:
             step = self.steps.current
         if step == '0':
-            providers = BaseProvider.get_providers(filter_sub=['domain_provider'], path=True)
+            providers = get_providers(filter_sub=['domain_provider'], path=True)
             provider_instance = ProviderInstance.objects.filter(
                 provider_path__in=providers,
                 userproductrelationship__user__in=[self.request.user])
@@ -71,7 +71,7 @@ def edit(req, domain):
     r_domain = domains.first()
 
     # Create list of all possible provider instances
-    providers = BaseProvider.get_providers(filter_sub=['domain_provider'], path=True)
+    providers = get_providers(filter_sub=['domain_provider'], path=True)
     provider_instance = ProviderInstance.objects.filter(
         provider_path__in=providers,
         userproductrelationship__user__in=[req.user])
