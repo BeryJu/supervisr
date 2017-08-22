@@ -2,7 +2,9 @@
 Supervisr DNS Provider
 """
 
-from supervisr.core.providers.base import BaseProvider
+from django.utils.translation import ugettext as _
+
+from supervisr.core.providers.base import BaseProvider, ProviderMetadata
 
 
 class BaseDNSProvider(BaseProvider):
@@ -11,6 +13,7 @@ class BaseDNSProvider(BaseProvider):
     """
 
     name = 'BaseDNSProvider'
+    selectable = False
 
     def create_account(self, address=None, **kwargs):
         raise NotImplementedError()
@@ -35,3 +38,10 @@ class BaseDNSProvider(BaseProvider):
 
     def delete_zone(self, zone=None, **kwargs):
         raise NotImplementedError()
+
+    class Meta(ProviderMetadata):
+
+        def __init__(self, provider):
+            super(BaseDNSProvider.Meta, self).__init__(provider)
+            self.selectable = False
+            self.ui_name = _('BaseDNSProvider')

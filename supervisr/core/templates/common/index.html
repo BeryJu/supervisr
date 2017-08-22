@@ -77,7 +77,7 @@
             {% for instance in user_providers %}
             <tr>
               <td><span>{{ instance.name }}</span></td>
-              <td><span>{{ instance.provider.ui_name }}</span></td>
+              <td><span>{{ instance.provider.get_meta.ui_name }}</span></td>
               <td>
                 {% with status=instance.provider.check_status %}
                   {% if status == True %}

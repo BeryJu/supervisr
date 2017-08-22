@@ -552,7 +552,7 @@ class ProviderInstance(Product):
         path_parts = self.provider_path.split('.')
         module = import_module('.'.join(path_parts[:-1]))
         _class = getattr(module, path_parts[-1])
-        return _class(self.credentials)
+        return _class(credentials=self.credentials)
 
     def __str__(self):
         return self.name

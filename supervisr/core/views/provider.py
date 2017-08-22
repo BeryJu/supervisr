@@ -15,7 +15,7 @@ from django.utils.translation import ugettext as _
 from supervisr.core.forms.provider import CredentialForm, ProviderForm
 from supervisr.core.models import (BaseCredential, ProviderInstance,
                                    UserProductRelationship)
-from supervisr.core.providers.base import BaseProvider
+from supervisr.core.providers.base import get_providers
 from supervisr.core.views.wizard import BaseWizardView
 
 
@@ -28,6 +28,11 @@ def instance_index(req):
         userproductrelationship__user__in=[req.user])
     return render(req, 'provider/instance-index.html', {'providers': user_providers})
 
+PROVIDER_TEMPLATES = {
+    '0': 'provider/instance-wizard.html',
+    '1': 'core/generic_wizard.html',
+}
+
 # pylint: disable=too-many-ancestors
 class ProviderNewView(BaseWizardView):
     """
@@ -35,6 +40,7 @@ class ProviderNewView(BaseWizardView):
     """
 
     title = _("New Provider")
+    providers = None
     form_list = [ProviderForm]
 
     def get_form(self, step=None, data=None, files=None):
@@ -42,14 +48,24 @@ class ProviderNewView(BaseWizardView):
         if step is None:
             step = self.steps.current
         if step == '0':
-            providers = BaseProvider.get_providers()
+            self.providers = get_providers()
             creds = BaseCredential.objects.filter(owner=self.request.user)
             form.fields['provider_path'].choices = \
-                [('%s.%s' % (s.__module__, s.__name__), s.ui_name) for s in providers]
+                [('%s.%s' % (s.__module__, s.__class__.__name__), s.get_meta.ui_name)
+                 for s in self.providers]
             form.fields['credentials'].choices = \
                 [(c.name, '%s: %s' % (c.cast().type(), c.name)) for c in creds]
             form.request = self.request
         return form
+
+    def get_context_data(self, form, **kwargs):
+        context = super(ProviderNewView, self).get_context_data(form=form, **kwargs)
+        if self.steps.current == '0':
+            context.update({'providers': self.providers})
+        return context
+
+    def get_template_names(self):
+        return [PROVIDER_TEMPLATES[self.steps.current]]
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
@@ -81,10 +97,10 @@ def instance_edit(req, uuid):
         raise Http404
     r_inst = inst.first()
 
-    providers = BaseProvider.get_providers()
+    providers = get_providers()
     creds = BaseCredential.objects.filter(owner=req.user)
-    form_providers = [('%s.%s' % (s.__module__, s.__name__),
-                       '%s (%s)' % (s.ui_name, s.__name__)) for s in providers]
+    form_providers = [('%s.%s' % (s.__module__, s.__class__.__name__),
+                       '%s (%s)' % (s.get_meta.ui_name, s.__class__.__name__)) for s in providers]
     form_credentials = [(c.name, '%s: %s' % (c.cast().type(), c.name)) for c in creds]
 
     if req.method == 'POST':

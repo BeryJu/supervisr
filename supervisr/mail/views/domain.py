@@ -10,7 +10,7 @@ from django.utils.translation import ugettext as _
 
 from supervisr.core.models import (Domain, ProviderInstance,
                                    UserProductRelationship)
-from supervisr.core.providers.base import BaseProvider
+from supervisr.core.providers.base import get_providers
 from supervisr.core.views.wizard import BaseWizardView
 from supervisr.mail.forms.domain import MailDomainForm
 from supervisr.mail.models import MailDomain
@@ -51,7 +51,7 @@ class DomainNewView(BaseWizardView):
             unused_domains = Domain.objects.filter(users__in=[self.request.user]) \
                 .exclude(pk__in=domains.values_list('domain', flat=True))
 
-            providers = BaseProvider.get_providers(filter_sub=['mail_provider'], path=True)
+            providers = get_providers(filter_sub=['mail_provider'], path=True)
             provider_instance = ProviderInstance.objects.filter(
                 provider_path__in=providers,
                 userproductrelationship__user__in=[self.request.user])

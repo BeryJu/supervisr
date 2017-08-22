@@ -2,9 +2,12 @@
 Supervisr Core Domain Provider
 """
 
-from supervisr.core.providers.base import BaseProvider
+from django.utils.translation import ugettext as _
+
+from supervisr.core.providers.base import BaseProvider, ProviderMetadata
 
 
+# pylint: disable=too-many-ancestors
 class DomainProvider(BaseProvider):
     """
     Base Provider for all domains
@@ -53,3 +56,14 @@ class DomainProvider(BaseProvider):
         Import domains from provider
         """
         pass
+
+    # pylint: disable=too-few-public-methods
+    class Meta(ProviderMetadata):
+        """
+        Domain Provider meta data
+        """
+
+        def __init__(self, provider):
+            super(DomainProvider.Meta, self).__init__(provider)
+            self.selectable = False
+            self.ui_name = _('Base Domain Provider')

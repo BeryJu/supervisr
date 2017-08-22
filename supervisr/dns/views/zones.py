@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 
 from supervisr.core.models import (Domain, ProviderInstance,
                                    UserProductRelationship)
-from supervisr.core.providers.base import BaseProvider
+from supervisr.core.providers.base import get_providers
 from supervisr.core.views.wizard import BaseWizardView
 from supervisr.dns.forms.zones import ZoneForm
 from supervisr.dns.models import Zone
@@ -58,7 +58,7 @@ class ZoneNewView(BaseWizardView):
             unused_domains = Domain.objects.filter(users__in=[self.request.user]) \
                 .exclude(pk__in=domains.values_list('domain', flat=True))
 
-            providers = BaseProvider.get_providers(filter_sub=['dns_provider'], path=True)
+            providers = get_providers(filter_sub=['dns_provider'], path=True)
             provider_instance = ProviderInstance.objects.filter(
                 provider_path__in=providers,
                 userproductrelationship__user__in=[self.request.user])
@@ -88,7 +88,7 @@ def edit(req, zone):
         raise Http404
     r_zone = zones.first()
     # Create list of all possible provider instances
-    providers = BaseProvider.get_providers(filter_sub=['dns_provider'], path=True)
+    providers = get_providers(filter_sub=['dns_provider'], path=True)
     provider_instance = ProviderInstance.objects.filter(
         provider_path__in=providers,
         userproductrelationship__user__in=[req.user])

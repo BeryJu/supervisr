@@ -144,7 +144,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
         'models',
         'providers.base',
         'providers.domain',
-        'providers.dummy',
+        'providers.internal',
     ]
     navbar_title = 'Core'
 

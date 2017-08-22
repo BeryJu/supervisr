@@ -11,6 +11,7 @@ from django.utils.translation import ugettext as _
 
 from supervisr.core.models import (APIKeyCredential, BaseCredential,
                                    UserPasswordCredential)
+from supervisr.core.providers.internal import InternalCredential
 from supervisr.core.utils import path_to_class
 
 LOGGER = logging.getLogger(__name__)
@@ -66,9 +67,20 @@ class NewCredentialDetailMeta:
         'name': forms.TextInput(),
     }
 
+class InternalCredentialForm(ModelForm):
+    """
+    Form for basic input details
+    """
+
+    title = 'Internal Credentials'
+
+    class Meta(NewCredentialDetailMeta):
+
+        model = InternalCredential
+
 class NewCredentialAPIForm(ModelForm):
     """
-    For to input credential details
+    Form to input credential details
     """
     title = 'API Credentials'
 

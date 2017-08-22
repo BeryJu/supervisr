@@ -2,18 +2,63 @@
 Supervisr Core Generic Provider
 """
 
+from django.utils.translation import ugettext as _
+
+
+# pylint: disable=too-few-public-methods
+class ProviderMetadata(object):
+    """
+    This is a class to store metadata like ui_name etc about a provider
+    """
+
+    selectable = True
+    ui_name = "ui_name hasn't been overridden"
+    ui_description = "ui_description hasn't been overridden"
+    provider = None
+
+    def __init__(self, provider):
+        self.provider = provider
+        self.ui_name = _(self.ui_name)
+        self.ui_description = _(self.ui_description)
+
+    def get_capabilities(self):
+        """
+        Return all subproviders this provider has
+        """
+        capabilities = []
+        suffix = '_provider'
+        for prop in dir(self.provider):
+            if prop.endswith(suffix):
+                capabilities.append(prop.replace(suffix, ''))
+        return capabilities
+
 # pylint: disable=too-few-public-methods
 class BaseProvider(object):
     """
     Generic Interface as base for GenericManagedProvider and GenericUserProvider
     """
 
-    ui_name = "ui_name hasn't been overriden"
-    selectable = True
     credentials = None
+    _meta = None
 
-    def __init__(self, credentials):
-        self.credentials = credentials.cast()
+    def __init__(self, credentials=None):
+        self._meta = self.Meta(self)
+        if credentials:
+            self.credentials = credentials.cast()
+
+    @property
+    def dotted_path(self):
+        """
+        Return absolute module and class path
+        """
+        return '%s.%s' % (self.__module__, self.__class__.__name__)
+
+    @property
+    def get_meta(self) -> ProviderMetadata:
+        """
+        Return instance of ProviderMetadata class
+        """
+        return self._meta
 
     def check_credentials(self, credentials=None):
         """
@@ -33,41 +78,51 @@ class BaseProvider(object):
         """
         raise NotImplementedError("This Method should be overwritten by subclasses")
 
-    @staticmethod
-    def get_providers(filter_sub=None, path=False):
+    class Meta(ProviderMetadata):
         """
-        Get all providers, and filter their sub providers
+        Base Provider Meta
         """
-        def walk(root):
-            """
-            Recursively walk subclasses of <root>
-            """
-            # pylint: disable=no-member
-            sub = root.__subclasses__()
-            result = []
-            if sub != []:
-                for _sub in sub:
-                    result += walk(_sub)
-            # else:
-            if root != BaseProvider:
-                result += [root]
-            return result
 
-        providers = walk(BaseProvider)
-        # Filter out the sub
-        valid = []
-        for provider in list(set(providers)):
-            if provider.selectable:
-                if filter_sub:
-                    quallified = True
-                    for sub_name in filter_sub:
-                        if not getattr(provider, sub_name, False):
-                            quallified = False
-                    if quallified:
-                        valid.append(provider)
-                else:
-                    valid.append(provider)
-        # if path is True, convert classes to dotted path
-        if path:
-            return ['%s.%s' % (p.__module__, p.__name__) for p in valid]
-        return sorted(valid, key=lambda x: x.ui_name)
+        def __init__(self, provider):
+            super(BaseProvider.Meta, self).__init__(provider)
+            self.selectable = False
+            self.ui_name = _('BaseProvider')
+
+def get_providers(filter_sub=None, path=False):
+    """
+    Get all providers, and filter their sub providers
+    """
+    def walk(root):
+        """
+        Recursively walk subclasses of <root>
+        """
+        # pylint: disable=no-member
+        sub = root.__subclasses__()
+        result = []
+        if sub != []:
+            for _sub in sub:
+                result += walk(_sub)
+        # else:
+        if root != BaseProvider:
+            result += [root]
+        return result
+
+    providers = walk(BaseProvider)
+    # Filter out the sub
+    valid = []
+    for provider in list(set(providers)):
+        provider_inst = provider()
+        if provider_inst._meta.selectable:
+            if filter_sub:
+                quallified = True
+                for sub_name in filter_sub:
+                    if not getattr(provider, sub_name, False):
+                        quallified = False
+                if quallified:
+                    valid.append(provider_inst)
+            else:
+                valid.append(provider_inst)
+    # if path is True, convert classes to dotted path
+    if path:
+        return ['%s.%s' % (p.__module__, p.__name__) for p in valid]
+    return sorted(valid, key=lambda x: x.get_meta.ui_name)
