@@ -5,6 +5,7 @@ Facebook OAuth Views
 from django.contrib.auth import get_user_model
 
 from supervisr.core.models import UserProfile, make_username
+from supervisr.mod.auth.oauth.client.errors import OAuthClientEmailMissingError
 from supervisr.mod.auth.oauth.client.utils import user_get_or_create
 from supervisr.mod.auth.oauth.client.views.core import (OAuthCallback,
                                                         OAuthRedirect)
@@ -26,6 +27,8 @@ class FacebookOAuth2Callback(OAuthCallback):
     """
 
     def get_or_create_user(self, provider, access, info):
+        if not 'email' in info:
+            raise OAuthClientEmailMissingError()
         user = get_user_model()
         user_data = {
             user.USERNAME_FIELD: info['email'],

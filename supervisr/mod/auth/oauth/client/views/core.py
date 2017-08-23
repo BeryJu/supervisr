@@ -20,6 +20,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic import RedirectView, View
 
 from supervisr.mod.auth.oauth.client.clients import get_client
+from supervisr.mod.auth.oauth.client.errors import OAuthClientError
 from supervisr.mod.auth.oauth.client.models import AccountAccess, Provider
 
 LOGGER = logging.getLogger(__name__)
@@ -116,7 +117,13 @@ class OAuthCallback(OAuthClientMixin, View):
                 AccountAccess.objects.filter(pk=access.pk).update(**defaults)
             user = authenticate(provider=self.provider, identifier=identifier)
             if user is None:
-                return self.handle_new_user(self.provider, access, info)
+                try:
+                    return self.handle_new_user(self.provider, access, info)
+                except OAuthClientError as exc:
+                    return render(request, 'common/error.html', {
+                        'code': 500,
+                        'exc_message': str(exc),
+                        })
             return self.handle_existing_user(self.provider, user, access, info)
 
     # pylint: disable=unused-argument, no-self-use
