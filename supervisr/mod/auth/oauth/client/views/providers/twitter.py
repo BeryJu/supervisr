@@ -41,7 +41,7 @@ class TwitterOAuthCallback(OAuthCallback):
     client_class = TwitterOAuthClient
 
     def get_or_create_user(self, provider, access, info):
-        if not 'email' in info:
+        if 'email' not in info:
             raise OAuthClientEmailMissingError()
         user = get_user_model()
         user_data = {
