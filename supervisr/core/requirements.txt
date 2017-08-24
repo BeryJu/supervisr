@@ -7,3 +7,4 @@ docutils
 pyyaml
 passlib
 Pillow
+schedule
