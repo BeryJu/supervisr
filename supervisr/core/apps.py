@@ -16,6 +16,8 @@ from django.core.cache import cache
 from django.db.utils import OperationalError
 from pip.req import parse_requirements
 
+from supervisr.core.thread.background import BackgroundThread
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -158,3 +160,4 @@ class SupervisrCoreConfig(SupervisrAppConfig):
             settings.VERSION_HASH = b'dev'
         super(SupervisrCoreConfig, self).ready()
         self.clear_cache()
+        BackgroundThread().start()

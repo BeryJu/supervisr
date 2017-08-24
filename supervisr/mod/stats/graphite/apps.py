@@ -5,13 +5,12 @@ Supervisr Stats Graphite AppConfig
 import logging
 import os
 import socket
-import threading
-import time
 
 import psutil
-from django.conf import settings
+from django.dispatch import receiver
 
 from supervisr.core.apps import SupervisrAppConfig
+from supervisr.core.thread.background import SIG_GET_SCHEDULER
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,6 +24,36 @@ class SupervisrModStatGraphiteConfig(SupervisrAppConfig):
     label = 'supervisr/mod/stats/graphite'
     title_moddifier = lambda self, title, request: 'Stats/Graphite'
 
+    def __init__(self, *args, **kwargs):
+        super(SupervisrModStatGraphiteConfig, self).__init__(*args, **kwargs)
+        @receiver(SIG_GET_SCHEDULER)
+        # pylint: disable=unused-argument, unused-variable
+        def handle_stats_graphite(sender, scheduler, **kwargs):
+            """
+            Register Schedule handler
+            """
+            from supervisr.core.models import Setting
+            from supervisr.mod.stats.graphite.graphite_client import GraphiteClient
+
+            client = GraphiteClient()
+
+            def send_stats(client, host):
+                """
+                Statistics checker function
+                """
+                def send():
+                    """
+                    Send CPU and Memory usage
+                    """
+                    process = psutil.Process(os.getpid())
+                    client.write('server.%s.mem' % host, process.memory_info().rss / 1024 / 1024)
+                    client.write('server.%s.cpu' % host, process.cpu_percent())
+                return send
+
+            if Setting.get('enabled', default='False') != 'False':
+                client.connect()
+                scheduler.every(10).seconds.do(send_stats(client, socket.gethostname()))
+
     def ensure_settings(self):
         return {
             'enabled': False,
@@ -32,32 +61,3 @@ class SupervisrModStatGraphiteConfig(SupervisrAppConfig):
             'port': 2003,
             'prefix': 'supervisr',
         }
-
-    def ready(self):
-        super(SupervisrModStatGraphiteConfig, self).ready()
-
-        def send_stats(client, host):
-            """
-            Statistics checker function
-            """
-            while True:
-                process = psutil.Process(os.getpid())
-                client.write('server.%s.mem' % host, process.memory_info().rss / 1024 / 1024)
-                client.write('server.%s.cpu' % host, process.cpu_percent())
-                time.sleep(10)
-
-        from supervisr.core.models import Setting
-        from supervisr.mod.stats.graphite.graphite_client import GraphiteClient
-
-        if Setting.get('enabled', default='False') != 'False':
-            if settings.DEBUG:
-                LOGGER.info("Not starting StatsThread because DEBUG")
-            elif 'DJANGO_MODE_WSGI' not in os.environ:
-                LOGGER.info("Not starting StatsThread because we're not running as WSGI")
-            else:
-                client = GraphiteClient()
-                client.connect()
-                thread = threading.Thread(target=send_stats,
-                                          args=(client, socket.gethostname(), ))
-                thread.start()
-                LOGGER.info("Started Statistics sender in seperate Thread")

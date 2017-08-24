@@ -19,6 +19,9 @@
       {% trans sub.title %}
     </a>
     {% endfor %}
+    <a href="{% url 'user-send_feedback' %}" class="nav-link {% is_active 'user-send_feedback' %}">
+      {% trans "Send Feedback" %}
+    </a>
   </section>
 </nav>
 {% endblock %}

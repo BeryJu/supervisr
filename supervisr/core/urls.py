@@ -63,6 +63,7 @@ urlpatterns = [
     # User views
     url(r'^user/$', user.index, name='user-index'),
     url(r'^user/events/$', user.events, name='user-events'),
+    url(r'^user/feedback/send/$', user.send_feedback, name='user-send_feedback'),
     # Admin views
     url(r'^admin/$', admin.index, name='admin-index'),
     url(r'^admin/users/$', admin.users, name='admin-users'),
