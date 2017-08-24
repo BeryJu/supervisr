@@ -27,7 +27,7 @@ class SupervisrModStatGraphiteConfig(SupervisrAppConfig):
     def __init__(self, *args, **kwargs):
         super(SupervisrModStatGraphiteConfig, self).__init__(*args, **kwargs)
         @receiver(SIG_GET_SCHEDULER)
-        # pylint: disable=unused-argument
+        # pylint: disable=unused-argument, unused-variable
         def handle_stats_graphite(sender, scheduler, **kwargs):
             """
             Register Schedule handler
