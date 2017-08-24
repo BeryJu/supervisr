@@ -19,13 +19,11 @@
 {% block messages %}{% endblock %}
 
 {% block content_area %}
-<div class="container">
-  <h1><clr-icon shape="cog" size="48"></clr-icon>{% trans "Settings" %}</h1>
-</div>
-<div class="content-container">
+<div class="content-container" style="min-height:100%">
   <div class="content-area">
     <div class="content">
       <div class="col-md-12">
+        <h1><clr-icon shape="cog" size="48"></clr-icon>{% trans "Settings" %}</h1>
         {% include 'blocks/block_messages.html' %}
         <form method="POST">
           {% csrf_token %}

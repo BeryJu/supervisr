@@ -11,20 +11,21 @@ def permanent_message(get_response):
     """
     Middleware Permenently add a message
     """
-    m_enabled = Setting.objects.get(
-        key='banner:enabled',
-        namespace='supervisr.core').value_bool
-    m_text = Setting.objects.get(
-        key='banner:message',
-        namespace='supervisr.core').value
-    m_level = Setting.objects.get(
-        key='banner:level',
-        namespace='supervisr.core').value
 
     def middleware(req):
         """
         Middleware Permenently add a message
         """
+        m_enabled = Setting.objects.get(
+            key='banner:enabled',
+            namespace='supervisr.core').value_bool
+        m_text = Setting.objects.get(
+            key='banner:message',
+            namespace='supervisr.core').value
+        m_level = Setting.objects.get(
+            key='banner:level',
+            namespace='supervisr.core').value
+
         if m_enabled is True:
             # Get existing Messages and only add if we're not in there
             storage = messages.get_messages(req)
