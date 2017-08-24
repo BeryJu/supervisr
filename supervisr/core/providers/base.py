@@ -124,5 +124,5 @@ def get_providers(filter_sub=None, path=False):
                 valid.append(provider_inst)
     # if path is True, convert classes to dotted path
     if path:
-        return ['%s.%s' % (p.__module__, p.__name__) for p in valid]
+        return ['%s.%s' % (p.__module__, p.__class__.__name__) for p in valid]
     return sorted(valid, key=lambda x: x.get_meta.ui_name)
