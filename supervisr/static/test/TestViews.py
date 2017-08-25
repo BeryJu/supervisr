@@ -39,12 +39,9 @@ class TestViews(TestCase):
         """
         Test Single View (invalid slug)
         """
-        try:
-            self.assertEqual(test_request(views.view, url_kwargs={
-                'slug': 'qqqqqqqqqqqqqqqqq',
-                }).status_code, 404)
-        except Http404:
-            pass
+        self.assertEqual(test_request(views.view, url_kwargs={
+            'slug': 'qqqqqqqqqqqqqqqqq',
+            }).status_code, 404)
 
     def test_feed_view(self):
         """
