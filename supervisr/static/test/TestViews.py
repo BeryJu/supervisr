@@ -3,7 +3,6 @@ Supervisr Static View Test
 """
 
 from django.contrib.auth.models import User
-from django.http import Http404
 from django.test import TestCase
 
 from supervisr.core.models import get_system_user
@@ -39,12 +38,9 @@ class TestViews(TestCase):
         """
         Test Single View (invalid slug)
         """
-        try:
-            self.assertEqual(test_request(views.view, url_kwargs={
-                'slug': 'qqqqqqqqqqqqqqqqq',
-                }).status_code, 404)
-        except Http404:
-            pass
+        self.assertEqual(test_request(views.view, url_kwargs={
+            'slug': 'qqqqqqqqqqqqqqqqq',
+            }).status_code, 404)
 
     def test_feed_view(self):
         """
