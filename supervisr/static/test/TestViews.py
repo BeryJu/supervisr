@@ -3,7 +3,6 @@ Supervisr Static View Test
 """
 
 from django.contrib.auth.models import User
-from django.http import Http404
 from django.test import TestCase
 
 from supervisr.core.models import get_system_user
