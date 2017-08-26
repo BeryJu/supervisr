@@ -28,8 +28,6 @@ class SupervisrModStatGraphiteConfig(SupervisrAppConfig):
         from supervisr.core.models import Setting
         from supervisr.mod.stats.graphite.graphite_client import GraphiteClient
 
-        client = GraphiteClient()
-
         def send_stats(client, host):
             """
             Statistics checker function
@@ -44,6 +42,7 @@ class SupervisrModStatGraphiteConfig(SupervisrAppConfig):
             return send
 
         if Setting.get('enabled', default='False') != 'False':
+            client = GraphiteClient()
             client.connect()
             SCHEDULER.every(10).seconds.do(send_stats(client, socket.gethostname()))
 
