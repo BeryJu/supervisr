@@ -73,7 +73,7 @@ def file(req, user, module, version):
     """
     Return file for release
     """
-    if not req.META['HTTP_USER_AGENT'] == Setting.get('puppet:allowed_user_agent'):
+    if not req.META['HTTP_USER_AGENT'] == Setting.get('allowed_user_agent'):
         LOGGER.warning("Denied Download with User-Agent '%s'", req.META['HTTP_USER_AGENT'])
         raise Http404
     p_user = User.objects.get(username=user)

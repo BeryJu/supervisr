@@ -8,9 +8,9 @@ from unittest import skipUnless
 
 from django.test import RequestFactory, TestCase
 
-from ..utils import (do_404, get_remote_ip, get_reverse_dns, render_to_string,
-                     send_admin_mail, uuid)
-from .utils import test_request
+from supervisr.core.test.utils import test_request
+from supervisr.core.utils import (do_404, get_remote_ip, get_reverse_dns,
+                                  render_to_string, send_admin_mail, uuid)
 
 
 class TestUtils(TestCase):

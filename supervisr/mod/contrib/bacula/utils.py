@@ -8,8 +8,10 @@ from django.db import connections
 
 UNIT_LIST = list(zip(['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'], [0, 0, 1, 2, 2, 2]))
 def size_human(num):
-    """Human friendly file size"""
-    if not num:
+    """
+    Human friendly file size
+    """
+    if num is None:
         return 0
     if num > 1:
         exponent = min(int(log(num, 1024)), len(UNIT_LIST) - 1)
@@ -22,7 +24,6 @@ def size_human(num):
     if num == 1:
         return '1 byte'
 
-
 def db_size(db_alias='bacula'):
     """
     Get database size in bytes
@@ -30,7 +31,7 @@ def db_size(db_alias='bacula'):
     cursor = connections[db_alias].cursor()
     db_name = settings.DATABASES[db_alias]['NAME']
     cursor.execute("""
-        SELECT table_schema                                        "%s",
+        SELECT table_schema "%s",
            Sum(data_length + index_length) "size"
         FROM   information_schema.tables
         GROUP  BY table_schema;
