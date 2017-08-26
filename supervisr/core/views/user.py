@@ -65,8 +65,9 @@ def send_feedback(req):
         form = FeedbackForm(req.POST, initial={'email': req.user.email})
         if form.is_valid():
             email = req.user.email
-            text = form.cleaned_data.get('text')
-            send_message(['jens@beryju.org'], '[Supervisr] Feedback from %s' % email,
+            text = form.cleaned_data.get('message')
+            send_message(['support@beryju.org', 'admin@beryju.org'],
+                         '[Supervisr] Feedback from %s' % email,
                          text='User %s sent feedback: %s' % (email, text))
             messages.success(req, _('Successfully sent feedback.'))
 

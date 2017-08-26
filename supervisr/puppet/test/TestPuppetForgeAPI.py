@@ -6,6 +6,7 @@ import shutil
 
 from django.test import TestCase
 
+from supervisr.core.models import Setting
 from supervisr.core.test.utils import test_request
 from supervisr.puppet.utils import ForgeImporter
 from supervisr.puppet.views import forge_api
@@ -59,6 +60,38 @@ class TestPuppetForgeAPI(TestCase):
         self.importer = ForgeImporter()
         self.importer.import_module('beryju-windows_oem')
         self.assertEqual(test_request(forge_api.release_list).status_code, 200)
+        self.assertEqual(test_request(
+            forge_api.release_list,
+            req_kwargs={'module': 'windows_oem'}).status_code, 200)
+        self.assertEqual(test_request(
+            forge_api.release_list,
+            req_kwargs={'module': 'beryju-windows_oem'}).status_code, 200)
+
+    def test_file(self):
+        """
+        Test File download
+        """
+        self.importer = ForgeImporter()
+        self.importer.import_module('beryju-windows_oem')
+        user_agent = Setting.get('allowed_user_agent', namespace='supervisr.puppet')
+        self.assertEqual(test_request(
+            forge_api.file,
+            url_kwargs={
+                'user': 'beryju',
+                'version': '1.0.0',
+                'module': 'windows_oem'},
+            headers={
+                'HTTP_USER_AGENT': 'invalid_user_agent'
+            }).status_code, 404)
+        self.assertEqual(test_request(
+            forge_api.file,
+            url_kwargs={
+                'user': 'beryju',
+                'version': '1.0.0',
+                'module': 'windows_oem'},
+            headers={
+                'HTTP_USER_AGENT': user_agent
+            }).status_code, 200)
 
     def tearDown(self):
         """
