@@ -7,10 +7,9 @@ import os
 import socket
 
 import psutil
-from django.dispatch import receiver
 
 from supervisr.core.apps import SupervisrAppConfig
-from supervisr.core.thread.background import SIG_GET_SCHEDULER
+from supervisr.core.thread.background import SCHEDULER
 
 LOGGER = logging.getLogger(__name__)
 
@@ -24,35 +23,28 @@ class SupervisrModStatGraphiteConfig(SupervisrAppConfig):
     label = 'supervisr/mod/stats/graphite'
     title_moddifier = lambda self, title, request: 'Stats/Graphite'
 
-    def __init__(self, *args, **kwargs):
-        super(SupervisrModStatGraphiteConfig, self).__init__(*args, **kwargs)
-        @receiver(SIG_GET_SCHEDULER)
-        # pylint: disable=unused-argument, unused-variable
-        def handle_stats_graphite(sender, scheduler, **kwargs):
-            """
-            Register Schedule handler
-            """
-            from supervisr.core.models import Setting
-            from supervisr.mod.stats.graphite.graphite_client import GraphiteClient
+    def ready(self):
+        super(SupervisrModStatGraphiteConfig, self).ready()
+        from supervisr.core.models import Setting
+        from supervisr.mod.stats.graphite.graphite_client import GraphiteClient
 
+        def send_stats(client, host):
+            """
+            Statistics checker function
+            """
+            def send():
+                """
+                Send CPU and Memory usage
+                """
+                process = psutil.Process(os.getpid())
+                client.write('server.%s.mem' % host, process.memory_info().rss / 1024 / 1024)
+                client.write('server.%s.cpu' % host, process.cpu_percent())
+            return send
+
+        if Setting.get('enabled', default='False') != 'False':
             client = GraphiteClient()
-
-            def send_stats(client, host):
-                """
-                Statistics checker function
-                """
-                def send():
-                    """
-                    Send CPU and Memory usage
-                    """
-                    process = psutil.Process(os.getpid())
-                    client.write('server.%s.mem' % host, process.memory_info().rss / 1024 / 1024)
-                    client.write('server.%s.cpu' % host, process.cpu_percent())
-                return send
-
-            if Setting.get('enabled', default='False') != 'False':
-                client.connect()
-                scheduler.every(10).seconds.do(send_stats(client, socket.gethostname()))
+            client.connect()
+            SCHEDULER.every(10).seconds.do(send_stats(client, socket.gethostname()))
 
     def ensure_settings(self):
         return {
