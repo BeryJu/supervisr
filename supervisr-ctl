@@ -1,8 +1,19 @@
 #!/bin/bash
-cd /usr/share/supervisr
+
+# Check if this file is a symlink, if so, read real base dir
+BASE_DIR=$(dirname $(readlink -f ${BASH_SOURCE[0]}))
+if [ $? -eq 0 ]; then
+	cd $BASE_DIR
+fi
 
 source env/bin/activate
 
-invoke "$@"
+if [ "$1" == "" ]; then
+	# Run --list if no arguments are passed
+	invoke --list
+else
+	# Otherwise pass arguments
+	invoke "$@"
+fi
 
 deactivate
