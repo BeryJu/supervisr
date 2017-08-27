@@ -1,4 +1,5 @@
 #!/bin/bash
+cd /usr/share/supervisr
 
 source env/bin/activate
 

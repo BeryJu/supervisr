@@ -45,11 +45,11 @@ def clean(ctx):
     """
     Clean Python cached files
     """
-    ctx.run('find . -name *.pyc -exec rm -rf {} \;', warn=True)
+    ctx.run(r'find . -name *.pyc -exec rm -rf {} \;', warn=True)
     print('Cleaned python cache')
-    ctx.run('find supervisr/cache/ -name *.djcache -exec rm -rf {} \;', warn=True)
+    ctx.run(r'find supervisr/cache/ -name *.djcache -exec rm -rf {} \;', warn=True)
     print('Cleaned django cache files')
-    ctx.run('find supervisr/puppet/modules/ -name *.tgz -exec rm -rf {} \;', warn=True)
+    ctx.run(r'find supervisr/puppet/modules/ -name *.tgz -exec rm -rf {} \;', warn=True)
     print('Cleaned puppet modules')
 
 @task
@@ -117,8 +117,7 @@ def lint(ctx, modules=None):
     Run PyLint
     """
     if modules is None:
-        modules = ['tasks.py']
-        modules.extend(glob('supervisr*'))
+        modules = ['tasks.py', 'supervisr']
     elif isinstance(modules, str):
         modules = [modules]
 
@@ -221,6 +220,7 @@ def sv_make_superuser(ctx, uid):
     LOGGER.info("Done!")
 
 @task
+# pylint: disable=unused-argument
 def run(ctx, pidfile=''):
     """
     Run CherryPY-based application server
@@ -233,7 +233,7 @@ def run(ctx, pidfile=''):
                             'log.error_file': ''})
     cherrypy.tree.graft(application, "/")
     cherrypy.server.unsubscribe()
-
+    # pylint: disable=protected-access
     server = cherrypy._cpserver.Server()
 
     server.socket_host = "0.0.0.0"
@@ -246,4 +246,3 @@ def run(ctx, pidfile=''):
 
     cherrypy.engine.start()
     cherrypy.engine.block()
-
