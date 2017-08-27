@@ -45,10 +45,12 @@ def clean(ctx):
     """
     Clean Python cached files
     """
-    files = glob("**/**/**/*.pyc")
-    for file in files:
-        os.remove(file)
-    LOGGER.info("Removed %i files", len(files))
+    ctx.run('find . -name *.pyc -exec rm -rf {} \;', warn=True)
+    print('Cleaned python cache')
+    ctx.run('find supervisr/cache/ -name *.djcache -exec rm -rf {} \;', warn=True)
+    print('Cleaned django cache files')
+    ctx.run('find supervisr/puppet/modules/ -name *.tgz -exec rm -rf {} \;', warn=True)
+    print('Cleaned puppet modules')
 
 @task
 def install(ctx, dev=False):
@@ -67,6 +69,23 @@ def install(ctx, dev=False):
         requirements.extend(glob("supervisr/**/**/**/requirements-dev.txt"))
         requirements.extend(glob("supervisr/**/**/**/**/requirements-dev.txt"))
     ctx.run("pip3 install -U -r %s" % ' -r '.join(requirements))
+
+@task
+def compile_reqs(ctx):
+    """
+    Compile all requirements into one requirements.txt
+    """
+    if WINDOWS:
+        ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
+    requirements = glob("supervisr/**/requirements.txt")
+    requirements.extend(glob("supervisr/**/**/requirements.txt"))
+    requirements.extend(glob("supervisr/**/**/**/requirements.txt"))
+    requirements.extend(glob("supervisr/**/**/**/**/requirements.txt"))
+    requirements.extend(glob("supervisr/**/requirements-dev.txt"))
+    requirements.extend(glob("supervisr/**/**/requirements-dev.txt"))
+    requirements.extend(glob("supervisr/**/**/**/requirements-dev.txt"))
+    requirements.extend(glob("supervisr/**/**/**/**/requirements-dev.txt"))
+    ctx.run("cat %s > requirements.txt" % ' '.join(requirements))
 
 @task
 def deploy(ctx, user=None, fqdn=None):
@@ -90,14 +109,6 @@ def migrate(ctx):
     Apply migrations
     """
     ctx.run("%s manage.py migrate" % PYTHON_EXEC)
-
-@task(pre=[migrate])
-@shell
-def run(ctx, port=8080):
-    """
-    Starts a development server
-    """
-    ctx.run("%s manage.py runserver 0.0.0.0:%s" % (PYTHON_EXEC, port))
 
 @task
 # pylint: disable=unused-argument
@@ -208,3 +219,31 @@ def sv_make_superuser(ctx, uid):
     except IntegrityError:
         pass
     LOGGER.info("Done!")
+
+@task
+def run(ctx, pidfile=''):
+    """
+    Run CherryPY-based application server
+    """
+    from supervisr.core.wsgi import application
+    from cherrypy.process.plugins import PIDFile
+    import cherrypy
+    cherrypy.config.update({'log.screen': False,
+                            'log.access_file': '',
+                            'log.error_file': ''})
+    cherrypy.tree.graft(application, "/")
+    cherrypy.server.unsubscribe()
+
+    server = cherrypy._cpserver.Server()
+
+    server.socket_host = "0.0.0.0"
+    server.socket_port = 8080
+    server.thread_pool = 30
+    server.subscribe()
+
+    if pidfile != '':
+        PIDFile(cherrypy.engine, pidfile).subscribe()
+
+    cherrypy.engine.start()
+    cherrypy.engine.block()
+

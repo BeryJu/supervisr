@@ -1,0 +1,3 @@
+supervisr	/usr/share/supervisr/
+supervisr-ctl	/usr/share/supervisr/
+tasks.py	/usr/share/supervisr/

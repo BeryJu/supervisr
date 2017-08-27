@@ -272,6 +272,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'cherrypy':  {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
     }
 }
 
