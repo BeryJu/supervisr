@@ -15,9 +15,8 @@ case "$1" in
     chown -R supervisr: /var/log/supervisr/
     chown -R supervisr: /usr/share/supervisr/
     chown -R supervisr: /etc/supervisr/
-    
-    cd /usr/share/supervisr
-    supervisr-ctl migrate
+    echo " * Running Database Migration"
+    supervisr-ctl supervisr.migrate
   ;;
 
   triggered|abort-upgrade|abort-remove|abort-deconfigure)
