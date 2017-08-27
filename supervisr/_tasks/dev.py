@@ -31,6 +31,18 @@ def shell(func):
     return wrapped
 
 @task
+def build_static(ctx):
+    """
+    Build Static CSS and JS files and run collectstatic
+    """
+    if WINDOWS:
+        ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
+    with ctx.cd('assets'):
+        ctx.run('grunt --no-color', hide='out')
+    from django.core.management import execute_from_command_line
+    execute_from_command_line(['manage.py', 'collectstatic', '--noinput'])
+
+@task
 # pylint: disable=unused-argument
 def clean(ctx):
     """

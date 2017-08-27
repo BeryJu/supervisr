@@ -66,19 +66,30 @@ def run(ctx, pidfile=''):
     """
     Run CherryPY-based application server
     """
+    from django.conf import settings
     from supervisr.core.wsgi import application
     from cherrypy.process.plugins import PIDFile
     import cherrypy
+    class NullObject(object): pass
+
     cherrypy.config.update({'log.screen': False,
                             'log.access_file': '',
-                            'log.error_file': ''})
-    cherrypy.tree.graft(application, "/")
+                            'log.error_file': ''
+                            })
+    cherrypy.tree.graft(application, '/')
+    # Mount NullObject to serve static files
+    cherrypy.tree.mount(NullObject(), '/static', config={
+        '/': {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': settings.STATIC_ROOT,
+        }
+    })
     cherrypy.server.unsubscribe()
     # pylint: disable=protected-access
     server = cherrypy._cpserver.Server()
 
     server.socket_host = "0.0.0.0"
-    server.socket_port = 8080
+    server.socket_port = 8000
     server.thread_pool = 30
     server.subscribe()
 
