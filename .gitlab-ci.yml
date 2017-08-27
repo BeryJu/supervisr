@@ -4,7 +4,7 @@ before_script:
   - "virtualenv env"
   - "source env/bin/activate"
   - "pip3 install invoke"
-  - "inv install --dev"
+  - "inv dev.install --dev"
 stages:
   - test
   - test-db
