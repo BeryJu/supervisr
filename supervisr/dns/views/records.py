@@ -64,8 +64,8 @@ class RecordNewView(BaseWizardView):
         return form
 
     # pylint: disable=unused-argument
-    def done(self, final_forms, form_dict, **kwargs):
-        record = form_dict['0'].save(commit=False)
+    def done(self, form_list):
+        record = form_list['0'].save(commit=False)
         record.save()
         UserProductRelationship.objects.create(
             product=record,
@@ -75,7 +75,7 @@ class RecordNewView(BaseWizardView):
                                 kwargs={'zone': self.kwargs['zone']}))
 
 @login_required
-def edit(req, zone, record):
+def edit(req, zone, record, uuid):
     """
     Edit a record
     """
@@ -85,9 +85,10 @@ def edit(req, zone, record):
         raise Http404
     r_zone = zones.first()
     # Check if the record exists too
-    records = Record.objects.filter(domain=r_zone, users__in=[req.user], name=record)
+    records = Record.objects.filter(domain=r_zone, users__in=[req.user], name=record, uuid=uuid)
     if not records.exists():
         raise Http404
+    assert len(records) == 1
     r_record = records.first()
 
     # Make a list of all zones so user can switch zones
@@ -116,7 +117,7 @@ def edit(req, zone, record):
         })
 
 @login_required
-def delete(req, zone, record):
+def delete(req, zone, record, uuid):
     """
     Delete a record
     """
@@ -126,9 +127,10 @@ def delete(req, zone, record):
         raise Http404
     r_zone = zones.first()
 
-    records = Record.objects.filter(domain=r_zone, users__in=[req.user], name=record)
+    records = Record.objects.filter(domain=r_zone, users__in=[req.user], name=record, uuid=uuid)
     if not records.exists():
         raise Http404
+    assert len(records) == 1
     r_record = records.first()
 
     if req.method == 'POST' and 'confirmdelete' in req.POST:

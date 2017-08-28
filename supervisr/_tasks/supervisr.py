@@ -70,12 +70,17 @@ def run(ctx, pidfile=''):
     from supervisr.core.wsgi import application
     from cherrypy.process.plugins import PIDFile
     import cherrypy
-    class NullObject(object): pass
+
+    # pylint: disable=too-few-public-methods
+    class NullObject(object):
+        """
+        empty class to serve static files with cherrypy
+        """
 
     cherrypy.config.update({'log.screen': False,
                             'log.access_file': '',
                             'log.error_file': ''
-                            })
+                           })
     cherrypy.tree.graft(application, '/')
     # Mount NullObject to serve static files
     cherrypy.tree.mount(NullObject(), '/static', config={

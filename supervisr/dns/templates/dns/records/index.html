@@ -52,7 +52,7 @@
   </thead>
   <tbody>
     {% for rec in records %}
-    <tr data-selectable data-ctx-edit="{% url 'supervisr/dns:dns-record-edit' zone=zone.domain.domain record=rec.name %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr/dns:dns-record-delete' zone=zone.domain.domain record=rec.name %}?back={{ request.get_full_path }}">
+    <tr data-selectable data-ctx-edit="{% url 'supervisr/dns:dns-record-edit' zone=zone.domain.domain record=rec.name uuid=rec.uuid %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr/dns:dns-record-delete' zone=zone.domain.domain record=rec.name uuid=rec.uuid %}?back={{ request.get_full_path }}">
       <td>{{ rec.name|default:'@' }}</td>
       <td>{{ rec.type }}</td>
       <td>{{ rec.prio }}</td>
