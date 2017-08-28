@@ -74,7 +74,7 @@ def login(req):
                     # Check is maybe not confirmed yet
                     acc_confs = AccountConfirmation.objects.filter(
                         user=users.first(),
-                        kinda=AccountConfirmation.KIND_SIGN_UP)
+                        kind=AccountConfirmation.KIND_SIGN_UP)
                     if acc_confs.exists() and not acc_confs.first().confirmed:
                         # Create url to resend email
                         url = reverse('account-confirmation_resend',
