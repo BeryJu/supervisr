@@ -4,7 +4,7 @@ Supervisr DNS URLs
 
 from django.conf.urls import include, url
 
-from supervisr.core.regex import DOMAIN_REGEX
+from supervisr.core.regex import DOMAIN_REGEX, UUID_REGEX
 from supervisr.dns.views import core, migrate, records, zones
 
 urlpatterns = [
@@ -17,10 +17,10 @@ urlpatterns = [
         records.list_records, name='dns-record-list'),
     url(r'^zones/(?P<zone>%s)/records/new/$' % DOMAIN_REGEX, records.RecordNewView.as_view(),
         name='dns-record-new'),
-    url(r'^zones/(?P<zone>%s)/records/(?P<record>.+)/edit/$' % DOMAIN_REGEX,
-        records.edit, name='dns-record-edit'),
-    url(r'^zones/(?P<zone>%s)/records/(?P<record>.+)/delete/$' % DOMAIN_REGEX,
-        records.delete, name='dns-record-delete'),
+    url(r'^zones/(?P<zone>%s)/records/(?P<record>.+)/(?P<uuid>%s)/edit/$' %
+        (DOMAIN_REGEX, UUID_REGEX), records.edit, name='dns-record-edit'),
+    url(r'^zones/(?P<zone>%s)/records/(?P<record>.+)/(?P<uuid>%s)/delete/$' %
+        (DOMAIN_REGEX, UUID_REGEX), records.delete, name='dns-record-delete'),
     url(r'^migrate/import/bind/$',
         migrate.BindZoneImportWizard.as_view(), name='migrate-import-bind'),
     url(r'^api/', include('supervisr.dns.views.api.urls')),

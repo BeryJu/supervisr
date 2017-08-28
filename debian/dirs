@@ -1,0 +1,3 @@
+etc/supervisr/
+var/log/supervisr/
+usr/share/supervisr/

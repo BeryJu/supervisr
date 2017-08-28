@@ -4,7 +4,7 @@ before_script:
   - "virtualenv env"
   - "source env/bin/activate"
   - "pip3 install invoke"
-  - "inv install --dev"
+  - "inv dev.install --dev"
 stages:
   - test
   - test-db
@@ -24,7 +24,7 @@ coverage:
   except:
     - prod
   script:
-    - "inv coverage"
+    - "inv dev.coverage"
   stage: test
   cache:
     paths:
@@ -33,7 +33,7 @@ isort:
   except:
     - prod
   script:
-    - "inv isort"
+    - "inv dev.isort"
   stage: test
   cache:
     paths:
@@ -42,7 +42,7 @@ migrations:
   except:
     - prod
   script:
-    - "inv migrate"
+    - "inv supervisr.migrate"
   stage: test
   cache:
     paths:
@@ -51,7 +51,7 @@ prospector:
   except:
     - prod
   script:
-    - "inv prospector"
+    - "inv dev.prospector"
   stage: test
   cache:
     paths:
@@ -60,7 +60,7 @@ pylint:
   except:
     - prod
   script:
-    - "inv lint"
+    - "inv dev.lint"
   stage: test
   cache:
     paths:
@@ -69,7 +69,7 @@ unittest:
   except:
     - prod
   script:
-    - "inv unittest"
+    - "inv dev.unittest"
   stage: test
   cache:
     paths:
@@ -133,5 +133,5 @@ deploy:
     - "eval $(ssh-agent -s)"
     - "mkdir ~/.ssh -p"
     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
-    - "inv deploy --user=beryjuorg --fqdn=ory1-web-prod-1.ory1.beryju.org"
+    - "ssh -o 'StrictHostKeyChecking=no' beryjuorg@ory1-web-prod-1.ory1.beryju.org \"./update_supervisr.sh\""
   stage: deploy

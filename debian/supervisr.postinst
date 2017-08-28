@@ -1,0 +1,30 @@
+#!/bin/bash
+
+#DEBHELPER#
+
+case "$1" in
+  configure)
+    if [ -z "`getent group supervisr`" ]; then
+      addgroup --quiet --system supervisr
+    fi
+    if [ -z "`getent passwd supervisr`" ]; then
+      echo -n "Creating user and group supervisr..."
+      adduser --quiet --system --home /usr/share/supervisr --shell /bin/false --ingroup supervisr --disabled-password --disabled-login --gecos "Supervisr User" supervisr
+      echo "done"
+    fi
+    chown -R supervisr: /var/log/supervisr/
+    chown -R supervisr: /usr/share/supervisr/
+    chown -R supervisr: /etc/supervisr/
+    echo " * Running Database Migration"
+    supervisr-ctl supervisr.migrate
+  ;;
+
+  triggered|abort-upgrade|abort-remove|abort-deconfigure)
+  ;;
+
+  *)
+    echo "postinst called with unknown argument \`$1'" >&2
+    exit 1
+  ;;
+esac
+

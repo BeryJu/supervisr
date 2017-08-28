@@ -1,0 +1,13 @@
+Source: supervisr
+Section: admin
+Priority: optional
+Maintainer: BeryJu.org <support@beryju.org>
+Uploaders: Jens Langhammer <jens@beryju.org>, BeryJu.org <support@beryju.org>
+Build-Depends: debhelper (>> 5.0.0), dh-systemd (>= 1.5), dh-exec, wget, dh-virtualenv
+Standards-Version: 3.7.2
+
+Package: supervisr
+Architecture: all
+Depends: python3, dbconfig-mysql | dbconfig-no-thanks
+Description: Supervise your IT
+
