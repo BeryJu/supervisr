@@ -36,7 +36,7 @@ class BaseOAuthClient(object):
             response = self.request('get', self.provider.profile_url, token=raw_token)
             response.raise_for_status()
         except RequestException as exc:
-            LOGGER.error('Unable to fetch user profile: %s', exc)
+            LOGGER.warning('Unable to fetch user profile: %s', exc)
             return None
         else:
             return response.json() or response.text
@@ -89,7 +89,7 @@ class OAuthClient(BaseOAuthClient):
                                         token=raw_token, data=data, oauth_callback=callback)
                 response.raise_for_status()
             except RequestException as exc:
-                LOGGER.error('Unable to fetch access token: %s', exc)
+                LOGGER.warning('Unable to fetch access token: %s', exc)
                 return None
             else:
                 return response.text
@@ -103,7 +103,7 @@ class OAuthClient(BaseOAuthClient):
                 'post', self.provider.request_token_url, oauth_callback=callback)
             response.raise_for_status()
         except RequestException as exc:
-            LOGGER.error('Unable to fetch request token: %s', exc)
+            LOGGER.warning('Unable to fetch request token: %s', exc)
             return None
         else:
             return response.text
@@ -166,16 +166,16 @@ class OAuth2Client(BaseOAuthClient):
             if returned is not None:
                 check = constant_time_compare(stored, returned)
             else:
-                LOGGER.error('No state parameter returned by the provider.')
+                LOGGER.warning('No state parameter returned by the provider.')
         else:
-            LOGGER.error('No state stored in the sesssion.')
+            LOGGER.warning('No state stored in the sesssion.')
         return check
 
     def get_access_token(self, request, callback=None):
         "Fetch access token from callback request."
         callback = request.build_absolute_uri(callback or request.path)
         if not self.check_application_state(request, callback):
-            LOGGER.error('Application state check failed.')
+            LOGGER.warning('Application state check failed.')
             return None
         if 'code' in request.GET:
             args = {
@@ -186,13 +186,13 @@ class OAuth2Client(BaseOAuthClient):
                 'grant_type': 'authorization_code',
             }
         else:
-            LOGGER.error('No code returned by the provider')
+            LOGGER.warning('No code returned by the provider')
             return None
         try:
             response = self.request('post', self.provider.access_token_url, data=args)
             response.raise_for_status()
         except RequestException as exc:
-            LOGGER.error('Unable to fetch access token: %s', exc)
+            LOGGER.warning('Unable to fetch access token: %s', exc)
             return None
         else:
             return response.text

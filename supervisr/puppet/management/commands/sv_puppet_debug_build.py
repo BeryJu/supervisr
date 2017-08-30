@@ -39,7 +39,7 @@ class Command(BaseCommand):
                     i.build()
                     LOGGER.info("Built Module %s!", n_module)
                     return "Built Module %s!" % n_module
-                LOGGER.error("Module %s-%s doesn't exist!", n_user, n_module)
+                LOGGER.warning("Module %s-%s doesn't exist!", n_user, n_module)
                 return "Module %s-%s doesn't exist!" % (n_user, n_module)
-            LOGGER.error("User %s doesn't exist!", n_user)
+            LOGGER.warning("User %s doesn't exist!", n_user)
             return "User %s doesn't exist!" % n_user

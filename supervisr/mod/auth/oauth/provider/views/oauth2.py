@@ -34,7 +34,7 @@ class SupervisrAuthorizationView(AuthorizationView):
                 upr = UserProductRelationship.objects.filter(user=request.user, product=product)
                 # Product is invite_only = True and no relation with user exists
                 if product.invite_only and not upr.exists():
-                    LOGGER.error("User '%s' has no invitation to '%s'", request.user, product)
+                    LOGGER.warning("User '%s' has no invitation to '%s'", request.user, product)
                     messages.error(request, "You have no access to '%s'" % product.name)
                     raise Http404
             if isinstance(full_res, HttpResponseRedirect):

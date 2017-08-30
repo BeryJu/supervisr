@@ -137,7 +137,7 @@ def login_process(request):
         try:
             full_res = _generate_response(request, proc, remote)
             if not access:
-                LOGGER.error("User '%s' has no invitation to '%s'", request.user, product)
+                LOGGER.warning("User '%s' has no invitation to '%s'", request.user, product)
                 messages.error(request, "You have no access to '%s'" % product.name)
                 raise Http404
             return full_res

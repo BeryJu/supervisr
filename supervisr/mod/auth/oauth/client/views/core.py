@@ -180,7 +180,7 @@ class OAuthCallback(OAuthClientMixin, View):
 
     def handle_login_failure(self, provider, reason):
         "Message user and redirect on error."
-        LOGGER.error('Authenication Failure: %s', reason)
+        LOGGER.warning('Authenication Failure: %s', reason)
         messages.error(self.request, _('Authenication Failed.'))
         return redirect(self.get_error_redirect(provider, reason))
 
