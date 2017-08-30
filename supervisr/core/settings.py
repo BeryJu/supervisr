@@ -228,11 +228,14 @@ def load_local_settings(mod):
             if not key.startswith('__') and not key.endswith('__'):
                 globals()[key] = val
         LOGGER.warning("Loaded '%s' as local_settings", mod)
+        return True
     except ImportError as exception:
-        LOGGER.warning("Failed to import local_settings because %s", exception)
+        LOGGER.info('Not loaded %s because %s', mod, exception)
+        return False
 
 for modu in [os.environ.get('SUPERVISR_LOCAL_SETTINGS', 'supervisr.local_settings'), 'config']:
-    load_local_settings(modu)
+    if load_local_settings(modu):
+        break
 
 SERVER_EMAIL = EMAIL_FROM
 

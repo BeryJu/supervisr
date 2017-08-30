@@ -9,8 +9,8 @@ from django.db import migrations, models
 def create_settings(apps, schema_editor):
     Setting = apps.get_model('core', 'Setting')
     settings = {
-        'analytics:ga:enabled': False,
-        'analytics:ga:tracking_id': '',
+        'core:analytics:ga:enabled': False,
+        'core:analytics:ga:tracking_id': '',
     }
     for key, value in settings.items():
         Setting.objects.get_or_create(

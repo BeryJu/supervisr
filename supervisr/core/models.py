@@ -487,7 +487,7 @@ class BaseCredential(CreatedUpdatedModel, CastableModel):
     Basic set of credentials
     """
     owner = models.ForeignKey(User)
-    name = models.TextField()
+    name = models.CharField(max_length=255)
     form = '' # form class which is used for setup
 
     @staticmethod
