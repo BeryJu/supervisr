@@ -98,7 +98,6 @@ INSTALLED_APPS = [
     'django.contrib.admindocs',
 ]
 
-CHANGELOG = '' # This gets overwritten with ../../CHANGELOG.md on launch
 VERSION_HASH = None # This gets overwritten with the current commit's hash on launch
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))+"/static"
@@ -213,15 +212,27 @@ STATICFILES_FINDERS = (
 
 EMAIL_FROM = 'Supervisr <supervisr@localhost>'
 
-try:
-    LOCAL_SETTINGS = os.environ.get('SUPERVISR_LOCAL_SETTINGS', 'supervisr.local_settings')
-    LOCAL_SETTINGS_MOD = importlib.import_module(LOCAL_SETTINGS, package=None)
-    for key, val in LOCAL_SETTINGS_MOD.__dict__.items():
-        if not key.startswith('__') and not key.endswith('__'):
-            globals()[key] = val
-    LOGGER.warning("Loaded '%s' as local_settings", LOCAL_SETTINGS)
-except ImportError as exception:
-    LOGGER.warning("Failed to import local_settings because %s", exception)
+LOG_LEVEL_FILE = 'DEBUG'
+LOG_LEVEL_CONSOLE = 'DEBUG'
+LOG_FILE = '/dev/null'
+
+sys.path.append('/etc/supervisr')
+
+def load_local_settings(mod):
+    """
+    Load module *mod* and apply contents to ourselves
+    """
+    try:
+        loaded_module = importlib.import_module(mod, package=None)
+        for key, val in loaded_module.__dict__.items():
+            if not key.startswith('__') and not key.endswith('__'):
+                globals()[key] = val
+        LOGGER.warning("Loaded '%s' as local_settings", mod)
+    except ImportError as exception:
+        LOGGER.warning("Failed to import local_settings because %s", exception)
+
+for modu in [os.environ.get('SUPERVISR_LOCAL_SETTINGS', 'supervisr.local_settings'), 'config']:
+    load_local_settings(modu)
 
 SERVER_EMAIL = EMAIL_FROM
 
@@ -240,7 +251,7 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'DEBUG',
+            'level': LOG_LEVEL_CONSOLE,
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
@@ -250,20 +261,25 @@ LOGGING = {
             'include_html': True,
         },
         'syslog': {
-            'level': 'DEBUG',
+            'level': LOG_LEVEL_FILE,
             'class': 'logging.handlers.SysLogHandler',
             'formatter': 'syslog',
             'address': (SYSLOG_HOST, SYSLOG_PORT)
-        }
+        },
+        'file': {
+            'level': LOG_LEVEL_FILE,
+            'class': 'logging.FileHandler',
+            'filename': LOG_FILE,
+        },
     },
     'loggers': {
         'supervisr': {
-            'handlers': ['console', 'syslog', 'mail_admins'],
+            'handlers': ['console', 'syslog', 'mail_admins', 'file'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'django': {
-            'handlers': ['console', 'syslog', 'mail_admins'],
+            'handlers': ['console', 'syslog', 'mail_admins', 'file'],
             'level': 'INFO',
             'propagate': True,
         },
@@ -273,7 +289,7 @@ LOGGING = {
             'propagate': True,
         },
         'cherrypy':  {
-            'handlers': ['console'],
+            'handlers': ['console', 'syslog', 'file'],
             'level': 'DEBUG',
             'propagate': True,
         }

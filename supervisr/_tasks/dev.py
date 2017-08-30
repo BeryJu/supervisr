@@ -3,6 +3,7 @@ Supervisr Invoke Dev Tasks
 """
 import logging
 import os
+import random
 import shutil
 from functools import wraps
 from glob import glob
@@ -89,6 +90,15 @@ def compile_reqs(ctx):
     requirements.extend(glob("supervisr/**/**/**/requirements-dev.txt"))
     requirements.extend(glob("supervisr/**/**/**/**/requirements-dev.txt"))
     ctx.run("cat %s > requirements.txt" % ' '.join(requirements))
+
+@task
+# pylint: disable=unused-argument
+def generate_secret_key(ctx):
+    """
+    Generate Django SECRET_KEY
+    """
+    print(''.join([random.SystemRandom() \
+            .choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)]))
 
 @task
 # pylint: disable=unused-argument

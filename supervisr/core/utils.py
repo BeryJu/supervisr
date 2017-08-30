@@ -153,3 +153,35 @@ def path_to_class(path):
     package = '.'.join(parts[:-1])
     _class = getattr(import_module(package), parts[-1])
     return _class
+
+def db_settings_from_dbconfig(config_path):
+    """
+    Generate Django DATABASE dict from dbconfig file
+    """
+    db_config = {}
+    with open(config_path, 'r') as file:
+        contents = file.read().split('\n')
+        for line in contents:
+            if line.startswith('#') or line == '':
+                continue
+            key, value = line.split('=')
+            value = value[1:-1]
+            if key == 'dbuser':
+                db_config['USER'] = value
+            elif key == 'dbpass':
+                db_config['PASSWORD'] = value
+            elif key == 'dbname':
+                db_config['NAME'] = value
+            elif key == 'dbserver':
+                db_config['HOST'] = value
+            elif key == 'dbport':
+                db_config['PORT'] = value
+            elif key == 'dbtype':
+                if value == 'mysql':
+                    db_config['ENGINE'] = 'django.db.backends.mysql'
+                    db_config['OPTIONS'] = {
+                        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+                    }
+                elif value == 'pgsql':
+                    db_config['ENGINE'] = 'django.db.backends.postgresql'
+        return db_config
