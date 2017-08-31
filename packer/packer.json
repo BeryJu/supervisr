@@ -1,0 +1,58 @@
+{
+    "builders": [
+        {
+            "name": "supervisr",
+            "type": "vmware-iso",
+            "guest_os_type": "debian8-64",
+            "tools_upload_flavor": "linux",
+
+            "iso_url": "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-9.1.0-amd64-netinst.iso",
+            "iso_checksum": "697600a110c7a5a1471fbf45c8030dd99b3c570db612044730f09b4624aa49f2a3d79469d55f1c18610c2414e9fffde1533b9a6fab6f3af4b5ba7c2d59003dc1",
+            "iso_checksum_type": "sha512",
+
+            "ssh_port": 22,
+            "ssh_timeout": "15m",
+            "ssh_username": "appliance",
+            "ssh_password": "b3ryju0rg!",
+            "ssh_wait_timeout": "30m",
+
+            "disk_size": "15000",
+
+            "http_directory": "http",
+
+            "boot_command": [
+              "<esc><wait>",
+              "install <wait>",
+              "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed <wait>",
+              "debian-installer=en_US.UTF-8 <wait>",
+              "auto <wait>",
+              "locale=en_US.UTF-8 <wait>",
+              "kbd-chooser/method=us <wait>",
+              "keyboard-configuration/xkb-keymap=us <wait>",
+              "fb=false <wait>",
+              "debconf/frontend=noninteractive <wait>",
+              "netcfg/get_hostname=supervisr <wait>",
+              "netcfg/get_domain=beryju.org <wait>",
+              "console-setup/ask_detect=false <wait>",
+              "console-keymaps-at/keymap=us <wait>",
+              "grub-installer/bootdev=/dev/sda <wait>",
+              "<enter><wait>"
+            ],
+            "boot_wait": "5s",
+
+            "shutdown_command": "echo 'b3ryju0rg!'|sudo -S shutdown -h now",
+
+            "vmx_data": {
+                "memsize": "4096",
+                "numvcpus": "2",
+                "sound.present": "TRUE"
+            },
+
+            "format": "ova",
+            "ovftool_options": ["--noImageFiles"]
+        }
+    ],
+    "variables": {
+        "ssh_public_key_path": "~/.ssh/id_rsa.pub"
+    }
+}
