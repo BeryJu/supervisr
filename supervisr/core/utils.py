@@ -2,8 +2,10 @@
 Supervisr Core utils
 """
 
+import importlib.util
 import logging
 import socket
+from glob import glob
 from importlib import import_module
 from time import time as timestamp
 from uuid import uuid4
@@ -185,3 +187,20 @@ def db_settings_from_dbconfig(config_path):
                 elif value == 'pgsql':
                     db_config['ENGINE'] = 'django.db.backends.postgresql'
         return db_config
+
+def read_simple(path, mode='r'):
+    """
+    Simple wrapper for file reading
+    """
+    with open(path, mode) as file:
+        return file.read()
+
+def import_dir(directory, callback):
+    """
+    Import every file in a direct and call callback for each
+    """
+    files = glob(directory+'/*.py', recursive=True)
+    for file in files:
+        spec = importlib.util.spec_from_file_location("", file)
+        module = importlib.util.module_from_spec(spec)
+        callback(module)

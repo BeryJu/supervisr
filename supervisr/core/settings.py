@@ -70,6 +70,12 @@ NOCAPTCHA = True
 CORS_ORIGIN_ALLOW_ALL = True
 REQUEST_APPROVAL_PROMPT = 'auto'
 
+CHERRYPY_SERVER = {
+    'socket_host': '0.0.0.0',
+    'socket_port': 8000,
+    'thread_pool': 30
+}
+
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
