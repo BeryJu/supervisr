@@ -96,6 +96,8 @@ def run(ctx, pidfile=''):
     server.socket_host = "0.0.0.0"
     server.socket_port = 8000
     server.thread_pool = 30
+    for key, value in settings.CHERRYPY_SERVER.items():
+        setattr(server, key, value)
     server.subscribe()
 
     if pidfile != '':

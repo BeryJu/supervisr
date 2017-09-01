@@ -3,12 +3,15 @@ Supervisr Invoke Tasks
 """
 import os
 
+import pymysql
 from invoke import Collection
 
 from supervisr._tasks import dev, supervisr
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
 os.environ.setdefault("SUPERVISR_LOCAL_SETTINGS", "supervisr.local_settings")
+
+pymysql.install_as_MySQLdb()
 
 # pylint: disable=invalid-name
 namespace = Collection()

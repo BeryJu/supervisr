@@ -8,10 +8,10 @@ from django.db import migrations
 def create_settings(apps, schema_editor):
     Setting = apps.get_model('core', 'Setting')
     settings = {
-        'banner:enabled': False,
-        'banner:message': '',
-        'banner:level': 'info',
-        'branding:icon': '',
+        'core:banner:enabled': False,
+        'core:banner:message': '',
+        'core:banner:level': 'info',
+        'core:branding:icon': '',
     }
     for key, value in settings.items():
         Setting.objects.get_or_create(
