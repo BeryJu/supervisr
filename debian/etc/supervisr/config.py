@@ -28,4 +28,7 @@ DATABASES = {
     'default': db_settings_from_dbconfig(path.join(LOCAL_BASE, 'database-config')),
 }
 
-import_dir(path.join(LOCAL_BASE, 'conf.d'), lambda module: globals()[key] = value if not key.startswith('__') and not key.endswith('__') for key, value in module.__dict__.items())
+for module in import_dir(path.join(LOCAL_BASE, 'conf.d')):
+    for key, value in module.__dict__.items():
+        if not key.startswith('__') and not key.endswith('__'):
+            globals()[key] = value

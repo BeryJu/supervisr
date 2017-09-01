@@ -2,11 +2,11 @@
 Supervisr Core utils
 """
 
-import importlib.util
 import logging
 import socket
 from glob import glob
 from importlib import import_module
+from importlib.util import module_from_spec, spec_from_file_location
 from time import time as timestamp
 from uuid import uuid4
 
@@ -195,12 +195,13 @@ def read_simple(path, mode='r'):
     with open(path, mode) as file:
         return file.read()
 
-def import_dir(directory, callback):
+def import_dir(directory):
     """
     Import every file in a direct and call callback for each
     """
     files = glob(directory+'/*.py', recursive=True)
+    modules = []
     for file in files:
-        spec = importlib.util.spec_from_file_location("", file)
-        module = importlib.util.module_from_spec(spec)
-        callback(module)
+        spec = spec_from_file_location("", file)
+        modules.append(module_from_spec(spec))
+    return modules
