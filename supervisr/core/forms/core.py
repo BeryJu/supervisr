@@ -34,9 +34,6 @@ def check_password(form, check_filter=True):
     if form.fields['password'].required is False and \
         form.fields['password_rep'].required is False:
         return password_a
-    # Error if one password is empty.
-    if not password_b:
-        raise forms.ValidationError(_("You must confirm your password"))
     if password_a != password_b:
         raise forms.ValidationError(_("Your passwords do not match"))
     # Check if password is strong enough

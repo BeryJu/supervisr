@@ -87,7 +87,7 @@ def login(req):
                 LOGGER.info("Failed to log in %s", form.cleaned_data.get('email'))
                 return redirect(reverse('account-login'))
         else:
-            print("Form invalid")
+            LOGGER.info("Form invalid")
     else:
         form = LoginForm()
     return render(req, 'account/login.html', {

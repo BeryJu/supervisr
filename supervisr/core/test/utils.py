@@ -23,7 +23,8 @@ def test_request(view,
                  session_data=None,
                  url_kwargs=None,
                  req_kwargs=None,
-                 headers=None):
+                 headers=None,
+                 just_request=False):
     """
     Wrapper to make test requests easier
     """
@@ -59,6 +60,9 @@ def test_request(view,
     elif isinstance(user, int):
         user = User.objects.get(pk=user)
     req.user = user
+
+    if just_request:
+        return req
 
     try:
         return view(req, **url_kwargs)
