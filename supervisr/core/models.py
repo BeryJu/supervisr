@@ -504,6 +504,9 @@ class BaseCredential(CreatedUpdatedModel, CastableModel):
         """
         return 'BaseCredential'
 
+    def __str__(self):
+        return "%s %s" % (self.cast().type(), self.name)
+
     class Meta:
         unique_together = (('owner', 'name'),)
 

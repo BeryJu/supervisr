@@ -51,8 +51,6 @@ import sys
 
 from django.contrib import messages
 
-SYSLOG_HOST = '127.0.0.1'
-SYSLOG_PORT = 514
 
 # WARNING!
 # This can only be changed before the first `migrate` is run
@@ -222,6 +220,11 @@ LOG_LEVEL_FILE = 'DEBUG'
 LOG_LEVEL_CONSOLE = 'DEBUG'
 LOG_FILE = '/dev/null'
 
+LOG_SYSLOG_HOST = '127.0.0.1'
+LOG_SYSLOG_PORT = 514
+
+LOG_GITLAB_API_KEY = None
+
 sys.path.append('/etc/supervisr')
 
 def load_local_settings(mod):
@@ -269,11 +272,16 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
             'include_html': True,
         },
+        'gitlab': {
+            'level': 'ERROR',
+            'class': 'supervisr.core.error.gitlab.GitlabHandler',
+            'api_key': LOG_GITLAB_API_KEY,
+        },
         'syslog': {
             'level': LOG_LEVEL_FILE,
             'class': 'logging.handlers.SysLogHandler',
             'formatter': 'syslog',
-            'address': (SYSLOG_HOST, SYSLOG_PORT)
+            'address': (LOG_SYSLOG_HOST, LOG_SYSLOG_PORT)
         },
         'file': {
             'level': LOG_LEVEL_FILE,
@@ -283,12 +291,12 @@ LOGGING = {
     },
     'loggers': {
         'supervisr': {
-            'handlers': ['console', 'syslog', 'mail_admins', 'file'],
+            'handlers': ['console', 'syslog', 'mail_admins', 'file', 'gitlab'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'django': {
-            'handlers': ['console', 'syslog', 'mail_admins', 'file'],
+            'handlers': ['console', 'syslog', 'mail_admins', 'file', 'gitlab'],
             'level': 'INFO',
             'propagate': True,
         },
