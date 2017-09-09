@@ -7,9 +7,9 @@ import os
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from ..forms.account import SignupForm
-from ..views import account, user
-from .utils import test_request
+from supervisr.core.forms.account import SignupForm
+from supervisr.core.test.utils import test_request
+from supervisr.core.views import account, user
 
 
 class TestUser(TestCase):

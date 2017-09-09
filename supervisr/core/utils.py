@@ -2,6 +2,7 @@
 Supervisr Core utils
 """
 
+import base64
 import logging
 import socket
 from glob import glob
@@ -113,7 +114,7 @@ def get_app_labels():
             app_cache.append(config.label)
         cache.set(cache_key, app_cache, 1000)
         return app_cache
-    return cache.get(cache_key)
+    return cache.get(cache_key) # pragma: no cover
 
 def time(statistic_key):
     """
@@ -205,3 +206,15 @@ def import_dir(directory):
         spec = spec_from_file_location("", file)
         modules.append(module_from_spec(spec))
     return modules
+
+def b64encode(*args):
+    """
+    String wrapper around b64encode to removie binary fuckery
+    """
+    return base64.b64encode(str.encode(''.join(args))).decode()
+
+def b64decode(*args):
+    """
+    String wrapper around b64decode to remove binary fuckery
+    """
+    return b64decode(''.join(args)).decode()

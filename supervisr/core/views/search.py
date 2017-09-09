@@ -5,6 +5,7 @@ Supervisr Core Common Views
 from django.apps import apps
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.db.utils import ConnectionDoesNotExist
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
 
@@ -48,7 +49,7 @@ def search(req):
                 m_query = Q()
                 for field in model._meta.sv_search_fields:
                     m_query = m_query | Q(**{
-                        '%s__icontains' % field: query
+                        '%s__contains' % field: query
                     })
                 matching = model.objects.filter(m_query)
                 if matching.exists():
@@ -63,11 +64,14 @@ def search(req):
     results = {}
     for app in apps.get_app_configs():
         app_result = None
-        if getattr(app, 'custom_search', None):
-            app_result = app.custom_search(query, req)
-        else:
+        try:
+            # if getattr(app, 'custom_search', None):
+            #     app_result = app.custom_search(query, req)
+            # else:
             app_result = default_app_handler(app, query, req)
-        if app_result is not None:
-            results[app.verbose_name] = app_result
+            if app_result is not None:
+                results[app.verbose_name] = app_result
+        except ConnectionDoesNotExist:
+            pass
 
     return render(req, 'search/search.html', {'results': results})

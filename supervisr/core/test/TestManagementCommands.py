@@ -5,7 +5,7 @@ Supervisr Core ManagementCommands Test
 from django.core.management import call_command
 from django.test import TestCase
 
-from ..models import Setting
+from supervisr.core.models import Setting
 
 
 class TestManagementCommandss(TestCase):

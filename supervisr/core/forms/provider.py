@@ -10,7 +10,8 @@ from django.http import Http404
 from django.utils.translation import ugettext as _
 
 from supervisr.core.models import (APIKeyCredential, ProviderInstance,
-                                   UserPasswordCredential)
+                                   UserPasswordCredential,
+                                   UserPasswordServerCredential)
 from supervisr.core.providers.internal import InternalCredential
 from supervisr.core.utils import path_to_class
 
@@ -48,7 +49,6 @@ class ProviderForm(ModelForm):
 
         model = ProviderInstance
         fields = ['name', 'provider_path', 'credentials']
-        # exclude = ['icon', '']
 
 class CredentialForm(forms.Form):
     """
@@ -109,4 +109,20 @@ class NewCredentialUserPasswordForm(ModelForm):
             'name': forms.TextInput(),
             'username': forms.TextInput(),
             'password': forms.TextInput(),
+        }
+
+class NewCredentialUserPasswordServerForm(ModelForm):
+    """
+    For to input credential details
+    """
+    title = 'User, Password and Server'
+
+    class Meta(NewCredentialDetailMeta):
+
+        model = UserPasswordServerCredential
+        widgets = {
+            'name': forms.TextInput(),
+            'username': forms.TextInput(),
+            'password': forms.TextInput(),
+            'server': forms.TextInput(),
         }

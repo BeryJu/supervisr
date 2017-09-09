@@ -46,4 +46,4 @@ def supervisr_dyn_user(context):
         sorted_list = sorted(app_list, key=lambda x: x['title'])
         cache.set(key, sorted_list, 1000)
         return sorted_list
-    return cache.get(key)
+    return cache.get(key) # pragma: no cover

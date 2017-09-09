@@ -7,8 +7,8 @@ import os
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from ..models import Event, Product, UserProductRelationship
-from ..signals import SIG_USER_POST_SIGN_UP
+from supervisr.core.models import Event, Product, UserProductRelationship
+from supervisr.core.signals import SIG_USER_POST_SIGN_UP
 
 
 class TestProduct(TestCase):

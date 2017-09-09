@@ -7,8 +7,8 @@ from django.contrib.auth.models import User
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
-from ..models import Product, get_system_user
-from ..views import product
+from supervisr.core.models import Product, get_system_user
+from supervisr.core.views import product
 
 
 class TestProductViews(TestCase):

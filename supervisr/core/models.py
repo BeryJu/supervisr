@@ -314,7 +314,6 @@ class ProductExtension(CreatedUpdatedModel, CastableModel):
     def __str__(self):
         return "ProductExtension %s" % self.extension_name
 
-
 class Product(CreatedUpdatedModel, CastableModel):
     """
     Information about the Main Product itself. This instances of this classes
@@ -394,7 +393,7 @@ class Domain(Product):
     class Meta:
 
         default_related_name = 'domains'
-        sv_search_fields = ['name', 'provider__name']
+        sv_search_fields = ['domain', 'provider__name']
 
 class Event(CreatedUpdatedModel):
     """
@@ -538,6 +537,22 @@ class UserPasswordCredential(BaseCredential):
         Return type
         """
         return _('Username and Password')
+
+class UserPasswordServerCredential(BaseCredential):
+    """
+    UserPasswordCredential which also holds a server
+    """
+    username = models.TextField()
+    password = fields.EncryptedField()
+    server = models.CharField(max_length=255)
+    form = 'supervisr.core.forms.provider.NewCredentialUserPasswordServerForm'
+
+    @staticmethod
+    def type():
+        """
+        Return type
+        """
+        return _("Username, Password and Server")
 
 class ProviderInstance(Product):
     """

@@ -2,17 +2,19 @@
 Supervisr Core Decorator Test
 """
 
-
 import os
 import time
 
-from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import AnonymousUser, User
+from django.http import HttpResponse
 from django.test import TestCase
 
-from ..decorators import REAUTH_KEY, REAUTH_MARGIN, ifapp, reauth_required
-from ..models import Setting, get_system_user
-from ..views import account, common
-from .utils import test_request
+from supervisr.core.decorators import (REAUTH_KEY, REAUTH_MARGIN, ifapp,
+                                       logged_in_or_basicauth, reauth_required)
+from supervisr.core.models import Setting, get_system_user
+from supervisr.core.test.utils import test_request
+from supervisr.core.utils import b64encode
+from supervisr.core.views import account, common
 
 
 class TestDecorators(TestCase):
@@ -69,7 +71,38 @@ class TestDecorators(TestCase):
             """
             Only run this function if app '_invalid-name' is present
             """
-            pass
+            pass # pragma: no cover
 
         self.assertTrue(test_core())
         self.assertEqual(test_invalid(), None)
+
+    def test_basic_auth(self):
+        """
+        test http basic auth
+        """
+        @logged_in_or_basicauth(realm='testrealm')
+        # pylint: disable=unused-argument
+        def _view(request):
+            """
+            user has gotten through so everything's fine
+            """
+            return HttpResponse(status=204)
+
+        user = User.objects.get(pk=get_system_user())
+        user.is_active = True
+        user.set_password('temppw')
+        user.save()
+
+        headers = {
+            'HTTP_AUTHORIZATION': 'Basic %s' % b64encode(':'.join([user.username, 'temppw']))
+        }
+
+        # Test already logged in
+        self.assertEqual(test_request(_view, user=user).status_code, 204)
+        # Test header
+        self.assertEqual(test_request(_view, headers=headers).status_code, 204)
+        # Test nothing
+        res_401 = test_request(_view)
+        self.assertEqual(res_401.status_code, 401)
+        self.assertIn('www-authenticate', res_401)
+        self.assertIn('testrealm', res_401['www-authenticate'])
