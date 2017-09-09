@@ -8,11 +8,12 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from ..forms.account import ChangePasswordForm, LoginForm, SignupForm
-from ..models import AccountConfirmation, get_system_user
-from ..signals import SIG_USER_RESEND_CONFIRM
-from ..views import account, common
-from .utils import test_request
+from supervisr.core.forms.account import (ChangePasswordForm, LoginForm,
+                                          SignupForm)
+from supervisr.core.models import AccountConfirmation, get_system_user
+from supervisr.core.signals import SIG_USER_RESEND_CONFIRM
+from supervisr.core.test.utils import test_request
+from supervisr.core.views import account, common
 
 
 class TestAccount(TestCase):
@@ -22,10 +23,11 @@ class TestAccount(TestCase):
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
+        # pylint: disable=duplicate-code
         self.signup_data = {
-            'email': 'test@test.test',
-            'username': 'beryjuorg',
             'name': 'Test user',
+            'username': 'beryjuorg',
+            'email': 'test@test.test',
             'password': 'B3ryju0rg!',
             'password_rep': 'B3ryju0rg!',
             'tos_accept': True,
@@ -42,20 +44,6 @@ class TestAccount(TestCase):
             'password': 'B4ryju0rg!',
             'password_rep': 'B4ryju0rg!',
         }
-
-    def test_signup_form(self):
-        """
-        Test SignupForm's validation
-        """
-        form = SignupForm(data=self.signup_data)
-        self.assertTrue(form.is_valid())
-
-    def test_login_form(self):
-        """
-        Test LoginForm's validation
-        """
-        form = LoginForm(data=self.login_data)
-        self.assertTrue(form.is_valid())
 
     def test_signup_view(self):
         """
@@ -138,7 +126,38 @@ class TestAccount(TestCase):
                            req_kwargs=form.cleaned_data)
         self.assertEqual(res.status_code, 302)
 
-    def test_change_password_init_view(self):
+    def test_change_password(self):
+        """
+        Test account.change_password
+        """
+        signup_form = SignupForm(self.signup_data)
+        self.assertTrue(signup_form.is_valid())
+
+        signup_res = test_request(account.signup,
+                                  method='POST',
+                                  req_kwargs=signup_form.cleaned_data)
+        self.assertEqual(signup_res.status_code, 302)
+
+        # Manually activate the account so we can log in
+        user = User.objects.filter(email=self.signup_data['email']).first()
+        user.is_active = True
+        user.save()
+
+        form = ChangePasswordForm(self.change_data)
+        self.assertTrue(form.is_valid())
+
+        res = test_request(account.change_password,
+                           user=user,
+                           method='POST',
+                           req_kwargs=form.cleaned_data)
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(res.url, reverse('common-index'))
+
+        res = test_request(account.change_password,
+                           user=user,)
+        self.assertEqual(res.status_code, 200)
+
+    def test_reset_password_init_view(self):
         """
         Test account.reset_password_init view POST (Anonymous)
         """
@@ -213,40 +232,3 @@ class TestAccount(TestCase):
 
         self.assertEqual(reset_res.status_code, 302)
         self.assertEqual(reset_res.url, reverse(common.index))
-
-    def test_change_password(self):
-        """
-        Test account.change_password view POST
-        """
-        signup_form = SignupForm(self.signup_data)
-        self.assertTrue(signup_form.is_valid())
-
-        signup_res = test_request(account.signup,
-                                  method='POST',
-                                  req_kwargs=signup_form.cleaned_data)
-        self.assertEqual(signup_res.status_code, 302)
-
-        # Manually activate the account so we can log in
-        user = User.objects.filter(email=self.signup_data['email']).first()
-        # activate_res = test_request(account.confirm,
-        #                             url_kwargs={
-        #                                 'uuid': AccountConfirmation.objects.
-        #                                         filter(user=user).first().pk
-        #                             })
-        # self.assertEqual(activate_res.status_code, 302)
-        # self.assertEqual(activate_res.url, reverse(account.login))
-
-        # Test form rendering
-        self.assertEqual(test_request(account.change_password, user=user).status_code, 200)
-
-        # Test actual password changing
-        change_form = ChangePasswordForm(self.change_data)
-        self.assertTrue(change_form.is_valid())
-
-    #     change_res = test_request(account.change_password,
-    #                               method='POST',
-    #                               user=user,
-    #                               req_kwargs=self.change_data)
-
-    #     self.assertEqual(change_res.status_code, 302)
-    #     self.assertEqual(change_res.url, reverse(common.index))

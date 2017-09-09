@@ -31,7 +31,7 @@ class SupervisrOAuth2Client(OAuth2Client):
                                     token=raw_token, headers=headers)
             response.raise_for_status()
         except RequestException as exc:
-            LOGGER.error('Unable to fetch user profile: %s', exc)
+            LOGGER.warning('Unable to fetch user profile: %s', exc)
             return None
         else:
             return response.json() or response.text

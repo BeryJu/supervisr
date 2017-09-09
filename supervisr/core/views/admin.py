@@ -154,4 +154,7 @@ def debug(req):
     """
     Show some misc debug buttons
     """
+    if req.method == 'POST':
+        if 'raise_error' in req.POST:
+            raise RuntimeError('test error')
     return render(req, '_admin/debug.html')

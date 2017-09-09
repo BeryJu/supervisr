@@ -87,7 +87,7 @@ def login(req):
                 LOGGER.info("Failed to log in %s", form.cleaned_data.get('email'))
                 return redirect(reverse('account-login'))
         else:
-            print("Form invalid")
+            LOGGER.info("Form invalid")
     else:
         form = LoginForm()
     return render(req, 'account/login.html', {
@@ -139,7 +139,7 @@ def signup(req):
                     user=new_user,
                     req=req)
             except SignalException as exception:
-                LOGGER.error("Failed to sign up user %s", exception)
+                LOGGER.warning("Failed to sign up user %s", exception)
                 new_up.delete()
                 new_user.delete()
                 messages.error(req, _("Failed to sign up."))
@@ -184,7 +184,7 @@ def change_password(req):
                 messages.success(req, _("Successfully changed password!"))
             except SignalException as exception:
                 messages.error(req, _("Failed to change password"))
-                LOGGER.error(exception)
+                LOGGER.warning(exception)
             return redirect(reverse('common-index'))
     else:
         form = ChangePasswordForm()
@@ -303,7 +303,7 @@ def reset_password_confirm(req, uuid):
                     pass_conf.confirmed = True
                     pass_conf.save()
                 except SignalException as exception:
-                    LOGGER.error(exception)
+                    LOGGER.warning(exception)
                     messages.error(req, _("Failed to reset Password. Please try again later."))
             else:
                 raise Http404

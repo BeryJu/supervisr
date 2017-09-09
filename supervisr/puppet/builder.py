@@ -100,7 +100,7 @@ class ReleaseBuilder(object):
             json.loads(body)
             return True
         except ValueError:
-            LOGGER.error(body)
+            LOGGER.warning(body)
             raise
 
     @time(statistic_key='puppet.builder.import_deps')

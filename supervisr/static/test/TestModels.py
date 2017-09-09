@@ -37,3 +37,14 @@ class TestModels(TestCase):
             author=User.objects.get(pk=get_system_user()))
         fpage.update_from_file()
         self.assertEqual(fpage.content, self.content)
+
+    def test_file_page_update_dupe(self):
+        """
+        Update file page twice
+        """
+        fpage = FilePage.objects.create(
+            path=self.filename,
+            author=User.objects.get(pk=get_system_user()))
+        fpage.update_from_file()
+        fpage.update_from_file()
+        self.assertEqual(fpage.content, self.content)

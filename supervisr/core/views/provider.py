@@ -24,8 +24,7 @@ def instance_index(req):
     """
     Show a n overview over all provider instances
     """
-    user_providers = ProviderInstance.objects.filter(
-        userproductrelationship__user__in=[req.user])
+    user_providers = ProviderInstance.objects.filter(users__in=[req.user])
     return render(req, 'provider/instance-index.html', {'providers': user_providers})
 
 PROVIDER_TEMPLATES = {
@@ -91,8 +90,7 @@ def instance_edit(req, uuid):
     """
     Edit Instance
     """
-    inst = ProviderInstance.objects.filter(uuid=uuid,
-                                           userproductrelationship__user__in=[req.user])
+    inst = ProviderInstance.objects.filter(uuid=uuid, users__in=[req.user])
     if not inst.exists():
         raise Http404
     r_inst = inst.first()
@@ -101,28 +99,23 @@ def instance_edit(req, uuid):
     creds = BaseCredential.objects.filter(owner=req.user)
     form_providers = [('%s.%s' % (s.__module__, s.__class__.__name__),
                        '%s (%s)' % (s.get_meta.ui_name, s.__class__.__name__)) for s in providers]
-    form_credentials = [(c.name, '%s: %s' % (c.cast().type(), c.name)) for c in creds]
 
     if req.method == 'POST':
-        form = ProviderForm(req.POST)
+        form = ProviderForm(req.POST, instance=r_inst)
         form.request = req
         form.fields['provider_path'].choices = form_providers
-        form.fields['credentials'].choices = form_credentials
+        form.fields['credentials'].queryset = creds
 
         if form.is_valid():
-
+            form.save()
             messages.success(req, _('Successfully edited Instance'))
             return redirect(reverse('instance-index'))
         messages.error(req, _('Invalid Instance'))
     else:
-        form = ProviderForm(initial={
-            'name': r_inst.name,
-            'provider_path': r_inst.provider_path,
-            'credentials': r_inst.credentials,
-            })
+        form = ProviderForm(instance=r_inst)
         form.request = req
         form.fields['provider_path'].choices = form_providers
-        form.fields['credentials'].choices = form_credentials
+        form.fields['credentials'].queryset = creds
 
     return render(req, 'core/generic_form_modal.html', {
         'form': form,

@@ -13,7 +13,7 @@ import pkg_resources
 from django.apps import AppConfig
 from django.conf import settings
 from django.core.cache import cache
-from django.db.utils import OperationalError
+from django.db.utils import OperationalError, ProgrammingError
 from pip.req import parse_requirements
 
 from supervisr.core.thread.background import BackgroundThread
@@ -55,14 +55,15 @@ class SupervisrAppConfig(AppConfig):
         try:
             from supervisr.core.models import Setting
             items = self.ensure_settings()
+            namespace = '.'.join(self.__module__.split('.')[:-1])
             for key, defv in items.items():
                 Setting.objects.get_or_create(
                     key=key,
-                    namespace=self.name,
+                    namespace=namespace,
                     defaults={'value': defv})
             if items:
                 LOGGER.info("Ensured %d settings", len(items))
-        except OperationalError:
+        except (OperationalError, ProgrammingError):
             pass
 
     def ensure_settings(self):
@@ -153,8 +154,10 @@ class SupervisrCoreConfig(SupervisrAppConfig):
     def ready(self):
         # Read this commit's shortened hash if git is in the path
         try:
+            fnull = open(os.devnull, 'w')
             current_hash = subprocess.Popen(['git', 'log', '--pretty=format:%h', '-n 1'],
-                                            stdout=subprocess.PIPE).communicate()[0]
+                                            stdout=subprocess.PIPE,
+                                            stderr=fnull).communicate()[0]
             settings.VERSION_HASH = current_hash
         except (OSError, IOError):
             settings.VERSION_HASH = b'dev'

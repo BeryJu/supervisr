@@ -52,7 +52,7 @@ class SignupForm(InlineForm):
         """
         username = self.cleaned_data.get('username')
         if UserProfile.objects.filter(username=username).exists():
-            LOGGER.error("Username %s already exists", username)
+            LOGGER.warning("Username %s already exists", username)
             raise ValidationError(_("Username alrexy exists"))
         return username
 

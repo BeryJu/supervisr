@@ -28,7 +28,7 @@ class TwitterOAuthClient(OAuthClient):
                                     token=raw_token)
             response.raise_for_status()
         except RequestException as exc:
-            LOGGER.error('Unable to fetch user profile: %s', exc)
+            LOGGER.warning('Unable to fetch user profile: %s', exc)
             return None
         else:
             return response.json() or response.text

@@ -11,8 +11,8 @@ ADMINS = [
 EMAIL_HOST = 'mx1.domain.tld'
 EMAIL_FROM = 'Supervisr <supervisr@domain.tld>'
 
-#SYSLOG_HOST = '172.16.1.30'
-#SYSLOG_PORT = 12239
+#LOG_SYSLOG_HOST = '172.16.1.30'
+#LOG_SYSLOG_PORT = 12239
 
 SECRET_KEY = ''
 
@@ -20,6 +20,9 @@ CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
     # List all domains that are going to use OAuth2
 )
+
+# Set this to your GitLab API key to directly report errors to gitlab
+LOG_GITLAB_API_KEY = None
 
 DATABASES = {
     'default': {

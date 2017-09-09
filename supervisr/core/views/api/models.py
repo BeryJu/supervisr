@@ -142,6 +142,7 @@ class ModelAPI(View):
                 rev_match = field.target_field.model.objects.filter(pk=data[field.name])
                 if not rev_match.exists():
                     raise Http404
+                assert len(rev_match) == 1
                 data[field.name] = rev_match.first()
         return data
 
@@ -183,6 +184,7 @@ class ModelAPI(View):
         inst = ModelAPI.user_filter(self.model.objects.filter(pk=data['pk']), request.user)
         if not inst.exists():
             raise Http404
+        assert len(inst) == 1
         r_inst = inst.first()
         # Make sure only allowed fields are present
         update_data = ModelAPI.sanitize_data(data, self.editable_fields)
@@ -206,6 +208,7 @@ class ModelAPI(View):
         inst = ModelAPI.user_filter(self.model.objects.filter(pk=data['pk']), request.user)
         if not inst.exists():
             raise Http404
+        assert len(inst) == 1
         r_inst = inst.first()
         r_inst.delete()
         return {'success': True}

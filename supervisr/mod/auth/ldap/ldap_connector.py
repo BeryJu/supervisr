@@ -164,7 +164,7 @@ class LDAPConnector(object):
         except LDAPInvalidCredentialsResult as exception:
             LOGGER.debug("User '%s' failed to login (Wrong credentials)", user_dn)
         except LDAPException as exception:
-            LOGGER.error(exception)
+            LOGGER.warning(exception)
         return False
 
     def is_email_used(self, mail):
@@ -204,7 +204,7 @@ class LDAPConnector(object):
         try:
             self.con.add(user_dn, attributes=attrs)
         except LDAPException as exception:
-            LOGGER.error("Failed to create user ('%s'), saved to DB", exception)
+            LOGGER.warning("Failed to create user ('%s'), saved to DB", exception)
             LDAPConnector.handle_ldap_error(user_dn, LDAPModification.ACTION_ADD, attrs)
         LOGGER.info("Signed up user %s", user.email)
         return self.change_password(raw_password, mail=user.email)
@@ -222,7 +222,7 @@ class LDAPConnector(object):
         try:
             self.con.modify(user_dn, diff)
         except LDAPException as exception:
-            LOGGER.error("Failed to modify %s ('%s'), saved to DB", user_dn, exception)
+            LOGGER.warning("Failed to modify %s ('%s'), saved to DB", user_dn, exception)
             LDAPConnector.handle_ldap_error(user_dn, LDAPModification.ACTION_MODIFY, diff)
         LOGGER.debug("moddified account '%s' [%s]", user_dn, ','.join(diff.keys()))
         return 'result' in self.con.result and self.con.result['result'] == 0

@@ -10,3 +10,4 @@ pyyaml
 passlib
 Pillow
 schedule
+python-gitlab

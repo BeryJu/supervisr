@@ -42,9 +42,9 @@ class TestManagementCommandss(TestCase):
         """
         Test PuppetForge import
         """
-        self.assertEqual(call_command_ret('sv_puppet_import', '--module', 'puppetlabs-ntp'),
+        self.assertEqual(call_command_ret('sv_puppet_import', '--module', 'beryju-windows_oem'),
                          'Done!\n')
-        self.assertEqual(call_command_ret('sv_puppet_import', '--module', 'puppetlabs-ntp'),
+        self.assertEqual(call_command_ret('sv_puppet_import', '--module', 'beryju-windows_oem'),
                          'Done!\n')
 
     @expectedFailure

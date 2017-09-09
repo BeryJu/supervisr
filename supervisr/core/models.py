@@ -487,7 +487,7 @@ class BaseCredential(CreatedUpdatedModel, CastableModel):
     Basic set of credentials
     """
     owner = models.ForeignKey(User)
-    name = models.TextField()
+    name = models.CharField(max_length=255)
     form = '' # form class which is used for setup
 
     @staticmethod
@@ -503,6 +503,9 @@ class BaseCredential(CreatedUpdatedModel, CastableModel):
         Return type
         """
         return 'BaseCredential'
+
+    def __str__(self):
+        return "%s %s" % (self.cast().type(), self.name)
 
     class Meta:
         unique_together = (('owner', 'name'),)

@@ -42,9 +42,12 @@ class SupervisrModStatGraphiteConfig(SupervisrAppConfig):
             return send
 
         if Setting.get('enabled', default='False') != 'False':
-            client = GraphiteClient()
-            client.connect()
-            SCHEDULER.every(10).seconds.do(send_stats(client, socket.gethostname()))
+            try:
+                client = GraphiteClient()
+                client.connect()
+                SCHEDULER.every(10).seconds.do(send_stats(client, socket.gethostname()))
+            except (TimeoutError, ConnectionError):
+                LOGGER.warning("Failed to connect to graphite server '%s'.", Setting.get('host'))
 
     def ensure_settings(self):
         return {

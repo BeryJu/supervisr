@@ -9,14 +9,14 @@ from django.forms import ModelForm
 from django.http import Http404
 from django.utils.translation import ugettext as _
 
-from supervisr.core.models import (APIKeyCredential, BaseCredential,
+from supervisr.core.models import (APIKeyCredential, ProviderInstance,
                                    UserPasswordCredential)
 from supervisr.core.providers.internal import InternalCredential
 from supervisr.core.utils import path_to_class
 
 LOGGER = logging.getLogger(__name__)
 
-class ProviderForm(forms.Form):
+class ProviderForm(ModelForm):
     """
     Form create/edit a new Provider
     """
@@ -25,7 +25,7 @@ class ProviderForm(forms.Form):
 
     name = forms.CharField(required=True, label=_('Instance Name'))
     provider_path = forms.ChoiceField(choices=[], required=True, label=_('Provider'))
-    credentials = forms.ChoiceField(choices=[], required=True, label=_('Credentials'))
+    credentials = forms.ModelChoiceField(queryset=None, required=True, label=_('Credentials'))
 
     def clean_credentials(self):
         """
@@ -35,16 +35,20 @@ class ProviderForm(forms.Form):
         # also check in form if class exists and is subclass of BaseProvider
         _class = path_to_class(self.cleaned_data.get('provider_path'))
         # Get credentials
-        creds = BaseCredential.objects.filter(name=self.cleaned_data.get('credentials'),
-                                              owner=self.request.user)
-        if not creds.exists():
+        if self.cleaned_data.get('credentials').owner != self.request.user:
             raise Http404
-        r_creds = creds.first().cast()
+        r_creds = self.cleaned_data.get('credentials').cast()
         # Check if credentials work with provider
         prov_inst = _class(r_creds)
         LOGGER.info("About to provider.check_credentials")
         prov_inst.check_credentials(r_creds)
         return self.cleaned_data.get('credentials')
+
+    class Meta:
+
+        model = ProviderInstance
+        fields = ['name', 'provider_path', 'credentials']
+        # exclude = ['icon', '']
 
 class CredentialForm(forms.Form):
     """
