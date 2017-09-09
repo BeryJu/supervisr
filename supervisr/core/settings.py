@@ -51,7 +51,6 @@ import sys
 
 from django.contrib import messages
 
-
 # WARNING!
 # This can only be changed before the first `migrate` is run
 # If you change this afterwards, it may cause serious damage!
