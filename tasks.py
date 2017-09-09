@@ -16,8 +16,6 @@ except ImportError:
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
 os.environ.setdefault("SUPERVISR_LOCAL_SETTINGS", "supervisr.local_settings")
 
-pymysql.install_as_MySQLdb()
-
 # pylint: disable=invalid-name
 namespace = Collection()
 namespace.add_collection(Collection.from_module(supervisr))
