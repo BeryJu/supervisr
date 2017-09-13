@@ -9,11 +9,11 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.core.forms.domain import DomainForm
+from supervisr.core.forms.domains import DomainForm
 from supervisr.core.models import (Domain, ProviderInstance,
                                    UserProductRelationship)
 from supervisr.core.providers.base import get_providers
-from supervisr.core.views.wizard import BaseWizardView
+from supervisr.core.views.wizards import BaseWizardView
 
 
 @login_required

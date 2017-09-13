@@ -273,7 +273,7 @@ LOGGING = {
         },
         'gitlab': {
             'level': 'ERROR',
-            'class': 'supervisr.core.error.gitlab.GitlabHandler',
+            'class': 'supervisr.core.errors.gitlab.GitlabHandler',
             'api_key': LOG_GITLAB_API_KEY,
         },
         'syslog': {

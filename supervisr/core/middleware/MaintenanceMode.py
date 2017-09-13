@@ -18,6 +18,7 @@ def maintenance_mode(get_response):
         """
         setting = Setting.objects.get_or_create(
             key='maintenancemode',
+            namespace='supervisr.core',
             defaults={'value': 'False'})[0]
         if setting.value_bool is True:
             return render(req, 'common/maintenance.html')

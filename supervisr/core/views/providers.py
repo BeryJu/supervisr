@@ -12,11 +12,11 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.core.forms.provider import CredentialForm, ProviderForm
+from supervisr.core.forms.providers import CredentialForm, ProviderForm
 from supervisr.core.models import (BaseCredential, ProviderInstance,
                                    UserProductRelationship)
 from supervisr.core.providers.base import get_providers
-from supervisr.core.views.wizard import BaseWizardView
+from supervisr.core.views.wizards import BaseWizardView
 
 
 @login_required

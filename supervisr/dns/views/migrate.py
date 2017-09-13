@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
 from supervisr.core.models import (Domain, ProviderInstance,
                                    UserProductRelationship)
 from supervisr.core.providers.base import get_providers
-from supervisr.core.views.wizard import BaseWizardView
+from supervisr.core.views.wizards import BaseWizardView
 from supervisr.dns.forms.migrate import ZoneImportForm, ZoneImportPreviewForm
 from supervisr.dns.forms.zones import ZoneForm
 from supervisr.dns.models import Zone

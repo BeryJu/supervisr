@@ -13,7 +13,7 @@ from django.urls import reverse
 from supervisr.core.middleware.MaintenanceMode import maintenance_mode
 from supervisr.core.middleware.PermanentMessage import permanent_message
 from supervisr.core.models import Setting, get_system_user
-from supervisr.core.views import account, common
+from supervisr.core.views import accounts, common
 
 
 class TestMiddleware(TestCase):
@@ -33,7 +33,7 @@ class TestMiddleware(TestCase):
         Setting.set('maintenancemode', True)
         req = self.factory.get(reverse('account-login'))
         req.user = AnonymousUser()
-        res = maintenance_mode(account.login)(req)
+        res = maintenance_mode(accounts.login)(req)
         self.assertEqual(res.status_code, 200)
 
     def test_maintenance_mode_on(self):
@@ -43,7 +43,7 @@ class TestMiddleware(TestCase):
         Setting.set('maintenancemode', False)
         req = self.factory.get(reverse('account-login'))
         req.user = AnonymousUser()
-        res = maintenance_mode(account.login)(req)
+        res = maintenance_mode(accounts.login)(req)
         self.assertEqual(res.status_code, 200)
 
     def test_permanent_message(self):

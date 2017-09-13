@@ -20,9 +20,9 @@ from django.views.decorators.http import require_GET
 from passlib.hash import sha512_crypt
 
 from ..decorators import anonymous_required
-from ..forms.account import (ChangePasswordForm, LoginForm,
-                             PasswordResetFinishForm, PasswordResetInitForm,
-                             ReauthForm, SignupForm)
+from ..forms.accounts import (ChangePasswordForm, LoginForm,
+                              PasswordResetFinishForm, PasswordResetInitForm,
+                              ReauthForm, SignupForm)
 from ..models import AccountConfirmation, UserProfile, make_username
 from ..signals import (SIG_USER_CHANGE_PASS, SIG_USER_CONFIRM, SIG_USER_LOGIN,
                        SIG_USER_LOGOUT, SIG_USER_PASS_RESET_INIT,

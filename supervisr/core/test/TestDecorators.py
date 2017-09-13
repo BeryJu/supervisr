@@ -14,7 +14,7 @@ from supervisr.core.decorators import (REAUTH_KEY, REAUTH_MARGIN, ifapp,
 from supervisr.core.models import Setting, get_system_user
 from supervisr.core.test.utils import test_request
 from supervisr.core.utils import b64encode
-from supervisr.core.views import account, common
+from supervisr.core.views import accounts, common
 
 
 class TestDecorators(TestCase):
@@ -31,9 +31,9 @@ class TestDecorators(TestCase):
         Test anonymous_required decorator
         """
         # View as AnonymousUser should return 200
-        self.assertEqual(test_request(account.login, user=AnonymousUser()).status_code, 200)
+        self.assertEqual(test_request(accounts.login, user=AnonymousUser()).status_code, 200)
         # As logged in user should redirect to index
-        self.assertEqual(test_request(account.login, user=get_system_user()).status_code, 302)
+        self.assertEqual(test_request(accounts.login, user=get_system_user()).status_code, 302)
 
     def test_reauth_required(self):
         """

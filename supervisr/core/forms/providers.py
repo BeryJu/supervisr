@@ -12,6 +12,7 @@ from django.utils.translation import ugettext as _
 from supervisr.core.models import (APIKeyCredential, ProviderInstance,
                                    UserPasswordCredential,
                                    UserPasswordServerCredential)
+from supervisr.core.providers.base import get_providers
 from supervisr.core.providers.internal import InternalCredential
 from supervisr.core.utils import path_to_class
 
@@ -33,6 +34,9 @@ class ProviderForm(ModelForm):
         Import Provider and check if credentials are compatible
         """
         # Import provider based on form
+        valid_providers = get_providers(path=True)
+        if self.cleaned_data.get('provider_path') not in valid_providers:
+            raise Http404
         # also check in form if class exists and is subclass of BaseProvider
         _class = path_to_class(self.cleaned_data.get('provider_path'))
         # Get credentials

@@ -8,7 +8,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
 
-from supervisr.core.forms.user import EditUserForm, FeedbackForm
+from supervisr.core.forms.users import EditUserForm, FeedbackForm
 from supervisr.core.mailer import send_message
 from supervisr.core.models import Event
 
