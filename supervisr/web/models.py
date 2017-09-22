@@ -12,9 +12,9 @@ class WebDomain(Product):
     Stores information about a Webdomain
     """
 
-    domain_web = models.OneToOneField(Domain)
+    domain_web = models.OneToOneField(Domain, on_delete=models.CASCADE)
     root = models.TextField(default='/')
-    profile = models.ForeignKey(UserProfile)
+    profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     quota = models.BigIntegerField(default=0) # domain quota in MB. 0 == unlimited
     is_php_enabled = models.BooleanField(default=True)
     custom_config = models.TextField(blank=True)

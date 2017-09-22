@@ -7,8 +7,6 @@ from django.core.validators import RegexValidator
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from supervisr.core.forms.core import InlineForm
-
 TFA_CODE_VALIDATOR = RegexValidator(r'^[0-9a-z]{6,8}$',
                                     _('Only alpha-numeric characters are allowed.'))
 
@@ -21,7 +19,7 @@ class PictureWidget(forms.widgets.Widget):
     def render(self, name, value, attrs=None, renderer=None):
         return mark_safe("<img src=\"%s\" />" % value)
 
-class TFAVerifyForm(InlineForm):
+class TFAVerifyForm(forms.Form):
     """
     Simple Form to verify 2FA Code
     """

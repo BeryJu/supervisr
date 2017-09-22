@@ -19,16 +19,20 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_GET
 from passlib.hash import sha512_crypt
 
-from ..decorators import anonymous_required
-from ..forms.accounts import (ChangePasswordForm, LoginForm,
-                              PasswordResetFinishForm, PasswordResetInitForm,
-                              ReauthForm, SignupForm)
-from ..models import AccountConfirmation, UserProfile, make_username
-from ..signals import (SIG_USER_CHANGE_PASS, SIG_USER_CONFIRM, SIG_USER_LOGIN,
-                       SIG_USER_LOGOUT, SIG_USER_PASS_RESET_INIT,
-                       SIG_USER_POST_CHANGE_PASS, SIG_USER_POST_SIGN_UP,
-                       SIG_USER_RESEND_CONFIRM, SIG_USER_SIGN_UP,
-                       SignalException)
+from supervisr.core.decorators import anonymous_required
+from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
+                                           PasswordResetFinishForm,
+                                           PasswordResetInitForm, ReauthForm,
+                                           SignupForm)
+from supervisr.core.models import (AccountConfirmation, UserProfile,
+                                   make_username)
+from supervisr.core.signals import (SIG_USER_CHANGE_PASS, SIG_USER_CONFIRM,
+                                    SIG_USER_LOGIN, SIG_USER_LOGOUT,
+                                    SIG_USER_PASS_RESET_INIT,
+                                    SIG_USER_POST_CHANGE_PASS,
+                                    SIG_USER_POST_SIGN_UP,
+                                    SIG_USER_RESEND_CONFIRM, SIG_USER_SIGN_UP,
+                                    SignalException)
 
 LOGGER = logging.getLogger(__name__)
 

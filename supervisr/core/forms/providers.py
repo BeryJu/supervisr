@@ -5,7 +5,6 @@ Supervisr Core Provider Forms
 import logging
 
 from django import forms
-from django.forms import ModelForm
 from django.http import Http404
 from django.utils.translation import ugettext as _
 
@@ -18,7 +17,7 @@ from supervisr.core.utils import path_to_class
 
 LOGGER = logging.getLogger(__name__)
 
-class ProviderForm(ModelForm):
+class ProviderForm(forms.ModelForm):
     """
     Form create/edit a new Provider
     """
@@ -75,7 +74,7 @@ class NewCredentialDetailMeta:
         'name': forms.TextInput(),
     }
 
-class InternalCredentialForm(ModelForm):
+class InternalCredentialForm(forms.ModelForm):
     """
     Form for basic input details
     """
@@ -86,7 +85,7 @@ class InternalCredentialForm(ModelForm):
 
         model = InternalCredential
 
-class NewCredentialAPIForm(ModelForm):
+class NewCredentialAPIForm(forms.ModelForm):
     """
     Form to input credential details
     """
@@ -100,7 +99,7 @@ class NewCredentialAPIForm(ModelForm):
             'api_key': forms.TextInput(),
         }
 
-class NewCredentialUserPasswordForm(ModelForm):
+class NewCredentialUserPasswordForm(forms.ModelForm):
     """
     For to input credential details
     """
@@ -115,7 +114,7 @@ class NewCredentialUserPasswordForm(ModelForm):
             'password': forms.TextInput(),
         }
 
-class NewCredentialUserPasswordServerForm(ModelForm):
+class NewCredentialUserPasswordServerForm(forms.ModelForm):
     """
     For to input credential details
     """

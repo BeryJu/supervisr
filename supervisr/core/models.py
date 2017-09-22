@@ -123,7 +123,7 @@ class UserProfile(CreatedUpdatedModel):
     """
     Save settings associated with user, since we don't want a custom user Model
     """
-    user = models.OneToOneField(User, primary_key=True)
+    user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
     username = models.TextField()
     crypt6_password = models.CharField(max_length=128, blank=True, default='')
     unix_username = models.CharField(max_length=32, default=get_random_string, editable=False)
@@ -138,10 +138,10 @@ class UserProfile(CreatedUpdatedModel):
 #     """
 #     Save extended information about Groups
 #     """
-#     group = models.OneToOneField(Group, primary_key=True)
+#     group = models.OneToOneField(Group, primary_key=True, on_delete=models.CASCADE)
 #     name = models.TextField()
 #     deletable = models.BooleanField(default=True, editable=False)
-#     organization = models.ForeignKey(Organization)
+#     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
 
 class Setting(CreatedUpdatedModel):
     """
@@ -241,7 +241,7 @@ class AccountConfirmation(CreatedUpdatedModel):
     )
 
     account_confirmation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     expires = models.BigIntegerField(default=expiry_date, editable=False)
     confirmed = models.BooleanField(default=False)
     kind = models.IntegerField(choices=ACCOUNT_CONFIRMATION_KIND, default=0)
@@ -262,8 +262,8 @@ class UserProductRelationship(CreatedUpdatedModel):
     Keeps track of a relationship between a User and a Product, with optional instance informations
     """
     user_product_relationship_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User)
-    product = models.ForeignKey('Product')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
     instance_name = models.TextField(blank=True, null=True)
     expiry_delta = models.BigIntegerField(default=0)
     discount_percent = models.IntegerField(default=0)
@@ -375,7 +375,7 @@ class Domain(Product):
     This is also used for sub domains, hence the is_sub.
     """
     domain = models.CharField(max_length=253, unique=True)
-    provider = models.ForeignKey('ProviderInstance')
+    provider = models.ForeignKey('ProviderInstance', on_delete=models.CASCADE)
     is_sub = models.BooleanField(default=False)
 
     def __str__(self):
@@ -415,7 +415,7 @@ class Event(CreatedUpdatedModel):
     )
 
     event_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     glyph = models.CharField(max_length=200, default='envelope')
     message = models.TextField()
     current = models.BooleanField(default=True)
@@ -424,7 +424,9 @@ class Event(CreatedUpdatedModel):
     action_parmas_json = models.TextField(blank=True)
     create_date = models.DateTimeField(auto_now_add=True)
     closed_date = models.DateTimeField(auto_now=True)
-    invoker = models.ForeignKey(User, default=get_system_user, related_name='events_invoked')
+    invoker = models.ForeignKey(User, default=get_system_user,
+                                related_name='events_invoked',
+                                on_delete=models.CASCADE)
     hidden = models.BooleanField(default=False)
     send_notification = models.BooleanField(default=False)
     remote_ip = models.GenericIPAddressField(default='0.0.0.0')
@@ -485,7 +487,7 @@ class BaseCredential(CreatedUpdatedModel, CastableModel):
     """
     Basic set of credentials
     """
-    owner = models.ForeignKey(User)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     form = '' # form class which is used for setup
 
@@ -560,7 +562,7 @@ class ProviderInstance(Product):
     """
 
     provider_path = models.TextField()
-    credentials = models.ForeignKey('BaseCredential')
+    credentials = models.ForeignKey('BaseCredential', on_delete=models.CASCADE)
 
     @property
     def provider(self):

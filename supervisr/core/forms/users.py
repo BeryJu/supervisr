@@ -6,10 +6,8 @@ Supervisr Core User Forms
 from django import forms
 from django.utils.translation import ugettext as _
 
-from supervisr.core.forms.core import InlineForm
 
-
-class EditUserForm(InlineForm):
+class EditUserForm(forms.Form):
     """
     Form to edit a User
     """
@@ -21,7 +19,7 @@ class EditUserForm(InlineForm):
     unix_username = forms.CharField(label=_('Unix Username'), disabled=True, required=False)
     unix_userid = forms.CharField(label=_('Unix ID'), disabled=True, required=False)
 
-class FeedbackForm(InlineForm):
+class FeedbackForm(forms.Form):
     """
     Form to send feedback
     """

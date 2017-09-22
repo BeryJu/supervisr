@@ -32,7 +32,7 @@ class ProductExtensionSAML2(ProductExtension):
     Associate a SAML2 Remote with a Product
     """
 
-    saml_remote = models.ForeignKey(SAMLRemote)
+    saml_remote = models.ForeignKey(SAMLRemote, on_delete=models.CASCADE)
 
     def __str__(self):
         return "ProductExtenstion SAML2 %s" % self.saml_remote.name

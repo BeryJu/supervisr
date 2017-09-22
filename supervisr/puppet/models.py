@@ -21,7 +21,7 @@ class PuppetModuleRelease(models.Model):
     downloads = models.IntegerField(default=0)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
-    module = models.ForeignKey('PuppetModule')
+    module = models.ForeignKey('PuppetModule', on_delete=models.CASCADE)
 
     readme = models.TextField(blank=True)
     changelog = models.TextField(blank=True)
@@ -89,7 +89,7 @@ class PuppetModule(models.Model):
     downloads = models.IntegerField(default=0)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
-    owner = models.ForeignKey(User)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     supported = models.BooleanField(default=False)
     source_path = models.TextField(default='', blank=True)
 

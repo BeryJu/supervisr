@@ -16,7 +16,7 @@ class StaticPage(CreatedUpdatedModel, CastableModel):
     template = models.TextField(default='static/generic.html')
     title = models.TextField()
     slug = models.SlugField()
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     published = models.BooleanField(default=False)
     listed = models.BooleanField(default=True)
     views = models.BigIntegerField(default=0)
@@ -55,7 +55,7 @@ class ProductPage(StaticPage):
     """
     A Page specific for a product
     """
-    product = models.ForeignKey(Product)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def __str__(self):
         return "ProductPage %s (slug=%s, product=%s)" % (self.title, self.slug, self.product)

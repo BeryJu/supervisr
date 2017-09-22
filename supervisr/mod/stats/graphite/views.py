@@ -24,7 +24,7 @@ def admin_settings(req, mod):
         'host': Setting.get('host'),
         'port': Setting.get('port'),
         'prefix': Setting.get('prefix'),
-        'enabled': Setting.get('enabled'),
+        'enabled': Setting.get('enabled') == 'True',
     }
     if req.method == 'POST':
         form = SettingsForm(req.POST)
