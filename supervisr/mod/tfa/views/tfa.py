@@ -21,7 +21,7 @@ from qrcode.image.svg import SvgPathImage
 
 from supervisr.core.decorators import reauth_required
 from supervisr.core.models import Event
-from supervisr.core.views.wizard import BaseWizardView
+from supervisr.core.views.wizards import BaseWizardView
 
 from ..forms.tfa import TFASetupInitForm, TFASetupStaticForm, TFAVerifyForm
 from ..utils import otpauth_url

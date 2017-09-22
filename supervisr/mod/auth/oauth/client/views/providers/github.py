@@ -16,7 +16,7 @@ class GitHubOAuth2Callback(OAuthCallback):
     """
 
     def get_or_create_user(self, provider, access, info):
-        if 'email' not in info:
+        if 'email' not in info or info['email'] == '':
             raise OAuthClientEmailMissingError()
         user = get_user_model()
         user_data = {

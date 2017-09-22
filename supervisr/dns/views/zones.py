@@ -12,7 +12,7 @@ from django.utils.translation import ugettext as _
 from supervisr.core.models import (Domain, ProviderInstance,
                                    UserProductRelationship)
 from supervisr.core.providers.base import get_providers
-from supervisr.core.views.wizard import BaseWizardView
+from supervisr.core.views.wizards import BaseWizardView
 from supervisr.dns.forms.zones import ZoneForm
 from supervisr.dns.models import Zone
 
@@ -75,7 +75,7 @@ class ZoneNewView(BaseWizardView):
             product=zone,
             user=self.request.user)
         messages.success(self.request, _('DNS Domain successfully created'))
-        return redirect(reverse('supervisr/dns:dns-zones'))
+        return redirect(reverse('supervisr/dns:dns-index'))
 
 @login_required
 def edit(req, zone):
@@ -99,7 +99,7 @@ def edit(req, zone):
         if form.is_valid():
             form.save()
             messages.success(req, _('Successfully edited Zone'))
-            return redirect(reverse('supervisr/dns:dns-zones'))
+            return redirect(reverse('supervisr/dns:dns-index'))
     else:
         form = ZoneForm(instance=r_zone)
         form.fields['provider'].queryset = provider_instance
@@ -124,7 +124,7 @@ def delete(req, zone):
         # User confirmed deletion
         r_zone.delete()
         messages.success(req, _('Zone successfully deleted'))
-        return redirect(reverse('supervisr/dns:dns-zones'))
+        return redirect(reverse('supervisr/dns:dns-index'))
 
     return render(req, 'core/generic_delete.html', {
         'object': 'Zone %s' % r_zone.domain,

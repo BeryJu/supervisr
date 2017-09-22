@@ -2,7 +2,6 @@
 
 {% load supervisr_title %}
 {% load supervisr_setting %}
-{% load crispy_forms_tags %}
 {% load i18n %}
 
 {% block header %}
@@ -20,7 +19,7 @@
       {% trans title %}
     </label>
     <div class="login-group">
-      {% crispy form %}
+      {% include 'blocks/block_form_login.html' with form=form %}
       {% block messages %}
         {% if messages %}
           {% for msg in messages %}

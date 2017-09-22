@@ -15,6 +15,9 @@ from django.test import RequestFactory
 from django.utils import timezone
 from oauth2_provider.models import AccessToken, Application
 
+from supervisr.core.models import ProviderInstance
+from supervisr.core.providers.internal import InternalCredential
+
 
 # pylint: disable=too-many-arguments
 def test_request(view,
@@ -68,6 +71,17 @@ def test_request(view,
         return view(req, **url_kwargs)
     except Http404:
         return HttpResponseNotFound('not found')
+
+def internal_provider(user):
+    """
+    Quickly create an instance of internal Provider
+    """
+    creds = InternalCredential.objects.create(owner=user, name='internal-unittest-%s' % str(user))
+    prov = ProviderInstance.objects.create(
+        credentials=creds,
+        provider_path='supervisr.core.providers.internal.InternalBaseProvider'
+        )
+    return prov, creds
 
 def call_command_ret(*args, **kwargs):
     """

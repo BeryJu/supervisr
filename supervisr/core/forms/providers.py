@@ -5,18 +5,19 @@ Supervisr Core Provider Forms
 import logging
 
 from django import forms
-from django.forms import ModelForm
 from django.http import Http404
 from django.utils.translation import ugettext as _
 
 from supervisr.core.models import (APIKeyCredential, ProviderInstance,
-                                   UserPasswordCredential)
+                                   UserPasswordCredential,
+                                   UserPasswordServerCredential)
+from supervisr.core.providers.base import get_providers
 from supervisr.core.providers.internal import InternalCredential
 from supervisr.core.utils import path_to_class
 
 LOGGER = logging.getLogger(__name__)
 
-class ProviderForm(ModelForm):
+class ProviderForm(forms.ModelForm):
     """
     Form create/edit a new Provider
     """
@@ -32,6 +33,9 @@ class ProviderForm(ModelForm):
         Import Provider and check if credentials are compatible
         """
         # Import provider based on form
+        valid_providers = get_providers(path=True)
+        if self.cleaned_data.get('provider_path') not in valid_providers:
+            raise Http404
         # also check in form if class exists and is subclass of BaseProvider
         _class = path_to_class(self.cleaned_data.get('provider_path'))
         # Get credentials
@@ -48,7 +52,6 @@ class ProviderForm(ModelForm):
 
         model = ProviderInstance
         fields = ['name', 'provider_path', 'credentials']
-        # exclude = ['icon', '']
 
 class CredentialForm(forms.Form):
     """
@@ -71,7 +74,7 @@ class NewCredentialDetailMeta:
         'name': forms.TextInput(),
     }
 
-class InternalCredentialForm(ModelForm):
+class InternalCredentialForm(forms.ModelForm):
     """
     Form for basic input details
     """
@@ -82,7 +85,7 @@ class InternalCredentialForm(ModelForm):
 
         model = InternalCredential
 
-class NewCredentialAPIForm(ModelForm):
+class NewCredentialAPIForm(forms.ModelForm):
     """
     Form to input credential details
     """
@@ -96,7 +99,7 @@ class NewCredentialAPIForm(ModelForm):
             'api_key': forms.TextInput(),
         }
 
-class NewCredentialUserPasswordForm(ModelForm):
+class NewCredentialUserPasswordForm(forms.ModelForm):
     """
     For to input credential details
     """
@@ -109,4 +112,20 @@ class NewCredentialUserPasswordForm(ModelForm):
             'name': forms.TextInput(),
             'username': forms.TextInput(),
             'password': forms.TextInput(),
+        }
+
+class NewCredentialUserPasswordServerForm(forms.ModelForm):
+    """
+    For to input credential details
+    """
+    title = 'User, Password and Server'
+
+    class Meta(NewCredentialDetailMeta):
+
+        model = UserPasswordServerCredential
+        widgets = {
+            'name': forms.TextInput(),
+            'username': forms.TextInput(),
+            'password': forms.TextInput(),
+            'server': forms.TextInput(),
         }

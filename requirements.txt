@@ -2,7 +2,6 @@ django>=1.10.0
 invoke
 cherrypy
 pymysql
-django-crispy-forms>=1.6.1
 django-formtools
 django-recaptcha
 docutils
@@ -20,6 +19,7 @@ ldap3
 pyasn1<=0.3.0
 google-api-python-client
 slumber
+pyvmomi
 psutil
 pycrypto>=2.4
 requests_oauthlib>=0.4.2

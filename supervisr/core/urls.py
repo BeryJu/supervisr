@@ -12,8 +12,8 @@ from django.contrib import admin as admin_django
 from supervisr.core.regex import (DOMAIN_REGEX, EMAIL_REGEX, MOD_REGEX,
                                   UUID_REGEX)
 from supervisr.core.utils import get_apps
-from supervisr.core.views import (account, admin, common, domain, product,
-                                  provider, search, user)
+from supervisr.core.views import (accounts, admin, common, domains, products,
+                                  providers, search, users)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,44 +26,44 @@ urlpatterns = [
     # Account views
     url(r'^$', common.index, name='common-index'),
     url(r'^search/$', search.search, name='search'),
-    url(r'^accounts/login/$', account.login, name='account-login'),
-    url(r'^accounts/login/reauth/$', account.reauth, name='account-reauth'),
-    url(r'^accounts/signup/$', account.signup, name='account-signup'),
-    url(r'^accounts/logout/$', account.logout, name='account-logout'),
-    url(r'^accounts/confirm/(?P<uuid>%s)/$' % UUID_REGEX, account.confirm, name='account-confirm'),
+    url(r'^accounts/login/$', accounts.login, name='account-login'),
+    url(r'^accounts/login/reauth/$', accounts.reauth, name='account-reauth'),
+    url(r'^accounts/signup/$', accounts.signup, name='account-signup'),
+    url(r'^accounts/logout/$', accounts.logout, name='account-logout'),
+    url(r'^accounts/confirm/(?P<uuid>%s)/$' % UUID_REGEX, accounts.confirm, name='account-confirm'),
     url(r'^accounts/confirm/resend/(?P<email>%s)/$' % EMAIL_REGEX,
-        account.confirmation_resend, name='account-confirmation_resend'),
-    url(r'^accounts/password/change/$', account.change_password, name='account-change_password'),
-    url(r'^accounts/password/reset/$', account.reset_password_init,
+        accounts.confirmation_resend, name='account-confirmation_resend'),
+    url(r'^accounts/password/change/$', accounts.change_password, name='account-change_password'),
+    url(r'^accounts/password/reset/$', accounts.reset_password_init,
         name='account-reset_password_init'),
     url(r'^accounts/password/reset/(?P<uuid>%s)/$' % UUID_REGEX,
-        account.reset_password_confirm, name='account-reset_password_confirm'),
+        accounts.reset_password_confirm, name='account-reset_password_confirm'),
     # Product views
-    url(r'^products/$', product.index, name='product-index'),
-    url(r'^products/(?P<slug>[a-zA-Z0-9\-]+)/$', product.view, name='product-view'),
+    url(r'^products/$', products.index, name='product-index'),
+    url(r'^products/(?P<slug>[a-zA-Z0-9\-]+)/$', products.view, name='product-view'),
     # Domain views
-    url(r'^domains/$', domain.index, name='domain-index'),
-    url(r'^domains/new/$', domain.DomainNewView.as_view(), name='domain-new'),
-    url(r'^domains/(?P<domain>%s)/edit/$' % DOMAIN_REGEX, domain.edit, name='domain-edit'),
-    url(r'^domains/(?P<domain>%s)/delete/$' % DOMAIN_REGEX, domain.delete, name='domain-delete'),
+    url(r'^domains/$', domains.index, name='domain-index'),
+    url(r'^domains/new/$', domains.DomainNewView.as_view(), name='domain-new'),
+    url(r'^domains/(?P<domain>%s)/edit/$' % DOMAIN_REGEX, domains.edit, name='domain-edit'),
+    url(r'^domains/(?P<domain>%s)/delete/$' % DOMAIN_REGEX, domains.delete, name='domain-delete'),
     # Provider
-    url(r'^providers/instances/$', provider.instance_index, name='instance-index'),
-    url(r'^providers/instances/new/$', provider.ProviderNewView.as_view(),
+    url(r'^providers/instances/$', providers.instance_index, name='instance-index'),
+    url(r'^providers/instances/new/$', providers.ProviderNewView.as_view(),
         name='instance-new'),
-    url(r'^providers/instances/(?P<uuid>%s)/edit/$' % UUID_REGEX, provider.instance_edit,
+    url(r'^providers/instances/(?P<uuid>%s)/edit/$' % UUID_REGEX, providers.instance_edit,
         name='instance-edit'),
-    url(r'^providers/instances/(?P<uuid>%s)/delete/$' % UUID_REGEX, provider.instance_delete,
+    url(r'^providers/instances/(?P<uuid>%s)/delete/$' % UUID_REGEX, providers.instance_delete,
         name='instance-delete'),
     # Credentials
-    url(r'^providers/credentials/$', provider.credential_index, name='credential-index'),
-    url(r'^providers/credentials/new/$', provider.CredentialNewView.as_view(),
+    url(r'^providers/credentials/$', providers.credential_index, name='credential-index'),
+    url(r'^providers/credentials/new/$', providers.CredentialNewView.as_view(),
         name='credential-new'),
     url(r'^providers/credentials/(?P<name>[a-zA-Z0-9\-\.\_\s]+)/delete/$',
-        provider.credential_delete, name='credential-delete'),
+        providers.credential_delete, name='credential-delete'),
     # User views
-    url(r'^user/$', user.index, name='user-index'),
-    url(r'^user/events/$', user.events, name='user-events'),
-    url(r'^user/feedback/send/$', user.send_feedback, name='user-send_feedback'),
+    url(r'^user/$', users.index, name='user-index'),
+    url(r'^user/events/$', users.events, name='user-events'),
+    url(r'^user/feedback/send/$', users.send_feedback, name='user-send_feedback'),
     # Admin views
     url(r'^admin/$', admin.index, name='admin-index'),
     url(r'^admin/users/$', admin.users, name='admin-users'),

@@ -61,7 +61,6 @@ REMEMBER_SESSION_AGE = 60 * 60 * 24 * 30 # One Month
 
 LOGGER = logging.getLogger(__name__)
 
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
 NOCAPTCHA = True
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -79,7 +78,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'crispy_forms',
     'captcha',
     'supervisr.core.apps.SupervisrCoreConfig',
     'supervisr.puppet.apps.SupervisrPuppetConfig',
@@ -273,7 +271,7 @@ LOGGING = {
         },
         'gitlab': {
             'level': 'ERROR',
-            'class': 'supervisr.core.error.gitlab.GitlabHandler',
+            'class': 'supervisr.core.errors.gitlab.GitlabHandler',
             'api_key': LOG_GITLAB_API_KEY,
         },
         'syslog': {

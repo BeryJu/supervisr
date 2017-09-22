@@ -4,9 +4,9 @@ Supervisr Core AdminView Test
 
 from django.test import TestCase
 
-from ..models import get_system_user
-from ..views import admin
-from .utils import test_request
+from supervisr.core.models import get_system_user
+from supervisr.core.test.utils import test_request
+from supervisr.core.views import admin
 
 
 class TestAdminViews(TestCase):

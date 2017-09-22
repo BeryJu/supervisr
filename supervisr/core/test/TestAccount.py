@@ -8,12 +8,12 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from supervisr.core.forms.account import (ChangePasswordForm, LoginForm,
-                                          SignupForm)
+from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
+                                           SignupForm)
 from supervisr.core.models import AccountConfirmation, get_system_user
 from supervisr.core.signals import SIG_USER_RESEND_CONFIRM
 from supervisr.core.test.utils import test_request
-from supervisr.core.views import account, common
+from supervisr.core.views import accounts, common
 
 
 class TestAccount(TestCase):
@@ -49,20 +49,20 @@ class TestAccount(TestCase):
         """
         Test account.signup view (Anonymous)
         """
-        res = test_request(account.signup)
+        res = test_request(accounts.signup)
         self.assertEqual(res.status_code, 200)
 
     def test_login_view(self):
         """
         Test account.login view (Anonymous)
         """
-        res = test_request(account.login)
+        res = test_request(accounts.login)
         self.assertEqual(res.status_code, 200)
         # test login with post
         form = LoginForm(self.login_data)
         self.assertTrue(form.is_valid())
 
-        res = test_request(account.login,
+        res = test_request(accounts.login,
                            method='POST',
                            req_kwargs=form.cleaned_data)
         self.assertEqual(res.status_code, 302)
@@ -71,7 +71,7 @@ class TestAccount(TestCase):
         """
         Test account.logout view
         """
-        res = test_request(account.logout,
+        res = test_request(accounts.logout,
                            user=get_system_user())
         self.assertEqual(res.status_code, 302)
 
@@ -79,7 +79,7 @@ class TestAccount(TestCase):
         """
         Test account.signup view (Authenticated)
         """
-        res = test_request(account.signup,
+        res = test_request(accounts.signup,
                            user=get_system_user())
         self.assertEqual(res.status_code, 302)
 
@@ -87,7 +87,7 @@ class TestAccount(TestCase):
         """
         Test account.login view (Authenticated)
         """
-        res = test_request(account.login,
+        res = test_request(accounts.login,
                            user=get_system_user())
         self.assertEqual(res.status_code, 302)
 
@@ -98,7 +98,7 @@ class TestAccount(TestCase):
         signup_form = SignupForm(self.signup_data)
         self.assertTrue(signup_form.is_valid())
 
-        signup_res = test_request(account.signup,
+        signup_res = test_request(accounts.signup,
                                   method='POST',
                                   req_kwargs=signup_form.cleaned_data)
         self.assertEqual(signup_res.status_code, 302)
@@ -108,7 +108,7 @@ class TestAccount(TestCase):
         user.is_active = True
         user.save()
 
-        login_res = test_request(account.login,
+        login_res = test_request(accounts.login,
                                  method='POST',
                                  req_kwargs=self.login_data)
         self.assertEqual(login_res.status_code, 302)
@@ -121,7 +121,7 @@ class TestAccount(TestCase):
         form = SignupForm(self.signup_data)
         self.assertTrue(form.is_valid())
 
-        res = test_request(account.signup,
+        res = test_request(accounts.signup,
                            method='POST',
                            req_kwargs=form.cleaned_data)
         self.assertEqual(res.status_code, 302)
@@ -133,7 +133,7 @@ class TestAccount(TestCase):
         signup_form = SignupForm(self.signup_data)
         self.assertTrue(signup_form.is_valid())
 
-        signup_res = test_request(account.signup,
+        signup_res = test_request(accounts.signup,
                                   method='POST',
                                   req_kwargs=signup_form.cleaned_data)
         self.assertEqual(signup_res.status_code, 302)
@@ -146,15 +146,15 @@ class TestAccount(TestCase):
         form = ChangePasswordForm(self.change_data)
         self.assertTrue(form.is_valid())
 
-        res = test_request(account.change_password,
+        res = test_request(accounts.change_password,
                            user=user,
                            method='POST',
                            req_kwargs=form.cleaned_data)
         self.assertEqual(res.status_code, 302)
         self.assertEqual(res.url, reverse('common-index'))
 
-        res = test_request(account.change_password,
-                           user=user,)
+        res = test_request(accounts.change_password,
+                           user=user, )
         self.assertEqual(res.status_code, 200)
 
     def test_reset_password_init_view(self):
@@ -164,12 +164,12 @@ class TestAccount(TestCase):
         form = SignupForm(self.signup_data)
         self.assertTrue(form.is_valid())
 
-        res = test_request(account.signup,
+        res = test_request(accounts.signup,
                            method='POST',
                            req_kwargs=form.cleaned_data)
         self.assertEqual(res.status_code, 302)
 
-        res = test_request(account.reset_password_init)
+        res = test_request(accounts.reset_password_init)
         self.assertEqual(res.status_code, 200)
 
     def test_resend_confirmation(self):
@@ -179,7 +179,7 @@ class TestAccount(TestCase):
         form = SignupForm(self.signup_data)
         self.assertTrue(form.is_valid())
 
-        res = test_request(account.signup,
+        res = test_request(accounts.signup,
                            method='POST',
                            req_kwargs=form.cleaned_data)
         self.assertEqual(res.status_code, 302)
@@ -206,7 +206,7 @@ class TestAccount(TestCase):
         signup_form = SignupForm(self.signup_data)
         self.assertTrue(signup_form.is_valid())
 
-        signup_res = test_request(account.signup,
+        signup_res = test_request(accounts.signup,
                                   method='POST',
                                   req_kwargs=signup_form.cleaned_data)
         self.assertEqual(signup_res.status_code, 302)
@@ -222,7 +222,7 @@ class TestAccount(TestCase):
         new_ac = AccountConfirmation.objects.create(user=user)
         self.assertFalse(new_ac.is_expired)
         uuid = AccountConfirmation.objects.filter(user=user).first().pk
-        reset_res = test_request(account.reset_password_confirm,
+        reset_res = test_request(accounts.reset_password_confirm,
                                  method='POST',
                                  user=user,
                                  url_kwargs={

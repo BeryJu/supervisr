@@ -12,7 +12,7 @@ from django.shortcuts import redirect, render, reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.models import Event, UserProductRelationship
-from supervisr.core.views.wizard import BaseWizardView
+from supervisr.core.views.wizards import BaseWizardView
 from supervisr.mail.forms.account import (MailAccountForm,
                                           MailAccountFormAlias,
                                           MailAccountFormCredentials)

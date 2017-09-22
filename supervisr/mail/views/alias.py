@@ -9,7 +9,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render, reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.core.views.wizard import BaseWizardView
+from supervisr.core.views.wizards import BaseWizardView
 from supervisr.mail.forms.alias import MailAliasForm
 from supervisr.mail.models import MailAccount, MailAlias, MailDomain
 

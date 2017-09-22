@@ -4,7 +4,7 @@ Supervisr Core Django Admin Test
 
 from django.test import TestCase
 
-from ..admin import admin_autoregister
+from supervisr.core.admin import admin_autoregister
 
 
 class TestDjangoAdmin(TestCase):

@@ -7,9 +7,9 @@ import os
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from supervisr.core.forms.account import (ChangePasswordForm, LoginForm,
-                                          PasswordResetFinishForm, SignupForm)
-from supervisr.core.forms.domain import DomainForm
+from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
+                                           PasswordResetFinishForm, SignupForm)
+from supervisr.core.forms.domains import DomainForm
 from supervisr.core.models import (ProviderInstance, Setting,
                                    UserProductRelationship, UserProfile,
                                    get_system_user)

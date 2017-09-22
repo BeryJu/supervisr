@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
 from supervisr.core.models import (Domain, ProviderInstance,
                                    UserProductRelationship)
 from supervisr.core.providers.base import get_providers
-from supervisr.core.views.wizard import BaseWizardView
+from supervisr.core.views.wizards import BaseWizardView
 from supervisr.dns.forms.migrate import ZoneImportForm, ZoneImportPreviewForm
 from supervisr.dns.forms.zones import ZoneForm
 from supervisr.dns.models import Zone
@@ -81,4 +81,4 @@ class BindZoneImportWizard(BaseWizardView):
             return redirect(reverse('supervisr/dns:dns-record-list',
                                     kwargs={'zone': m_dom.domain.domain}))
         messages.error(self.request, _('Created nothing'))
-        return redirect(reverse('supervisr/dns:dns-zones'))
+        return redirect(reverse('supervisr/dns:dns-index'))

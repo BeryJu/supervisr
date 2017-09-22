@@ -11,13 +11,13 @@ from django.contrib.auth.models import User
 from django.forms import ValidationError
 from django.utils.translation import ugettext as _
 
-from supervisr.core.forms.core import InlineForm, check_password
+from supervisr.core.forms.core import check_password
 from supervisr.core.models import Setting, UserProfile
 from supervisr.core.signals import SIG_CHECK_USER_EXISTS
 
 LOGGER = logging.getLogger(__name__)
 
-class LoginForm(InlineForm):
+class LoginForm(forms.Form):
     """
     Form to handle logins
     """
@@ -30,7 +30,7 @@ class LoginForm(InlineForm):
         private_key=Setting.get('recaptcha:private'),
         public_key=Setting.get('recaptcha:public'))
 
-class SignupForm(InlineForm):
+class SignupForm(forms.Form):
     """
     Form to handle signups
     """
@@ -80,7 +80,7 @@ class SignupForm(InlineForm):
         """
         return check_password(self)
 
-class ChangePasswordForm(InlineForm):
+class ChangePasswordForm(forms.Form):
     """
     Form to handle password changes
     """
@@ -94,7 +94,7 @@ class ChangePasswordForm(InlineForm):
         """
         return check_password(self)
 
-class PasswordResetInitForm(InlineForm):
+class PasswordResetInitForm(forms.Form):
     """
     Form to initiate password resets
     """
@@ -105,7 +105,7 @@ class PasswordResetInitForm(InlineForm):
         private_key=Setting.get('recaptcha:private'),
         public_key=Setting.get('recaptcha:public'))
 
-class PasswordResetFinishForm(InlineForm):
+class PasswordResetFinishForm(forms.Form):
     """
     Form to finish password resets
     """
@@ -119,7 +119,7 @@ class PasswordResetFinishForm(InlineForm):
         """
         return check_password(self)
 
-class ReauthForm(InlineForm):
+class ReauthForm(forms.Form):
     """
     Form to reauthenticate users
     """

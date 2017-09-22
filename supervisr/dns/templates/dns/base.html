@@ -8,11 +8,8 @@
 {% block sidenav %}
 <nav class="sidenav clr-nav-level-2">
   <section class="sidenav-content">
-    <a href="{% url 'supervisr/dns:dns-index' %}" class="nav-link {% is_active 'dns-index' %}">
-    {% trans "Overview" %}
-    </a>
     <section class="nav-group">
-      <a href="{% url 'supervisr/dns:dns-zones' %}" class="nav-link {% is_active 'dns-zones' %}">{% trans "Zones" %}</a>
+      <a href="{% url 'supervisr/dns:dns-index' %}" class="nav-link {% is_active 'dns-index' %}">{% trans "Zones" %}</a>
       <ul class="nav-list">
         {% dns_zones as zones %}
         {% for z in zones %}

@@ -131,13 +131,13 @@ def isort(ctx):
     ctx.run("isort -c -vb -sg env -b importlib")
 
 @task()
-def coverage(ctx, post_action='report'):
+def coverage(ctx, module='supervisr', post_action='report'):
     """
     Run Unittests and get coverage
     """
     if WINDOWS:
         ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
-    ctx.run("coverage run manage.py test --pattern=Test*.py")
+    ctx.run("coverage run --source=%s manage.py test --pattern=Test*.py" % module)
     ctx.run("coverage %s" % post_action)
 
 @task

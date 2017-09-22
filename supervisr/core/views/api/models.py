@@ -1,6 +1,7 @@
 """
 Supervisr Core r1 Model API
 """
+import collections
 
 from django import forms
 from django.db import models
@@ -61,14 +62,23 @@ class ModelAPI(View):
         Check if form is set and read fields from it
         """
         if self.form:
-            # pylint: disable=not-callable
-            form = self.form()
-            if isinstance(form, forms.ModelForm):
-                fields = self.form.Meta.fields
-                self.queryable_fields = fields
-                self.viewable_fields = fields
-                self.editable_fields = fields
-                return True
+            # Wrapper for single form APIs
+            if not isinstance(self.form, collections.Sequence):
+                self.form = [self.form]
+            new_fields = []
+            for frm in self.forms:
+                # pylint: disable=not-callable
+                frm_inst = frm()
+                if isinstance(frm_inst, forms.ModelForm):
+                    fields = self.frm_inst.Meta.fields
+                    # Add all fields from all arrays into our fields
+                    new_fields += fields
+            # convert concatenated list into set to remove duplicates
+            new_fields = set(new_fields)
+            self.queryable_fields = new_fields
+            self.viewable_fields = new_fields
+            self.editable_fields = new_fields
+            return True
         return False
 
     @staticmethod

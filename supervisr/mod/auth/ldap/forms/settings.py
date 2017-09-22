@@ -5,10 +5,8 @@ Supervisr Mod LDAP Forms
 from django import forms
 from django.utils.translation import ugettext as _
 
-from supervisr.core.forms.core import InlineForm
 
-
-class SettingsForm(InlineForm):
+class SettingsForm(forms.Form):
     """
     Settings form
     """

@@ -12,11 +12,11 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.core.forms.provider import CredentialForm, ProviderForm
+from supervisr.core.forms.providers import CredentialForm, ProviderForm
 from supervisr.core.models import (BaseCredential, ProviderInstance,
                                    UserProductRelationship)
 from supervisr.core.providers.base import get_providers
-from supervisr.core.views.wizard import BaseWizardView
+from supervisr.core.views.wizards import BaseWizardView
 
 
 @login_required
@@ -52,8 +52,7 @@ class ProviderNewView(BaseWizardView):
             form.fields['provider_path'].choices = \
                 [('%s.%s' % (s.__module__, s.__class__.__name__), s.get_meta.ui_name)
                  for s in self.providers]
-            form.fields['credentials'].choices = \
-                [(c.name, '%s: %s' % (c.cast().type(), c.name)) for c in creds]
+            form.fields['credentials'].queryset = creds
             form.request = self.request
         return form
 
@@ -68,11 +67,11 @@ class ProviderNewView(BaseWizardView):
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
-        creds = BaseCredential.objects.filter(name=form_dict['0'].cleaned_data.get('credentials'),
-                                              owner=self.request.user)
-        if not creds.exists():
+        creds = form_dict['0'].cleaned_data.get('credentials')
+        if not creds.owner == self.request.user:
             raise Http404
-        r_creds = creds.first().cast()
+
+        r_creds = creds.cast()
 
         prov_inst = ProviderInstance.objects.create(
             name=form_dict['0'].cleaned_data.get('name'),

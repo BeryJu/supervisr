@@ -5,8 +5,8 @@ Supervisr Core r1 API Urls
 from django.conf.urls import url
 
 from supervisr.core.regex import DOMAIN_REGEX
-from supervisr.dns.views.api.r1.records import RecordAPI, dyndns_update
-from supervisr.dns.views.api.r1.zones import ZoneAPI
+from supervisr.dns.views.api.r1.record import RecordAPI, dyndns_update
+from supervisr.dns.views.api.r1.zone import ZoneAPI
 
 urlpatterns = [
     url(r'^records/(?P<verb>\w+)/$', RecordAPI.as_view(), name='api-r1-records'),

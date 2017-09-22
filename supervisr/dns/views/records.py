@@ -10,7 +10,7 @@ from django.shortcuts import redirect, render, reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.models import UserProductRelationship
-from supervisr.core.views.wizard import BaseWizardView
+from supervisr.core.views.wizards import BaseWizardView
 from supervisr.dns.forms.records import RecordForm
 from supervisr.dns.models import Record, Zone
 

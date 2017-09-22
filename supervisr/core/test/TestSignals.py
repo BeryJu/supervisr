@@ -4,7 +4,7 @@ Supervisr Core Signals Test
 
 from django.test import TestCase
 
-from ..signals import RobustSignal, SignalException
+from supervisr.core.signals import RobustSignal, SignalException
 
 
 class TestSignals(TestCase):

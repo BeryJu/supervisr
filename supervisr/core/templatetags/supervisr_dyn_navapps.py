@@ -58,4 +58,4 @@ def supervisr_dyn_navapps(context):
         sorted_list = sorted(app_list, key=lambda x: x['short'])
         cache.set(key, sorted_list, 1000)
         return sorted_list
-    return cache.get(key)
+    return cache.get(key) # pragma: no cover

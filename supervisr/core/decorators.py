@@ -94,7 +94,7 @@ def ifapp(app_name):
                 app_cache.append(config.label)
             cache.set(cache_key, app_cache, 1000)
             return app_cache
-        return cache.get(cache_key)
+        return cache.get(cache_key) # pragma: no cover
 
     app_cache = get_app_labels()
 
@@ -136,7 +136,7 @@ def view_or_basicauth(view, request, test_func, realm="", *args, **kwargs):
             # NOTE: We are only support basic authentication for now.
             #
             if auth[0].lower() == "basic":
-                uname, passwd = base64.b64decode(auth[1]).split(':')
+                uname, passwd = base64.b64decode(auth[1]).decode('utf-8').split(':')
                 user = authenticate(username=uname, password=passwd)
                 if user is not None:
                     if user.is_active:

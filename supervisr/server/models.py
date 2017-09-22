@@ -11,9 +11,9 @@ class Server(Product):
     """
     Store information about a Server Model
     """
-    cpus = models.ForeignKey('ServerCPU')
+    cpus = models.ForeignKey('ServerCPU', on_delete=models.CASCADE)
     ram = models.IntegerField()
-    drives = models.ForeignKey('ServerDrive')
+    drives = models.ForeignKey('ServerDrive', on_delete=models.CASCADE)
     nics = models.ManyToManyField('ServerNIC')
     is_virtual = models.BooleanField(default=True)
     is_managed = models.BooleanField(default=True)

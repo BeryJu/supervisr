@@ -18,8 +18,8 @@ class MailDomain(Product):
     Stores information about a MailDomain
     """
 
-    domain = models.OneToOneField(Domain)
-    provider = models.ForeignKey(ProviderInstance, default=None)
+    domain = models.OneToOneField(Domain, on_delete=models.CASCADE)
+    provider = models.ForeignKey(ProviderInstance, default=None, on_delete=models.CASCADE)
     domain_raw = models.TextField(blank=True, help_text=_('This field is automatically generated'
                                                           'by Django to make queries easier.'))
     enabled = models.BooleanField(default=True)
@@ -47,7 +47,7 @@ class MailAccount(Product):
     Store information about a MailAccount/MailForward
     """
     address = models.CharField(max_length=64) # rfc5321 4.5.3.1.1.
-    domain = models.ForeignKey(MailDomain)
+    domain = models.ForeignKey(MailDomain, on_delete=models.CASCADE)
     quota = models.BigIntegerField(default=0) # account quota in MB. 0 == unlimited
     size = models.BigIntegerField(default=0)
     can_send = models.BooleanField(default=True)
@@ -107,7 +107,7 @@ class MailAlias(CreatedUpdatedModel):
     Record to save destinations to forward mail to
     """
 
-    account = models.ForeignKey(MailAccount)
+    account = models.ForeignKey(MailAccount, on_delete=models.CASCADE)
     destination = models.EmailField()
 
     def __str__(self):
