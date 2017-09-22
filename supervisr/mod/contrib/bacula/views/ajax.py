@@ -9,11 +9,13 @@ from django.db.models import Sum
 from django.http import JsonResponse
 from django.utils import timezone
 
+from supervisr.mod.contrib.bacula.decorators import check_bacula_db
 from supervisr.mod.contrib.bacula.models import Job
 
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
+@check_bacula_db
 # pylint: disable=unused-argument
 def ajax_graph_job_status(req):
     """
@@ -53,6 +55,7 @@ def ajax_graph_job_status(req):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
+@check_bacula_db
 # pylint: disable=unused-argument
 def ajax_graph_stored_bytes(req):
     """

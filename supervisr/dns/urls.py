@@ -5,11 +5,10 @@ Supervisr DNS URLs
 from django.conf.urls import include, url
 
 from supervisr.core.regex import DOMAIN_REGEX, UUID_REGEX
-from supervisr.dns.views import core, migrate, records, zones
+from supervisr.dns.views import migrate, records, zones
 
 urlpatterns = [
-    url(r'^$', core.index, name='dns-index'),
-    url(r'^zones/$', zones.index, name='dns-zones'),
+    url(r'^zones/$', zones.index, name='dns-index'),
     url(r'^zones/new/$', zones.ZoneNewView.as_view(), name='dns-zone-new'),
     url(r'^zones/(?P<zone>%s)/edit/$' % DOMAIN_REGEX, zones.edit, name='dns-zone-edit'),
     url(r'^zones/(?P<zone>%s)/delete/$' % DOMAIN_REGEX, zones.delete, name='dns-zone-delete'),

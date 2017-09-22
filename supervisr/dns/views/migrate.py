@@ -81,4 +81,4 @@ class BindZoneImportWizard(BaseWizardView):
             return redirect(reverse('supervisr/dns:dns-record-list',
                                     kwargs={'zone': m_dom.domain.domain}))
         messages.error(self.request, _('Created nothing'))
-        return redirect(reverse('supervisr/dns:dns-zones'))
+        return redirect(reverse('supervisr/dns:dns-index'))

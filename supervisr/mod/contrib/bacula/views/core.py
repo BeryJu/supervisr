@@ -10,6 +10,7 @@ from django.db.models import Q, Sum
 from django.shortcuts import render
 from django.utils import timezone
 
+from supervisr.mod.contrib.bacula.decorators import check_bacula_db
 from supervisr.mod.contrib.bacula.forms.filter import JobFilterForm
 from supervisr.mod.contrib.bacula.models import (Client, File, Job, Log, Media,
                                                  Pool)
@@ -18,6 +19,7 @@ from supervisr.mod.contrib.bacula.utils import db_size, size_human
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
+@check_bacula_db
 def index(req):
     """
     Show overview of all bacula
@@ -47,6 +49,7 @@ def index(req):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
+@check_bacula_db
 def jobs(req):
     """
     Return a list of all jobs, paginated
@@ -82,6 +85,7 @@ def jobs(req):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
+@check_bacula_db
 def volumes(req):
     """
     Return a list of all volumes
@@ -105,6 +109,7 @@ def volumes(req):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
+@check_bacula_db
 def job_log(req, jobid):
     """
     Return logs for jobid
@@ -118,6 +123,7 @@ def job_log(req, jobid):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
+@check_bacula_db
 def job_file(req, jobid):
     """
     Return files for jobid
