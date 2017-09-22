@@ -20,7 +20,8 @@ from django.utils.translation import ugettext as _
 from django.views.generic import RedirectView, View
 
 from supervisr.mod.auth.oauth.client.clients import get_client
-from supervisr.mod.auth.oauth.client.errors import OAuthClientError, OAuthClientEmailMissingError
+from supervisr.mod.auth.oauth.client.errors import (OAuthClientEmailMissingError,
+                                                    OAuthClientError)
 from supervisr.mod.auth.oauth.client.models import AccountAccess, Provider
 
 LOGGER = logging.getLogger(__name__)
