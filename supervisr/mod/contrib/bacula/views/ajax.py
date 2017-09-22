@@ -25,6 +25,8 @@ def ajax_graph_job_status(req):
 
     # This is a bit of a workaround since django won't let me do StartTime__isnull
     first_id = Job.objects.all().order_by('JobId').exclude(StartTime__lte=yesterday).first()
+    if not first_id:
+        return JsonResponse({})
     graph_job_status_raw = Job.objects.filter(JobId__gte=first_id.JobId).order_by('-JobId')
 
     def qs_get_count(qs, default=0, **kwargs):
