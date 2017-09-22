@@ -20,7 +20,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic import RedirectView, View
 
 from supervisr.mod.auth.oauth.client.clients import get_client
-from supervisr.mod.auth.oauth.client.errors import OAuthClientError
+from supervisr.mod.auth.oauth.client.errors import OAuthClientError, OAuthClientEmailMissingError
 from supervisr.mod.auth.oauth.client.models import AccountAccess, Provider
 
 LOGGER = logging.getLogger(__name__)
@@ -79,7 +79,7 @@ class OAuthCallback(OAuthClientMixin, View):
     provider_id = None
     provider = None
 
-    # pylint: disable=unused-argument
+    # pylint: disable=unused-argument, too-many-return-statements
     def get(self, request, *args, **kwargs):
         """
         View Get handler
@@ -119,6 +119,13 @@ class OAuthCallback(OAuthClientMixin, View):
             if user is None:
                 try:
                     return self.handle_new_user(self.provider, access, info)
+                except OAuthClientEmailMissingError as exc:
+                    return render(request, 'common/error.html', {
+                        'code': 500,
+                        'exc_message': _("Provider %(name)s didn't provide an E-Mail address." % {
+                            'name': self.provider.name
+                            }),
+                        })
                 except OAuthClientError as exc:
                     return render(request, 'common/error.html', {
                         'code': 500,
