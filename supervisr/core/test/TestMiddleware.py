@@ -33,7 +33,7 @@ class TestMiddleware(TestCase):
         Setting.set('maintenancemode', True)
         req = self.factory.get(reverse('account-login'))
         req.user = AnonymousUser()
-        res = maintenance_mode(accounts.login)(req)
+        res = maintenance_mode(accounts.LoginView.as_view())(req)
         self.assertEqual(res.status_code, 200)
 
     def test_maintenance_mode_on(self):
@@ -43,7 +43,7 @@ class TestMiddleware(TestCase):
         Setting.set('maintenancemode', False)
         req = self.factory.get(reverse('account-login'))
         req.user = AnonymousUser()
-        res = maintenance_mode(accounts.login)(req)
+        res = maintenance_mode(accounts.LoginView.as_view())(req)
         self.assertEqual(res.status_code, 200)
 
     def test_permanent_message(self):

@@ -4,7 +4,9 @@
 
 {% block extra %}
 {% template_wildcard 'account/dyn_extra/' as incl %}
-{% for inc in incl %}
-{% include inc %}
-{% endfor %}
+{% if incl %}
+    {% for inc in incl %}
+    {% include inc %}
+    {% endfor %}
+{% endif %}
 {% endblock %}

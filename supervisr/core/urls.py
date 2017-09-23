@@ -26,7 +26,7 @@ urlpatterns = [
     # Account views
     url(r'^$', common.index, name='common-index'),
     url(r'^search/$', search.search, name='search'),
-    url(r'^accounts/login/$', accounts.login, name='account-login'),
+    url(r'^accounts/login/$', accounts.LoginView.as_view(), name='account-login'),
     url(r'^accounts/login/reauth/$', accounts.reauth, name='account-reauth'),
     url(r'^accounts/signup/$', accounts.signup, name='account-signup'),
     url(r'^accounts/logout/$', accounts.logout, name='account-logout'),

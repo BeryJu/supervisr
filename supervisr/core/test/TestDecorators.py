@@ -31,9 +31,11 @@ class TestDecorators(TestCase):
         Test anonymous_required decorator
         """
         # View as AnonymousUser should return 200
-        self.assertEqual(test_request(accounts.login, user=AnonymousUser()).status_code, 200)
+        self.assertEqual(test_request(accounts.LoginView.as_view(),
+                                      user=AnonymousUser()).status_code, 200)
         # As logged in user should redirect to index
-        self.assertEqual(test_request(accounts.login, user=get_system_user()).status_code, 302)
+        self.assertEqual(test_request(accounts.LoginView.as_view(),
+                                      user=get_system_user()).status_code, 302)
 
     def test_reauth_required(self):
         """

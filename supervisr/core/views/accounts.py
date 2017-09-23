@@ -12,10 +12,12 @@ from django.contrib.auth import logout as django_logout
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import Http404
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
+from django.views import View
 from django.views.decorators.http import require_GET
 from passlib.hash import sha512_crypt
 
@@ -36,73 +38,123 @@ from supervisr.core.signals import (SIG_USER_CHANGE_PASS, SIG_USER_CONFIRM,
 
 LOGGER = logging.getLogger(__name__)
 
+@method_decorator(anonymous_required, name='dispatch')
+class LoginView(View):
+    """
+    View to handle login logic
+    """
 
-@anonymous_required
-def login(req):
-    """
-    View to handle Browser Logins Requests
-    """
-    if req.method == 'POST':
-        form = LoginForm(req.POST)
+    def render(self, request: HttpRequest, form: LoginForm) -> HttpResponse:
+        """Render our template
+
+        """
+        return render(request, 'account/login.html', {
+            'form': form,
+            'title': _("SSO - Login"),
+            'primary_action': _("Login"),
+            'extra_links': {
+                'account-signup': 'Sign up for an account',
+                'account-reset_password_init': 'Reset your password'
+            }
+            })
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Handle Get request
+
+        Args:
+            request (HttpRequest): The current request
+
+        Returns:
+            HttpResponse: Login template
+        """
+        form = LoginForm()
+        return self.render(request, form)
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        """Handle Post request
+
+        Args:
+            request (HttpRequest): The current request
+
+        Returns:
+            HttpResponse: Either a redirect to next view or login template if any errors exist
+        """
+        form = LoginForm(request.POST)
         if form.is_valid():
             user = authenticate(
                 username=form.cleaned_data.get('email'),
                 password=form.cleaned_data.get('password'))
+            if user:
+                return self.handle_login(request, user, form)
+            return self.handle_disabled_login(request, username=form.cleaned_data.get('email'))
+        LOGGER.info("LoginForm invalid")
+        return self.render(request, form=form)
 
-            if user is not None:
-                django_login(req, user)
-                # Set updated password in user profile for PAM
-                user.userprofile.crypt6_password = \
-                    sha512_crypt.hash(form.cleaned_data.get('password'))
-                user.userprofile.save()
+    def handle_login(self, request: HttpRequest, user: User, form: LoginForm) -> HttpResponse:
+        """Handle actual login
 
-                if form.cleaned_data.get('remember') is True:
-                    req.session.set_expiry(settings.REMEMBER_SESSION_AGE)
-                else:
-                    req.session.set_expiry(0) # Expires when browser is closed
-                messages.success(req, _("Successfully logged in!"))
-                # Send event that we're logged in now
-                SIG_USER_LOGIN.send(
-                    sender=login, user=user, req=req)
-                LOGGER.info("Successfully logged in %s", form.cleaned_data.get('email'))
-                # Check if there is a next GET parameter and redirect to that
-                if 'next' in req.GET:
-                    return redirect(req.GET.get('next'))
-                # Otherwise just index
-                return redirect(reverse('common-index'))
-            else:
-                # Check if the user's account is pending
-                # and inform that, they need to check their emails
-                users = User.objects.filter(username=form.cleaned_data.get('email'))
-                if users.exists():
-                    # Check is maybe not confirmed yet
-                    acc_confs = AccountConfirmation.objects.filter(
-                        user=users.first(),
-                        kind=AccountConfirmation.KIND_SIGN_UP)
-                    if acc_confs.exists() and not acc_confs.first().confirmed:
-                        # Create url to resend email
-                        url = reverse('account-confirmation_resend',
-                                      kwargs={'email': users.first().email})
-                        messages.error(req, _(('Account not confirmed yet. Check your emails. '
-                                               'Click <a href="%(url)s">here</a> to resend the '
-                                               'email.')) % {'url': url})
-                        return redirect(reverse('account-login'))
-                messages.error(req, _("Invalid Login"))
-                LOGGER.info("Failed to log in %s", form.cleaned_data.get('email'))
-                return redirect(reverse('account-login'))
+        Actually logs user in, sets session expiry and redirects to ?next parameter
+
+        Args:
+            request (HttpRequest) The current request
+            user (User) The user to be logged in.
+
+        Returns:
+            HttpResponse: Either redirect to ?next or if not present to common-index
+        """
+        assert user is not None
+        django_login(request, user)
+        # Set updated password in user profile for PAM
+        user.userprofile.crypt6_password = \
+            sha512_crypt.hash(form.cleaned_data.get('password'))
+        user.userprofile.save()
+
+        if form.cleaned_data.get('remember') is True:
+            request.session.set_expiry(settings.REMEMBER_SESSION_AGE)
         else:
-            LOGGER.info("Form invalid")
-    else:
-        form = LoginForm()
-    return render(req, 'account/login.html', {
-        'form': form,
-        'title': _("SSO - Login"),
-        'primary_action': _("Login"),
-        'extra_links': {
-            'account-signup': 'Sign up for an account',
-            'account-reset_password_init': 'Reset your password'
-        }
-        })
+            request.session.set_expiry(0) # Expires when browser is closed
+        messages.success(request, _("Successfully logged in!"))
+        # Send event that we're logged in now
+        SIG_USER_LOGIN.send(
+            sender=self, user=user, req=request)
+        LOGGER.info("Successfully logged in %s", user.username)
+        # Check if there is a next GET parameter and redirect to that
+        if 'next' in request.GET:
+            return redirect(request.GET.get('next'))
+        # Otherwise just index
+        return redirect(reverse('common-index'))
+
+    def handle_disabled_login(self, request: HttpRequest, username: str) -> HttpResponse:
+        """Handle login for disabled users
+
+        This informs users that their email is not confirmed yet
+
+        Args:
+            request (HttpRequest) The current request
+            username (str) Username to search the user by
+
+        Returns:
+            HttpResponse: Either redirect to ?next or if not present to common-index
+        """
+        # Check if the user's account is pending
+        # and inform that, they need to check their emails
+        users = User.objects.filter(username=username)
+        if users.exists():
+            # Check is maybe not confirmed yet
+            acc_confs = AccountConfirmation.objects.filter(
+                user=users.first(),
+                kind=AccountConfirmation.KIND_SIGN_UP)
+            if acc_confs.exists() and not acc_confs.first().confirmed:
+                # Create url to resend email
+                url = reverse('account-confirmation_resend',
+                              kwargs={'email': users.first().email})
+                messages.error(request, _(('Account not confirmed yet. Check your emails. '
+                                           'Click <a href="%(url)s">here</a> to resend the '
+                                           'email.')) % {'url': url})
+                return redirect(reverse('account-login'))
+        messages.error(request, _("Invalid Login"))
+        LOGGER.info("Failed to log in %s", username)
+        return redirect(reverse('account-login'))
 
 @anonymous_required
 def signup(req):
