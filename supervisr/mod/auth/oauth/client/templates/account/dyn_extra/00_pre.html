@@ -1,0 +1,7 @@
+{% load i18n %}
+{% load provider_exists %}
+
+{% if any_provider %}
+{% trans 'Login with: ' %}
+<div class="btn-group btn-primary">
+{% endif %}

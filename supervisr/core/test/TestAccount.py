@@ -56,13 +56,13 @@ class TestAccount(TestCase):
         """
         Test account.login view (Anonymous)
         """
-        res = test_request(accounts.login)
+        res = test_request(accounts.LoginView.as_view())
         self.assertEqual(res.status_code, 200)
         # test login with post
         form = LoginForm(self.login_data)
         self.assertTrue(form.is_valid())
 
-        res = test_request(accounts.login,
+        res = test_request(accounts.LoginView.as_view(),
                            method='POST',
                            req_kwargs=form.cleaned_data)
         self.assertEqual(res.status_code, 302)
@@ -87,7 +87,7 @@ class TestAccount(TestCase):
         """
         Test account.login view (Authenticated)
         """
-        res = test_request(accounts.login,
+        res = test_request(accounts.LoginView.as_view(),
                            user=get_system_user())
         self.assertEqual(res.status_code, 302)
 
@@ -108,7 +108,7 @@ class TestAccount(TestCase):
         user.is_active = True
         user.save()
 
-        login_res = test_request(accounts.login,
+        login_res = test_request(accounts.LoginView.as_view(),
                                  method='POST',
                                  req_kwargs=self.login_data)
         self.assertEqual(login_res.status_code, 302)
