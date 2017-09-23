@@ -4,6 +4,7 @@ Supervisr Core Account Views
 
 import logging
 import time
+from typing import Dict
 
 from django.conf import settings
 from django.contrib import messages
@@ -47,6 +48,11 @@ class LoginView(View):
     def render(self, request: HttpRequest, form: LoginForm) -> HttpResponse:
         """Render our template
 
+        Args:
+            request: The current request
+
+        Returns:
+            HttpResponse: Login template
         """
         return render(request, 'account/login.html', {
             'form': form,
@@ -62,7 +68,7 @@ class LoginView(View):
         """Handle Get request
 
         Args:
-            request (HttpRequest): The current request
+            request: The current request
 
         Returns:
             HttpResponse: Login template
@@ -74,7 +80,7 @@ class LoginView(View):
         """Handle Post request
 
         Args:
-            request (HttpRequest): The current request
+            request: The current request
 
         Returns:
             HttpResponse: Either a redirect to next view or login template if any errors exist
@@ -85,19 +91,19 @@ class LoginView(View):
                 username=form.cleaned_data.get('email'),
                 password=form.cleaned_data.get('password'))
             if user:
-                return self.handle_login(request, user, form)
+                return self.handle_login(request, user, form.cleaned_data)
             return self.handle_disabled_login(request, username=form.cleaned_data.get('email'))
         LOGGER.info("LoginForm invalid")
         return self.render(request, form=form)
 
-    def handle_login(self, request: HttpRequest, user: User, form: LoginForm) -> HttpResponse:
+    def handle_login(self, request: HttpRequest, user: User, cleaned_data: Dict) -> HttpResponse:
         """Handle actual login
 
         Actually logs user in, sets session expiry and redirects to ?next parameter
 
         Args:
-            request (HttpRequest) The current request
-            user (User) The user to be logged in.
+            request: The current request
+            user: The user to be logged in.
 
         Returns:
             HttpResponse: Either redirect to ?next or if not present to common-index
@@ -106,10 +112,10 @@ class LoginView(View):
         django_login(request, user)
         # Set updated password in user profile for PAM
         user.userprofile.crypt6_password = \
-            sha512_crypt.hash(form.cleaned_data.get('password'))
+            sha512_crypt.hash(cleaned_data.get('password'))
         user.userprofile.save()
 
-        if form.cleaned_data.get('remember') is True:
+        if cleaned_data.get('remember') is True:
             request.session.set_expiry(settings.REMEMBER_SESSION_AGE)
         else:
             request.session.set_expiry(0) # Expires when browser is closed

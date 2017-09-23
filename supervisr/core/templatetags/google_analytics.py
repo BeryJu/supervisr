@@ -5,7 +5,7 @@ Supervisr Core Google Analytics Templatetag
 from django import template
 from django.utils.safestring import mark_safe
 
-from ..models import Setting
+from supervisr.core.models import Setting
 
 register = template.Library()
 
@@ -20,8 +20,8 @@ def google_analytics(context):
     tracking_id = Setting.get('analytics:ga:tracking_id')
     # Check if we're signed in and pass the user through
     user_id = 'Anonymous'
-    if 'request' in context and 'user' in context['request']:
-        req = context['request']
+    if 'request' in context:
+        req = context.get('request')
         if req.user.is_authenticated:
             user_id = req.user.pk
     return mark_safe("""

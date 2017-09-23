@@ -3,9 +3,9 @@ Supervisr DNS r1 Record API
 """
 from django.http import HttpResponse
 
+from supervisr.core.api.models import ProductAPI
 from supervisr.core.decorators import logged_in_or_basicauth
 from supervisr.core.utils import get_remote_ip
-from supervisr.core.views.api.models import ProductAPI
 from supervisr.dns.forms.records import RecordForm
 from supervisr.dns.models import Record, Zone
 
