@@ -4,7 +4,7 @@ Supervisr Core APIv2
 
 from oauth2_provider.decorators import protected_resource
 
-from supervisr.core.views.api.utils import api_response
+from supervisr.core.api.utils import api_response
 
 
 @protected_resource()

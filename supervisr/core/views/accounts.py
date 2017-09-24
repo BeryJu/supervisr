@@ -41,9 +41,7 @@ LOGGER = logging.getLogger(__name__)
 
 @method_decorator(anonymous_required, name='dispatch')
 class LoginView(View):
-    """
-    View to handle login logic
-    """
+    """View to handle login logic"""
 
     def render(self, request: HttpRequest, form: LoginForm) -> HttpResponse:
         """Render our template
@@ -52,7 +50,7 @@ class LoginView(View):
             request: The current request
 
         Returns:
-            HttpResponse: Login template
+            Login template
         """
         return render(request, 'account/login.html', {
             'form': form,
@@ -71,7 +69,7 @@ class LoginView(View):
             request: The current request
 
         Returns:
-            HttpResponse: Login template
+            Login template
         """
         form = LoginForm()
         return self.render(request, form)
@@ -83,7 +81,7 @@ class LoginView(View):
             request: The current request
 
         Returns:
-            HttpResponse: Either a redirect to next view or login template if any errors exist
+            Either a redirect to next view or login template if any errors exist
         """
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -106,7 +104,7 @@ class LoginView(View):
             user: The user to be logged in.
 
         Returns:
-            HttpResponse: Either redirect to ?next or if not present to common-index
+            Either redirect to ?next or if not present to common-index
         """
         assert user is not None
         django_login(request, user)
@@ -136,11 +134,11 @@ class LoginView(View):
         This informs users that their email is not confirmed yet
 
         Args:
-            request (HttpRequest) The current request
-            username (str) Username to search the user by
+            request: The current request
+            username: Username to search the user by
 
         Returns:
-            HttpResponse: Either redirect to ?next or if not present to common-index
+            Either redirect to ?next or if not present to common-index
         """
         # Check if the user's account is pending
         # and inform that, they need to check their emails
@@ -162,61 +160,107 @@ class LoginView(View):
         LOGGER.info("Failed to log in %s", username)
         return redirect(reverse('account-login'))
 
-@anonymous_required
-def signup(req):
-    """
-    View to handle Browser Signups Requests
-    """
-    if req.method == 'POST':
-        form = SignupForm(req.POST)
-        if form.is_valid():
-            # Create user
-            new_user = User.objects.create_user(
-                username=form.cleaned_data.get('email'),
-                email=form.cleaned_data.get('email'),
-                first_name=form.cleaned_data.get('name'))
-            new_user.save()
-            new_user.is_active = False
-            new_user.set_password(form.cleaned_data.get('password'))
-            new_user.save()
-            # Create user profile
-            new_up = UserProfile(
+@method_decorator(anonymous_required, name='dispatch')
+class SignupView(View):
+    """View to handle Signup requests"""
+
+    def render(self, request: HttpRequest, form: LoginForm) -> HttpResponse:
+        """Render our template
+
+        Args:
+            request: The current request
+
+        Returns:
+            Login template
+        """
+        return render(request, 'core/generic_form_login.html', {
+            'form': form,
+            'title': _("SSO - Signup"),
+            'primary_action': _("Signup")
+            })
+
+    def create_user(self, data: Dict, request: HttpRequest = None) -> User:
+        """Create user and userprofile from data
+
+        Args:
+            data: Dictionary as returned by SignupForm's cleaned_data
+            request: Optional current request.
+
+        Returns:
+            The user created
+
+        Raises:
+            SignalException: if any signals raise an exception. This also deletes the created user.
+        """
+        # Create user
+        new_user = User.objects.create_user(
+            username=data.get('email'),
+            email=data.get('email'),
+            first_name=data.get('name'))
+        new_user.save()
+        new_user.is_active = False
+        new_user.set_password(data.get('password'))
+        new_user.save()
+        # Create user profile
+        new_profile = UserProfile(
+            user=new_user,
+            username=data.get('username'),
+            crypt6_password=sha512_crypt.hash(data.get('password')),
+            unix_username=make_username(data.get('username')))
+        new_profile.save()
+        # Send signal for other auth sources
+        try:
+            SIG_USER_SIGN_UP.send(
+                sender=None,
                 user=new_user,
-                username=form.cleaned_data.get('username'),
-                crypt6_password=sha512_crypt.hash(form.cleaned_data.get('password')),
-                unix_username=make_username(form.cleaned_data.get('username')))
-            new_up.save()
-            # Send signal for other auth sources
+                req=request,
+                password=data.get('password'))
+            # Create Account Confirmation UUID
+            AccountConfirmation.objects.create(user=new_user)
+            # Send event for user creation
+            SIG_USER_POST_SIGN_UP.send(
+                sender=None,
+                user=new_user,
+                req=request)
+        except SignalException as exception:
+            LOGGER.warning("Failed to sign up user %s", exception)
+            new_profile.delete()
+            new_user.delete()
+            raise
+        return new_user
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        """Handle Post request
+
+        Args:
+            request: The current HttpRequest
+
+        Returns:
+            Either the signup form if any errors exist, otherwise redirect to common-index
+        """
+        form = SignupForm(request.POST)
+        if form.is_valid():
             try:
-                SIG_USER_SIGN_UP.send(
-                    sender=None,
-                    user=new_user,
-                    req=req,
-                    password=form.cleaned_data.get('password'))
-                # Create Account Confirmation UUID
-                AccountConfirmation.objects.create(user=new_user)
-                # Send event for user creation
-                SIG_USER_POST_SIGN_UP.send(
-                    sender=None,
-                    user=new_user,
-                    req=req)
-            except SignalException as exception:
-                LOGGER.warning("Failed to sign up user %s", exception)
-                new_up.delete()
-                new_user.delete()
-                messages.error(req, _("Failed to sign up."))
+                self.create_user(form.cleaned_data, request)
+                messages.success(request, _("Successfully signed up!"))
+                LOGGER.info("Successfully signed up %s",
+                            form.cleaned_data.get('email'))
                 return redirect(reverse('account-login'))
-            messages.success(req, _("Successfully signed up!"))
-            LOGGER.info("Successfully signed up %s",
-                        form.cleaned_data.get('email'))
-            return redirect(reverse('account-login'))
-    else:
+            except SignalException:
+                messages.error(request, _("Failed to sign up."))
+        return self.render(request, form)
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Handle Get request
+
+        Args:
+            request: The Current HttpRequest
+
+        Returns:
+            Rendered signup form
+        """
         form = SignupForm()
-    return render(req, 'core/generic_form_login.html', {
-        'form': form,
-        'title': _("SSO - Signup"),
-        'primary_action': _("Signup")
-        })
+        return self.render(request, form)
 
 @login_required
 def change_password(req):

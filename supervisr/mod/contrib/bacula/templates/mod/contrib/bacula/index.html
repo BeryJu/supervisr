@@ -133,7 +133,7 @@
     return bytes.toFixed(1)+' '+units[u];
   };
   $.ajax({
-    url: "{% url 'supervisr/mod/contrib/bacula:bacula-ajax_graph_job_status' %}",
+    url: "{% url 'supervisr/mod/contrib/bacula:api-r1-graph' verb='job_status' %}",
     type: "get",
   }).done(function (data) {
     var chart = new Chart($("#jobStatus")[0].getContext('2d'), {
@@ -148,7 +148,7 @@
     $("#jobStatus").parent().find('.progress').remove();
   });
   $.ajax({
-    url: "{% url 'supervisr/mod/contrib/bacula:bacula-ajax_graph_stored_bytes' %}",
+    url: "{% url 'supervisr/mod/contrib/bacula:api-r1-graph' verb='stored_bytes' %}",
     type: "get",
   }).done(function (data) {
     var chart = new Chart($("#storedBytes")[0].getContext('2d'), {

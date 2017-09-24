@@ -6,16 +6,13 @@ import collections
 from django import forms
 from django.db import models
 from django.db.models.fields import NOT_PROVIDED
-from django.http import Http404, QueryDict
-from django.utils.decorators import method_decorator
-from django.views import View
-from django.views.decorators.csrf import csrf_exempt
+from django.http import Http404
 
+from supervisr.core.api.crud import CRUDAPI
 from supervisr.core.models import Product, UserProductRelationship
-from supervisr.core.views.api.utils import api_response
 
 
-class ModelAPI(View):
+class ModelAPI(CRUDAPI):
     """
     Basic API for Models
     """
@@ -27,37 +24,8 @@ class ModelAPI(View):
     viewable_fields = ['name']
     editable_fields = ['name']
 
-    ALLOWED_VERBS = {
-        'GET': ['read'],
-        'POST': ['create', 'update', 'delete'],
-    }
-
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        my_allowed = self.ALLOWED_VERBS[request.method]
-        verb = kwargs['verb']
-        if verb not in my_allowed:
-            return api_response(request, {'error': 'verb not allowed in HTTP VERB'})
-
-        if request.method in ['PUT', 'DELETE']:
-            data = QueryDict(request.body).dict()
-        elif request.method == 'POST':
-            data = request.POST.dict()
-        elif request.method == 'GET':
-            data = request.GET.dict()
-
-        self.fields_from_form()
-
-        handler = getattr(self, verb, None)
-        if handler:
-            try:
-                return api_response(request, handler(request, data))
-            except Http404:
-                return api_response(request, {'error': '404'})
-            except KeyError as exc:
-                return api_response(request, {'error': exc.args[0]})
-
-    def fields_from_form(self):
+    # pylint: disable=unused-argument
+    def pre_handler(self, request, handler):
         """
         Check if form is set and read fields from it
         """

@@ -7,9 +7,9 @@ import sys
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
+from supervisr.core.api.utils import api_response
 from supervisr.core.models import (Event, ProviderInstance,
                                    UserProductRelationship)
-from supervisr.core.views.api.utils import api_response
 
 
 @login_required
