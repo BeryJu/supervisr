@@ -4,11 +4,11 @@
 {% load i18n %}
 
 {% block title %}
-{% supervisr_title "Accounts" %}
+{% supervisr_title "All Accounts" %}
 {% endblock %}
 
 {% block content %}
-<h1><clr-icon shape="user" size="48"></clr-icon>{% trans "Accounts" %}</h1>
+<h1><clr-icon shape="user" size="48"></clr-icon>{% trans "All Accounts" %}</h1>
 <div class="btn-group btn-link btn-icon-link">
   <a href="{% url 'supervisr/mail:mail-account-new' %}" class="btn">
     <clr-icon shape="add"></clr-icon>

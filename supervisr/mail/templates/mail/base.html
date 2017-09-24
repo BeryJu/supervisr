@@ -8,12 +8,6 @@
 {% block sidenav %}
 <nav class="sidenav clr-nav-level-2">
   <section class="sidenav-content">
-    <a href="{% url 'supervisr/mail:mail-account-index' %}" class="nav-link {% is_active 'mail-account-index' %}">
-    {% trans "Accounts" %}
-    </a>
-    <a href="{% url 'supervisr/mail:mail-alias-index' %}" class="nav-link {% is_active 'mail-alias-index' %}">
-    {% trans "Aliases" %}
-    </a>
     <section class="nav-group">
       <a href="{% url 'supervisr/mail:mail-index' %}" class="nav-link {% is_active 'mail-index' %}">{% trans "Domains" %}</a>
       <ul class="nav-list">
@@ -23,6 +17,12 @@
         {% endfor %}
       </ul>
     </section>
+    <a href="{% url 'supervisr/mail:mail-account-index' %}" class="nav-link {% is_active 'mail-account-index' %}">
+    {% trans "All Accounts" %}
+    </a>
+    <a href="{% url 'supervisr/mail:mail-alias-index' %}" class="nav-link {% is_active 'mail-alias-index' %}">
+    {% trans "All Aliases" %}
+    </a>
   </section>
 </nav>
 {% endblock %}

@@ -4,6 +4,7 @@ Supervisr Mail Domain Views
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import Http404
 from django.shortcuts import redirect, render, reverse
 from django.utils.translation import ugettext as _
@@ -13,7 +14,7 @@ from supervisr.core.models import (Domain, ProviderInstance,
 from supervisr.core.providers.base import get_providers
 from supervisr.core.views.wizards import BaseWizardView
 from supervisr.mail.forms.domain import MailDomainForm
-from supervisr.mail.models import MailDomain
+from supervisr.mail.models import MailAccount, MailAlias, MailDomain
 
 
 @login_required
@@ -27,8 +28,36 @@ def view(req, domain):
         raise Http404
     r_domain = domains.first()
 
+    acc_accounts = MailAccount.objects \
+        .filter(domain=r_domain, users__in=[req.user]) \
+        .order_by('address')
+
+    acc_paginator = Paginator(acc_accounts, max(int(req.GET.get('per_page', 50)), 1))
+    page = req.GET.get('accountPage')
+    try:
+        accounts = acc_paginator.page(page)
+    except PageNotAnInteger:
+        accounts = acc_paginator.page(1)
+    except EmptyPage:
+        accounts = acc_paginator.page(acc_paginator.num_pages)
+
+    fwd_accounts = MailAlias.objects \
+        .filter(account__domain=r_domain, account__users__in=[req.user]) \
+        .order_by('account__domain', 'account__address')
+    ali_paginator = Paginator(fwd_accounts, max(int(req.GET.get('per_page', 50)), 1))
+
+    page = req.GET.get('aliasPage')
+    try:
+        aliases = ali_paginator.page(page)
+    except PageNotAnInteger:
+        aliases = ali_paginator.page(1)
+    except EmptyPage:
+        aliases = ali_paginator.page(ali_paginator.num_pages)
+
     return render(req, 'mail/domain/view.html', {
         'domain': r_domain,
+        'acc_accounts': accounts,
+        'acc_aliases': aliases,
         'title': '%s - Domains' % r_domain.domain.domain,
         })
 

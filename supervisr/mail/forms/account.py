@@ -10,7 +10,7 @@ from supervisr.mail.fields import MultiEmailField
 from supervisr.mail.models import MailAccount
 
 
-class MailAccountForm(forms.Form):
+class MailAccountGeneralForm(forms.Form):
     """
     Initial MailAccount Creation Form
     """
@@ -78,3 +78,13 @@ class MailAccountFormAlias(forms.Form):
         if len(fwd_list) != len(set(fwd_list)):
             raise forms.ValidationError('List contains duplicates.')
         return fwd_list
+
+class MailAccountForm(forms.ModelForm):
+    """
+    Form used to edit accounts
+    """
+
+    class Meta:
+
+        fields = ['domain', 'address', 'can_send', 'can_receive', 'is_catchall']
+        model = MailAccount
