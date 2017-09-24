@@ -201,3 +201,7 @@ h2 > clr-icon {
     background: #d9e4ea;
     color: #000;
 }
+
+section[role=tabpanel] {
+    width: 100%;
+}
