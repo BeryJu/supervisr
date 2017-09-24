@@ -11,4 +11,4 @@ def index(req):
     """
     Show empty index page
     """
-    return render(req, 'core/base.html')
+    return render(req, 'web/index.html')

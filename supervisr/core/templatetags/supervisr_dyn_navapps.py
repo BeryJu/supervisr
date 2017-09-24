@@ -24,7 +24,11 @@ def supervisr_dyn_navapps(context):
     # pylint: disable=global-statement
     uniq = ''
     if 'request' in context:
-        uniq = context['request'].user.email
+        user = context.get('request').user
+        if user.is_authenticated:
+            uniq = context.get('request').user.email
+        else:
+            uniq = 'anon'
     key = 'supervisr_dyn_navapps_%s' % uniq
     if not cache.get(key):
         app_list = []

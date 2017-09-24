@@ -1,8 +1,9 @@
 {% load i18n %}
 
 <div class="btn-group">
+  {% with param=get_param|default:'page' %}
   {% if pages.has_previous %}
-    <a class="btn" href="?page={{ pages.previous_page_number }}"><clr-icon shape="caret left"></clr-icon></a>
+    <a class="btn" href="?{{ param }}={{ pages.previous_page_number }}"><clr-icon shape="caret left"></clr-icon></a>
   {% else %}
     <a class="btn disabled" href=""><clr-icon shape="caret left"></clr-icon></a>
   {% endif %}
@@ -12,8 +13,9 @@
     {% endblocktrans %}
   </span>
   {% if pages.has_next %}
-    <a class="btn" href="?page={{ pages.next_page_number }}"><clr-icon shape="caret right"></clr-icon></a>
+    <a class="btn" href="?{{ param }}={{ pages.next_page_number }}"><clr-icon shape="caret right"></clr-icon></a>
   {% else %}
     <a class="btn disabled" href=""><clr-icon shape="caret right"></clr-icon></a>
   {% endif %}
+  {% endwith %}
 </div>

@@ -17,7 +17,11 @@ def supervisr_dyn_user(context):
     """
     uniq = ''
     if 'request' in context:
-        uniq = context['request'].user.email
+        user = context.get('request').user
+        if user.is_authenticated:
+            uniq = context.get('request').user.email
+        else:
+            uniq = 'anon'
     key = 'supervisr_dyn_user_%s' % uniq
     if not cache.get(key):
         app_list = []

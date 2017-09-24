@@ -30,9 +30,11 @@ def supervisr_title(context, title=None):
             # New label style ('supervisr/core', 'supervisr/mod/auth/oauth/client', etc)
             app_title = context.request.resolver_match.namespace
             dj_app = apps.get_app_config(app_title)
-        app_title = dj_app.title_moddifier(
-            context.request.resolver_match.namespace, context.request)
-        app = app_title + ' -'
+        title_moddifier = getattr(dj_app, 'title_moddifier', None)
+        if title_moddifier:
+            app_title = dj_app.title_moddifier(
+                context.request.resolver_match.namespace, context.request)
+            app = app_title + ' -'
     return _("%(title)s - %(app)s %(branding)s" % {
         'title': title,
         'branding': branding,

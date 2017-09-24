@@ -8,6 +8,7 @@ from django.apps import apps
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin as admin_django
+from django.contrib.admin.views.decorators import staff_member_required
 
 from supervisr.core.regex import (DOMAIN_REGEX, EMAIL_REGEX, MOD_REGEX,
                                   UUID_REGEX)
@@ -21,6 +22,8 @@ LOGGER = logging.getLogger(__name__)
 handler404 = 'supervisr.core.views.common.uncaught_404'
 # pylint: disable=invalid-name
 handler500 = 'supervisr.core.views.common.uncaught_500'
+
+admin_django.site.login = staff_member_required(admin_django.site.login)
 
 urlpatterns = [
     # Account views

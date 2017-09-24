@@ -1,9 +1,9 @@
 {% extends "core/base.html" %}
 
 {% load i18n %}
+{% load related_products %}
 {% load is_active %}
 {% load is_active_url %}
-{% load dns_zones %}
 
 {% block sidenav %}
 <nav class="sidenav clr-nav-level-2">
@@ -11,7 +11,7 @@
     <section class="nav-group">
       <a href="{% url 'supervisr/dns:dns-index' %}" class="nav-link {% is_active 'dns-index' %}">{% trans "Zones" %}</a>
       <ul class="nav-list">
-        {% dns_zones as zones %}
+        {% related_products 'supervisr.dns.models.Zone' as zones %}
         {% for z in zones %}
         <li><a href="{% url 'supervisr/dns:dns-record-list' zone=z.domain %}" class="nav-link {% is_active_url 'supervisr/dns:dns-record-list' zone=z.domain %}">{{ z.domain }}</a></li>
         {% endfor %}

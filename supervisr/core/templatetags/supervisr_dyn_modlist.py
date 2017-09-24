@@ -17,7 +17,11 @@ def supervisr_dyn_modlist(context):
     """
     uniq = ''
     if 'request' in context:
-        uniq = context['request'].user.email
+        user = context.get('request').user
+        if user.is_authenticated:
+            uniq = context.get('request').user.email
+        else:
+            uniq = 'anon'
     key = 'supervisr_dyn_modlist_%s' % uniq
     if not cache.get(key):
         mod_list = get_apps(mod_only=True)
