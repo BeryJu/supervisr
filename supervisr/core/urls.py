@@ -8,7 +8,7 @@ from django.apps import apps
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin as admin_django
-from django.contrib.admin.views.decorators import staff_member_required
+from django.views.generic.base import RedirectView
 
 from supervisr.core.regex import (DOMAIN_REGEX, EMAIL_REGEX, MOD_REGEX,
                                   UUID_REGEX)
@@ -23,15 +23,18 @@ handler404 = 'supervisr.core.views.common.uncaught_404'
 # pylint: disable=invalid-name
 handler500 = 'supervisr.core.views.common.uncaught_500'
 
-admin_django.site.login = staff_member_required(admin_django.site.login)
+admin_django.site.login = RedirectView.as_view(pattern_name=settings.LOGIN_URL,
+                                               permanent=True, query_string=True)
+admin_django.site.logout = RedirectView.as_view(pattern_name='account-logout',
+                                                permanent=True, query_string=True)
 
 urlpatterns = [
     # Account views
     url(r'^$', common.index, name='common-index'),
     url(r'^search/$', search.search, name='search'),
-    url(r'^accounts/login/$', accounts.LoginView.as_view(), name='account-login'),
+    url(r'^accounts/login/$', accounts.LoginView.as_view(), name=settings.LOGIN_URL),
     url(r'^accounts/login/reauth/$', accounts.reauth, name='account-reauth'),
-    url(r'^accounts/signup/$', accounts.signup, name='account-signup'),
+    url(r'^accounts/signup/$', accounts.SignupView.as_view(), name='account-signup'),
     url(r'^accounts/logout/$', accounts.logout, name='account-logout'),
     url(r'^accounts/confirm/(?P<uuid>%s)/$' % UUID_REGEX, accounts.confirm, name='account-confirm'),
     url(r'^accounts/confirm/resend/(?P<email>%s)/$' % EMAIL_REGEX,

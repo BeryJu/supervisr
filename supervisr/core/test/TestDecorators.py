@@ -84,7 +84,7 @@ class TestDecorators(TestCase):
         """
         @logged_in_or_basicauth(realm='testrealm')
         # pylint: disable=unused-argument
-        def _view(request):
+        def _view(req):
             """
             user has gotten through so everything's fine
             """

@@ -115,6 +115,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 LOGIN_REDIRECT_URL = 'user-index'
+LOGIN_URL = 'account-login'
 
 # Settings are taken from DB, these are needed for django-recaptcha to work
 RECAPTCHA_PUBLIC_KEY = ''

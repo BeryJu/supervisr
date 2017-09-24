@@ -219,12 +219,14 @@ def b64decode(*args):
     """
     return b64decode(''.join(args)).decode()
 
-def check_db_connection(connection_name='default'):
-    """
-    Check if a database connection can be made
+def check_db_connection(connection_name: str = 'default') -> bool:
+    """Check if a database connection can be made
 
-    :param connection_name: Name of the Django database connection Name
-    :returns: True if connection could be made, otherwise False
+    Args:
+        connection_name: Name of the Django database connection Name
+
+    Returns:
+        True if connection could be made, otherwise False
     """
     from django.db import connections
     from django.db.utils import OperationalError

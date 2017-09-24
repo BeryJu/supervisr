@@ -4,9 +4,9 @@ Supervisr Core APIv2
 
 from django.core.cache import cache
 
+from supervisr.core.api.utils import api_response
 from supervisr.core.signals import SIG_GET_MOD_HEALTH
 from supervisr.core.utils import check_db_connection
-from supervisr.core.views.api.utils import api_response
 
 
 def _cache_status():
