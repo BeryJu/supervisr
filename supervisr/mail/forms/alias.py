@@ -6,9 +6,10 @@ from django import forms
 from django.utils.translation import ugettext as _
 
 from supervisr.mail.fields import MultiEmailField
+from supervisr.mail.models import MailAlias
 
 
-class MailAliasForm(forms.Form):
+class MailAliasWizardForm(forms.Form):
     """
     Create a Mail Alias
     """
@@ -20,7 +21,7 @@ class MailAliasForm(forms.Form):
     alias_dest = MultiEmailField(required=False, label=_('Alias destination'))
 
     def __init__(self, *args, **kwargs):
-        super(MailAliasForm, self).__init__(*args, **kwargs)
+        super(MailAliasWizardForm, self).__init__(*args, **kwargs)
         self.fields['alias_dest'].widget.attrs['placeholder'] = _("One destination per line")
 
     def clean_alias_dest(self):
@@ -31,3 +32,13 @@ class MailAliasForm(forms.Form):
         if len(alias_list) != len(set(alias_list)):
             raise forms.ValidationError('List contains duplicates.')
         return alias_list
+
+class MailAliasForm(forms.ModelForm):
+    """
+    Form used to edit Mail Aliases
+    """
+
+    class Meta:
+
+        exclude = []
+        model = MailAlias

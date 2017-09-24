@@ -10,7 +10,7 @@ from django.shortcuts import redirect, render, reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.views.wizards import BaseWizardView
-from supervisr.mail.forms.alias import MailAliasForm
+from supervisr.mail.forms.alias import MailAliasForm, MailAliasWizardForm
 from supervisr.mail.models import MailAccount, MailAlias, MailDomain
 
 
@@ -44,7 +44,7 @@ class AliasNewView(BaseWizardView):
     """
 
     title = _('New Mail Alias')
-    form_list = [MailAliasForm]
+    form_list = [MailAliasWizardForm]
 
     def get_form(self, step=None, data=None, files=None):
         form = super(AliasNewView, self).get_form(step, data, files)
@@ -54,7 +54,7 @@ class AliasNewView(BaseWizardView):
             domains = MailDomain.objects.filter(users__in=[self.request.user])
             form.fields['accounts'].queryset = \
                 MailAccount.objects \
-                    .filter(domain__in=domains, users__in=[self.request.user]) \
+                    .filter(domain__in=domains, account__users__in=[self.request.user]) \
                     .order_by('domain', 'address')
         return form
 
@@ -68,20 +68,54 @@ class AliasNewView(BaseWizardView):
                     destination=alias_dest
                     )
         messages.success(self.request, _('Mail Aliases successfully created'))
-        return redirect(reverse('supervisr/mail:mail-alias-index'))
+        return redirect(reverse('supervisr/mail:mail-domain-view',
+                                kwargs={'domain': m_acc.domain.domain})+'#clr_tab=aliases')
 
 @login_required
-# pylint: disable=unused-argument
-def alias_delete(req, domain, dest):
+def alias_edit(req, domain, dest):
     """
-    Show view to delete alias
+    Edit Alias
     """
-    domains = MailDomain.objects.filter(domain__domain=domain)
+    domains = MailDomain.objects.filter(domain__domain=domain, users__in=[req.user])
     if not domains.exists():
         raise Http404
     r_domain = domains.first()
 
-    aliases = MailAlias.objects.filter(account__domain=r_domain, destination=dest)
+    aliases = MailAlias.objects.filter(account__domain=r_domain,
+                                       destination=dest, account__users__in=[req.user])
+    if not aliases.exists():
+        raise Http404
+    r_alias = aliases.first()
+
+    if req.method == 'POST':
+        form = MailAliasForm(req.POST, instance=r_alias)
+        if form.is_valid():
+            form.save()
+            messages.success(req, _('Successfully updated Alias'))
+            return redirect(reverse('supervisr/mail:mail-domain-view',
+                                    kwargs={'domain': domain})+'#clr_tab=aliases')
+    else:
+        form = MailAliasForm(instance=r_alias)
+
+    return render(req, 'core/generic_form_modal.html', {
+        'form': form,
+        'primary_action': 'Save',
+        'title': 'Alias Edit',
+        'size': 'lg',
+        })
+
+@login_required
+def alias_delete(req, domain, dest):
+    """
+    Show view to delete alias
+    """
+    domains = MailDomain.objects.filter(domain__domain=domain, users__in=[req.user])
+    if not domains.exists():
+        raise Http404
+    r_domain = domains.first()
+
+    aliases = MailAlias.objects.filter(account__domain=r_domain,
+                                       destination=dest, account__users__in=[req.user])
     if not aliases.exists():
         raise Http404
     r_alias = aliases.first()
@@ -90,7 +124,8 @@ def alias_delete(req, domain, dest):
         # User confirmed deletion
         r_alias.delete()
         messages.success(req, _('Alias successfully deleted'))
-        return redirect(reverse('supervisr/mail:mail-index'))
+        return redirect(reverse('supervisr/mail:mail-domain-view',
+                                kwargs={'domain': domain})+'#clr_tab=aliases')
 
     return render(req, 'core/generic_delete.html', {
         'object': 'Alias %s' % r_alias.destination,

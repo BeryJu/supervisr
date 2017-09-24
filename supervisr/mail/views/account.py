@@ -15,7 +15,8 @@ from supervisr.core.models import Event, UserProductRelationship
 from supervisr.core.views.wizards import BaseWizardView
 from supervisr.mail.forms.account import (MailAccountForm,
                                           MailAccountFormAlias,
-                                          MailAccountFormCredentials)
+                                          MailAccountFormCredentials,
+                                          MailAccountGeneralForm)
 from supervisr.mail.models import MailAccount, MailAlias, MailDomain
 
 LOGGER = logging.getLogger(__name__)
@@ -60,7 +61,7 @@ class AccountNewView(BaseWizardView):
     """
 
     title = _('New Mail Account')
-    form_list = [MailAccountForm, MailAccountFormCredentials, MailAccountFormAlias]
+    form_list = [MailAccountGeneralForm, MailAccountFormCredentials, MailAccountFormAlias]
     condition_dict = {
         '1': check_cred_form
     }
@@ -96,19 +97,20 @@ class AccountNewView(BaseWizardView):
                     destination=alias_dest
                     )
         messages.success(self.request, _('Mail Account successfully created'))
-        return redirect(reverse('supervisr/mail:mail-account-index'))
+        return redirect(reverse('supervisr/mail:mail-domain-view', kwargs=
+                                {'domain': form_dict['0'].cleaned_data.get('domain').domain}))
 
 @login_required
 def account_set_password(req, domain, account):
     """
     Set password for account
     """
-    domains = MailDomain.objects.filter(domain__domain=domain)
+    domains = MailDomain.objects.filter(domain__domain=domain, users__in=[req.user])
     if not domains.exists():
         raise Http404
     r_domain = domains.first()
 
-    accounts = MailAccount.objects.filter(domain=r_domain, address=account)
+    accounts = MailAccount.objects.filter(domain=r_domain, address=account, users__in=[req.user])
     if not accounts.exists():
         raise Http404
     r_account = accounts.first()
@@ -131,7 +133,7 @@ def account_set_password(req, domain, account):
                 request=req,
                 current=False)
             LOGGER.info("Updated password for %s", r_account.email)
-            return redirect(reverse('supervisr/mail:mail-account-index'))
+            return redirect(reverse('supervisr/mail:mail-domain-view', kwargs={'domain': domain}))
 
     else:
 
@@ -150,7 +152,41 @@ def account_edit(req, domain, account):
     """
     Show view to edit account
     """
-    pass
+    domains = MailDomain.objects.filter(domain__domain=domain, users__in=[req.user])
+    if not domains.exists():
+        raise Http404
+    r_domain = domains.first()
+
+    accounts = MailAccount.objects.filter(domain=r_domain, users__in=[req.user], address=account)
+    if not accounts.exists():
+        raise Http404
+    r_account = accounts.first()
+
+    # Make a list of all zones so user can switch zones
+    user_domains = MailDomain.objects.filter(users__in=[req.user])
+    domain_pk = user_domains.filter(domain__domain=domain).first().pk
+    full_address = '%s@%s' % (r_account.address, r_domain.domain.domain)
+
+    if req.method == 'POST':
+        form = MailAccountForm(req.POST, instance=r_account)
+        form.fields['domain'].queryset = user_domains
+        form.fields['domain'].initial = domain_pk
+        if form.is_valid():
+            r_account.save()
+            messages.success(req, _('Successfully edited Account'))
+            return redirect(reverse('supervisr/mail:mail-domain-view', kwargs={'domain': domain}))
+        messages.error(req, _("Invalid Account"))
+        return redirect(reverse('supervisr/mail:mail-domain-view', kwargs={'domain': domain}))
+    else:
+        form = MailAccountForm(instance=r_account)
+        form.fields['domain'].queryset = user_domains
+        form.fields['domain'].initial = domain_pk
+    return render(req, 'core/generic_form_modal.html', {
+        'form': form,
+        'primary_action': 'Save',
+        'title': _('Edit Account %(address)s' % {'address': full_address}),
+        'size': 'lg',
+        })
 
 @login_required
 # pylint: disable=unused-argument
@@ -158,12 +194,12 @@ def account_delete(req, domain, account):
     """
     Show view to delete account
     """
-    domains = MailDomain.objects.filter(domain__domain=domain)
+    domains = MailDomain.objects.filter(domain__domain=domain, users__in=[req.user])
     if not domains.exists():
         raise Http404
     r_domain = domains.first()
 
-    accounts = MailAccount.objects.filter(domain=r_domain, address=account)
+    accounts = MailAccount.objects.filter(domain=r_domain, address=account, users__in=[req.user])
     if not accounts.exists():
         raise Http404
     r_account = accounts.first()
@@ -172,7 +208,7 @@ def account_delete(req, domain, account):
         # User confirmed deletion
         r_account.delete()
         messages.success(req, _('Account successfully deleted'))
-        return redirect(reverse('supervisr/mail:mail-index'))
+        return redirect(reverse('supervisr/mail:mail-domain-view', kwargs={'domain': domain}))
 
     return render(req, 'core/generic_delete.html', {
         'object': 'Account %s' % r_account.email_raw,

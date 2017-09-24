@@ -64,8 +64,8 @@ class RecordNewView(BaseWizardView):
         return form
 
     # pylint: disable=unused-argument
-    def done(self, form_list):
-        record = form_list['0'].save(commit=False)
+    def done(self, final_forms, form_dict, **kwargs):
+        record = form_dict['0'].save(commit=False)
         record.save()
         UserProductRelationship.objects.create(
             product=record,
