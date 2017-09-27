@@ -21,6 +21,8 @@ google-api-python-client
 slumber
 pyvmomi
 psutil
+influxdb==4.1.1
+psutil
 pycrypto>=2.4
 requests_oauthlib>=0.4.2
 oauthlib>=0.6.2
