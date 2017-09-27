@@ -32,7 +32,7 @@ def stats_influx_handle_health(sender, **kwargs):
 
 @receiver(SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
 # pylint: disable=unused-argument,invalid-name
-def stats_influx_handle_upr_created(sender, **kwargs):
+def stats_influx_handle_upr_created(sender, upr, **kwargs):
     """
     Handle stats for SIG_USER_PRODUCT_RELATIONSHIP_CREATED
     """
@@ -41,13 +41,14 @@ def stats_influx_handle_upr_created(sender, **kwargs):
             client.write('signal',
                          tags={
                              'kind': 'upr',
-                             'action': 'created'
+                             'action': 'created',
+                             'user': 'Anonymous' if upr.user.username == '' else upr.user.username,
                          },
                          count=1)
 
 @receiver(SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
 # pylint: disable=unused-argument,invalid-name
-def stats_influx_handle_upr_deleted(sender, **kwargs):
+def stats_influx_handle_upr_deleted(sender, upr, **kwargs):
     """
     Handle stats for SIG_USER_PRODUCT_RELATIONSHIP_DELETED
     """
@@ -56,13 +57,14 @@ def stats_influx_handle_upr_deleted(sender, **kwargs):
             client.write('signal',
                          tags={
                              'kind': 'upr',
-                             'action': 'deleted'
+                             'action': 'deleted',
+                             'user': 'Anonymous' if upr.user.username == '' else upr.user.username,
                          },
                          count=1)
 
 @receiver(SIG_USER_POST_SIGN_UP)
 # pylint: disable=unused-argument,invalid-name
-def stats_influx_handle_user_post_sign_up(sender, **kwargs):
+def stats_influx_handle_user_post_sign_up(sender, user, **kwargs):
     """
     Handle stats for SIG_USER_POST_SIGN_UP
     """
@@ -71,13 +73,14 @@ def stats_influx_handle_user_post_sign_up(sender, **kwargs):
             client.write('signal',
                          tags={
                              'kind': 'user',
-                             'action': 'sign_up'
+                             'action': 'sign_up',
+                             'user': 'Anonymous' if user.username == '' else user.username,
                          },
                          count=1)
 
 @receiver(SIG_USER_POST_CHANGE_PASS)
 # pylint: disable=unused-argument,invalid-name
-def stats_influx_handle_user_post_change_pass(sender, **kwargs):
+def stats_influx_handle_user_post_change_pass(sender, user, **kwargs):
     """
     Handle stats for SIG_USER_POST_CHANGE_PASS
     """
@@ -86,13 +89,14 @@ def stats_influx_handle_user_post_change_pass(sender, **kwargs):
             client.write('signal',
                          tags={
                              'kind': 'user',
-                             'action': 'change_pass'
+                             'action': 'change_pass',
+                             'user': 'Anonymous' if user.username == '' else user.username,
                          },
                          count=1)
 
 @receiver(SIG_USER_PASS_RESET_FIN)
 # pylint: disable=unused-argument,invalid-name
-def stats_influx_handle_user_pass_reset_fin(sender, **kwargs):
+def stats_influx_handle_user_pass_reset_fin(sender, user, **kwargs):
     """
     Handle stats for SIG_USER_PASS_RESET_FIN
     """
@@ -101,13 +105,14 @@ def stats_influx_handle_user_pass_reset_fin(sender, **kwargs):
             client.write('signal',
                          tags={
                              'kind': 'user',
-                             'action': 'reset_pass'
+                             'action': 'reset_pass',
+                             'user': 'Anonymous' if user.username == '' else user.username,
                          },
                          count=1)
 
 @receiver(SIG_USER_CONFIRM)
 # pylint: disable=unused-argument,invalid-name
-def stats_influx_handle_user_confirm(sender, **kwargs):
+def stats_influx_handle_user_confirm(sender, user, **kwargs):
     """
     Handle stats for SIG_USER_CONFIRM
     """
@@ -116,13 +121,14 @@ def stats_influx_handle_user_confirm(sender, **kwargs):
             client.write('signal',
                          tags={
                              'kind': 'user',
-                             'action': 'confirm'
+                             'action': 'confirm',
+                             'user': 'Anonymous' if user.username == '' else user.username,
                          },
                          count=1)
 
 @receiver(SIG_USER_LOGIN)
 # pylint: disable=unused-argument,invalid-name
-def stats_influx_handle_user_login(sender, **kwargs):
+def stats_influx_handle_user_login(sender, user, **kwargs):
     """
     Handle stats for SIG_USER_LOGIN
     """
@@ -131,13 +137,14 @@ def stats_influx_handle_user_login(sender, **kwargs):
             client.write('signal',
                          tags={
                              'kind': 'user',
-                             'action': 'login'
+                             'action': 'login',
+                             'user': 'Anonymous' if user.username == '' else user.username,
                          },
                          count=1)
 
 @receiver(SIG_USER_LOGOUT)
 # pylint: disable=unused-argument,invalid-name
-def stats_influx_handle_user_logout(sender, **kwargs):
+def stats_influx_handle_user_logout(sender, user, **kwargs):
     """
     Handle stats for SIG_USER_LOGOUT
     """
@@ -146,13 +153,14 @@ def stats_influx_handle_user_logout(sender, **kwargs):
             client.write('signal',
                          tags={
                              'kind': 'user',
-                             'action': 'logout'
+                             'action': 'logout',
+                             'user': 'Anonymous' if user.username == '' else user.username,
                          },
                          count=1)
 
 @receiver(SIG_USER_RESEND_CONFIRM)
 # pylint: disable=unused-argument,invalid-name
-def stats_influx_handle_user_resend_confirm(sender, **kwargs):
+def stats_influx_handle_user_resend_confirm(sender, user, **kwargs):
     """
     Handle stats for SIG_USER_RESEND_CONFIRM
     """
@@ -161,7 +169,8 @@ def stats_influx_handle_user_resend_confirm(sender, **kwargs):
             client.write('signal',
                          tags={
                              'kind': 'user',
-                             'action': 'resend_confirm'
+                             'action': 'resend_confirm',
+                             'user': 'Anonymous' if user.username == '' else user.username,
                          },
                          count=1)
 
