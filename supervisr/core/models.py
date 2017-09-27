@@ -171,14 +171,14 @@ class Setting(CreatedUpdatedModel):
         return "Setting %s/%s" % (self.namespace, self.key)
 
     @staticmethod
-    def get(key, namespace='', default=''):
+    def get(key, namespace='', default='', inspect_offset=1):
         """
         Get value, when Setting doesn't exist, it's created with default
         """
         if not Setting._ALLOWED_NAMESPACES:
             Setting._init_allowed()
         if namespace == '':
-            namespace = inspect.getmodule(inspect.stack()[1][0]).__name__
+            namespace = inspect.getmodule(inspect.stack()[inspect_offset][0]).__name__
         for name in Setting._ALLOWED_NAMESPACES:
             if namespace.startswith(name):
                 namespace = name
@@ -197,6 +197,14 @@ class Setting(CreatedUpdatedModel):
             return setting.value
         except (OperationalError, ProgrammingError):
             return default
+
+    @staticmethod
+    def get_bool(*args, **kwargs):
+        """
+        Return value cast to boolean
+        """
+        value = Setting.get(*args, inspect_offset=2, **kwargs)
+        return str(value) == 'True'
 
     @staticmethod
     def set(key, value, namespace=''):

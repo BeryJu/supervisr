@@ -1,0 +1,32 @@
+{% extends "_admin/mod_default.html" %}
+
+{% load i18n %}
+{% load supervisr_title %}
+
+{% block title %}
+{% supervisr_title "Overview" %}
+{% endblock %}
+
+{% block module_content %}
+<h2><clr-icon shape="line-chart" size="32"></clr-icon>{% trans 'InfluxDB' %}</h2>
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h2><clr-icon shape="storage" size="32"></clr-icon>{% trans 'Connection Settings' %}</h2>
+      </div>
+      <form role="form" method="POST">
+        <div class="card-block">
+          <section class="form-block">
+            {% include 'blocks/block_form.html' with form=form %}
+          </section>
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-sm btn-primary">{% trans 'Update' %}</button>
+          <button type="submit" name="test" class="btn btn-sm btn-outline">{% trans 'Test' %}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
