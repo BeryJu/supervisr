@@ -34,13 +34,13 @@ def stats(get_response):
                     view_path = (res_match.__module__ + '.' + res_match.__name__)
                     remote_ip = get_remote_ip(req)
                     reverse_dns = get_reverse_dns(remote_ip)
+                    username = 'Anonymous' if req.user.username == '' else req.user.username
                     client.write('request',
                                  tags={
                                      'view_path': view_path,
                                      'remote_ip': remote_ip,
                                      'remote_ip_rdns': reverse_dns,
-                                     'user': 'Anonymous' if req.user.username == '' \
-                                                         else req.user.username,
+                                     'user': username ,
                                  },
                                  duration=(after - before) * 1000,
                                  status=response.status_code)
