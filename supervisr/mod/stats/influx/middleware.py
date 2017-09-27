@@ -39,6 +39,8 @@ def stats(get_response):
                                      'view_path': view_path,
                                      'remote_ip': remote_ip,
                                      'remote_ip_rdns': reverse_dns,
+                                     'user': 'Anonymous' if req.user.username == '' \
+                                                         else req.user.username,
                                  },
                                  duration=(after - before) * 1000,
                                  status=response.status_code)
