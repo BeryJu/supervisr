@@ -8,7 +8,7 @@
 }
 
 .login-wrapper {
-    background: url('../img/login_bg.jpg') !important;
+    background-image: url('../img/login_bg.jpg') !important;
 }
 
 .login-wrapper .form-group {
