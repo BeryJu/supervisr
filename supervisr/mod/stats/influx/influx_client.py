@@ -45,7 +45,8 @@ class InfluxClient(object):
             port=self.port,
             username=self.username,
             password=self.password,
-            database=self.database)
+            database=self.database,
+            timeout=5)
 
     def write(self, meas, tags=None, **fields):
         """
