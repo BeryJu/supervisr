@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.core.urlresolvers import resolve
 from django.utils.translation import ugettext as _
 from influxdb.exceptions import InfluxDBClientError, InfluxDBServerError
+from requests.exceptions import ConnectionError
 
 from supervisr.core.models import Setting
 from supervisr.core.utils import get_remote_ip, get_reverse_dns
@@ -44,7 +45,7 @@ def stats(get_response):
                                  },
                                  duration=(after - before) * 1000,
                                  status=response.status_code)
-            except (InfluxDBClientError, InfluxDBServerError) as exc:
+            except (InfluxDBClientError, InfluxDBServerError, ConnectionError) as exc:
                 if req.user.is_authenticated and req.user.is_superuser:
                     # Only show message if logged in and superuser
                     messages.error(req, _("Influx Error: %(msg)s" % {'msg': str(exc)}))
