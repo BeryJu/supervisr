@@ -41,7 +41,7 @@ class SupervisrModStatInfluxConfig(SupervisrAppConfig):
                              cpu=process.cpu_percent())
             return send
 
-        if Setting.get('enabled', default='False') != 'False':
+        if Setting.get_bool('enabled'):
             try:
                 client = InfluxClient()
                 client.connect()
