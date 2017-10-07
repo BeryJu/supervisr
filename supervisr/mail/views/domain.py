@@ -91,10 +91,7 @@ class DomainNewView(BaseWizardView):
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
-        m_dom = MailDomain.objects.create(
-            domain=form_dict['0'].cleaned_data.get('domain'),
-            provider=form_dict['0'].cleaned_data.get('provider'),
-            enabled=form_dict['0'].cleaned_data.get('enabled'))
+        m_dom = form_dict['0'].save()
         UserProductRelationship.objects.create(
             product=m_dom,
             user=self.request.user)

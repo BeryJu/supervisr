@@ -22,6 +22,7 @@ class MailDomain(Product):
     provider = models.ForeignKey(ProviderInstance, default=None, on_delete=models.CASCADE)
     domain_raw = models.TextField(blank=True, help_text=_('This field is automatically generated'
                                                           'by Django to make queries easier.'))
+    destination = models.TextField(default='internal')
     enabled = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
