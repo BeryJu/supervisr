@@ -41,12 +41,12 @@ class SupervisrModStatInfluxConfig(SupervisrAppConfig):
                              cpu=process.cpu_percent())
             return send
 
-        if Setting.get('enabled', default='False') != 'False':
+        if Setting.get_bool('enabled'):
             try:
                 client = InfluxClient()
                 client.connect()
                 SCHEDULER.every(10).seconds.do(send_stats(client))
-            except (TimeoutError, ConnectionError):
+            except (TimeoutError, ConnectionError, IOError):
                 LOGGER.warning("Failed to connect to influx server '%s'.", Setting.get('host'))
 
     def ensure_settings(self):

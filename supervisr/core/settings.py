@@ -303,8 +303,13 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'cherrypy':  {
+        'cherrypy': {
             'handlers': ['console', 'syslog', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'oauthlib': {
+            'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
         }

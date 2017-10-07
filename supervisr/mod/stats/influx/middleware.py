@@ -45,7 +45,7 @@ def stats(get_response):
                                  },
                                  duration=(after - before) * 1000,
                                  status=response.status_code)
-            except (InfluxDBClientError, InfluxDBServerError, reqConnectionError) as exc:
+            except (InfluxDBClientError, InfluxDBServerError, reqConnectionError, IOError) as exc:
                 if req.user.is_authenticated and req.user.is_superuser:
                     # Only show message if logged in and superuser
                     messages.error(req, _("Influx Error: %(msg)s" % {'msg': str(exc)}))
