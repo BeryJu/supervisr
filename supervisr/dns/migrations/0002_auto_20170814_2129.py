@@ -8,7 +8,7 @@ from supervisr.core.models import get_system_user
 
 
 def create_module(apps, schema_editor):
-    PuppetModule = apps.get_model('puppet', 'PuppetModule')
+    PuppetModule = apps.get_model('supervisr/puppet', 'PuppetModule')
     User = apps.get_model('auth', 'User')
     system_user = User.objects.get(pk=get_system_user())
 
@@ -20,7 +20,7 @@ def create_module(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('puppet', '0004_puppetmodule_source_path'),
+        ('supervisr/puppet', '0004_puppetmodule_source_path'),
         ('supervisr/dns', '0001_initial'),
     ]
 

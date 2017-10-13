@@ -14,7 +14,7 @@ NAMESPACE_MAP = {
 }
 
 def update_settings(apps, schema_editor):
-    Setting = apps.get_model('core', 'Setting')
+    Setting = apps.get_model('supervisr/core', 'Setting')
     for set in Setting.objects.all():
         for key, value in NAMESPACE_MAP.items():
             if set.key.startswith(key):
@@ -25,7 +25,7 @@ def update_settings(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0056_setting_namespace'),
+        ('supervisr/core', '0056_setting_namespace'),
     ]
 
     operations = [

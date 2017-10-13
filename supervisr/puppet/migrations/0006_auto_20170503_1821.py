@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('puppet', '0005_auto_20170423_1827'),
+        ('supervisr/puppet', '0005_auto_20170423_1827'),
     ]
 
     operations = [

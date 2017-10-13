@@ -7,7 +7,7 @@ from django.db import migrations, models
 
 
 def create_settings(apps, schema_editor):
-    Setting = apps.get_model('core', 'Setting')
+    Setting = apps.get_model('supervisr/core', 'Setting')
     settings = {
         'core:analytics:ga:enabled': False,
         'core:analytics:ga:tracking_id': '',
@@ -20,7 +20,7 @@ def create_settings(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0020_remove_domain_domain_name'),
+        ('supervisr/core', '0020_remove_domain_domain_name'),
     ]
 
     operations = [

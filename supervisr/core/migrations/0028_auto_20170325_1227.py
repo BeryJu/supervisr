@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.OAUTH2_PROVIDER_APPLICATION_MODEL),
-        ('core', '0027_auto_20170325_1103'),
+        ('supervisr/core', '0027_auto_20170325_1103'),
     ]
 
     operations = [
@@ -33,17 +33,17 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ProductExtensionOAuth2',
             fields=[
-                ('productextension_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='core.ProductExtension')),
+                ('productextension_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/core.ProductExtension')),
                 ('application', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.OAUTH2_PROVIDER_APPLICATION_MODEL)),
             ],
             options={
                 'abstract': False,
             },
-            bases=('core.productextension',),
+            bases=('supervisr/core.productextension',),
         ),
         migrations.AddField(
             model_name='product',
             name='extensions',
-            field=models.ManyToManyField(to='core.ProductExtension'),
+            field=models.ManyToManyField(to='supervisr/core.ProductExtension'),
         ),
     ]

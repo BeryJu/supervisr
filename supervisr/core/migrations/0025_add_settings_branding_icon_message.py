@@ -6,7 +6,7 @@ from django.db import migrations
 
 
 def create_settings(apps, schema_editor):
-    Setting = apps.get_model('core', 'Setting')
+    Setting = apps.get_model('supervisr/core', 'Setting')
     settings = {
         'core:banner:enabled': False,
         'core:banner:message': '',
@@ -21,7 +21,7 @@ def create_settings(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0024_auto_20170222_1701'),
+        ('supervisr/core', '0024_auto_20170222_1701'),
     ]
 
     operations = [

@@ -11,27 +11,27 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('core', '0010_domain'),
+        ('supervisr/core', '0010_domain'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='MailAccount',
             fields=[
-                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='core.Product')),
+                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/core.Product')),
                 ('address', models.CharField(max_length=64)),
                 ('quota', models.BigIntegerField(default=0)),
                 ('can_send', models.BooleanField(default=True)),
                 ('password', models.CharField(max_length=128)),
             ],
-            bases=('core.product',),
+            bases=('supervisr/core.product',),
         ),
         migrations.CreateModel(
             name='MailDomain',
             fields=[
-                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='core.Product')),
-                ('domain_mail', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='core.Domain')),
+                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/core.Product')),
+                ('domain_mail', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='supervisr/core.Domain')),
             ],
-            bases=('core.product',),
+            bases=('supervisr/core.product',),
         ),
     ]

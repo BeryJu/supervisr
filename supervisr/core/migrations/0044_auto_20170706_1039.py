@@ -10,7 +10,7 @@ import supervisr.core.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0043_auto_20170706_1037'),
+        ('supervisr/core', '0043_auto_20170706_1037'),
     ]
 
     operations = [

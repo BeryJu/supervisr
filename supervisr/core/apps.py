@@ -32,6 +32,13 @@ class SupervisrAppConfig(AppConfig):
     navbar_enabled = lambda self, request: False
     title_moddifier = lambda self, label, request: label.title()
 
+    def __init__(self, *args, **kwargs):
+        """
+        Set app Label based on full name
+        """
+        self.label = self.name.replace('.', '/')
+        super(SupervisrAppConfig, self).__init__(*args, **kwargs)
+
     def ready(self):
         #self.check_requirements()
         self.load_init()
@@ -140,6 +147,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr.core'
+    label = 'supervisr/core'
     init_modules = [
         'signals',
         'events',

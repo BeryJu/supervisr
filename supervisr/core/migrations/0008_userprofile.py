@@ -10,8 +10,8 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('auth', '0008_alter_user_username_max_length'),
-        ('core', '0007_auto_20170110_1139'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('supervisr/core', '0007_auto_20170110_1139'),
     ]
 
     operations = [

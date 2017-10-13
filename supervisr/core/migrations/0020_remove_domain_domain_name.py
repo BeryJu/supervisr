@@ -16,7 +16,7 @@ def update_system_user(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0019_auto_20170118_1703'),
+        ('supervisr/core', '0019_auto_20170118_1703'),
     ]
 
     operations = [

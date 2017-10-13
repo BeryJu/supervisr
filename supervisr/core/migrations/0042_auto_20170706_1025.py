@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('core', '0041_baseproviderinstance'),
+        ('supervisr/core', '0041_baseproviderinstance'),
     ]
 
     operations = [
@@ -32,25 +32,25 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='APIKeyCredential',
             fields=[
-                ('basecredential_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='core.BaseCredential')),
+                ('basecredential_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/core.BaseCredential')),
                 ('api_key', models.TextField()),
             ],
             options={
                 'abstract': False,
             },
-            bases=('core.basecredential',),
+            bases=('supervisr/core.basecredential',),
         ),
         migrations.CreateModel(
             name='UserPasswordCredential',
             fields=[
-                ('basecredential_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='core.BaseCredential')),
+                ('basecredential_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/core.BaseCredential')),
                 ('username', models.TextField()),
                 ('password', supervisr.core.fields.EncryptedField()),
             ],
             options={
                 'abstract': False,
             },
-            bases=('core.basecredential',),
+            bases=('supervisr/core.basecredential',),
         ),
         migrations.AddField(
             model_name='basecredential',
@@ -60,6 +60,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='basecredential',
             name='provider',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.BaseProviderInstance'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/core.BaseProviderInstance'),
         ),
     ]

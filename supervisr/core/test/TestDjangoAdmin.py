@@ -20,4 +20,4 @@ class TestDjangoAdmin(TestCase):
         """
         Test Admin autoregister
         """
-        admin_autoregister('core')
+        admin_autoregister('supervisr/core')

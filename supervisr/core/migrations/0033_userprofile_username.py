@@ -10,7 +10,7 @@ from supervisr.core.models import make_username
 
 def update_username(apps, schema_editor):
     User = apps.get_model('auth', 'User')
-    UserProfile = apps.get_model('core', 'UserProfile')
+    UserProfile = apps.get_model('supervisr/core', 'UserProfile')
     for up in UserProfile.objects.all():
         up.username = up.user.email
         up.unix_username = make_username(up.username)
@@ -19,7 +19,7 @@ def update_username(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0032_auto_20170423_1805'),
+        ('supervisr/core', '0032_auto_20170423_1805'),
     ]
 
     operations = [
