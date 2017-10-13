@@ -13,3 +13,7 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'corsheaders',
 ]
+AUTHENTICATION_BACKENDS = [
+    'oauth2_provider.backends.OAuth2Backend',
+]
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'

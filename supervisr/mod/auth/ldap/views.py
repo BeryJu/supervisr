@@ -20,27 +20,27 @@ def admin_settings(req, mod):
     Default view for modules without admin view
     """
     initial_data = {
-        'enabled':       Setting.get('mod:ldap:enabled') == 'True',
-        'host':          Setting.get('mod:ldap:server', None),
-        'base':          Setting.get('mod:ldap:base', None),
-        'create_base':   Setting.get('mod:ldap:create_base', None),
-        'bind_user':     Setting.get('mod:ldap:bind:user', None),
-        'bind_password': Setting.get('mod:ldap:bind:password', None),
-        'domain':        Setting.get('mod:ldap:domain', None),
+        'enabled':       Setting.get('enabled') == 'True',
+        'host':          Setting.get('server', default=None),
+        'base':          Setting.get('base', default=None),
+        'create_base':   Setting.get('create_base', default=None),
+        'bind_user':     Setting.get('bind:user', default=None),
+        'bind_password': Setting.get('bind:password', default=None),
+        'domain':        Setting.get('domain', default=None),
     }
     if req.method == 'POST':
         form = SettingsForm(req.POST)
         if form.is_valid():
-            Setting.set('mod:ldap:enabled', form.cleaned_data.get('enabled'))
-            Setting.set('mod:ldap:server', form.cleaned_data.get('host'))
-            Setting.set('mod:ldap:base', form.cleaned_data.get('base'))
-            Setting.set('mod:ldap:create_base', form.cleaned_data.get('create_base'))
-            Setting.set('mod:ldap:bind:user', form.cleaned_data.get('bind_user'))
-            Setting.set('mod:ldap:bind:password', form.cleaned_data.get('bind_password'))
-            Setting.set('mod:ldap:domain', form.cleaned_data.get('domain'))
+            Setting.set('enabled', form.cleaned_data.get('enabled'))
+            Setting.set('server', form.cleaned_data.get('host'))
+            Setting.set('base', form.cleaned_data.get('base'))
+            Setting.set('create_base', form.cleaned_data.get('create_base'))
+            Setting.set('bind:user', form.cleaned_data.get('bind_user'))
+            Setting.set('bind:password', form.cleaned_data.get('bind_password'))
+            Setting.set('domain', form.cleaned_data.get('domain'))
             Setting.objects.update()
             messages.success(req, _('Settings successfully updated'))
-        return redirect(reverse('ldap:admin_settings', kwargs={'mod': mod}))
+        return redirect(reverse('supervisr/mod/auth/ldap:admin_settings', kwargs={'mod': mod}))
     else:
         form = SettingsForm(initial=initial_data)
     return render(req, 'ldap/settings.html', {

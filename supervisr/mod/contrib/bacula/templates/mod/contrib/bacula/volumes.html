@@ -1,0 +1,51 @@
+{% extends "mod/contrib/bacula/base.html" %}
+
+{% load i18n %}
+{% load static %}
+{% load supervisr_title %}
+{% load human_size %}
+
+{% block title %}
+  {% supervisr_title 'Volumes' %}
+{% endblock %}
+
+{% block content_area %}
+<div class="container">
+  <h1><clr-icon shape="view-list" size="48"></clr-icon>{% trans "All Volumes" %}</h1>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <table class="table table-compact">
+      <thead>
+        <tr>
+          <th>{% trans 'Media ID' %}</th>
+          <th>{% trans 'Name' %}</th>
+          <th>{% trans 'Status' %}</th>
+          <th>{% trans 'Pool' %}</th>
+          <th>{% trans 'Type' %}</th>
+          <th>{% trans 'Start Time' %}</th>
+          <th>{% trans 'End Time' %}</th>
+          <th>{% trans 'Size' %}</th>
+          <th>{% trans 'Files' %}</th>
+        </tr>
+      </thead>
+      {% for media in pages %}
+        <tr>
+          <td>{{ media.MediaId }}</td>
+          <td>{{ media.VolumeName }}</td>
+          <td>{{ media.VolStatus }}</td>
+          <td>{{ media.PoolId.Name }}</td>
+          <td>{{ media.MediaType }}</td>
+          <td>{{ media.FirstWritten }}</td>
+          <td>{{ media.LastWritten }}</td>
+          <td>{% human_size media.VolBytes %}</td>
+          <td>{{ media.VolFiles }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+<div class="row">
+  {% include 'blocks/block_pagination.html' %}
+</div>
+{% endblock %}

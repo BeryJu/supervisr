@@ -1,5 +1,6 @@
 {% extends "common/base.html" %}
 
+{% load cache %}
 {% load supervisr_title %}
 {% load i18n %}
 {% load gravatar %}
@@ -8,9 +9,46 @@
 {% supervisr_title "Overview" %}
 {% endblock %}
 
-{% block content %}
+{% block header %}
+<style>
+  .apps ul {
+    background: #fff;
+    margin: 0;
+    overflow: hidden;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .apps ul li {
+    width: 33%;
+    min-width: 100px;
+    color: black;
+    padding: 18px 0;
+    text-align: center;
+  }
+
+  .apps ul li a {
+    color: black;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .apps ul li a img,
+  .apps ul li a clr-icon {
+    width: 64px;
+    height: 64px;
+    margin: auto;
+  }
+</style>
+{% endblock %}
+
+{% block content_area %}
+<div class="container">
+  <h1><clr-icon shape="dashboard" size="48"></clr-icon>{% trans "Overview" %}</h1>
+</div>
 <div class="row">
-  <div class="col-md-2">
+  <div class="col-md-2 hidden-sm-down">
     <div class="card">
       <div class="card-img">
         <img src="{% gravatar user.email %}" class="card-media-image">
@@ -22,69 +60,45 @@
       </div>
     </div>
   </div>
-  <div class="col-md-2">
+  <div class="col-md-7">
     <div class="card">
       <div class="card-header">
-        {% trans "Overall Status" %}
+        {% trans "Provider Instance Status" %}
       </div>
       <div class="card-block">
+        {% if user_providers and user_providers|length > 0 %}
+        <table class="table table-noborder table-compact table-card">
+          <thead>
+            <th>{% trans 'Instance' %}</th>
+            <th>{% trans 'Provider' %}</th>
+            <th>{% trans 'Status' %}</th>
+          </thead>
+          <tbody>
+            {% for instance in user_providers %}
+            <tr>
+              <td><span>{{ instance.name }}</span></td>
+              <td><span>{{ instance.provider.get_meta.ui_name }}</span></td>
+              <td>
+                {% with status=instance.provider.check_status %}
+                  {% if status == True %}
+                    <span class="label label-success">{% trans "OK" %}</span>
+                  {% else %}
+                    <span class="label is-error">{{ status }}</span>
+                  {% endif %}
+                {% endwith %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
         <div class="card-text">
-          <h1 class="text-center text-success">{% trans "OK" %}</h1>
+          <p>{% trans "No Provders" %}</p>
         </div>
+        {% endif %}
       </div>
     </div>
-    {% for domain in domains %}
-    <div class="card">
-      <div class="card-header">
-        {% blocktrans %}Quota Domain '{{ domain }}'{% endblocktrans %}
-      </div>
-      <div class="card-block">
-        <div class="card-text">
-          <table class="table table-noborder table-compact table-card">
-            <tbody>
-              {# TODO: templatetag that returns domain's service instances #}
-              <!--<tr>
-                <td>Mail</td>
-                <td>
-                  <div class="progress-bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="width: 30%;">30%</div>
-                </td>
-              </tr> -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-  <div class="col-md-8">
-    <div class="card">
-      <div class="card-header">
-        {% trans "Quicklaunch" %}
-      </div>
-      <div class="card-block">
-        <div class="card-text">
-          {% if hosted_applications %}
-          <table class="table table-noborder table-compact table-card">
-            <tbody>
-              {% for app in hosted_applications %}
-              <tr>
-                <td>{{ app.name }}</td>
-                <td><a href="{{ app.product.management_url }}" class="btn btn-primary btn-sm">{% trans "Open" %}</a></td>
-                <td><span class="label label-success">{% trans "OK" %}</span></td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-          {% else %}
-          <div class="card-text">
-            <p>{% trans "No Hosted Applications yet!" %}</p>
-          </div>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
+    <div class="card hidden-sm-down">
       <div class="card-header">
         {% trans "Recent Events" %}
       </div>
@@ -117,6 +131,43 @@
         {% else %}
         <div class="card-text">
           <p>{% trans "No Current Events!" %}</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-header">
+        {% trans "Quicklaunch" %}
+      </div>
+      <div class="card-block">
+        {% if hosted_applications %}
+         <div class="launcher">
+           <div class="app-launcher">
+             <div class="apps">
+               <ul>
+                  {% for app in hosted_applications %}
+                  <li>
+                    <a href="{{ app.product.management_url }}">
+                      {% if app.product.icon %}
+                      {% cache 600 app app.product.uuid %}
+                      <img src="{{ app.product.icon_b64 }}" alt="{{ app.name }} Icon">
+                      {% endcache %}
+                      {% else %}
+                      <clr-icon shape="application" size="64"></clr-icon>
+                      {% endif %}
+                      {{ app.name }}
+                    </a>
+                  </li>
+                  {% endfor %}
+               </ul>
+             </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="card-text">
+          <p>{% trans "No Hosted Applications yet!" %}</p>
         </div>
         {% endif %}
       </div>

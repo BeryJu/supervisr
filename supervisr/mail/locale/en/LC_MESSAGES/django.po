@@ -1,0 +1,213 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-15 19:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\fields.py:15
+msgid "Enter valid email addresses."
+msgstr ""
+
+#: .\forms\account.py:20 .\forms\domain.py:16
+#: .\templates\mail\account\index.html:35 .\templates\mail\index.html:18
+msgid "Domain"
+msgstr ""
+
+#: .\forms\account.py:21 .\templates\mail\alias\index.html:26
+msgid "Address"
+msgstr ""
+
+#: .\forms\account.py:23
+msgid "Can Send Emails"
+msgstr ""
+
+#: .\forms\account.py:25
+msgid "Can Receive Emails"
+msgstr ""
+
+#: .\forms\account.py:27
+msgid "Mark as Catch-all Account"
+msgstr ""
+
+#: .\forms\account.py:50
+msgid "Password"
+msgstr ""
+
+#: .\forms\account.py:52
+msgid "Repeat Password"
+msgstr ""
+
+#: .\forms\account.py:67
+msgid "Forwarder destination (optional)"
+msgstr ""
+
+#: .\forms\account.py:71 .\forms\alias.py:24
+msgid "One destination per line"
+msgstr ""
+
+#: .\forms\alias.py:19
+msgid "Source Account"
+msgstr ""
+
+#: .\forms\alias.py:20
+msgid "Alias destination"
+msgstr ""
+
+#: .\forms\domain.py:18 .\templates\mail\index.html:19
+msgid "Provider"
+msgstr ""
+
+#: .\forms\domain.py:19
+msgid "Enabled"
+msgstr ""
+
+#: .\models.py:23 .\models.py:58 .\models.py:60
+msgid "This field is automatically generatedby Django to make queries easier."
+msgstr ""
+
+#: .\models.py:78
+#, python-format
+msgid "Changed Password for Mail Account %(account)s"
+msgstr ""
+
+#: .\templates\mail\account\index.html:11 .\templates\mail\base.html:15
+#: .\templates\mail\index.html:44
+msgid "Accounts"
+msgstr ""
+
+#: .\templates\mail\account\index.html:27
+msgid "Set Password"
+msgstr ""
+
+#: .\templates\mail\account\index.html:34
+msgid "Full Address"
+msgstr ""
+
+#: .\templates\mail\account\index.html:36 .\templates\mail\alias\index.html:28
+msgid "Owner"
+msgstr ""
+
+#: .\templates\mail\account\index.html:37
+msgid "Usage"
+msgstr ""
+
+#: .\templates\mail\account\index.html:38 .\templates\mail\alias\index.html:29
+msgid "Is Catchall?"
+msgstr ""
+
+#: .\templates\mail\alias\index.html:11 .\templates\mail\base.html:18
+#: .\templates\mail\index.html:50
+msgid "Aliases"
+msgstr ""
+
+#: .\templates\mail\alias\index.html:27
+msgid "Forwarder Destination"
+msgstr ""
+
+#: .\templates\mail\base.html:12
+msgid "Overview"
+msgstr ""
+
+#: .\templates\mail\base.html:22
+msgid "Domain Settings"
+msgstr ""
+
+#: .\templates\mail\domain\view.html:18
+msgid "Details "
+msgstr ""
+
+#: .\templates\mail\domain\view.html:22
+msgid "General Settings"
+msgstr ""
+
+#: .\templates\mail\domain\view.html:26
+msgid "Spam Settings"
+msgstr ""
+
+#: .\templates\mail\domain\view.html:30
+msgid "DKIM Settings"
+msgstr ""
+
+#: .\templates\mail\domain\view.html:37
+msgid "Created"
+msgstr ""
+
+#: .\templates\mail\domain\view.html:41
+msgid "Domain Provider"
+msgstr ""
+
+#: .\templates\mail\index.html:11
+msgid "Mail"
+msgstr ""
+
+#: .\templates\mail\index.html:13
+msgid "Unclaimed Domains"
+msgstr ""
+
+#: .\templates\mail\index.html:28
+msgid "Pursue"
+msgstr ""
+
+#: .\templates\mail\index.html:38
+msgid "Domains"
+msgstr ""
+
+#: .\views\account.py:62
+msgid "New Mail Account"
+msgstr ""
+
+#: .\views\account.py:98
+msgid "Mail Account successfully created"
+msgstr ""
+
+#: .\views\account.py:126
+#, python-format
+msgid "Successfully set password for %(account)s"
+msgstr ""
+
+#: .\views\account.py:130
+#, python-format
+msgid "You reset the password for %(account)s"
+msgstr ""
+
+#: .\views\account.py:144
+#, python-format
+msgid "Change password for %(account)s"
+msgstr ""
+
+#: .\views\account.py:174
+msgid "Account successfully deleted"
+msgstr ""
+
+#: .\views\alias.py:46
+msgid "New Mail Alias"
+msgstr ""
+
+#: .\views\alias.py:70
+msgid "Mail Aliases successfully created"
+msgstr ""
+
+#: .\views\alias.py:92
+msgid "Alias successfully deleted"
+msgstr ""
+
+#: .\views\domain.py:41
+msgid "New Mail Domain"
+msgstr ""
+
+#: .\views\domain.py:72
+msgid "Mail Domain successfully created"
+msgstr ""

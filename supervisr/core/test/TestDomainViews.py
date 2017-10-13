@@ -9,8 +9,8 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
-from ..models import get_system_user
-from ..views import domain
+from supervisr.core.models import get_system_user
+from supervisr.core.views import domains
 
 
 class TestDomainViews(TestCase):
@@ -28,7 +28,7 @@ class TestDomainViews(TestCase):
         """
         req = self.factory.get(reverse('domain-index'))
         req.user = AnonymousUser()
-        res = domain.index(req)
+        res = domains.index(req)
         self.assertEqual(res.status_code, 302)
 
     def test_index_view_auth(self):
@@ -37,5 +37,5 @@ class TestDomainViews(TestCase):
         """
         req = self.factory.get(reverse('domain-index'))
         req.user = User.objects.get(pk=get_system_user())
-        res = domain.index(req)
+        res = domains.index(req)
         self.assertEqual(res.status_code, 200)

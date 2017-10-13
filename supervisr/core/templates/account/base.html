@@ -4,7 +4,7 @@
 {% load is_active %}
 
 {% block sidenav %}
-<nav class="sidenav">
+<nav class="sidenav clr-nav-level-2">
   <section class="sidenav-content">
     <a href="{% url 'admin-index' %}" class="nav-link {% is_active 'admin-index' %}">
       {% trans "Overview" %}

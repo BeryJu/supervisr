@@ -1,7 +1,7 @@
 ### auth/30_supervisr_config
 #################################
 {% load supervisr_setting %}
-{% supervisr_setting 'mail:debug' as debug %}
+{% supervisr_setting 'debug' as debug %}
 
 plain_server:
   driver = plaintext

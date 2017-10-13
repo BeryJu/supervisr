@@ -3,26 +3,11 @@ Supervisr Core Forms
 """
 import re
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout
 from django import forms
 from django.utils.translation import ugettext as _
 
-from ..models import Setting
+from supervisr.core.models import Setting
 
-
-class InlineForm(forms.Form):
-    """
-    Form with a bootstrap3 inline template applied
-    """
-
-    order = []
-
-    def __init__(self, *args, **kwargs):
-        super(InlineForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.field_template = 'bootstrap3/layout/inline_field.html'
-        self.helper.layout = Layout(*self.order)
 
 def check_password(form, check_filter=True):
     """
@@ -34,15 +19,12 @@ def check_password(form, check_filter=True):
     if form.fields['password'].required is False and \
         form.fields['password_rep'].required is False:
         return password_a
-    # Error if one password is empty.
-    if not password_b:
-        raise forms.ValidationError(_("You must confirm your password"))
     if password_a != password_b:
         raise forms.ValidationError(_("Your passwords do not match"))
     # Check if password is strong enough
-    if Setting.get('core:password:filter') != '' and check_filter:
-        if not re.match(Setting.get('core:password:filter'), password_b):
-            desc = Setting.get('core:password:filter:description')
+    if Setting.get('password:filter') != '' and check_filter:
+        if not re.match(Setting.get('password:filter'), password_b):
+            desc = Setting.get('password:filter:description')
             raise forms.ValidationError(_("Password has to contain %(desc)s" % {
                 'desc': desc
                 }))

@@ -1,9 +1,12 @@
 django>=1.10.0
+invoke
+cherrypy
 pymysql
-django-crispy-forms>=1.6.1
 django-formtools
 django-recaptcha
-markdown
 docutils
 pyyaml
 passlib
+Pillow
+schedule
+python-gitlab

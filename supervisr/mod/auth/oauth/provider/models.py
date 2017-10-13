@@ -13,7 +13,7 @@ class ProductExtensionOAuth2(ProductExtension):
     Associate an OAuth2 Application with a Product
     """
 
-    application = models.ForeignKey(Application)
+    application = models.ForeignKey(Application, on_delete=models.CASCADE)
 
     def __str__(self):
         return "ProductExtenstion OAuth %s" % self.application.name

@@ -4,8 +4,9 @@ Supervisr Mod Stats Graphite
 
 from django.conf.urls import url
 
+from supervisr.core.regex import MOD_REGEX
 from supervisr.mod.stats.graphite import views
 
 urlpatterns = [
-    url(r'^settings/(?P<mod>[a-zA-Z0-9]+)/$', views.admin_settings, name='admin_settings'),
+    url(r'^settings/(?P<mod>%s)/$' % MOD_REGEX, views.admin_settings, name='admin_settings'),
 ]

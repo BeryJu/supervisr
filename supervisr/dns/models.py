@@ -1,42 +1,135 @@
 """
 Supervisr DNS Models
 """
+
+from django.contrib.auth.models import User
 from django.db import models
 
-from supervisr.core.models import CreatedUpdatedModel, Domain, Product
+from supervisr.core.models import (CreatedUpdatedModel, Domain, Product,
+                                   ProviderInstance)
+
+RECORD_TYPES = (
+    ('A', 'A'),
+    ('AAAA', 'AAAA'),
+    ('AFSDB', 'AFSDB'),
+    ('APL', 'APL'),
+    ('CAA', 'CAA'),
+    ('CDNSKEY', 'CDNSKEY'),
+    ('CDS', 'CDS'),
+    ('CERT', 'CERT'),
+    ('CNAME', 'CNAME'),
+    ('DHCID', 'DHCID'),
+    ('DLV', 'DLV'),
+    ('DNAME', 'DNAME'),
+    ('DNSKEY', 'DNSKEY'),
+    ('DS', 'DS'),
+    ('HIP', 'HIP'),
+    ('IPSECKEY', 'IPSECKEY'),
+    ('KEY', 'KEY'),
+    ('KX', 'KX'),
+    ('LOC', 'LOC'),
+    ('MX', 'MX'),
+    ('NAPTR', 'NAPTR'),
+    ('NS', 'NS'),
+    ('NSEC', 'NSEC'),
+    ('NSEC3', 'NSEC3'),
+    ('NSEC3PARAM', 'NSEC3PARAM'),
+    ('OPENPGPKEY', 'OPENPGPKEY'),
+    ('PTR', 'PTR'),
+    ('RRSIG', 'RRSIG'),
+    ('RP', 'RP'),
+    ('SIG', 'SIG'),
+    ('SOA', 'SOA'),
+    ('SRV', 'SRV'),
+    ('SSHFP', 'SSHFP'),
+    ('TA', 'TA'),
+    ('TKEY', 'TKEY'),
+    ('TLSA', 'TLSA'),
+    ('TSIG', 'TSIG'),
+    ('TXT', 'TXT'),
+    ('URI', 'URI'),
+)
 
 
-class DNSZone(Product):
+class Comment(CreatedUpdatedModel):
     """
-    Store Information about a root DNS Zone
+    DNS Zone Comments
     """
-    domain_dns = models.OneToOneField(Domain)
-    zone = models.CharField(max_length=255) # 255 Bytes acording to rfc1035, 2.3.4
+    zone_id = models.ForeignKey('Zone', on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    type = models.CharField(max_length=10)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    account = models.CharField(max_length=40)
+    comment = models.TextField()
 
-    @property
-    def domain(self):
-        """
-        Get our parent domain
-        """
-        return self.domain_dns
-
-    @domain.setter
-    def domain(self, value):
-        self.domain_dns = value
-
-    def __str__(self):
-        return "DNS Zone '%s'" % self.zone
-
-class DNSRecord(CreatedUpdatedModel):
+class CryptoKey(models.Model):
     """
-    Store a particular DNS record
+    DNS CryptoKeys for DNSSec
     """
-    zone = models.OneToOneField(DNSZone, primary_key=True, unique=True)
-    type = models.CharField(max_length=10, default='A')
-    ttl = models.IntegerField()
-    prio = models.IntegerField()
+    zone_id = models.ForeignKey('Zone', on_delete=models.CASCADE)
+    flags = models.IntegerField()
+    active = models.BooleanField()
     content = models.TextField()
 
+class DomainMetadata(models.Model):
+    """
+    DNS Additional Domain Metadata
+    """
+    zone_id = models.ForeignKey('Zone', on_delete=models.CASCADE)
+    kind = models.CharField(max_length=32)
+    content = models.TextField()
+
+class Zone(Product):
+    """
+    DNS Zone
+    """
+    domain = models.OneToOneField(Domain, on_delete=models.CASCADE)
+    provider = models.ForeignKey(ProviderInstance, default=None, on_delete=models.CASCADE)
+    master = models.CharField(max_length=128)
+    last_check = models.IntegerField(default=0)
+    type = models.CharField(max_length=6)
+    notified_serial = models.IntegerField(default=0)
+    account = models.CharField(max_length=40)
+    enabled = models.BooleanField(default=True)
+
     def __str__(self):
-        return "DNS Record for '%s': '%s %s'" % \
-            (self.zone, self.type, self.content)
+        return "Zone %s" % self.domain.domain
+
+class Record(Product):
+    """
+    DNS Record
+    """
+    domain = models.ForeignKey(Zone, on_delete=models.CASCADE)
+    type = models.CharField(max_length=10, choices=RECORD_TYPES)
+    content = models.TextField()
+    ttl = models.IntegerField(default=3600)
+    prio = models.IntegerField(default=0)
+    enabled = models.BooleanField(default=True)
+    ordername = models.CharField(max_length=255, null=True, default=None)
+    auth = models.IntegerField(default=1)
+
+    def __str__(self):
+        return "Record %s" % self.name
+
+class SuperMaster(models.Model):
+    """
+    DNS SuperMaster
+    """
+    # pylint: disable=invalid-name
+    ip = models.CharField(max_length=64)
+    nameserver = models.CharField(max_length=255)
+    account = models.CharField(max_length=40)
+
+    class Meta:
+        unique_together = (('ip', 'nameserver'),)
+
+class TSIGKey(models.Model):
+    """
+    DNS TSIGKeys
+    """
+    name = models.CharField(max_length=255)
+    algorithm = models.CharField(max_length=50)
+    secret = models.CharField(max_length=255)
+
+    class Meta:
+        unique_together = (('name', 'algorithm'),)

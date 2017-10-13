@@ -1,0 +1,16 @@
+{% load supervisr_setting %}
+
+{
+    "name": "{{ PUPPET.module.owner.username }}-supervisr_mail",
+    "version": "{{ PUPPET.version }}",
+    "author": "{{ PUPPET.module.owner.username }}",
+    "summary": "Manage DNS for supervisr.",
+    "license": "MIT",
+    "source": "{% supervisr_setting 'domain' %}",
+    "project_page": "{% supervisr_setting 'domain' %}",
+    "issues_url": "{% supervisr_setting 'domain' %}",
+    "dependencies": [
+        {"name":"{{ PUPPET.module.owner.username }}-supervisr_core","version_requirement":">= 1.0.0"},
+        {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+    ]
+}

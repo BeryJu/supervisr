@@ -1,0 +1,21 @@
+{% extends "core/skel.html" %}
+
+{% load supervisr_title %}
+
+{% block title %}
+{% supervisr_title 'Redirecting...' %}
+{% endblock %}
+
+{% block body %}
+<form action="{{ url }}" method="POST">
+  {% for key, value in attrs.items %}
+    <input type="hidden" name="{{ key }}" value="{{ value }}">
+  {% endfor %}
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  $('form').submit();
+</script>
+{% endblock %}

@@ -1,13 +1,13 @@
 """
-Supervisr mod_ldap app config
+Supervisr auth oauth provider app config
 """
 
 from supervisr.core.apps import SupervisrAppConfig
 
 
-class SupervisrModAuthOAuthProviderAppConfig(SupervisrAppConfig):
+class SupervisrModAuthOAuthProviderConfig(SupervisrAppConfig):
     """
-    Supervisr mod_ldap app config
+    Supervisr auth oauth provider app config
     """
 
     name = 'supervisr.mod.auth.oauth.provider'

@@ -21,18 +21,18 @@ def admin_settings(req, mod):
     Default view for modules without admin view
     """
     initial_data = {
-        'host': Setting.get('mod:stats:graphite:host'),
-        'port': Setting.get('mod:stats:graphite:port'),
-        'prefix': Setting.get('mod:stats:graphite:prefix'),
-        'enabled': Setting.get('mod:stats:graphite:enabled') == 'True',
+        'host': Setting.get('host'),
+        'port': Setting.get('port'),
+        'prefix': Setting.get('prefix'),
+        'enabled': Setting.get('enabled') == 'True',
     }
     if req.method == 'POST':
         form = SettingsForm(req.POST)
         if form.is_valid() and 'test' not in req.POST:
-            Setting.set('mod:stats:graphite:host', form.cleaned_data.get('host'))
-            Setting.set('mod:stats:graphite:port', form.cleaned_data.get('port'))
-            Setting.set('mod:stats:graphite:prefix', form.cleaned_data.get('prefix'))
-            Setting.set('mod:stats:graphite:enabled', form.cleaned_data.get('enabled'))
+            Setting.set('host', form.cleaned_data.get('host'))
+            Setting.set('port', form.cleaned_data.get('port'))
+            Setting.set('prefix', form.cleaned_data.get('prefix'))
+            Setting.set('enabled', form.cleaned_data.get('enabled'))
             Setting.objects.update()
             messages.success(req, _('Settings successfully updated'))
         elif 'test' in req.POST:
@@ -40,7 +40,7 @@ def admin_settings(req, mod):
             with GraphiteClient() as client:
                 client.write("test", 128)
             messages.success(req, _('Successfully Sent test message'))
-        return redirect(reverse('stats/graphite:admin_settings', kwargs={'mod': mod}))
+        return redirect(reverse('supervisr/mod/stats/graphite:admin_settings', kwargs={'mod': mod}))
     else:
         form = SettingsForm(initial=initial_data)
     return render(req, 'stats/graphite/settings.html', {

@@ -2,12 +2,18 @@
 Supervisr Core utils
 """
 
+import base64
 import logging
 import socket
+from glob import glob
+from importlib import import_module
+from importlib.util import module_from_spec, spec_from_file_location
 from time import time as timestamp
 from uuid import uuid4
 
+from django.apps import apps
 from django.conf import settings
+from django.core.cache import cache
 from django.shortcuts import render
 from django.template import loader
 from django.utils.translation import ugettext as _
@@ -71,9 +77,6 @@ def render_to_string(tmpl, ctx):
     """
     Render a template to string
     """
-    print('-----------------------')
-    print(tmpl)
-    print(ctx)
     template = loader.get_template(tmpl)
     return template.render(ctx)
 
@@ -91,6 +94,27 @@ def get_apps(mod_only=False):
             else:
                 app_list.append(app)
     return app_list
+
+def get_app_labels():
+    """
+    Cache all installed apps and return the list
+    """
+    cache_key = 'core:app_labels'
+    if not cache.get(cache_key):
+        # Make a list of all short names for all apps
+        app_cache = []
+        for app in get_apps():
+            try:
+                mod_new = '/'.join(app.split('.')[:-2])
+                config = apps.get_app_config(mod_new)
+                mod = mod_new
+            except LookupError:
+                mod = app.split('.')[:-2][-1]
+                config = apps.get_app_config(mod)
+            app_cache.append(config.label)
+        cache.set(cache_key, app_cache, 1000)
+        return app_cache
+    return cache.get(cache_key) # pragma: no cover
 
 def time(statistic_key):
     """
@@ -110,10 +134,106 @@ def time(statistic_key):
             time_end = timestamp()
 
             stat_set(statistic_key, (time_end - time_start) * 1000)
-            LOGGER.info("'%s' took %2.2f to run", statistic_key, time_end-time_start)
-
             return result
 
         return timed
 
     return outer_wrapper
+
+def class_to_path(cls):
+    """
+    Turn Class (Class or instance) into module path
+    """
+    return '%s.%s' % (cls.__module__, cls.__name__)
+
+def path_to_class(path):
+    """
+    Import module and return class
+    """
+    if not path:
+        return None
+    parts = path.split('.')
+    package = '.'.join(parts[:-1])
+    _class = getattr(import_module(package), parts[-1])
+    return _class
+
+def db_settings_from_dbconfig(config_path):
+    """
+    Generate Django DATABASE dict from dbconfig file
+    """
+    db_config = {}
+    with open(config_path, 'r') as file:
+        contents = file.read().split('\n')
+        for line in contents:
+            if line.startswith('#') or line == '':
+                continue
+            key, value = line.split('=')
+            value = value[1:-1]
+            if key == 'dbuser':
+                db_config['USER'] = value
+            elif key == 'dbpass':
+                db_config['PASSWORD'] = value
+            elif key == 'dbname':
+                db_config['NAME'] = value
+            elif key == 'dbserver':
+                db_config['HOST'] = value
+            elif key == 'dbport':
+                db_config['PORT'] = value
+            elif key == 'dbtype':
+                if value == 'mysql':
+                    db_config['ENGINE'] = 'django.db.backends.mysql'
+                    db_config['OPTIONS'] = {
+                        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+                    }
+                elif value == 'pgsql':
+                    db_config['ENGINE'] = 'django.db.backends.postgresql'
+        return db_config
+
+def read_simple(path, mode='r'):
+    """
+    Simple wrapper for file reading
+    """
+    with open(path, mode) as file:
+        return file.read()
+
+def import_dir(directory):
+    """
+    Import every file in a direct and call callback for each
+    """
+    files = glob(directory+'/*.py', recursive=True)
+    modules = []
+    for file in files:
+        spec = spec_from_file_location("", file)
+        modules.append(module_from_spec(spec))
+    return modules
+
+def b64encode(*args):
+    """
+    String wrapper around b64encode to removie binary fuckery
+    """
+    return base64.b64encode(str.encode(''.join(args))).decode()
+
+def b64decode(*args):
+    """
+    String wrapper around b64decode to remove binary fuckery
+    """
+    return b64decode(''.join(args)).decode()
+
+def check_db_connection(connection_name: str = 'default') -> bool:
+    """Check if a database connection can be made
+
+    Args:
+        connection_name: Name of the Django database connection Name
+
+    Returns:
+        True if connection could be made, otherwise False
+    """
+    from django.db import connections
+    from django.db.utils import OperationalError
+    db_conn = connections[connection_name]
+    try:
+        db_conn.cursor()
+    except OperationalError:
+        return False
+    else:
+        return True

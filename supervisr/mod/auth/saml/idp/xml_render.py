@@ -7,7 +7,10 @@ from __future__ import absolute_import
 import logging
 
 from supervisr.core.utils import render_to_string
-from supervisr.mod.auth.saml.idp.xml_signing import get_signature_xml
+from supervisr.mod.auth.saml.idp.xml_signing import (get_signature_xml,
+                                                     load_certificate,
+                                                     load_private_key,
+                                                     sign_with_signxml)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -19,7 +22,7 @@ def _get_attribute_statement(params):
     PRE-REQ: params['SUBJECT'] has already been created (usually by a call to
     _get_subject().
     """
-    attributes = params.get('ATTRIBUTES', {})
+    attributes = params.get('ATTRIBUTES', [])
     if len(attributes) < 1:
         params['ATTRIBUTE_STATEMENT'] = ''
         return
@@ -49,7 +52,10 @@ def _get_subject(params):
     """
     params['SUBJECT_STATEMENT'] = render_to_string('saml/xml/subject.xml', params)
 
-def _get_assertion_xml(template, parameters, signed=False):
+def get_assertion_xml(template, parameters, signed=False):
+    """
+    Get XML for Assertion
+    """
     # Reset signature.
     params = {}
     params.update(parameters)
@@ -60,37 +66,16 @@ def _get_assertion_xml(template, parameters, signed=False):
     _get_attribute_statement(params)
 
     unsigned = render_to_string(template, params)
-    LOGGER.debug('Unsigned: %s', unsigned)
+    # LOGGER.debug('Unsigned: %s', unsigned)
     if not signed:
         return unsigned
 
     # Sign it.
-    signature_xml = get_signature_xml(unsigned, params['ASSERTION_ID'])
+    signature_xml = get_signature_xml()
     params['ASSERTION_SIGNATURE'] = signature_xml
-    signed = render_to_string(template, params)
+    return render_to_string(template, params)
 
-    LOGGER.debug('Signed: %s', signed)
-    return signed
-
-def get_assertion_googleapps_xml(parameters, signed=False):
-    """
-    Get Assertion XML for Google Apps
-    """
-    return _get_assertion_xml('saml/xml/assertions/google_apps.xml', parameters, signed)
-
-def get_assertion_salesforce_xml(parameters, signed=False):
-    """
-    Get Assertion XML for Salesforce
-    """
-    return _get_assertion_xml('saml/xml/assertions/salesforce.xml', parameters, signed)
-
-def get_assertion_generic_xml(parameters, signed=True):
-    """
-    Get Assertion XML for Generic
-    """
-    return _get_assertion_xml('saml/xml/assertions/generic.xml', parameters, signed)
-
-def get_response_xml(parameters, signed=False):
+def get_response_xml(parameters, signed=False, assertion_id=''):
     """
     Returns XML for response, with signatures, if signed is True.
     """
@@ -102,14 +87,19 @@ def get_response_xml(parameters, signed=False):
 
     unsigned = render_to_string('saml/xml/response.xml', params)
 
-    LOGGER.debug('Unsigned: %s', unsigned)
+    # LOGGER.debug('Unsigned: %s', unsigned)
     if not signed:
         return unsigned
 
     # Sign it.
-    signature_xml = get_signature_xml(unsigned, params['RESPONSE_ID'])
-    params['RESPONSE_SIGNATURE'] = signature_xml
-    signed = render_to_string('saml/xml/response.xml', params)
-
-    LOGGER.debug('Signed: %s', signed)
-    return signed
+    if signed:
+        signature_xml = get_signature_xml()
+        params['RESPONSE_SIGNATURE'] = signature_xml
+        raw_response = render_to_string('saml/xml/response.xml', params)
+        # LOGGER.debug("Raw response: %s", raw_response)
+        raw_cert = load_certificate()
+        signed = sign_with_signxml(
+            load_private_key(), raw_response, raw_cert, reference_uri=assertion_id) \
+            .decode("utf-8")
+        return signed
+    return render_to_string('saml/xml/response.xml', params)

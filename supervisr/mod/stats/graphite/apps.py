@@ -5,13 +5,11 @@ Supervisr Stats Graphite AppConfig
 import logging
 import os
 import socket
-import threading
-import time
 
 import psutil
-from django.conf import settings
 
 from supervisr.core.apps import SupervisrAppConfig
+from supervisr.core.thread.background import SCHEDULER
 
 LOGGER = logging.getLogger(__name__)
 
@@ -21,41 +19,40 @@ class SupervisrModStatGraphiteConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr.mod.stats.graphite'
-    admin_url_name = 'stats/graphite:admin_settings'
-
-    def ensure_settings(self):
-        return {
-            'mod:stats:graphite:enabled': False,
-            'mod:stats:graphite:host': 'localhost',
-            'mod:stats:graphite:port': 2003,
-            'mod:stats:graphite:prefix': 'supervisr',
-        }
+    admin_url_name = 'supervisr/mod/stats/graphite:admin_settings'
+    label = 'supervisr/mod/stats/graphite'
+    title_moddifier = lambda self, title, request: 'Stats/Graphite'
 
     def ready(self):
         super(SupervisrModStatGraphiteConfig, self).ready()
+        from supervisr.core.models import Setting
+        from supervisr.mod.stats.graphite.graphite_client import GraphiteClient
 
         def send_stats(client, host):
             """
             Statistics checker function
             """
-            while True:
+            def send():
+                """
+                Send CPU and Memory usage
+                """
                 process = psutil.Process(os.getpid())
                 client.write('server.%s.mem' % host, process.memory_info().rss / 1024 / 1024)
                 client.write('server.%s.cpu' % host, process.cpu_percent())
-                time.sleep(10)
+            return send
 
-        from supervisr.core.models import Setting
-        from supervisr.mod.stats.graphite.graphite_client import GraphiteClient
-
-        if Setting.get('mod:stats:graphite:enabled', 'False') != 'False':
-            if settings.DEBUG:
-                LOGGER.info("Not starting StatsThread because DEBUG")
-            elif 'DJANGO_MODE_WSGI' not in os.environ:
-                LOGGER.info("Not starting StatsThread because we're not running as WSGI")
-            else:
+        if Setting.get('enabled', default='False') != 'False':
+            try:
                 client = GraphiteClient()
                 client.connect()
-                thread = threading.Thread(target=send_stats,
-                                          args=(client, socket.gethostname(), ))
-                thread.start()
-                LOGGER.info("Started Statistics sender in seperate Thread")
+                SCHEDULER.every(10).seconds.do(send_stats(client, socket.gethostname()))
+            except (TimeoutError, ConnectionError):
+                LOGGER.warning("Failed to connect to graphite server '%s'.", Setting.get('host'))
+
+    def ensure_settings(self):
+        return {
+            'enabled': False,
+            'host': 'localhost',
+            'port': 2003,
+            'prefix': 'supervisr',
+        }

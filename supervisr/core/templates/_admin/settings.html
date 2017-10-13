@@ -1,0 +1,57 @@
+{% extends "_admin/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+
+{% block title %}
+{% supervisr_title "Settings" %}
+{% endblock %}
+
+{% block header %}
+<style>
+  .main-container .content-container .content-area {
+    padding: 0;
+  }
+
+</style>
+{% endblock %}
+
+{% block messages %}{% endblock %}
+
+{% block content_area %}
+<div class="content-container" style="min-height:100%">
+  <div class="content-area">
+    <div class="content">
+      <div class="col-md-12">
+        <h1><clr-icon shape="cog" size="48"></clr-icon>{% trans "Settings" %}</h1>
+        {% include 'blocks/block_messages.html' %}
+        <form method="POST">
+          {% csrf_token %}
+          <section class="form-block">
+            <label>{{ current_namespace }}</label>
+            {% for set in settings %}
+            <div class="form-group">
+              <label for="{{ current_namespace }}/{{ set.key }}">{{ set.key }}</label>
+              <input type="text" id="{{ current_namespace }}/{{ set.key }}" name="{{ current_namespace }}/{{ set.key }}"value="{{ set.value }}">
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+          </section>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="clr-vertical-nav">
+    <div class="nav-content">
+      <label class="nav-header">{% trans 'Namespaces' %}</label>
+      {% for namespace in namespaces %}
+      <a href="{% url 'admin-settings' namespace=namespace %}" class="nav-link {% if current_namespace == namespace %}active{% endif %}">
+        <span class="nav-text">
+          {{ namespace }}
+        </span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

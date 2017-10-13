@@ -2,6 +2,8 @@
 Supervisr Core Mail helper
 """
 
+import logging
+
 from django.conf import settings
 from django.core.mail import send_mail
 from django.dispatch import receiver
@@ -9,9 +11,12 @@ from django.template import loader
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from .models import AccountConfirmation, Setting
-from .signals import (SIG_USER_PASS_RESET_INIT, SIG_USER_POST_SIGN_UP,
-                      SIG_USER_RESEND_CONFIRM)
+from supervisr.core.models import AccountConfirmation, Setting
+from supervisr.core.signals import (SIG_USER_PASS_RESET_INIT,
+                                    SIG_USER_POST_SIGN_UP,
+                                    SIG_USER_RESEND_CONFIRM)
+
+LOGGER = logging.getLogger(__name__)
 
 
 def send_message(recipients, subject, **kwargs):
@@ -46,10 +51,12 @@ def send_message(recipients, subject, **kwargs):
         # Actually send the mail
         sent = send_mail(subject, django_text, django_from, \
             recipients, **django_kwargs)
+        LOGGER.info("Sent '%s' email to %s: %s", subject, recipients, sent)
         return sent == 1 # send_mail returns either 0 or 1
-    except ConnectionRefusedError:
+    except ConnectionRefusedError as exc:
         # Always return true when debugging
         if settings.DEBUG:
+            LOGGER.info("Failed to send email %s", str(exc))
             return True
         else:
             raise
@@ -68,8 +75,8 @@ def mail_handle_user_signed_up(sender, signal, user, req, **kwargs):
     else:
         return
     # Make URL for confirmation email
-    domain = Setting.get('core:domain')
-    branding = Setting.get('core:branding')
+    domain = Setting.get('domain')
+    branding = Setting.get('branding')
     url = domain + reverse('account-confirm',
                            kwargs={'uuid': acc_conf.pk})
     return send_message(
@@ -101,8 +108,8 @@ def mail_handle_pass_reset_init(sender, signal, user, **kwargs):
     else:
         return
     # Make URL for confirmation email
-    domain = Setting.get('core:domain')
-    branding = Setting.get('core:branding')
+    domain = Setting.get('domain')
+    branding = Setting.get('branding')
     url = domain + reverse('account-reset_password_confirm',
                            kwargs={'uuid': acc_conf.pk})
     return send_message(

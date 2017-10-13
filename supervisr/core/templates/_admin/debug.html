@@ -9,4 +9,9 @@
 {% endblock %}
 
 {% block content %}
+<h1><clr-icon shape="play" size="48"></clr-icon>{% trans "Debug" %}</h1>
+<form action="" method="POST">
+  {% csrf_token %}
+  <input type="submit" name="raise_error" value="Raise RuntimeError" class="btn btn-primary">
+</form>
 {% endblock %}

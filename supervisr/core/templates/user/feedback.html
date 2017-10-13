@@ -1,0 +1,37 @@
+{% extends "user/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+{% load gravatar %}
+
+{% block title %}
+{% supervisr_title "Feedback" %}
+{% endblock %}
+
+{% block content %}
+<h1><clr-icon shape="help-info" size="48"></clr-icon>{% trans "Feedback" %}</h1>
+<div class="login-panel panel panel-default">
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-md-8">
+        {% include 'blocks/block_form_card.html' with card_title='Send Feedback' form_update='Send' %}
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            {% trans 'Additional Links' %}
+          </div>
+          <div class="card-block">
+            <section class="form-block">
+              <ul>
+                <li>{% trans 'See open issues' %} <a href="//git.beryju.org/BeryJu.org/supervisr/issues">{% trans 'here' %}.</a></li>
+                <li>{% trans 'Experiencing slowness? Check status' %} <a href="//status.beryju.org">{% trans 'here' %}.</a></li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

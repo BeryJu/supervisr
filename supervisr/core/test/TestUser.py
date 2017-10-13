@@ -7,9 +7,9 @@ import os
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from ..forms.account import SignupForm
-from ..views import account, user
-from .utils import test_request
+from supervisr.core.forms.accounts import SignupForm
+from supervisr.core.test.utils import test_request
+from supervisr.core.views import accounts, users
 
 
 class TestUser(TestCase):
@@ -37,14 +37,14 @@ class TestUser(TestCase):
         signup_form = SignupForm(self.signup_data)
         self.assertTrue(signup_form.is_valid())
 
-        signup_res = test_request(account.signup,
+        signup_res = test_request(accounts.SignupView.as_view(),
                                   method='POST',
                                   req_kwargs=signup_form.cleaned_data)
         self.assertEqual(signup_res.status_code, 302)
 
         m_user = User.objects.get(email=self.signup_data['email'])
 
-        edit_res = test_request(user.index, user=m_user)
+        edit_res = test_request(users.index, user=m_user)
         self.assertEqual(edit_res.status_code, 200)
 
 
@@ -80,15 +80,15 @@ class TestUser(TestCase):
         signup_form = SignupForm(self.signup_data)
         self.assertTrue(signup_form.is_valid())
 
-        signup_res = test_request(account.signup,
+        signup_res = test_request(accounts.SignupView.as_view(),
                                   method='POST',
                                   req_kwargs=signup_form.cleaned_data)
         self.assertEqual(signup_res.status_code, 302)
 
         m_user = User.objects.get(email=self.signup_data['email'])
 
-        valid_res = test_request(user.events, user=m_user)
+        valid_res = test_request(users.events, user=m_user)
         self.assertEqual(valid_res.status_code, 200)
 
-        invalid_res = test_request(user.events, user=m_user, req_kwargs={'page': 999999})
+        invalid_res = test_request(users.events, user=m_user, req_kwargs={'page': 999999})
         self.assertEqual(invalid_res.status_code, 200)

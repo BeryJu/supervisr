@@ -2,6 +2,7 @@
 Supervisr mod_ldap Signals
 """
 
+from django.conf import settings
 from django.dispatch import receiver
 from ldap3 import version as ldap3_version
 from ldap3.core.exceptions import LDAPException
@@ -14,6 +15,9 @@ from supervisr.core.signals import (SIG_CHECK_USER_EXISTS, SIG_GET_MOD_HEALTH,
                                     SIG_USER_SIGN_UP)
 from supervisr.mod.auth.ldap.ldap_connector import LDAPConnector
 
+LDAP = None
+if LDAPConnector.enabled():
+    LDAP = LDAPConnector()
 
 @receiver(SIG_USER_SIGN_UP)
 # pylint: disable=unused-argument
@@ -21,14 +25,13 @@ def ldap_handle_user_sign_up(sender, signal, user, password, **kwargs):
     """
     Create LDAP user if LDAP is active
     """
-    if LDAPConnector.enabled():
-        ldap = LDAPConnector()
+    if LDAP:
         # Returns false if user could not be created
-        if not ldap.create_user(user, password):
+        if not LDAP.create_user(user, password):
             # Add message what happend and return
             user.delete()
             return False
-        ldap.disable_user(user.email)
+        LDAP.disable_user(user.email)
 
 @receiver(SIG_USER_CHANGE_PASS)
 # pylint: disable=unused-argument
@@ -36,9 +39,8 @@ def ldap_handle_change_pass(sender, signal, user, password, **kwargs):
     """
     Update ldap password if LDAP is enabled
     """
-    if LDAPConnector.enabled():
-        ldap = LDAPConnector()
-        ldap.change_password(password, mail=user.email)
+    if LDAP:
+        LDAP.change_password(password, mail=user.email)
 
 @receiver(SIG_USER_CONFIRM)
 #pylint: disable=unused-argument
@@ -46,9 +48,8 @@ def ldap_handle_user_confirm(sender, signal, user, **kwargs):
     """
     activate LDAP user
     """
-    if LDAPConnector.enabled():
-        ldap = LDAPConnector()
-        ldap.enable_user(user.email)
+    if LDAP:
+        LDAP.enable_user(user.email)
 
 @receiver(SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
 # pylint: disable=unused-argument
@@ -56,11 +57,10 @@ def ldap_handle_upr_created(sender, signal, upr, **kwargs):
     """
     Handle creation of user_product_relationship, add to ldap group if needed
     """
-    if LDAPConnector.enabled():
+    if LDAP:
         exts = upr.product.extensions.filter(productextensionldap__isnull=False)
         if exts.exists():
-            ldap = LDAPConnector()
-            ldap.add_to_group(
+            LDAP.add_to_group(
                 group_dn=exts.first().ldap_group,
                 mail=upr.user.email)
 
@@ -70,11 +70,10 @@ def ldap_handle_upr_deleted(sender, signal, upr, **kwargs):
     """
     Handle deletion of user_product_relationship, remove from group if needed
     """
-    if LDAPConnector.enabled():
+    if LDAP:
         exts = upr.product.extensions.filter(productextensionldap__isnull=False)
         if exts.exists():
-            ldap = LDAPConnector()
-            ldap.remove_from_group(
+            LDAP.remove_from_group(
                 group_dn=exts.first().ldap_group,
                 mail=upr.user.email)
 
@@ -84,9 +83,8 @@ def ldap_handle_check_user(sender, signal, email, **kwargs):
     """
     Check if user exists in LDAP
     """
-    if LDAPConnector.enabled():
-        ldap = LDAPConnector()
-        if ldap.is_email_used(email):
+    if LDAP:
+        if LDAP.is_email_used(email) and not settings.TEST:
             return True
     return False
 

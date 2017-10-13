@@ -9,8 +9,8 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
-from ..models import Setting, get_system_user
-from ..views import common
+from supervisr.core.models import Setting, get_system_user
+from supervisr.core.views import common
 
 
 class TestCommonViews(TestCase):
@@ -20,7 +20,7 @@ class TestCommonViews(TestCase):
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
-        Setting.set('core:analytics:ga:enabled', True)
+        Setting.set('analytics:ga:enabled', True)
         self.factory = RequestFactory()
 
     def test_index_view(self):

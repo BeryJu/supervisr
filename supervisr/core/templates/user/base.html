@@ -1,12 +1,11 @@
 {% extends "core/base.html" %}
 
-{% load cache %}
 {% load i18n %}
 {% load is_active %}
 {% load supervisr_dyn_user %}
 
 {% block sidenav %}
-<nav class="sidenav">
+<nav class="sidenav clr-nav-level-2">
   <section class="sidenav-content">
     <a href="{% url 'user-index' %}" class="nav-link {% is_active 'user-index' %}">
       {% trans "Overview" %}
@@ -14,14 +13,15 @@
     <a href="{% url 'user-events' %}" class="nav-link {% is_active 'user-events' %}">
       {% trans "Events" %}
     </a>
-    {% cache 500 request.user.username %}
-      {% supervisr_dyn_user as view_settings %}
-      {% for sub in view_settings %}
-      <a href="{% url sub.view %}" class="nav-link {% is_active sub.view %}">
-        {% trans sub.title %}
-      </a>
-      {% endfor %}
-    {% endcache %}
+    {% supervisr_dyn_user as view_settings %}
+    {% for sub in view_settings %}
+    <a href="{% url sub.view %}" class="nav-link {% is_active sub.view %}">
+      {% trans sub.title %}
+    </a>
+    {% endfor %}
+    <a href="{% url 'user-send_feedback' %}" class="nav-link {% is_active 'user-send_feedback' %}">
+      {% trans "Send Feedback" %}
+    </a>
   </section>
 </nav>
 {% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'core/generic_wizard.html' %}
+
+{% load supervisr_title %}
+{% load fieldtype %}
+{% load i18n %}
+
+{% block title %}
+{% supervisr_title title %}
+{% endblock %}
+
+{% block after_form %}
+<p>{% trans 'Description:' %} <span id="provider-description"></span></p>
+<p>{% trans 'Capabilities:' %} <span id="provider-capabilities"></span></p>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  var providers = {
+    {% for prov in providers %}
+    '{{ prov.dotted_path }}': {
+      'ui_name': '{{ prov.get_meta.ui_name }}',
+      'ui_description': '{{ prov.get_meta.ui_description }}',
+      'capabilities': '{{ prov.get_meta.get_capabilities|join:", " }}',
+      'author': '{{ prov.get_meta.get_author }}',
+    },
+    {% endfor %}
+  };
+  var update_desc = function (key) {
+    var data = providers[key];
+    $('#provider-description').html(data.ui_description);
+    $('#provider-capabilities').html(data.capabilities);
+  }
+  $('[name="0-provider_path"]').change(function () {
+    update_desc($(this).val());
+  });
+  update_desc($('[name="0-provider_path"]').val());
+</script>
+{% endblock %}

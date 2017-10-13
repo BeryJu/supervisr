@@ -1,0 +1,56 @@
+{% extends "mail/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+
+{% block title %}
+{% supervisr_title "Aliases" %}
+{% endblock %}
+
+{% block content %}
+<h1><clr-icon shape="redo" size="48"></clr-icon>{% trans "Aliases" %}</h1>
+<div class="btn-group btn-link btn-icon-link">
+  <a href="{% url 'supervisr/mail:mail-alias-new' %}" class="btn">
+    <clr-icon shape="add"></clr-icon>
+  </a>
+  <a data-ctx-name="edit" class="btn">
+    <clr-icon shape="edit"></clr-icon>
+  </a>
+  <a data-ctx-name="trash" class="btn">
+    <clr-icon shape="trash"></clr-icon>
+  </a>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>{% trans 'Address' %}</th>
+      <th>{% trans 'Forwarder Destination' %}</th>
+      <th>{% trans 'Owner' %}</th>
+      <th>{% trans 'Is Catchall?' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for fwd in fwd_accounts %}
+    <tr data-selectable data-ctx-edit="" data-ctx-trash="{% url 'supervisr/mail:mail-alias-delete' domain=fwd.account.domain.domain.domain dest=fwd.destination %}">
+      <td>{{ fwd.account.address }}@{{ fwd.account.domain.domain.domain }}</td>
+      <td>{{ fwd.destination }}</td>
+      <td>{{ fwd.account.users.all|join:"," }}</td>
+      <td>
+        {% if fwd.account.is_catchall %}
+        <clr-icon shape="check"></clr-icon>
+        {% else %}
+        <clr-icon shape="times"></clr-icon>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% include 'blocks/block_pagination.html' with pages=fwd_accounts %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+clrTableSelect('.container');
+</script>
+{% endblock %}

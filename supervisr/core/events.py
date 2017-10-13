@@ -48,9 +48,9 @@ def event_handle_upr_created(sender, signal, upr, **kwargs):
     """
     Event.create(
         user=upr.user,
-        message=_("You gained access to %(product)s %(name)s" % {
+        message=_("You gained access to %(class)s %(name)s" % {
             'name': upr.name,
-            'product': upr.product._meta.verbose_name.title()
+            'class': upr.product.cast().__class__.__name__,
             }),
         current=True)
 
@@ -62,9 +62,8 @@ def event_handle_upr_deleted(sender, signal, upr, **kwargs):
     """
     Event.create(
         user=upr.user,
-        message=_("You lost access to %(product)s %(name)s" % {
+        message=_("You lost access to %(name)s" % {
             'name': upr.name,
-            'product': upr.product._meta.verbose_name.title()
             }),
         current=True)
 

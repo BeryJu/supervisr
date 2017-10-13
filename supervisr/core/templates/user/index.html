@@ -3,13 +3,13 @@
 {% load supervisr_title %}
 {% load i18n %}
 {% load gravatar %}
-{% load crispy_forms_tags %}
 
 {% block title %}
 {% supervisr_title "Overview" %}
 {% endblock %}
 
 {% block content %}
+<h1><clr-icon shape="user" size="48"></clr-icon>{% trans "User Profile" %}</h1>
 <div class="login-panel panel panel-default">
   <div class="panel-body">
     <div class="row">

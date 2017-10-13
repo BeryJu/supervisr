@@ -12,12 +12,12 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.shortcuts import redirect, render
-from django.urls import reverse
+from django.shortcuts import render
+from django.utils.translation import ugettext as _
 
-from ..models import Event
-from ..signals import SIG_GET_MOD_INFO
-from ..utils import get_reverse_dns
+from supervisr.core.models import Event, Setting, get_system_user
+from supervisr.core.signals import SIG_GET_MOD_INFO
+from supervisr.core.utils import get_reverse_dns
 
 
 @login_required
@@ -34,12 +34,58 @@ def index(req):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
+def users(req):
+    """
+    Show a list of all users
+    """
+    users = User.objects.all().order_by('date_joined').exclude(pk=get_system_user())
+    paginator = Paginator(users, max(int(req.GET.get('per_page', 50)), 1))
+
+    page = req.GET.get('page')
+    try:
+        accounts = paginator.page(page)
+    except PageNotAnInteger:
+        accounts = paginator.page(1)
+    except EmptyPage:
+        accounts = paginator.page(paginator.num_pages)
+    return render(req, '_admin/users.html', {
+        'users': accounts,
+        })
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
 # pylint: disable=unused-argument
-def settings(req):
+def settings(req, namespace):
     """
     Admin settings
     """
-    return redirect(reverse('admin-index'))
+    all_settings = Setting.objects.filter(namespace=namespace).order_by('key')
+    namespaces = Setting.objects.all() \
+        .values_list('namespace', flat=True) \
+        .distinct() \
+        .order_by('namespace')
+    # Update settings when posted
+    if req.method == 'POST':
+        update_counter = 0
+        for name_key, value in req.POST.items():
+            # Names are formatted <namespace>/<key>
+            if '/' in name_key:
+                namespace, key = name_key.split('/')
+                settings = Setting.objects.filter(namespace=namespace, key=key)
+                if not settings.exists():
+                    continue
+                setting = settings.first()
+                if value != setting.value:
+                    update_counter += 1
+                    setting.value = value
+                    setting.save()
+        Setting.objects.update()
+        messages.success(req, _('Updated %d settings' % update_counter))
+    return render(req, '_admin/settings.html', {
+        'settings': all_settings,
+        'namespaces': namespaces,
+        'current_namespace': namespace
+        })
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -108,18 +154,7 @@ def debug(req):
     """
     Show some misc debug buttons
     """
+    if req.method == 'POST':
+        if 'raise_error' in req.POST:
+            raise RuntimeError('test error')
     return render(req, '_admin/debug.html')
-
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def debug_puppet_build(req):
-    """
-    Run Puppet Build
-    """
-    from supervisr.puppet.builder import ReleaseBuilder
-    from supervisr.puppet.models import PuppetModule
-    module = PuppetModule.objects.filter(name='supervisr_mail').first()
-    rel_builder = ReleaseBuilder(module)
-    rel_builder.build()
-    messages.success(req, 'Successfully built')
-    return redirect(reverse('admin-debug'))

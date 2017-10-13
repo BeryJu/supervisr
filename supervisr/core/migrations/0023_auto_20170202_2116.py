@@ -17,6 +17,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='userprofile',
             name='unix_username',
-            field=models.CharField(default=supervisr.core.models.get_random_string, editable=False, max_length=10),
+            field=models.CharField(default=supervisr.core.models.get_random_string, editable=False, max_length=32),
         ),
     ]

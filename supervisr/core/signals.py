@@ -4,7 +4,7 @@ Supervisr Core Signal definitions
 
 import logging
 
-from django.db.models.signals import post_migrate
+from django.db.models.signals import post_migrate, post_save
 from django.dispatch import Signal, receiver
 from passlib.hash import sha512_crypt
 
@@ -47,6 +47,7 @@ SIG_DOMAIN_CREATED = RobustSignal(providing_args=['domain'])
 # Signal which can be subscribed to initialize things that take longer
 # and should not be run up on reboot of the app
 SIG_DO_SETUP = RobustSignal(providing_args=['app_name'])
+SIG_SETTING_UPDATE = RobustSignal(providing_args=['setting'])
 
 # SIG_CHECK_* Signals return a boolean
 
@@ -85,3 +86,21 @@ def crypt6_handle_user_change_pass(signal, user, password, **kwargs):
     upro = user.userprofile
     upro.crypt6_password = sha512_crypt.hash(password)
     upro.save()
+
+@receiver(SIG_SET_STAT)
+# pylint: disable=unused-argument
+def stat_output_verbose(signal, key, value, **kwargs):
+    """
+    Output stats to LOGGER
+    """
+    LOGGER.info("Stats: '%s': '%s'", key, value)
+
+@receiver(post_save)
+# pylint: disable=unused-argument
+def setting_update(sender, instance, created, **kwargs):
+    """
+    Trigger signal when settings are updated
+    """
+    from supervisr.core.models import Setting
+    if isinstance(instance, Setting):
+        SIG_SETTING_UPDATE.send(instance)

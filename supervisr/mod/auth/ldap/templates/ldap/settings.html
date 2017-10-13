@@ -7,12 +7,13 @@
 {% supervisr_title "Overview" %}
 {% endblock %}
 
-{% block content %}
+{% block module_content %}
+<h2><clr-icon shape="application" size="32"></clr-icon>{% trans 'LDAP Connection' %}</h2>
 <div class="row">
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        {% trans 'LDAP Connection Settings' %}
+        <h2><clr-icon shape="directory" size="32"></clr-icon>{% trans 'Settings' %}</h2>
       </div>
       <form role="form" method="POST">
         <div class="card-block">

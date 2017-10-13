@@ -25,16 +25,19 @@ class GraphiteClient(object):
         """
         Load settings form DB
         """
-        self.host = Setting.get('mod:stats:graphite:host')
-        self.port = int(Setting.get('mod:stats:graphite:port'))
-        self.prefix = Setting.get('mod:stats:graphite:prefix')
+        self.host = Setting.get('host')
+        self.port = int(Setting.get('port'))
+        self.prefix = Setting.get('prefix')
 
     def connect(self):
         """
         Connect to graphite socket
         """
-        self._socket = socket.socket()
-        self._socket.connect((self.host, self.port))
+        try:
+            self._socket = socket.socket()
+            self._socket.connect((self.host, self.port))
+        except ConnectionRefusedError:
+            raise GraphiteException('Connection refused')
 
     def write(self, key, value):
         """
@@ -56,3 +59,9 @@ class GraphiteClient(object):
     # pylint: disable=unused-argument
     def __exit__(self, _type, value, _tb):
         self._socket.close()
+
+class GraphiteException(Exception):
+    """
+    Exception wrapper to make catching easier
+    """
+    pass

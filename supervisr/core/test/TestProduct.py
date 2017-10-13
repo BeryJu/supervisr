@@ -7,8 +7,8 @@ import os
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from ..models import Event, Product, UserProductRelationship
-from ..signals import SIG_USER_POST_SIGN_UP
+from supervisr.core.models import Event, Product, UserProductRelationship
+from supervisr.core.signals import SIG_USER_POST_SIGN_UP
 
 
 class TestProduct(TestCase):
@@ -24,7 +24,7 @@ class TestProduct(TestCase):
             description="Test Product A with auto_add=True",
             price=0.000,
             auto_add=True)
-        self.assertEqual(self.product_a.pk, 1)
+        # self.assertEqual(self.product_a.pk, 1)
         self.user = User.objects.create(
             username="Test User a",
             email="testa@test.test")
@@ -53,7 +53,7 @@ class TestProduct(TestCase):
             description="Test Product B with auto_all_add=True",
             price=0.000,
             auto_all_add=True)
-        self.assertEqual(product_b.pk, 2)
+        # self.assertEqual(product_b.pk, 2)
         rel = UserProductRelationship.objects.filter(
             product=product_b,
             user=self.user)

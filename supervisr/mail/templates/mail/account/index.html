@@ -1,0 +1,75 @@
+{% extends "mail/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+
+{% block title %}
+{% supervisr_title "All Accounts" %}
+{% endblock %}
+
+{% block content %}
+<h1><clr-icon shape="user" size="48"></clr-icon>{% trans "All Accounts" %}</h1>
+<div class="btn-group btn-link btn-icon-link">
+  <a href="{% url 'supervisr/mail:mail-account-new' %}" class="btn">
+    <clr-icon shape="add"></clr-icon>
+  </a>
+  <a data-ctx-name="edit" class="btn">
+    <clr-icon shape="edit"></clr-icon>
+  </a>
+  <a data-ctx-name="trash" class="btn">
+    <clr-icon shape="trash"></clr-icon>
+  </a>
+  <div class="btn-group-overflow dropdown">
+    <button class="btn dropdown-toggle" clrDropdown>
+      <clr-icon shape="ellipsis-horizontal"></clr-icon>
+    </button>
+    <div class="dropdown-menu">
+      <a data-ctx-name="setpassword" class="dropdown-item">{% trans 'Set Password' %}</a>
+    </div>
+  </div>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>{% trans 'Full Address' %}</th>
+      <th>{% trans 'Domain' %}</th>
+      <th>{% trans 'Owner' %}</th>
+      <th>{% trans 'Usage' %}</th>
+      <th>{% trans 'Is Catchall?' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for account in acc_accounts %}
+    <tr data-selectable data-ctx-edit="{% url 'supervisr/mail:mail-account-edit' account=account.address domain=account.domain.domain.domain %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr/mail:mail-account-delete' account=account.address domain=account.domain.domain.domain %}?back={{ request.get_full_path }}" data-ctx-setpassword="{% url 'supervisr/mail:mail-account-set-password' account=account.address domain=account.domain.domain.domain %}?back={{ request.get_full_path }}">
+      <td>{{ account.address }}@{{ account.domain.domain.domain }}</td>
+      <td>{{ account.domain.domain.domain }}</td>
+      <td>{{ account.users.all|join:"," }}</td>
+      <td>
+        {% if account.quota > 0 %}
+        <div class="progress labeled">
+          <progress max="{{ account.quota }}" value="{{ account.size }}"></progress>
+          <span></span>
+        </div>
+        {% else %}
+        {{ account.size }}
+        {% endif %}
+      </td>
+      <td>
+        {% if account.is_catchall %}
+        <clr-icon shape="check"></clr-icon>
+        {% else %}
+        <clr-icon shape="times"></clr-icon>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% include 'blocks/block_pagination.html' with pages=acc_accounts %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+clrTableSelect('.container');
+</script>
+{% endblock %}

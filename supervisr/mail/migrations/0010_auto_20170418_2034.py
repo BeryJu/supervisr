@@ -20,7 +20,7 @@ def create_module(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/puppet', '0004_puppetmodule_source_path'),
+        ('puppet', '0004_puppetmodule_source_path'),
         ('supervisr/mail', '0009_maildomain_enabled'),
     ]
 

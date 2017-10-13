@@ -35,13 +35,13 @@ class LDAPConnector(object):
             return
         # Either use mock argument or test is in argv
         if mock is False and 'test' not in sys.argv:
-            self.domain = Setting.get('mod:ldap:domain')
-            self.base_dn = Setting.get('mod:ldap:base')
-            full_user = Setting.get('mod:ldap:bind:user')+'@'+self.domain
-            self.server = Server(Setting.get('mod:ldap:server'))
+            self.domain = Setting.get('domain')
+            self.base_dn = Setting.get('base')
+            full_user = Setting.get('bind:user')+'@'+self.domain
+            self.server = Server(Setting.get('server'))
             self.con = Connection(self.server, raise_exceptions=True,
                                   user=full_user,
-                                  password=Setting.get('mod:ldap:bind:password'))
+                                  password=Setting.get('bind:password'))
             self.con.bind()
             self.con.start_tls()
         else:
@@ -114,15 +114,14 @@ class LDAPConnector(object):
         """
         Returns whether LDAP is enabled or not
         """
-        return Setting.objects.get(key='mod:ldap:enabled').value_bool or \
-            'test' in sys.argv
+        return Setting.get(key='enabled') == 'True' or 'test' in sys.argv
 
     @staticmethod
     def get_server():
         """
         Return the saved LDAP Server
         """
-        return Setting.objects.get(key='mod:ldap:server').value
+        return Setting.get(key='server')
 
     @staticmethod
     def encode_pass(password):
@@ -165,7 +164,7 @@ class LDAPConnector(object):
         except LDAPInvalidCredentialsResult as exception:
             LOGGER.debug("User '%s' failed to login (Wrong credentials)", user_dn)
         except LDAPException as exception:
-            LOGGER.error(exception)
+            LOGGER.warning(exception)
         return False
 
     def is_email_used(self, mail):
@@ -205,7 +204,7 @@ class LDAPConnector(object):
         try:
             self.con.add(user_dn, attributes=attrs)
         except LDAPException as exception:
-            LOGGER.error("Failed to create user ('%s'), saved to DB", exception)
+            LOGGER.warning("Failed to create user ('%s'), saved to DB", exception)
             LDAPConnector.handle_ldap_error(user_dn, LDAPModification.ACTION_ADD, attrs)
         LOGGER.info("Signed up user %s", user.email)
         return self.change_password(raw_password, mail=user.email)
@@ -223,7 +222,7 @@ class LDAPConnector(object):
         try:
             self.con.modify(user_dn, diff)
         except LDAPException as exception:
-            LOGGER.error("Failed to modify %s ('%s'), saved to DB", user_dn, exception)
+            LOGGER.warning("Failed to modify %s ('%s'), saved to DB", user_dn, exception)
             LDAPConnector.handle_ldap_error(user_dn, LDAPModification.ACTION_MODIFY, diff)
         LOGGER.debug("moddified account '%s' [%s]", user_dn, ','.join(diff.keys()))
         return 'result' in self.con.result and self.con.result['result'] == 0

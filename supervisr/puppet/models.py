@@ -8,6 +8,7 @@ import tarfile
 
 from django.contrib.auth.models import User
 from django.db import models
+from pymysql.err import InternalError
 
 LOGGER = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ class PuppetModuleRelease(models.Model):
     downloads = models.IntegerField(default=0)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
-    module = models.ForeignKey('PuppetModule')
+    module = models.ForeignKey('PuppetModule', on_delete=models.CASCADE)
 
     readme = models.TextField(blank=True)
     changelog = models.TextField(blank=True)
@@ -67,15 +68,14 @@ class PuppetModuleRelease(models.Model):
                         json.loads(self.metadata)
                     except ValueError:
                         raise
-                elif file.lower().endswith('readme.md'):
-                    self.readme = tar.extractfile(file).read().decode('utf-8')
-                    LOGGER.info("%s: Added 'readme' from targz", self.module.name)
-                elif file.lower().endswith('changelog.md'):
-                    self.changelog = tar.extractfile(file).read().decode('utf-8')
-                    LOGGER.info("%s: Added 'changelog' from targz", self.module.name)
-                elif file.lower().endswith('license.md'):
-                    self.license = tar.extractfile(file).read().decode('utf-8')
-                    LOGGER.info("%s: Added 'license' from targz", self.module.name)
+                meta_keys = ['readme', 'changelog', 'license']
+                for key in meta_keys:
+                    if file.lower().endswith('%s.md' % key):
+                        try:
+                            setattr(self, key, tar.extractfile(file).read().decode('utf-8'))
+                            LOGGER.info("%s: Added '%s' from targz", self.module.name, key)
+                        except InternalError:
+                            pass
         super(PuppetModuleRelease, self).save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
@@ -89,7 +89,7 @@ class PuppetModule(models.Model):
     downloads = models.IntegerField(default=0)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
-    owner = models.ForeignKey(User)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     supported = models.BooleanField(default=False)
     source_path = models.TextField(default='', blank=True)
 

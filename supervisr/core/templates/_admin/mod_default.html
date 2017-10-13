@@ -8,6 +8,9 @@
 {% endblock %}
 
 {% block content %}
-<p>{% trans "This Module does not have a settings Page." %}</p>
-<p>{{ mod }}</p>
+<h1><clr-icon shape="blocks-group" size="48"></clr-icon>{% trans "Module Settings" %}</h1>
+{% block module_content %}
+  <h2><clr-icon shape="bundle" size="32"></clr-icon>{{ mod }}</h2>
+  <p>{% trans "This Module does not have a settings Page." %}</p>
+{% endblock %}
 {% endblock %}

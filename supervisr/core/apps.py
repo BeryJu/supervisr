@@ -12,7 +12,11 @@ import subprocess
 import pkg_resources
 from django.apps import AppConfig
 from django.conf import settings
+from django.core.cache import cache
+from django.db.utils import OperationalError, ProgrammingError
 from pip.req import parse_requirements
+
+from supervisr.core.thread.background import BackgroundThread
 
 LOGGER = logging.getLogger(__name__)
 
@@ -36,22 +40,38 @@ class SupervisrAppConfig(AppConfig):
         return super(SupervisrAppConfig, self).__init__(*args, **kwargs)
 
     def ready(self):
-        self.check_requirements()
+        #self.check_requirements()
         self.load_init()
         self.merge_settings()
+        self.run_ensure_settings()
         super(SupervisrAppConfig, self).ready()
+
+    # pylint: disable=no-self-use
+    def clear_cache(self):
+        """
+        Clear cache on startup
+        """
+        cache.clear()
+        LOGGER.info("Successfully cleared Cache")
 
     # pylint: disable=no-self-use
     def run_ensure_settings(self):
         """
         Make sure settings defined in `ensure_settings` are theere
         """
-        from supervisr.core.models import Setting
-        items = self.ensure_settings()
-        for key, defv in items.items():
-            Setting.objects.get_or_create(key=key, defaults={'value': defv})
-        if items:
-            LOGGER.info("Ensured %d settings", len(items))
+        try:
+            from supervisr.core.models import Setting
+            items = self.ensure_settings()
+            namespace = '.'.join(self.__module__.split('.')[:-1])
+            for key, defv in items.items():
+                Setting.objects.get_or_create(
+                    key=key,
+                    namespace=namespace,
+                    defaults={'value': defv})
+            if items:
+                LOGGER.info("Ensured %d settings", len(items))
+        except (OperationalError, ProgrammingError):
+            pass
 
     def ensure_settings(self):
         """
@@ -66,10 +86,11 @@ class SupervisrAppConfig(AppConfig):
         LOGGER.info("Loaded %s", self.name)
         for module in self.init_modules:
             try:
-                importlib.import_module("%s.%s" % (self.name, module))
                 LOGGER.info("Loaded %s.%s", self.name, module)
-            except ImportError:
-                pass # ignore non-existant modules
+                importlib.import_module("%s.%s" % (self.name, module))
+            except ImportError as exc:
+                if 'No' not in str(exc):
+                    raise # ignore non-existant modules
 
     def check_requirements(self):
         """
@@ -126,15 +147,27 @@ class SupervisrCoreConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr.core'
-    init_modules = ['signals', 'events', 'mailer', 'models', 'providers.base']
+    init_modules = [
+        'signals',
+        'events',
+        'mailer',
+        'models',
+        'providers.base',
+        'providers.domain',
+        'providers.internal',
+    ]
     navbar_title = 'Core'
 
     def ready(self):
         # Read this commit's shortened hash if git is in the path
         try:
+            fnull = open(os.devnull, 'w')
             current_hash = subprocess.Popen(['git', 'log', '--pretty=format:%h', '-n 1'],
-                                            stdout=subprocess.PIPE).communicate()[0]
+                                            stdout=subprocess.PIPE,
+                                            stderr=fnull).communicate()[0]
             settings.VERSION_HASH = current_hash
         except (OSError, IOError):
             settings.VERSION_HASH = b'dev'
         super(SupervisrCoreConfig, self).ready()
+        self.clear_cache()
+        BackgroundThread().start()

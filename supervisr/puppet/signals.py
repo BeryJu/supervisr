@@ -17,7 +17,7 @@ def puppet_handle_do_setup(sender, signal, **kwargs):
     """
     Handle setup and import modules
     """
-    if sender == 'supervisr.puppet' and settings.TEST is False:
+    if sender == 'supervisr.puppet' and not settings.TEST:
         for_imp = ForgeImporter()
         for_imp.import_module('puppetlabs-stdlib')
         LOGGER.info('Imported initial Dependencies')

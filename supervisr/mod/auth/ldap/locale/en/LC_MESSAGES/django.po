@@ -1,0 +1,58 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-15 19:28+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\forms\settings.py:17
+msgid "Enabled"
+msgstr ""
+
+#: .\forms\settings.py:18
+msgid "Hostname"
+msgstr ""
+
+#: .\forms\settings.py:21
+msgid "Base DN"
+msgstr ""
+
+#: .\forms\settings.py:24
+msgid "Create Base DN"
+msgstr ""
+
+#: .\forms\settings.py:27
+msgid "Bind User"
+msgstr ""
+
+#: .\forms\settings.py:30
+msgid "Bind Password"
+msgstr ""
+
+#: .\forms\settings.py:31
+msgid "Domain"
+msgstr ""
+
+#: .\templates\ldap\settings.html:15
+msgid "LDAP Connection Settings"
+msgstr ""
+
+#: .\templates\ldap\settings.html:24
+msgid "Update"
+msgstr ""
+
+#: .\views.py:42
+msgid "Settings successfully updated"
+msgstr ""

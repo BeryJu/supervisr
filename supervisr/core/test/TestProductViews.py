@@ -7,8 +7,8 @@ from django.contrib.auth.models import User
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
-from ..models import Product, get_system_user
-from ..views import product
+from supervisr.core.models import Product, get_system_user
+from supervisr.core.views import products
 
 
 class TestProductViews(TestCase):
@@ -26,7 +26,7 @@ class TestProductViews(TestCase):
         """
         req = self.factory.get(reverse('product-index'))
         req.user = User.objects.get(pk=get_system_user())
-        res = product.index(req)
+        res = products.index(req)
         self.assertEqual(res.status_code, 200)
 
     def test_product_view(self):
@@ -43,5 +43,5 @@ class TestProductViews(TestCase):
             'slug': test_product.slug
             }))
         req.user = User.objects.get(pk=get_system_user())
-        res = product.index(req)
+        res = products.index(req)
         self.assertEqual(res.status_code, 200)

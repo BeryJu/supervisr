@@ -2,7 +2,7 @@
 Google Apps Processor
 """
 from supervisr.mod.auth.saml.idp.base import Processor
-from supervisr.mod.auth.saml.idp.xml_render import get_assertion_googleapps_xml
+from supervisr.mod.auth.saml.idp.xml_render import get_assertion_xml
 
 
 class GoogleAppsProcessor(Processor):
@@ -14,4 +14,5 @@ class GoogleAppsProcessor(Processor):
         self._audience = 'IAMShowcase'
 
     def _format_assertion(self):
-        self._assertion_xml = get_assertion_googleapps_xml(self._assertion_params, signed=True)
+        self._assertion_xml = get_assertion_xml(
+            'saml/xml/assertions/google_apps.xml', self._assertion_params, signed=True)

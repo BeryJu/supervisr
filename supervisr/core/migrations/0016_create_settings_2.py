@@ -8,8 +8,8 @@ from django.db import migrations
 def create_settings(apps, schema_editor):
     Setting = apps.get_model('supervisr/core', 'Setting')
     settings = {
-        'core:password:filter:description': 'One Letter, one Number and one speical Character',
-        'core:password:filter': r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&\.])[A-Za-z\d$@$!%*?&\.]{8,}$",
+        'password:filter:description': 'One Letter, one Number and one speical Character',
+        'password:filter': r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&\.])[A-Za-z\d$@$!%*?&\.]{8,}$",
     }
     for key, value in settings.items():
         Setting.objects.get_or_create(

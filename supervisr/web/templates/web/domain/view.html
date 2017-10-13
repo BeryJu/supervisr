@@ -1,0 +1,63 @@
+{% extends "mail/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+
+{% block title %}
+{% supervisr_title title %}
+{% endblock %}
+
+{% block content %}
+<h1><clr-icon shape="world" size="48"></clr-icon>{{ domain.domain.domain }}</h1>
+<div class="btn-group btn-link btn-icon-link">
+</div>
+<div class="row">
+  <ul id="mailTabd" class="nav" role="tablist">
+    <li role="presentation" class="nav-item">
+      <button id="tabDetails" class="btn btn-link nav-link" aria-controls="details"
+      aria-selected="false" type="button">{% trans "Details " %}</button>
+    </li>
+    <li role="presentation" class="nav-item">
+      <button id="tabGeneralSettings" class="btn btn-link nav-link" aria-controls="settingsGeneral"
+      aria-selected="false" type="button">{% trans "General Settings" %}</button>
+    </li>
+    <li role="presentation" class="nav-item">
+      <button id="tabSettingsSpam" class="btn btn-link nav-link" aria-controls="settingsSpam"
+      aria-selected="false" type="button">{% trans "Spam Settings" %}</button>
+    </li>
+    <li role="presentation" class="nav-item">
+      <button id="tabSettingsDKIM" class="btn btn-link nav-link" aria-controls="settingsDKIM"
+      aria-selected="false" type="button">{% trans "DKIM Settings" %}</button>
+    </li>
+  </ul>
+  <section id="details" role="tabpanel" aria-labelledby="tabDetails" aria-hidden="true">
+    <table class="table">
+      <tbody>
+        <tr>
+          <td>{% trans "Created" %}</td>
+          <td>{{ domain.created }}</td>
+        </tr>
+        <tr>
+          <td>{% trans "Domain Provider" %}</td>
+          <td>{{ domain.domain.provider.name }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+  <section id="settingsGeneral" role="tabpanel" aria-labelledby="tabGeneralSettings" aria-hidden="true">
+  v
+  </section>
+  <section id="settingsSpam" role="tabpanel" aria-labelledby="tabSettingsSpam" aria-hidden="true">
+  b
+  </section>
+  <section id="settingsDKIM" role="tabpanel" aria-labelledby="tabSettingsDKIM" aria-hidden="true">
+  c
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+clrTabs();
+</script>
+{% endblock %}

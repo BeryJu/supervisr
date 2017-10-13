@@ -11,10 +11,12 @@ class SupervisrMailConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr.mail'
+    label = 'supervisr/mail'
     verbose_name = 'Supervisr Mail'
     navbar_enabled = lambda self, request: True
+    title_moddifier = lambda self, title, request: 'Mail'
 
     def ensure_settings(self):
         return {
-            'mail:debug': False,
+            'debug': False,
         }
