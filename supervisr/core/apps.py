@@ -37,7 +37,7 @@ class SupervisrAppConfig(AppConfig):
         Set app Label based on full name
         """
         self.label = self.name.replace('.', '/')
-        return super(SupervisrAppConfig, self).__init__(*args, **kwargs)
+        super(SupervisrAppConfig, self).__init__(*args, **kwargs)
 
     def ready(self):
         #self.check_requirements()
@@ -147,6 +147,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr.core'
+    label = 'supervisr/core'
     init_modules = [
         'signals',
         'events',

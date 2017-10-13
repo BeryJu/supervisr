@@ -14,15 +14,15 @@
     "results": [
         {% for release in releases %}
         {
-            "uri": "{% url 'puppet:release' user=release.module.owner.username module=release.module.name version=release.version %}",
+            "uri": "{% url 'supervisr/puppet:release' user=release.module.owner.username module=release.module.name version=release.version %}",
             "slug": "{{ release.module.owner.username }}-{{ release.module.name }}-{{ release.version }}",
             "version": "{{ release.version }}",
             "module": {
-                "uri": "{% url 'puppet:module' user=release.module.owner.username module=release.module.name %}",
+                "uri": "{% url 'supervisr/puppet:module' user=release.module.owner.username module=release.module.name %}",
                 "slug": "{{ release.module.owner.username }}-{{ release.module.name }}",
                 "name": "{{ release.module.name }}",
                 "owner": {
-                    "url": "{% url 'puppet:user' user=release.module.owner.username %}",
+                    "url": "{% url 'supervisr/puppet:user' user=release.module.owner.username %}",
                     "slug": "{{ release.module.owner.username }}",
                     "username": "{{ release.module.owner.username }}"
                 }
@@ -32,7 +32,7 @@
             "supported": {{ release.module.supported|lower }},
             "file_size": {{ release.get_size }},
             "file_md5": "{{ release.get_md5 }}",
-            "file_uri": "{% url 'puppet:file' user=release.module.owner.username module=release.module.name version=release.version %}",
+            "file_uri": "{% url 'supervisr/puppet:file' user=release.module.owner.username module=release.module.name version=release.version %}",
             "downloads": {{ release.get_downloads }},
             "readme": "{{ release.readme|jsonify }}",
             "changelog": "{{ release.changelog|jsonify }}",

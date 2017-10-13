@@ -23,7 +23,7 @@ def supervisr_title(context, title=None):
     if context.request.resolver_match and context.request.resolver_match.namespace != '':
         dj_app = None
         try:
-            # Old label style ('core', 'client', etc)
+            # Old label style ('supervisr/core', 'client', etc)
             app_title = context.request.resolver_match.namespace.split('/')[-1]
             dj_app = apps.get_app_config(app_title)
         except (LookupError, KeyError):

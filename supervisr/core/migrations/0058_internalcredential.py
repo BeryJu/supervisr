@@ -7,7 +7,7 @@ from django.db import migrations, models
 
 
 def update_dummy_internal(apps, schema_editor):
-    ProviderInstance = apps.get_model('core', 'ProviderInstance')
+    ProviderInstance = apps.get_model('supervisr/core', 'ProviderInstance')
     for pinst in ProviderInstance.objects.all():
         if pinst.provider_path == 'supervisr.core.providers.dummy.DummyBaseProvider':
             pinst.provider_path = 'supervisr.core.providers.internal.InternalBaseProvider'
@@ -16,19 +16,19 @@ def update_dummy_internal(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0057_auto_20170818_1943'),
+        ('supervisr/core', '0057_auto_20170818_1943'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='InternalCredential',
             fields=[
-                ('basecredential_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='core.BaseCredential')),
+                ('basecredential_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/core.BaseCredential')),
             ],
             options={
                 'abstract': False,
             },
-            bases=('core.basecredential',),
+            bases=('supervisr/core.basecredential',),
         ),
         migrations.RunPython(update_dummy_internal),
     ]

@@ -106,7 +106,7 @@ def ifapp(app_name):
             """
             Only executes ifapp_func if app_name is installed
             """
-            if app_name in app_cache or app_name == 'core' or app_name == 'supervisr/core':
+            if app_name in app_cache or app_name == 'supervisr/core':
                 return ifapp_func(*args, **kwargs)
             return
         wrap.__doc__ = ifapp_func.__doc__

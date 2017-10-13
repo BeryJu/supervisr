@@ -11,24 +11,24 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('core', '0052_auto_20170726_1515'),
+        ('supervisr/core', '0052_auto_20170726_1515'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='WebDomain',
             fields=[
-                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='core.Product')),
+                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/core.Product')),
                 ('root', models.TextField(default='/')),
                 ('quota', models.BigIntegerField(default=0)),
                 ('is_php_enabled', models.BooleanField(default=True)),
                 ('custom_config', models.TextField(blank=True)),
-                ('domain_web', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='core.Domain')),
-                ('profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.UserProfile')),
+                ('domain_web', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='supervisr/core.Domain')),
+                ('profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/core.UserProfile')),
             ],
             options={
                 'abstract': False,
             },
-            bases=('core.product',),
+            bases=('supervisr/core.product',),
         ),
     ]

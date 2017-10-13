@@ -23,7 +23,7 @@ class TestServerViews(TestCase):
         """
         Test module_list view
         """
-        req = self.factory.get(reverse('server:server-index'))
+        req = self.factory.get(reverse('supervisr/server:server-index'))
         req.user = User.objects.get(pk=get_system_user())
         res = server.index(req)
         self.assertEqual(res.status_code, 200)
