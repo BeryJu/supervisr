@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0017_adjust_password_filter'),
+        ('supervisr/core', '0017_adjust_password_filter'),
     ]
 
     operations = [

@@ -21,8 +21,8 @@ def create_module(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0013_auto_20170112_1925'),
-        ('puppet', '0004_puppetmodule_source_path'),
+        ('supervisr/core', '0013_auto_20170112_1925'),
+        ('supervisr/puppet', '0004_puppetmodule_source_path'),
     ]
 
     operations = [

@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0052_auto_20170726_1515'),
+        ('supervisr/core', '0052_auto_20170726_1515'),
         ('supervisr/static', '0003_auto_20170709_1219'),
     ]
 
@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             name='ProductPage',
             fields=[
                 ('staticpage_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/static.StaticPage')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.Product')),
+                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/core.Product')),
             ],
             options={
                 'abstract': False,
