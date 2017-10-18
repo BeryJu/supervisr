@@ -41,7 +41,7 @@ class SupervisrModStatGraphiteConfig(SupervisrAppConfig):
                 client.write('server.%s.cpu' % host, process.cpu_percent())
             return send
 
-        if Setting.get('enabled', default='False') != 'False':
+        if Setting.get_bool('enabled', default=False):
             try:
                 client = GraphiteClient()
                 client.connect()

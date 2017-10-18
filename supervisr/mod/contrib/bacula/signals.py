@@ -16,7 +16,7 @@ def update_bacula_db(sender, **kwargs):
     Update Bacula DB from settings
     """
     if sender.namespace == 'supervisr.mod.contrib.bacula':
-        if Setting.get('enabled'):
+        if Setting.get_bool('enabled'):
             settings.DATABASES['bacula'] = {}
             for key in ['ENGINE', 'NAME', 'USER', 'PASSWORD', 'HOST']:
                 settings.DATABASES['bacula'][key] = Setting.get(key.lower())
