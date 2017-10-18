@@ -22,7 +22,7 @@ class SupervisrModContribBaculaConfig(SupervisrAppConfig):
     def ready(self):
         super(SupervisrModContribBaculaConfig, self).ready()
         from supervisr.core.models import Setting
-        if Setting.get('enabled') != 'False' and not settings.TEST:
+        if Setting.get_bool('enabled') and not settings.TEST:
             settings.DATABASES['bacula'] = {}
             for key in ['ENGINE', 'NAME', 'USER', 'PASSWORD', 'HOST']:
                 settings.DATABASES['bacula'][key] = Setting.get(key.lower())
@@ -44,4 +44,4 @@ class SupervisrModContribBaculaConfig(SupervisrAppConfig):
         Only show in navbar if enabled and superuser
         """
         from supervisr.core.models import Setting
-        return req.user.is_superuser and Setting.get('enabled') != 'False'
+        return req.user.is_superuser and Setting.get_bool('enabled')

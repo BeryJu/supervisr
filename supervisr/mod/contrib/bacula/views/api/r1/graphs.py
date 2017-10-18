@@ -5,10 +5,11 @@ Supervisr Mod Contrib Bacula Graphing API
 from datetime import timedelta
 
 from django.db.models import Sum
-from django.http import Http404, JsonResponse
+from django.http import Http404
 from django.utils import timezone
 
 from supervisr.core.api.base import API
+from supervisr.core.models import Setting
 from supervisr.core.utils import check_db_connection
 from supervisr.mod.contrib.bacula.models import Job
 
@@ -28,6 +29,8 @@ class GraphAPI(API):
             raise Http404
         if not check_db_connection('bacula'):
             raise Http404
+        if not Setting.get_bool('enabled'):
+            raise Http404
 
     # pylint: disable=unused-argument
     def job_status(self, request, data):
@@ -39,7 +42,7 @@ class GraphAPI(API):
         # This is a bit of a workaround since django won't let me do StartTime__isnull
         first_id = Job.objects.all().order_by('JobId').exclude(StartTime__lte=yesterday).first()
         if not first_id:
-            return JsonResponse({})
+            return {}
         graph_job_status_raw = Job.objects.filter(JobId__gte=first_id.JobId).order_by('-JobId')
 
         def qs_get_count(qs, default=0, **kwargs):
