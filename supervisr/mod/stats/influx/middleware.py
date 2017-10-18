@@ -48,6 +48,6 @@ def stats(get_response):
             except (InfluxDBClientError, InfluxDBServerError, reqConnectionError, IOError) as exc:
                 if req.user.is_authenticated and req.user.is_superuser:
                     # Only show message if logged in and superuser
-                    messages.error(req, _("Influx Error: %(msg)s" % {'msg': str(exc)}))
+                    messages.error(req, _("Influx Error: %(msg)s" % {'msg': repr(exc)}))
         return response
     return middleware

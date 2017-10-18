@@ -18,5 +18,5 @@ class SettingsForm(forms.Form):
     port = forms.IntegerField(label=_('Port'), initial=8086, max_value=65535, min_value=0,
                               widget=forms.TextInput(attrs={'placeholder': 8086}))
     database = forms.CharField(label=_('Database'), initial='supervisr')
-    username = forms.CharField(label=_('User'), initial='root')
-    password = forms.CharField(label=_('Password'), initial='root')
+    username = forms.CharField(label=_('User'), initial='root', required=False)
+    password = forms.CharField(label=_('Password'), initial='root', required=False)
