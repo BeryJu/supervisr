@@ -26,7 +26,7 @@ def stats(get_response):
         response = get_response(req)
         after = time.time()
 
-        if Setting.get('enabled') == 'True':
+        if Setting.get_bool('enabled'):
             try:
                 with GraphiteClient() as client:
                     res_match = resolve(req.path_info).func

@@ -20,7 +20,7 @@ def admin_settings(req, mod):
     Default view for modules without admin view
     """
     initial_data = {
-        'enabled':       Setting.get('enabled') == 'True',
+        'enabled':       Setting.get_bool('enabled', default=False),
         'host':          Setting.get('server', default=None),
         'base':          Setting.get('base', default=None),
         'create_base':   Setting.get('create_base', default=None),

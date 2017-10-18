@@ -31,7 +31,6 @@ def admin_settings(req, mod):
     if req.method == 'POST':
         form = SettingsForm(req.POST)
         if form.is_valid() and 'test' not in req.POST:
-            print(form.cleaned_data)
             for key in ['enabled', 'host', 'port', 'database', 'username', 'password']:
                 Setting.set(key, form.cleaned_data.get(key))
             Setting.objects.update()
