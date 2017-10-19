@@ -1,3 +1,2 @@
 django-oauth-toolkit
 django-cors-middleware
-oauthlib==2.0.3
