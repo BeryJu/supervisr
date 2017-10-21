@@ -24,6 +24,10 @@ class SupervisrModStatInfluxConfig(SupervisrAppConfig):
 
     def ready(self):
         super(SupervisrModStatInfluxConfig, self).ready()
+        SupervisrModStatInfluxConfig._worker()
+
+    @staticmethod
+    def _worker():
         from supervisr.core.models import Setting
         from supervisr.mod.stats.influx.influx_client import InfluxClient
 
@@ -46,6 +50,7 @@ class SupervisrModStatInfluxConfig(SupervisrAppConfig):
 
             except (TimeoutError, ConnectionError, IOError):
                 LOGGER.warning("Failed to connect to influx server '%s'.", Setting.get('host'))
+
 
     def ensure_settings(self):
         return {

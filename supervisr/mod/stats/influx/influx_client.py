@@ -58,13 +58,17 @@ class InfluxClient(object):
             'host': self._fqdn,
             }
         all_tags.update(tags)
-        return self._client.write_points([
-            {
-                'measurement': meas,
-                'tags': all_tags,
-                'fields': fields
-            }
-        ])
+        try:
+            return self._client.write_points([
+                {
+                    'measurement': meas,
+                    'tags': all_tags,
+                    'fields': fields
+                }
+            ])
+        # pylint: disable=broad-except
+        except Exception:
+            return False
 
     def close(self):
         """
@@ -73,7 +77,11 @@ class InfluxClient(object):
         # self._client.close()
 
     def __enter__(self):
-        self.connect()
+        try:
+            self.connect()
+        # pylint: disable=broad-except
+        except Exception:
+            pass
         return self
 
     # pylint: disable=unused-argument
