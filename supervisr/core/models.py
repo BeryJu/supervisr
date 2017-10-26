@@ -204,7 +204,7 @@ class Setting(CreatedUpdatedModel):
         Return value cast to boolean
         """
         value = Setting.get(*args, inspect_offset=2, **kwargs)
-        return str(value) == 'True'
+        return str(value).lower() == 'true'
 
     @staticmethod
     def set(key, value, namespace=''):

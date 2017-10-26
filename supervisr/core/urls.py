@@ -69,6 +69,7 @@ urlpatterns = [
     # User views
     url(r'^user/$', users.index, name='user-index'),
     url(r'^user/events/$', users.events, name='user-events'),
+    url(r'^user/delete/$', users.UserDeleteView.as_view(), name='user-delete'),
     url(r'^user/feedback/send/$', users.send_feedback, name='user-send_feedback'),
     # Admin views
     url(r'^admin/$', admin.index, name='admin-index'),

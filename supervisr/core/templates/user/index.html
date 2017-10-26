@@ -16,6 +16,18 @@
       <div class="col-md-6">
         {% include 'blocks/block_form_card.html' with card_title='General Information' form_update='Update' %}
       </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            {% trans 'Actions' %}
+          </div>
+          <div class="card-block">
+            <section class="form-block">
+              <a href="{% url 'user-delete' %}" class="btn btn-danger">{% trans 'Delete Account' %}</a>
+            </section>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
