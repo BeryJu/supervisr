@@ -53,7 +53,7 @@ class SignupForm(forms.Form):
         username = self.cleaned_data.get('username')
         if UserProfile.objects.filter(username=username).exists():
             LOGGER.warning("Username %s already exists", username)
-            raise ValidationError(_("Username alrexy exists"))
+            raise ValidationError(_("Username already exists"))
         return username
 
     def clean_email(self):
