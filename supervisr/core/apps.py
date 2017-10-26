@@ -172,3 +172,23 @@ class SupervisrCoreConfig(SupervisrAppConfig):
         super(SupervisrCoreConfig, self).ready()
         self.clear_cache()
         BackgroundThread().start()
+
+    def ensure_settings(self):
+        """ensure Core settings"""
+        return {
+            'signup:enabled': True,
+            'password_reset:enabled': True,
+            'banner:enabled': False,
+            'banner:level': 'info',
+            'banner:message': '',
+            'branding': 'supervisr',
+            'branding:icon': '',
+            'domain': 'https://localhost/',
+            'maintenancemode': False,
+            'password:filter': r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])'
+                               r'[A-Za-z\d$@$!%*?&]{8,}',
+            'password:filter:description': 'Minimum 8 characters at least 1 Uppercase Alphabet, 1 L'
+                                           'owercase Alphabet, 1 Number and 1 Special Character',
+            'recaptcha:private': '',
+            'recaptcha:public': '',
+        }

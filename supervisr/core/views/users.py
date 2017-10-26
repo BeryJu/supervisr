@@ -3,11 +3,18 @@ Supervisr Core User Views
 """
 
 from django.contrib import messages
+from django.contrib.auth import logout as django_logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.shortcuts import render
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import redirect, render
+from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
+from django.views import View
 
+from supervisr.core.decorators import reauth_required
 from supervisr.core.forms.users import EditUserForm, FeedbackForm
 from supervisr.core.mailer import send_message
 from supervisr.core.models import Event
@@ -77,3 +84,56 @@ def send_feedback(req):
         'primary_action': 'Send',
         'form': form
         })
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(reauth_required, name='dispatch')
+class UserDeleteView(View):
+    """View to allow users to delete their own profile"""
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Handle get request
+
+        Args:
+            request: The Current HttpRequest
+
+        Returns:
+            Rendered HTML
+        """
+        return render(request, 'core/generic_delete.html', {
+            'object': 'Account %s' % request.user.username,
+            'title': 'Delete %s' % request.user.username,
+            'delete_url': reverse('user-delete'),
+            'extra_markup': '<h4>%s</h4>' % _('This action cannot be reversed!')
+            })
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        """Handle post request
+
+        Args:
+            request: The Current HttpRequest
+
+        Returns:
+            Redirect to login page if successful
+        """
+        if 'confirmdelete' in request.POST:
+            self.delete(request.user)
+            messages.success(request, _('Successfully deleted account'))
+            return redirect('account-login')
+        messages.error(request, _('Failed to delete account'))
+        return redirect('user-index')
+
+    def delete(self, account: User) -> bool:
+        """Handle actual deletion
+
+        Log out user before deleting account with everything attached.
+
+        Args:
+            account: The user to delete
+
+        Return:
+            True if successful, otherwise False
+        """
+        if account.delete() != 0:
+            django_logout(account)
+            return True
+        return False

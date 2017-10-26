@@ -10,10 +10,12 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.core.cache import cache
 from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.http import urlencode
+from django.utils.translation import ugettext as _
 
+from supervisr.core.models import Setting
 from supervisr.core.utils import get_apps
 
 REAUTH_KEY = getattr(settings, 'REAUTH_KEY', 'supervisr_require_reauth_done')
@@ -70,6 +72,41 @@ def reauth_required(view_function):
     wrap.__doc__ = view_function.__doc__
     wrap.__name__ = view_function.__name__
     return wrap
+
+def require_setting(path, value, message=_('This function has been administratively disabled.')):
+    """Check if setting under *key* has value of *value*
+
+    Args:
+        path: Complete path to the setting, i.e. supervisr.core/banner:enabled
+        value: The value which Setting should have.
+        message: The message which should be shown
+
+    Returns:
+        Inner-wrapper
+    """
+
+    def outer_wrap(view_func):
+        """Check if setting under *key* has value of *value*"""
+        def wrap(request, *args, **kwargs):
+            """Check if setting under *key* has value of *value*"""
+            namespace, key = path.split('/')
+            setting = Setting.objects.filter(namespace=namespace, key=key)
+
+            # pylint: disable=unidiomatic-typecheck
+            if setting.exists() and \
+                    (type(value) == bool and setting.first().value_bool != value or \
+                    type(value) != bool and setting.first().value != value):
+                # Only show error if setting exists and doesnt match value
+                return render(request, 'common/error.html', {'message': message})
+
+            return view_func(request, *args, **kwargs)
+
+        wrap.__doc__ = view_func.__doc__
+        wrap.__name__ = view_func.__name__
+
+        return wrap
+
+    return outer_wrap
 
 def ifapp(app_name):
     """

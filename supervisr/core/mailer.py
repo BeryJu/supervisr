@@ -3,6 +3,7 @@ Supervisr Core Mail helper
 """
 
 import logging
+from socket import gaierror
 
 from django.conf import settings
 from django.core.mail import send_mail
@@ -53,7 +54,7 @@ def send_message(recipients, subject, **kwargs):
             recipients, **django_kwargs)
         LOGGER.info("Sent '%s' email to %s: %s", subject, recipients, sent)
         return sent == 1 # send_mail returns either 0 or 1
-    except ConnectionRefusedError as exc:
+    except (ConnectionRefusedError, gaierror) as exc:
         # Always return true when debugging
         if settings.DEBUG:
             LOGGER.info("Failed to send email %s", str(exc))

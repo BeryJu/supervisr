@@ -22,12 +22,12 @@ from django.views import View
 from django.views.decorators.http import require_GET
 from passlib.hash import sha512_crypt
 
-from supervisr.core.decorators import anonymous_required
+from supervisr.core.decorators import anonymous_required, require_setting
 from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
                                            PasswordResetFinishForm,
                                            PasswordResetInitForm, ReauthForm,
                                            SignupForm)
-from supervisr.core.models import (AccountConfirmation, UserProfile,
+from supervisr.core.models import (AccountConfirmation, Setting, UserProfile,
                                    make_username)
 from supervisr.core.signals import (SIG_USER_CHANGE_PASS, SIG_USER_CONFIRM,
                                     SIG_USER_LOGIN, SIG_USER_LOGOUT,
@@ -52,14 +52,16 @@ class LoginView(View):
         Returns:
             Login template
         """
+        extra_links = {}
+        if Setting.get_bool('password_reset:enabled'):
+            extra_links['account-reset_password_init'] = 'Reset your password'
+        if Setting.get_bool('signup:enabled'):
+            extra_links['account-signup'] = 'Sign up for an account'
         return render(request, 'account/login.html', {
             'form': form,
             'title': _("SSO - Login"),
             'primary_action': _("Login"),
-            'extra_links': {
-                'account-signup': 'Sign up for an account',
-                'account-reset_password_init': 'Reset your password'
-            }
+            'extra_links': extra_links
             })
 
     def get(self, request: HttpRequest) -> HttpResponse:
@@ -161,6 +163,7 @@ class LoginView(View):
         return redirect(reverse('account-login'))
 
 @method_decorator(anonymous_required, name='dispatch')
+@method_decorator(require_setting('supervisr.core/signup:enabled', True), name='dispatch')
 class SignupView(View):
     """View to handle Signup requests"""
 
@@ -346,6 +349,7 @@ def confirm(req, uuid):
     return redirect(reverse('account-login'))
 
 @anonymous_required
+@require_setting('supervisr.core/password_reset:enabled', True)
 def reset_password_init(req):
     """
     View to handle Browser account password reset initiation Requests
@@ -369,6 +373,7 @@ def reset_password_init(req):
         })
 
 @anonymous_required
+@require_setting('supervisr.core/password_reset:enabled', True)
 def reset_password_confirm(req, uuid):
     """
     View to handle Browser account password reset confirmation Requests
