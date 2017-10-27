@@ -46,6 +46,7 @@ urlpatterns = [
         accounts.reset_password_confirm, name='account-reset_password_confirm'),
     # Product views
     url(r'^products/$', products.index, name='product-index'),
+    url(r'^products/new/$', products.ProductNewWizard.as_view(), name='products-new'),
     url(r'^products/(?P<slug>[a-zA-Z0-9\-]+)/$', products.view, name='product-view'),
     # Domain views
     url(r'^domains/$', domains.index, name='domain-index'),
@@ -81,6 +82,7 @@ urlpatterns = [
     url(r'^admin/info/$', admin.info, name='admin-info'),
     url(r'^admin/events/$', admin.events, name='admin-events'),
     url(r'^admin/debug/$', admin.debug, name='admin-debug'),
+    url(r'^admin/products/$', products.admin_index, name='admin-product_index'),
     # Include django-admin
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),
@@ -94,19 +96,13 @@ for app in get_apps():
     app = '.'.join(app.split('.')[:-2])
     # Check if app uses old or new label
     namespace = None
-    try:
-        # Try new format first
-        # from supervisr.mod.auth.oauth.client
-        # to mod/auth/oauth/client
-        new_name = '/'.join(app.split('.'))
-        mount_path = new_name.replace('supervisr/', '')
-        app_config = apps.get_app_config(new_name)
-        namespace = new_name
-    except (KeyError, LookupError):
-        # Try old format afterwards
-        old_name = app.split('.')[-1]
-        app_config = apps.get_app_config(old_name)
-        namespace = old_name
+    # Try new format first
+    # from supervisr.mod.auth.oauth.client
+    # to mod/auth/oauth/client
+    new_name = '/'.join(app.split('.'))
+    mount_path = new_name.replace('supervisr/', '')
+    app_config = apps.get_app_config(new_name)
+    namespace = new_name
 
     url_module = "%s.urls" % app
     # Only add if module could be loaded

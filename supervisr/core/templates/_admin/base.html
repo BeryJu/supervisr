@@ -27,6 +27,9 @@
         {% endfor %}
       </ul>
     </section>
+    <a href="{% url 'admin-product_index' %}" class="nav-link {% is_active 'admin-product_index' %}">
+      {% trans 'Products' %}
+    </a>
     <a href="{% url 'admin-info' %}" class="nav-link {% is_active 'admin-info' %}">
       {% trans "System Information" %}
     </a>
