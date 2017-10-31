@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
@@ -34,12 +35,18 @@ def debug_build(req, user, module):
     """
     Run Puppet Build
     """
-    p_user = User.objects.get(username=user)
-    p_module = PuppetModule.objects.get(name=module, owner=p_user)
+    p_users = User.objects.filter(username=user)
+    if not p_users.exists():
+        raise Http404
+    p_user = p_users.first()
+    p_modules = PuppetModule.objects.filter(name=module, owner=p_user)
+    if not p_modules.exists():
+        raise Http404
+    p_module = p_modules.first()
     rel_builder = ReleaseBuilder(p_module)
     rel_builder.build()
     messages.success(req, 'Successfully built %s-%s' % (user, module))
-    return redirect(reverse('puppet:puppet-index'))
+    return redirect(reverse('supervisr/puppet:puppet-index'))
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)

@@ -1,12 +1,12 @@
 """
 Supervisr Puppet Module Builder
 """
+import glob
 import gzip
 import io
 import json
 import logging
 import os
-import sys
 import tarfile
 from tempfile import NamedTemporaryFile
 
@@ -116,23 +116,6 @@ class ReleaseBuilder(object):
             importer.import_module(module['name'])
         LOGGER.info('Imported dependencies for %s', self._root_dir)
 
-    @staticmethod
-    def _glob_helper(list_dir):
-        """
-        Wrapper for glob which can't do recursive under python 3.5
-        """
-        if sys.version_info >= (3, 5):
-            # Python 3.5 has a glob function with recursion
-            import glob
-            # pylint: disable=unexpected-keyword-arg
-            return glob.glob('%s/**' % list_dir, recursive=True)
-        matches = []
-        # pylint: disable=unused-variable
-        for root, dirs, files in os.walk(list_dir):
-            for file in files:
-                matches.append(os.path.join(root, file))
-        return matches
-
     def render_template(self, path, context=None, check_json=True):
         """
         Render template and return as string
@@ -153,7 +136,7 @@ class ReleaseBuilder(object):
         """
         Copy non-templates into tar, render templates into tar and import into django
         """
-        files = self._glob_helper(self.base_dir)
+        files = glob.glob('%s/**' % self.base_dir, recursive=True)
         if context is None:
             context = {}
         _context = self.make_context(context)

@@ -1,0 +1,66 @@
+{% extends '_admin/base.html' %}
+
+{% load i18n %}
+{% load cache %}
+{% load supervisr_title %}
+
+{% block header %}
+<style>
+  .card>.card-img>img {
+    max-height: 128px;
+    width: auto;
+    margin: auto;
+  }
+</style>
+{% endblock %}
+
+{% block title %}
+  {% supervisr_title 'Products' %}
+{% endblock %}
+
+{% block content %}
+<div class="btn-group">
+  <a href="" class="btn">
+    <clr-icon shape="add"></clr-icon>
+    {% trans 'Add' %}
+  </a>
+  <a data-ctx-name="edit" class="btn">
+    <clr-icon shape="edit"></clr-icon>
+    {% trans 'Edit' %}
+  </a>
+  <a data-ctx-name="trash" class="btn">
+    <clr-icon shape="trash"></clr-icon>
+    {% trans 'Delete' %}
+  </a>
+</div>
+<div class="row">
+  {% for product in products %}
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-img">
+        {% if product.icon %}
+        {% cache 600 app product.uuid %}
+        <img src="{{ product.icon_b64 }}" alt="{{ name }} Icon">
+        {% endcache %}
+        {% else %}
+        <clr-icon shape="application" size="64"></clr-icon>
+        {% endif %}
+      </div>
+      <div class="card-block">
+        <p class="card-text">
+          <h3 class="card-title">{{ product.name }}</h3>
+          <p>{{ product.description }}</p>
+        </p>
+      </div>
+      <div class="card-footer">
+        <a href="{% url 'product-view' slug=product.slug %}" class="btn btn-sm btn-link">{% trans 'Details' %}</a>
+        <a href="" class="btn btn-sm btn-link">{% trans 'UPRs' %}</a>
+        {% if product.management_url %}
+        <a href="{{ product.management_url }}" class="btn btn-sm btn-link">{% trans 'Open' %}</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
