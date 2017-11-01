@@ -14,3 +14,10 @@ class SupervisrPuppetConfig(SupervisrAppConfig):
     verbose_name = 'Supervisr Puppet'
     navbar_enabled = lambda self, request: request.user.is_superuser
     title_moddifier = lambda self, title, request: 'Puppet'
+
+    def ensure_settings(self):
+        """ensure puppet settings"""
+        from supervisr.core.models import get_random_string
+        return {
+            'url_key': get_random_string(20),
+        }
