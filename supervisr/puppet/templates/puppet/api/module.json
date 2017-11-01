@@ -1,0 +1,21 @@
+{% load jsonify %}
+
+{
+  "uri": "{% url 'supervisr/puppet:module' user=module.owner.username module=module.name %}",
+  "name": "{{ module.name }}",
+  "downloads": {{ module.downloads }},
+  "created_at": "{{ module.create_at }}",
+  "updated_at": "{{ module.updated_at }}",
+  "supported": true,
+  "slug": "{{ module.owner.username }}-{{ module.name }}",
+  "owner": {
+    "uri": "{% url 'supervisr/puppet:user' user=module.owner.username %}",
+    "username": "{{ module.owner.username }}"
+  },
+  "current_release": {% include 'puppet/api/snippets/release.json' with release=lrel %},
+  "releases": [
+      {% include 'puppet/api/snippets/release_list.json' %}
+  ],
+  "homepage_url": "uri",
+  "issues_url": "uri"
+}
