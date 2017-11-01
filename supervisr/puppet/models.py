@@ -49,6 +49,13 @@ class PuppetModuleRelease(models.Model):
         """
         return self.downloads
 
+    @property
+    def get_metaobject(self):
+        """
+        Return Metdata as parsed object
+        """
+        return json.loads(self.metadata)
+
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """
         Import metadata, readme, changelog and license on first save

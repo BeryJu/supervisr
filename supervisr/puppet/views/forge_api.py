@@ -8,8 +8,8 @@ from wsgiref.util import FileWrapper
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import Http404, HttpResponse
-from django.shortcuts import render
+from django.http import Http404, HttpResponse, JsonResponse
+from django.urls import reverse
 
 from supervisr.core.models import Setting
 from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
@@ -39,13 +39,7 @@ def module(req, user, module):
         raise Http404
     r_module = modules.first()
 
-    releases = PuppetModuleRelease.objects.filter(module=r_module).order_by('-pk')
-
-    return render(req, 'puppet/api/module.json', {
-        'module': r_module,
-        'lrel': releases.first(),
-        'releases': releases
-        }, content_type='application/json')
+    return JsonResponse(_json_module(r_module))
 
 # pylint: disable=unused-argument
 def user_list(req):
@@ -75,9 +69,18 @@ def release_list(req):
 
     releases = PuppetModuleRelease.objects.filter(query)
 
-    return render(req, 'puppet/api/release_list.json', {
-        'releases': releases
-        }, content_type='application/json')
+    return JsonResponse({
+        "pagination": {
+            "limit": 20,
+            "offset": 0,
+            "first": "/",
+            "previous": None,
+            "current": "/",
+            "next": None,
+            "total": len(releases)
+        },
+        "results": _json_release_list(releases)
+    })
 
 # pylint: disable=unused-argument
 def release(req, user, module, version):
@@ -99,9 +102,7 @@ def release(req, user, module, version):
         raise Http404
     r_rel = releases.first()
 
-    return render(req, 'puppet/api/release.json', {
-        'release': r_rel
-        }, content_type='application/json')
+    return JsonResponse(_json_release(r_rel))
 
 def file(req, user, module, version):
     """
@@ -125,3 +126,80 @@ def file(req, user, module, version):
     p_module.downloads += 1
     p_module.save()
     return response
+
+# Json helpers
+# These methods convert PuppetModules or PuppetModuleReleases into Objects
+# which have the same structure as https://forgeapi.puppetlabs.com/
+
+def _json_release(release):
+    """Convert a single release"""
+    return {
+        "uri": reverse('supervisr/puppet:release', kwargs={
+            'user': release.module.owner.username,
+            'module': release.module.name,
+            'version': release.version
+            }),
+        "slug": "%s-%s-%s" % (release.module.owner.username, release.module.name, release.version),
+        "version": release.version,
+        "module": {
+            "uri": reverse('supervisr/puppet:module', kwargs={
+                'user': release.module.owner.username,
+                'module': release.module.name
+                }),
+            "slug": "%s-%s" % (release.module.owner.username, release.module.name),
+            "name": release.module.name,
+            "owner": {
+                "url": reverse('supervisr/puppet:user', kwargs={
+                    'user': release.module.owner.username
+                    }),
+                "slug": release.module.owner.username,
+                "username": release.module.owner.username,
+            }
+        },
+        "metadata": release.get_metaobject,
+        "tags": [],
+        "supported": release.module.supported,
+        "file_size": release.get_size,
+        "file_md5": release.get_md5,
+        "file_uri": "/v3/files/%s-%s-%s.tar.gz" % (release.module.owner.username, \
+                                                   release.module.name, release.version),
+        "downloads": release.get_downloads,
+        "readme": release.readme,
+        "changelog": release.changelog,
+        "license": release.license,
+        "created_at": release.create_at,
+        "updated_at": release.update_at,
+    }
+
+def _json_release_list(releases):
+    """Create a list of releases"""
+    arr = []
+    for rel in releases:
+        arr.append(_json_release(rel))
+    return arr
+
+def _json_module(module):
+    """Convert a single module"""
+    return {
+        "uri": reverse('supervisr/puppet:module', kwargs={
+            'user': module.owner.username,
+            'module': module.name
+            }),
+        "name": module.name,
+        "downloads": module.downloads,
+        "created_at": module.create_at,
+        "updated_at": module.update_at,
+        "supported": True,
+        "slug": "%s-%s" % (module.owner.username, module.name),
+        "owner": {
+            "uri": reverse('supervisr/puppet:user', kwargs={
+                'user': module.owner.username
+                }),
+            "username": module.owner.username
+        },
+        "current_release": _json_release(module.puppetmodulerelease_set.all() \
+                                         .order_by('-pk').first()),
+        "releases": _json_release_list(module.puppetmodulerelease_set.all()),
+        "homepage_url": "uri",
+        "issues_url": "uri"
+    }
