@@ -5,7 +5,6 @@ Supervisr Puppet Forge API views
 import logging
 from wsgiref.util import FileWrapper
 
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import Http404, HttpResponse, JsonResponse
@@ -16,7 +15,26 @@ from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 
 LOGGER = logging.getLogger(__name__)
 
+def check_key(view_function):
+    """
+    Decorator to check puppet key in url
+    """
+    def wrap(*args, **kwargs):
+        """
+        Check if key is the same as in DB
+        """
+        if 'key' in kwargs:
+            set_key = Setting.get('url_key')
+            if not set_key == kwargs['key']:
+                raise Http404
+            del kwargs['key']
+        return view_function(*args, **kwargs)
 
+    wrap.__doc__ = view_function.__doc__
+    wrap.__name__ = view_function.__name__
+    return wrap
+
+@check_key
 # pylint: disable=unused-argument
 def module_list(req):
     """
@@ -24,6 +42,7 @@ def module_list(req):
     """
     return HttpResponse('Not Implemented yet!', status=501)
 
+@check_key
 # pylint: disable=unused-argument
 def module(req, user, module):
     """
@@ -41,6 +60,7 @@ def module(req, user, module):
 
     return JsonResponse(_json_module(r_module))
 
+@check_key
 # pylint: disable=unused-argument
 def user_list(req):
     """
@@ -48,6 +68,7 @@ def user_list(req):
     """
     return HttpResponse('Not Implemented yet!', status=501)
 
+@check_key
 # pylint: disable=unused-argument
 def user(req, user):
     """
@@ -55,6 +76,7 @@ def user(req, user):
     """
     return HttpResponse('Not Implemented yet!', status=501)
 
+@check_key
 def release_list(req):
     """
     Return a list of releases
@@ -82,6 +104,7 @@ def release_list(req):
         "results": _json_release_list(releases)
     })
 
+@check_key
 # pylint: disable=unused-argument
 def release(req, user, module, version):
     """
@@ -104,13 +127,12 @@ def release(req, user, module, version):
 
     return JsonResponse(_json_release(r_rel))
 
+@check_key
+# pylint: disable=unused-argument
 def file(req, user, module, version):
     """
     Return file for release
     """
-    if not req.META['HTTP_USER_AGENT'] == Setting.get('allowed_user_agent') and not settings.DEBUG:
-        LOGGER.warning("Denied Download with User-Agent '%s'", req.META['HTTP_USER_AGENT'])
-        raise Http404
     p_user = User.objects.get(username=user)
     p_module = PuppetModule.objects.get(name=module, owner=p_user)
     p_release = PuppetModuleRelease.objects.get(module=p_module, version=version)
@@ -137,20 +159,23 @@ def _json_release(release):
         "uri": reverse('supervisr/puppet:release', kwargs={
             'user': release.module.owner.username,
             'module': release.module.name,
-            'version': release.version
+            'version': release.version,
+            'key': Setting.get('url_key')
             }),
         "slug": "%s-%s-%s" % (release.module.owner.username, release.module.name, release.version),
         "version": release.version,
         "module": {
             "uri": reverse('supervisr/puppet:module', kwargs={
                 'user': release.module.owner.username,
-                'module': release.module.name
+                'module': release.module.name,
+                'key': Setting.get('url_key')
                 }),
             "slug": "%s-%s" % (release.module.owner.username, release.module.name),
             "name": release.module.name,
             "owner": {
                 "url": reverse('supervisr/puppet:user', kwargs={
-                    'user': release.module.owner.username
+                    'user': release.module.owner.username,
+                    'key': Setting.get('url_key')
                     }),
                 "slug": release.module.owner.username,
                 "username": release.module.owner.username,
@@ -183,7 +208,8 @@ def _json_module(module):
     return {
         "uri": reverse('supervisr/puppet:module', kwargs={
             'user': module.owner.username,
-            'module': module.name
+            'module': module.name,
+            'key': Setting.get('url_key')
             }),
         "name": module.name,
         "downloads": module.downloads,
@@ -193,7 +219,8 @@ def _json_module(module):
         "slug": "%s-%s" % (module.owner.username, module.name),
         "owner": {
             "uri": reverse('supervisr/puppet:user', kwargs={
-                'user': module.owner.username
+                'user': module.owner.username,
+                'key': Setting.get('url_key')
                 }),
             "username": module.owner.username
         },
