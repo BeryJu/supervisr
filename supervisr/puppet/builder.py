@@ -16,9 +16,8 @@ from django.core.files import File
 from django.template import loader
 
 from supervisr.core.utils import time
-
-from .models import PuppetModuleRelease
-from .utils import ForgeImporter
+from supervisr.puppet.models import PuppetModuleRelease
+from supervisr.puppet.utils import ForgeImporter
 
 LOGGER = logging.getLogger(__name__)
 

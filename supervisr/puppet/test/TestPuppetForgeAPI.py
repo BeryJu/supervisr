@@ -2,12 +2,15 @@
 Supervisr Puppet View Test
 """
 
+import json
 import shutil
 
 from django.test import TestCase
 
 from supervisr.core.models import Setting
 from supervisr.core.test.utils import test_request
+from supervisr.puppet.builder import ReleaseBuilder
+from supervisr.puppet.models import PuppetModule
 from supervisr.puppet.utils import ForgeImporter
 from supervisr.puppet.views import forge_api
 
@@ -19,6 +22,21 @@ class TestPuppetForgeAPI(TestCase):
 
     importer = None
 
+    @staticmethod
+    def is_json(data):
+        """Test if data is valid json."""
+        try:
+            json.loads(data.decode('utf-8'))
+        except ValueError:
+            return False
+        return True
+
+    def setUp(self):
+        """Build supervisr-supervisr_core module once"""
+        _builder = ReleaseBuilder(PuppetModule.objects.filter(name='supervisr_core').first())
+        _builder.build()
+        TestPuppetForgeAPI.is_json(b'{')
+
     def test_module_list(self):
         """
         Test module_list view
@@ -29,8 +47,26 @@ class TestPuppetForgeAPI(TestCase):
         """
         Test module view
         """
-        kwargs = {'user': 'testuser', 'module': 'testmodule'}
-        self.assertEqual(test_request(forge_api.module, url_kwargs=kwargs).status_code, 501)
+        # test invalid user
+        self.assertEqual(test_request(forge_api.module,
+                                      url_kwargs={
+                                          'user': 'invalid_user',
+                                          'module': 'supervisr_core',
+                                      }).status_code, 404)
+        # test invalid module
+        self.assertEqual(test_request(forge_api.module,
+                                      url_kwargs={
+                                          'user': 'supervisr',
+                                          'module': 'invalid_module',
+                                      }).status_code, 404)
+        # Test correct data
+        resp = test_request(forge_api.module,
+                            url_kwargs={
+                                'user': 'supervisr',
+                                'module': 'supervisr_core',
+                            })
+        self.assertEqual(TestPuppetForgeAPI.is_json(resp.content), True)
+        self.assertEqual(resp.status_code, 200)
 
     def test_user_list(self):
         """
@@ -49,8 +85,37 @@ class TestPuppetForgeAPI(TestCase):
         """
         Test release view
         """
-        kwargs = {'user': 'testuser', 'module': 'testmodule', 'version': '0.1.1'}
-        self.assertEqual(test_request(forge_api.release, url_kwargs=kwargs).status_code, 501)
+        # test invalid user
+        self.assertEqual(test_request(forge_api.release,
+                                      url_kwargs={
+                                          'user': 'invalid_user',
+                                          'module': 'supervisr_core',
+                                          'version': '1.0.0',
+                                      }).status_code, 404)
+        # test invalid module
+        self.assertEqual(test_request(forge_api.release,
+                                      url_kwargs={
+                                          'user': 'supervisr',
+                                          'module': 'invalid_module',
+                                          'version': '1.0.0',
+                                      }).status_code, 404)
+        # test invalid version
+        # test invalid module
+        self.assertEqual(test_request(forge_api.release,
+                                      url_kwargs={
+                                          'user': 'supervisr',
+                                          'module': 'supervisr_core',
+                                          'version': '0.0.0',
+                                      }).status_code, 404)
+        # test correct data
+        resp = test_request(forge_api.release,
+                            url_kwargs={
+                                'user': 'supervisr',
+                                'module': 'supervisr_core',
+                                'version': '1.0.0',
+                            })
+        self.assertEqual(TestPuppetForgeAPI.is_json(resp.content), True)
+        self.assertEqual(resp.status_code, 200)
 
     def test_release_list(self):
         """

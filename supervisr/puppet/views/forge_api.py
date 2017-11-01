@@ -5,6 +5,7 @@ Supervisr Puppet Forge API views
 import logging
 from wsgiref.util import FileWrapper
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import Http404, HttpResponse
@@ -28,7 +29,23 @@ def module(req, user, module):
     """
     Return information about module <module>
     """
-    return HttpResponse('Not Implemented yet!', status=501)
+    users = User.objects.filter(username=user)
+    if not users.exists():
+        raise Http404
+    r_user = users.first()
+
+    modules = PuppetModule.objects.filter(name=module, owner=r_user)
+    if not modules.exists():
+        raise Http404
+    r_module = modules.first()
+
+    releases = PuppetModuleRelease.objects.filter(module=r_module).order_by('-pk')
+
+    return render(req, 'puppet/api/module.json', {
+        'module': r_module,
+        'lrel': releases.first(),
+        'releases': releases
+        }, content_type='application/json')
 
 # pylint: disable=unused-argument
 def user_list(req):
@@ -67,13 +84,30 @@ def release(req, user, module, version):
     """
     Return list of releases for module
     """
-    return HttpResponse('Not Implemented yet!', status=501)
+    users = User.objects.filter(username=user)
+    if not users.exists():
+        raise Http404
+    r_user = users.first()
+
+    modules = PuppetModule.objects.filter(name=module, owner=r_user)
+    if not modules.exists():
+        raise Http404
+    r_module = modules.first()
+
+    releases = PuppetModuleRelease.objects.filter(module=r_module, version=version)
+    if not releases.exists():
+        raise Http404
+    r_rel = releases.first()
+
+    return render(req, 'puppet/api/release.json', {
+        'release': r_rel
+        }, content_type='application/json')
 
 def file(req, user, module, version):
     """
     Return file for release
     """
-    if not req.META['HTTP_USER_AGENT'] == Setting.get('allowed_user_agent'):
+    if not req.META['HTTP_USER_AGENT'] == Setting.get('allowed_user_agent') and not settings.DEBUG:
         LOGGER.warning("Denied Download with User-Agent '%s'", req.META['HTTP_USER_AGENT'])
         raise Http404
     p_user = User.objects.get(username=user)
@@ -81,7 +115,7 @@ def file(req, user, module, version):
     p_release = PuppetModuleRelease.objects.get(module=p_module, version=version)
 
     # generate the file
-    filename = "%s-%s-%s" % (p_user.username, p_module.name, p_release.version)
+    filename = "%s-%s-%s.tgz" % (p_user.username, p_module.name, p_release.version)
     response = HttpResponse(FileWrapper(p_release.release), content_type='application/zip')
     response['Content-Disposition'] = 'attachment; filename=%s' % filename
 
