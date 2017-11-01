@@ -359,8 +359,7 @@ class Product(CreatedUpdatedModel, CastableModel):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # Auto generate slug
-        if not self.pk:
-            self.slug = slugify(self.name)
+        self.slug = slugify(self.name)
 
         super(Product, self).save(force_insert, force_update, using, update_fields)
         if self.auto_all_add is True:

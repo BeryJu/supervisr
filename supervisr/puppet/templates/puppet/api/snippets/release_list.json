@@ -1,4 +1,0 @@
-{% for release in releases %}
-{% include 'puppet/api/snippets/release.json' with release=release %}
-{% if not forloop.last %},{% endif %}
-{% endfor %}
