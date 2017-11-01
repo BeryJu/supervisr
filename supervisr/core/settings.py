@@ -222,6 +222,7 @@ LOG_SYSLOG_HOST = '127.0.0.1'
 LOG_SYSLOG_PORT = 514
 
 LOG_GITLAB_API_KEY = None
+LOG_GITLAB_SERVER = 'https://git.beryju.org'
 
 sys.path.append('/etc/supervisr')
 

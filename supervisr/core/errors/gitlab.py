@@ -6,6 +6,7 @@ import logging
 from copy import copy
 
 import gitlab
+from django.conf import settings
 from django.template import Context, Engine
 from django.views.debug import ExceptionReporter
 
@@ -137,8 +138,10 @@ class GitlabHandler(logging.Handler):
 
     _api = None
 
-    def __init__(self, server_url='https://git.beryju.org', api_key=None):
+    def __init__(self, server_url=None, api_key=None):
         logging.Handler.__init__(self)
+        if not server_url:
+            server_url = settings.LOG_GITLAB_SERVER
         if not api_key:
             self.unused = True
         else:
@@ -169,7 +172,7 @@ class GitlabHandler(logging.Handler):
         reporter = MarkdownExceptionReporter(request, is_email=True, *exc_info)
         message = "%s\n\n%s" % (self.format(no_exc_record), reporter.get_traceback_md())
         self._project.issues.create(data={
-            'title': subject,
+            'title': subject[:397]+'...' if len(subject) > 400 else subject,
             'description': message,
             'confidential': True,
             })
