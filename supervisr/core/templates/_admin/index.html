@@ -23,17 +23,15 @@
       </div>
     </div>
   </div>
-  <div class="col-md-3">
-    <div class="card">
-      <div class="card-header">
-        {% trans "Version" %}
-      </div>
-      <div class="card-block">
-        <div class="card-text">
-          <h1 class="text-center">{% setting 'VERSION_HASH' %}</h1>
-        </div>
-      </div>
-    </div>
+  <div class="col-md-6">
+    <table class="table">
+      <tbody>
+        <tr>
+          <td>{% trans 'Version' %}</td>
+          <td>{% setting 'VERSION_HASH' %}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
 {% endblock %}

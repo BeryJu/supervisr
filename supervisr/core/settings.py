@@ -49,6 +49,7 @@ import logging
 import os
 import sys
 
+import raven
 from django.contrib import messages
 
 # WARNING!
@@ -97,9 +98,10 @@ INSTALLED_APPS = [
     'formtools',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'raven.contrib.django.raven_compat',
 ]
 
-VERSION_HASH = None # This gets overwritten with the current commit's hash on launch
+VERSION_HASH = raven.fetch_git_sha(os.path.dirname(os.pardir))
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))+"/static"
 MEDIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/media"
@@ -147,6 +149,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
+    'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
     'supervisr.core.middleware.ImpersonateMiddleware.impersonate',
     'supervisr.core.middleware.MaintenanceMode.maintenance_mode',
     'supervisr.core.middleware.PermanentMessage.permanent_message',
@@ -221,8 +224,7 @@ LOG_FILE = '/dev/null'
 LOG_SYSLOG_HOST = '127.0.0.1'
 LOG_SYSLOG_PORT = 514
 
-LOG_GITLAB_API_KEY = None
-LOG_GITLAB_SERVER = 'https://git.beryju.org'
+SENTRY_DSN = ''
 
 sys.path.append('/etc/supervisr')
 
@@ -247,6 +249,13 @@ for modu in [os.environ.get('SUPERVISR_LOCAL_SETTINGS', 'supervisr.local_setting
 
 SERVER_EMAIL = EMAIL_FROM
 
+RAVEN_CONFIG = {
+    'dsn': SENTRY_DSN,
+    'release': VERSION_HASH,
+    'environment': 'production' if DEBUG is False else 'development',
+    'tags': {'external_domain': ''}
+}
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -266,15 +275,9 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
-        'mail_admins': {
+        'sentry': {
             'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler',
-            'include_html': True,
-        },
-        'gitlab': {
-            'level': 'ERROR',
-            'class': 'supervisr.core.errors.gitlab.GitlabHandler',
-            'api_key': LOG_GITLAB_API_KEY,
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
         },
         'syslog': {
             'level': LOG_LEVEL_FILE,
@@ -290,12 +293,12 @@ LOGGING = {
     },
     'loggers': {
         'supervisr': {
-            'handlers': ['console', 'syslog', 'mail_admins', 'file', 'gitlab'],
+            'handlers': ['console', 'syslog', 'file', 'sentry'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'django': {
-            'handlers': ['console', 'syslog', 'mail_admins', 'file', 'gitlab'],
+            'handlers': ['console', 'syslog', 'file', 'sentry'],
             'level': 'INFO',
             'propagate': True,
         },

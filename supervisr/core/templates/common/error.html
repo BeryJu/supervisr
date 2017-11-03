@@ -3,6 +3,7 @@
 {% load supervisr_title %}
 {% load supervisr_setting %}
 {% load i18n %}
+{% load raven %}
 
 {% block header %}
 <title>{% supervisr_title code %}</title>
@@ -34,8 +35,23 @@
         {% endif %}
       {% endif %}
       <br>
+      {% if request.sentry.id %}
+        <p>If you need assistance, you may reference this error as
+        <strong>{{ request.sentry.id }}</strong>.</p>
+      {% endif %}
       <small>Error Code: {{ code }}</small>
     </div>
   </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{% if request.sentry.id %}
+  <script>
+  Raven.showReportDialog({
+    eventId: '{{ request.sentry.id }}',
+    dsn: '{% sentry_public_dsn %}'
+  });
+  </script>
+{% endif %}
 {% endblock %}

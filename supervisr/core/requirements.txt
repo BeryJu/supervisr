@@ -1,6 +1,6 @@
 django>=1.10.0
 invoke
-cherrypy
+cherrypy<=11.0.0
 pymysql
 django-formtools
 django-recaptcha
@@ -9,4 +9,4 @@ pyyaml
 passlib
 Pillow
 schedule
-python-gitlab
+raven

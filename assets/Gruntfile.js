@@ -38,7 +38,13 @@ module.exports = function(grunt) {
       custom_elements: {
         files: [
           { src: ['node_modules/@webcomponents/custom-elements/custom-elements.min.js'],
-            dest: '../supervisr/core/static/custom-elements.min.js'}
+            dest: '../supervisr/core/static/js/custom-elements.min.js'}
+        ]
+      },
+      raven: {
+        files: [
+          { src: ['node_modules/raven-js/dist/raven.min.js'],
+            dest: '../supervisr/core/static/js/raven.min.js'}
         ]
       },
       images: {
