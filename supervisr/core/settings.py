@@ -48,8 +48,8 @@ import importlib
 import logging
 import os
 import sys
-import raven
 
+import raven
 from django.contrib import messages
 
 # WARNING!
