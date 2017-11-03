@@ -7,7 +7,6 @@ from __future__ import unicode_literals
 import importlib
 import logging
 import os
-import subprocess
 
 import pkg_resources
 from django.apps import AppConfig
@@ -160,18 +159,12 @@ class SupervisrCoreConfig(SupervisrAppConfig):
     navbar_title = 'Core'
 
     def ready(self):
-        # Read this commit's shortened hash if git is in the path
-        try:
-            fnull = open(os.devnull, 'w')
-            current_hash = subprocess.Popen(['git', 'log', '--pretty=format:%h', '-n 1'],
-                                            stdout=subprocess.PIPE,
-                                            stderr=fnull).communicate()[0]
-            settings.VERSION_HASH = current_hash
-        except (OSError, IOError):
-            settings.VERSION_HASH = b'dev'
         super(SupervisrCoreConfig, self).ready()
         self.clear_cache()
         BackgroundThread().start()
+        # Set external_domain on raven
+        from supervisr.core.models import Setting
+        settings.RAVEN_CONFIG['tags']['external_domain'] = Setting.get('domain')
 
     def ensure_settings(self):
         """ensure Core settings"""

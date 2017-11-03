@@ -1,6 +1,6 @@
 django>=1.10.0
 invoke
-cherrypy
+cherrypy<=11.0.0
 pymysql
 django-formtools
 django-recaptcha
@@ -9,25 +9,25 @@ pyyaml
 passlib
 Pillow
 schedule
-python-gitlab
-markdown
+raven
 dnspython
 requests
-# In here you can specify pip modules that should be installed
+markdown
 django-two-factor-auth
+# In here you can specify pip modules that should be installed
 ldap3
 pyasn1<=0.3.0
-slumber
 google-api-python-client
+slumber
 pyvmomi
+psutil
 influxdb==4.1.1
 psutil
-psutil
-django-oauth-toolkit
-django-cors-middleware
 pycrypto>=2.4
 requests_oauthlib>=0.4.2
 oauthlib==2.0.3
+django-oauth-toolkit
+django-cors-middleware
 beautifulsoup4>=4.6.0
 lxml>=3.8.0
 signxml==2.3.0
