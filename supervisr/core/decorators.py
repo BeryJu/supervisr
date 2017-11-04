@@ -13,7 +13,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.http import urlencode
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.models import Setting
 from supervisr.core.utils import get_apps

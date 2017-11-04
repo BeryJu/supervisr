@@ -7,7 +7,7 @@ import re
 
 from django import forms
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.models import Domain, ProviderInstance
 from supervisr.core.regex import DOMAIN_REGEX

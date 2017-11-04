@@ -3,7 +3,7 @@ Supervisr Mail MailAccount Forms
 """
 
 from django import forms
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.forms.core import check_password
 from supervisr.mail.fields import MultiEmailField

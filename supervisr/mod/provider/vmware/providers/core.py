@@ -3,7 +3,7 @@ Supervisr VMware Provider
 """
 
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from pyVim import connect
 
 from supervisr.core.models import UserPasswordServerCredential

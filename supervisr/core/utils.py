@@ -16,7 +16,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.shortcuts import render
 from django.template import loader
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.statistics import stat_set
 

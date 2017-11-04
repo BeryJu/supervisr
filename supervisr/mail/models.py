@@ -4,7 +4,7 @@ Supervisr Web Models
 import logging
 
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from passlib.hash import sha512_crypt
 
 from supervisr.core.models import (CreatedUpdatedModel, Domain, Event, Product,

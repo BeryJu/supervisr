@@ -6,7 +6,7 @@ import time
 
 from django.contrib import messages
 from django.core.urlresolvers import resolve
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.models import Setting
 from supervisr.mod.stats.graphite.graphite_client import (GraphiteClient,

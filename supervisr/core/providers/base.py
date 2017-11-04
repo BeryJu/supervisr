@@ -2,7 +2,7 @@
 Supervisr Core Generic Provider
 """
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 
 # pylint: disable=too-few-public-methods

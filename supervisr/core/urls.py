@@ -8,6 +8,7 @@ from django.apps import apps
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin as admin_django
+from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
@@ -24,6 +25,8 @@ handler404 = 'supervisr.core.views.common.uncaught_404'
 # pylint: disable=invalid-name
 handler500 = 'supervisr.core.views.common.uncaught_500'
 
+admin_django.site.index_title = _('Supervisr Admin')
+admin_django.site.site_title = _('supervisr')
 admin_django.site.login = RedirectView.as_view(pattern_name=settings.LOGIN_URL,
                                                permanent=True, query_string=True)
 admin_django.site.logout = RedirectView.as_view(pattern_name='account-logout',

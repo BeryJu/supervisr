@@ -2,7 +2,7 @@
 Supervisr Mail Provider
 """
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.providers.base import ProviderMetadata
 from supervisr.mail.providers.base import BaseMailProvider
