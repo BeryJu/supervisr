@@ -95,6 +95,10 @@
     <div class="header-backdrop"></div>
   </header>
   <div class="content-container">
+    {% if '_popup' not in request.GET %}
+    {% block sidenav %}
+    {% endblock %}
+    {% endif %}
     <div class="content-area">
       {% block content_area %}
       {% endblock %}
@@ -105,8 +109,6 @@
         {% endblock %}
       </div>
     </div>
-    {% block sidenav %}
-    {% endblock %}
   </div>
   {% endblock %}
 </div>
