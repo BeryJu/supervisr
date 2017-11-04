@@ -3,7 +3,7 @@ Supervisr Mail MailAlias Forms
 """
 
 from django import forms
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from supervisr.mail.fields import MultiEmailField
 from supervisr.mail.models import MailAlias

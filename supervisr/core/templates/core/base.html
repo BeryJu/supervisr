@@ -5,6 +5,7 @@
 {% load supervisr_dyn_navapps %}
 {% load supervisr_setting %}
 {% load is_active %}
+{% load is_active_app %}
 {% load setting %}
 {% load hostname %}
 {% load i18n %}
@@ -40,7 +41,7 @@
       </a>
       {% endfor %}
       {% if user.is_superuser %}
-      <a class="nav-link {% is_active 'admin' %}" href="{% url 'admin-index' %}">
+      <a class="nav-link {% is_active 'admin' %} {% is_active_app 'admin' %}" href="{% url 'admin-index' %}">
         <span class="nav-text">{% trans "Admin" %}</span>
       </a>
       {% endif %}

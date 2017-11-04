@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load is_active %}
 {% load is_active_url %}
+{% load is_active_app %}
 {% load supervisr_dyn_modlist %}
 
 {% block sidenav %}
@@ -41,12 +42,12 @@
       <label for="django-admin">{% trans "Django Builtins" %}</label>
       <ul class="nav-list">
         <li>
-          <a href="{% url 'admin:index' %}" class="nav-link {% is_active 'index' %}">
+          <a href="{% url 'admin:index' %}" class="nav-link {% is_active_app 'admin' %}">
             {% trans "Admin Interface" %}
           </a>
         </li>
         <li>
-          <a href="{% url 'django-admindocs-docroot' %}" class="nav-link {% is_active 'django-admindocs' %}">
+          <a href="{% url 'django-admindocs-docroot' %}" class="nav-link {% is_active_app 'admindocs' %}">
             {% trans "Admin Docs" %}
           </a>
         </li>

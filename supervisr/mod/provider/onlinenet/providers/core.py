@@ -4,7 +4,7 @@ Supervisr OnlineNet Provider
 
 import requests
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from slumber import API
 from slumber.exceptions import HttpClientError
 

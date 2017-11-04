@@ -4,7 +4,7 @@ Supervisr Core User Forms
 
 
 from django import forms
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 
 class EditUserForm(forms.Form):

@@ -10,7 +10,7 @@ from django.core.mail import send_mail
 from django.dispatch import receiver
 from django.template import loader
 from django.urls import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.models import AccountConfirmation, Setting
 from supervisr.core.signals import (SIG_USER_PASS_RESET_INIT,

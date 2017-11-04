@@ -3,7 +3,7 @@ Supervisr Mod Auth SAML IDP Forms
 """
 
 from django import forms
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 
 class SettingsForm(forms.Form):

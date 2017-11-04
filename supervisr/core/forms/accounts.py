@@ -9,7 +9,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.forms import ValidationError
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.forms.core import check_password
 from supervisr.core.models import Setting, UserProfile
