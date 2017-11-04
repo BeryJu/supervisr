@@ -10,7 +10,8 @@ module.exports = function(grunt) {
     },
     uglify: {
       options: {
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+        banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
+        sourceMap: true,
       },
       supervisr: {
         src: [
@@ -23,6 +24,7 @@ module.exports = function(grunt) {
     },
     cssmin: {
       supervisr: {
+        sourceMap: true,
         files: [{
           src: [
               'node_modules/clarity-icons/clarity-icons.min.css',
@@ -31,20 +33,24 @@ module.exports = function(grunt) {
               'css/*.css',
           ],
           dest: '../supervisr/core/static/css/app.min.css',
-        }]
+        }],
       }
     },
     copy: {
       custom_elements: {
         files: [
           { src: ['node_modules/@webcomponents/custom-elements/custom-elements.min.js'],
-            dest: '../supervisr/core/static/js/custom-elements.min.js'}
+            dest: '../supervisr/core/static/js/custom-elements.min.js'},
+          { src: ['node_modules/@webcomponents/custom-elements/custom-elements.min.js.map'],
+            dest: '../supervisr/core/static/js/custom-elements.min.js.map'}
         ]
       },
       raven: {
         files: [
           { src: ['node_modules/raven-js/dist/raven.min.js'],
-            dest: '../supervisr/core/static/js/raven.min.js'}
+            dest: '../supervisr/core/static/js/raven.min.js'},
+          { src: ['node_modules/raven-js/dist/raven.min.js.map'],
+            dest: '../supervisr/core/static/js/raven.min.js.map'},
         ]
       },
       images: {

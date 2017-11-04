@@ -57,7 +57,7 @@ def admin_index(req):
     """
     Show product overview for admins
     """
-    products = Product.objects.all()
+    products = Product.objects.filter(auto_generated=False)
     return render(req, 'product/admin_index.html', {
         'products': products
         })

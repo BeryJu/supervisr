@@ -50,7 +50,9 @@
   <script>
   Raven.showReportDialog({
     eventId: '{{ request.sentry.id }}',
-    dsn: '{% sentry_public_dsn %}'
+    dsn: '{% sentry_public_dsn %}',
+    name: '{{ user.first_name }}',
+    email: '{{ user.email }}',
   });
   </script>
 {% endif %}
