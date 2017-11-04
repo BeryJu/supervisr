@@ -2,6 +2,7 @@
 {% load google_analytics %}
 {% load supervisr_title %}
 {% load raven %}
+{% load setting %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,7 +16,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="#313131">
     <link rel="stylesheet" href="{% static 'css/app.min.css' %}">
     <script src="{% static 'js/raven.min.js' %}"></script>
-    <script>Raven.config('{% sentry_public_dsn %}').install()</script>
+    <script>Raven.config('{% sentry_public_dsn %}', {environment: '{% setting "ENVIRONMENT" %}',release: '{% setting "VERSION_HASH" %}',}).install()</script>
     <script src="{% static 'js/custom-elements.min.js' %}"></script>
     <script src="{% static 'js/app.min.js' %}"></script>
     <link rel="shortcut icon" type="image/png" href="{% static 'img/icon.png' %}"/>

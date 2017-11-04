@@ -119,9 +119,10 @@ MEDIA_URL = '/media/'
 LOGIN_REDIRECT_URL = 'user-index'
 LOGIN_URL = 'account-login'
 
-# Settings are taken from DB, these are needed for django-recaptcha to work
-RECAPTCHA_PUBLIC_KEY = ''
-RECAPTCHA_PRIVATE_KEY = ''
+# Settings are taken from DB, these are dev keys as per
+# https://developers.google.com/recaptcha/docs/faq
+RECAPTCHA_PUBLIC_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
+RECAPTCHA_PRIVATE_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 
 INTERNAL_IPS = ['127.0.0.1']
 
@@ -183,6 +184,9 @@ TEMPLATES = [
         },
     },
 ]
+
+CSRF_COOKIE_NAME = 'supervisr_csrf'
+SESSION_COOKIE_NAME = 'supervisr_sessionid'
 
 WSGI_APPLICATION = 'supervisr.core.wsgi.application'
 
@@ -248,11 +252,12 @@ for modu in [os.environ.get('SUPERVISR_LOCAL_SETTINGS', 'supervisr.local_setting
         break
 
 SERVER_EMAIL = EMAIL_FROM
+ENVIRONMENT = 'production' if DEBUG is False else 'development'
 
 RAVEN_CONFIG = {
     'dsn': SENTRY_DSN,
     'release': VERSION_HASH,
-    'environment': 'production' if DEBUG is False else 'development',
+    'environment': ENVIRONMENT,
     'tags': {'external_domain': ''}
 }
 

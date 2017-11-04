@@ -8,6 +8,7 @@ from django.apps import apps
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin as admin_django
+from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
 from supervisr.core.regex import (DOMAIN_REGEX, EMAIL_REGEX, MOD_REGEX,
@@ -88,6 +89,8 @@ urlpatterns = [
     url(r'^admin/django/', admin_django.site.urls),
     # General API Urls
     url(r'^api/', include('supervisr.core.views.api.urls')),
+    # Robots.txt to stop 404s
+    url(r'^robots\.txt', TemplateView.as_view(template_name='common/robots.txt')),
 ]
 
 # Load Urls for all sub apps
