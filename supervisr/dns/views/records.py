@@ -104,7 +104,6 @@ def edit(req, zone, record, uuid):
             messages.success(req, _('Successfully edited Record'))
             return redirect(reverse('supervisr/dns:dns-record-list', kwargs={'zone': zone}))
         messages.error(req, _("Invalid Record"))
-        return redirect(reverse('supervisr/dns:dns-record-list', kwargs={'zone': zone}))
     else:
         form = RecordForm(instance=r_record)
         form.fields['domain'].queryset = user_zones
