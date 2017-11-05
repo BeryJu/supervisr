@@ -9,9 +9,9 @@
 {% endblock %}
 
 {% block content %}
-<h1><clr-icon shape="data-cluster" size="48"></clr-icon>{% trans "Puppet Overview" %}</h1>
+<h1><clr-icon shape="puppetlabs" size="48"></clr-icon>{% trans "Puppet Overview" %}</h1>
 <div class="row">
-  <div class="col-md-4">
+  <div class="col-md-2">
     <div class="card">
       <div class="card-header">
         {% trans "Modules" %}
@@ -23,7 +23,7 @@
       </div>
     </div>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-2">
     <div class="card">
       <div class="card-header">
         {% trans "Downloads" %}
@@ -38,20 +38,45 @@
   <div class="col-md-4">
     <div class="card">
       <div class="card-header">
-        {% trans "Debug" %}
+        {% trans "Debug: Puppet Build" %}
+      </div>
+      <div class="card-footer">
+        <a class="btn btn-primary" href="{% url 'supervisr/puppet:puppet-debug-build' user='supervisr' module='supervisr_core' %}">
+          core
+        </a>
+        <a class="btn btn-primary" href="{% url 'supervisr/puppet:puppet-debug-build' user='supervisr' module='supervisr_mail' %}">
+          mail
+        </a>
+        <a class="btn btn-primary" href="{% url 'supervisr/puppet:puppet-debug-build' user='supervisr' module='supervisr_dns' %}">
+          dns
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        {% trans "Versions" %}
       </div>
       <div class="card-block">
-        <a class="btn btn-block" href="{% url 'supervisr/puppet:puppet-debug-build' user='supervisr' module='supervisr_core' %}">
-          Puppet Build (core)
-        </a>
-        <br>
-        <a class="btn btn-block" href="{% url 'supervisr/puppet:puppet-debug-build' user='supervisr' module='supervisr_mail' %}">
-          Puppet Build (mail)
-        </a>
-        <br>
-        <a class="btn btn-block" href="{% url 'supervisr/puppet:puppet-debug-build' user='supervisr' module='supervisr_dns' %}">
-          Puppet Build (DNS)
-        </a>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>{% trans 'Module' %}</th>
+              <th>{% trans 'Latest Version' %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for mod, rel in versions.items %}
+            <tr>
+              <td>{{ mod.name }}</td>
+              <td>{{ rel.version }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
