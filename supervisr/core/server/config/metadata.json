@@ -9,7 +9,5 @@
     "source": "{% supervisr_setting 'domain' %}",
     "project_page": "{% supervisr_setting 'domain' %}",
     "issues_url": "{% supervisr_setting 'domain' %}",
-    "dependencies": [
-        {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
-    ]
+    "dependencies": []
 }
