@@ -92,6 +92,18 @@ class Zone(Product):
     account = models.CharField(max_length=40)
     enabled = models.BooleanField(default=True)
 
+    @property
+    def soa(self):
+        """Get SOA record for this zone
+
+        Returns None if no SOA Record exists
+        """
+        soa_records = Record.objects.filter(domain=self, type='SOA')
+        if soa_records.exists():
+            assert len(soa_records) == 1
+            return soa_records.first()
+        return None
+
     def __str__(self):
         return "Zone %s" % self.domain.domain
 
@@ -107,6 +119,11 @@ class Record(Product):
     enabled = models.BooleanField(default=True)
     ordername = models.CharField(max_length=255, null=True, default=None)
     auth = models.IntegerField(default=1)
+
+    @property
+    def to_bind(self):
+        """Return this record bind formatted"""
+        return "%s IN %s %s" % (self.name, self.type, self.content)
 
     def __str__(self):
         return "Record %s" % self.name
