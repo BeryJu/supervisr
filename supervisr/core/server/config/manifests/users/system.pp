@@ -7,8 +7,9 @@ class supervisr_core::users::system {
 
   {% for user in User.all %}
     {% if puppet_systemgroup in user.groups.all %}
-    supervisr_core::resources::user { '{{ user.userprofile.unix_username }}':
+    user { '{{ user.userprofile.unix_username }}':
       id       => {{ user.userprofile.unix_userid }},
+      gid      => {{ settings.USER_PROFILE_ID_START }},
       password => '{{ user.userprofile.crypt6_password }}',
       shell    => '/bin/bash',
       groups   => ['supervisr_system'],

@@ -70,4 +70,4 @@ def dns_serial_update(sender, zone, **kwargs):
             soa.content = rdata.to_text()
             soa.save()
         except DNSSyntaxError:
-            raise
+            pass
