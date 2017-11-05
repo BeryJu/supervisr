@@ -15,7 +15,7 @@ class InternalCredential(BaseCredential):
     Internally used Credential
     """
 
-    form = 'supervisr.core.forms.provider.InternalCredentialForm'
+    form = 'supervisr.core.forms.providers.InternalCredentialForm'
 
     @staticmethod
     def type():
