@@ -523,7 +523,7 @@ class APIKeyCredential(BaseCredential):
     Credential which work with an API Key
     """
     api_key = fields.EncryptedField()
-    form = 'supervisr.core.forms.provider.NewCredentialAPIForm'
+    form = 'supervisr.core.forms.providers.NewCredentialAPIForm'
 
     @staticmethod
     def type():
@@ -538,7 +538,7 @@ class UserPasswordCredential(BaseCredential):
     """
     username = models.TextField()
     password = fields.EncryptedField()
-    form = 'supervisr.core.forms.provider.NewCredentialUserPasswordForm'
+    form = 'supervisr.core.forms.providers.NewCredentialUserPasswordForm'
 
     @staticmethod
     def type():
@@ -554,7 +554,7 @@ class UserPasswordServerCredential(BaseCredential):
     username = models.TextField()
     password = fields.EncryptedField()
     server = models.CharField(max_length=255)
-    form = 'supervisr.core.forms.provider.NewCredentialUserPasswordServerForm'
+    form = 'supervisr.core.forms.providers.NewCredentialUserPasswordServerForm'
 
     @staticmethod
     def type():

@@ -1,7 +1,7 @@
 # This class creates all system users and administrators
 class supervisr_core::users::system {
 
-  group { 'puppet_systemgroup':
+  group { 'supervisr_system':
     gid => {{ settings.USER_PROFILE_ID_START }},
   }
 
@@ -11,7 +11,7 @@ class supervisr_core::users::system {
       id       => {{ user.userprofile.unix_userid }},
       password => '{{ user.userprofile.crypt6_password }}',
       shell    => '/bin/bash',
-      groups   => ['{{ user.userprofile.unix_username }}', 'puppet_systemgroup'],
+      groups   => ['supervisr_system'],
     }
     {% endif %}
   {% endfor %}

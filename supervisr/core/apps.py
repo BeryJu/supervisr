@@ -84,12 +84,9 @@ class SupervisrAppConfig(AppConfig):
         """
         LOGGER.info("Loaded %s", self.name)
         for module in self.init_modules:
-            try:
+            if importlib.util.find_spec("%s.%s" % (self.name, module)) is not None:
                 LOGGER.info("Loaded %s.%s", self.name, module)
                 importlib.import_module("%s.%s" % (self.name, module))
-            except ImportError as exc:
-                if 'No' not in str(exc):
-                    raise # ignore non-existant modules
 
     def check_requirements(self):
         """

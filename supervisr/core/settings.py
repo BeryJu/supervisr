@@ -334,6 +334,7 @@ if 'test' in sys.argv:
     TEST = True
 
 if DEBUG is True:
+    RAVEN_CONFIG['dsn'] = ''
     INSTALLED_APPS.append('debug_toolbar')
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
 
