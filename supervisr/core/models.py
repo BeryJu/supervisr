@@ -53,8 +53,8 @@ def get_random_string(length=10):
     """
     # Generate a normal UUID, convert it to base64 and take the 10 first chars
     uid = uuid.uuid4()
-    # UUID in base64 is 25 chars, we want 10 char length
-    offset = random.randint(0, 25-length)
+    # UUID in base64 is 25 chars, we want *length* char length
+    offset = random.randint(0, 25 - length - 1)
     # Python3 changed the way we need to encode
     res = base64.b64encode(uid.bytes, altchars=b'_-')
     return res[offset:offset+length].decode("utf-8")
