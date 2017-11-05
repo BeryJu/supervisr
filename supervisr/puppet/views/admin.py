@@ -12,6 +12,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
+from supervisr.core.models import get_system_user
 from supervisr.puppet.builder import ReleaseBuilder
 from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 
@@ -24,8 +25,19 @@ def index(req):
     """
     module_count = len(PuppetModule.objects.all())
     download_count = PuppetModuleRelease.objects.all().aggregate(Sum('downloads'))
+    # Show latest version of internal modules
+    supervisr_user = User.objects.get(pk=get_system_user())
+    versions = {}
+    for mod in PuppetModule.objects.filter(owner=supervisr_user):
+        latest_releases = PuppetModuleRelease.objects \
+                            .filter(module=mod) \
+                            .order_by('-pk')
+        if latest_releases.exists():
+            versions[mod] = latest_releases.first()
+    print(versions)
     return render(req, 'puppet/index.html', {
         'module_count': module_count,
+        'versions': versions,
         'download_count': download_count['downloads__sum'],
         })
 

@@ -13,3 +13,4 @@ class SupervisrModAuthOAuthProviderConfig(SupervisrAppConfig):
     name = 'supervisr.mod.auth.oauth.provider'
     label = 'supervisr/mod/auth/oauth/provider'
     title_moddifier = lambda self, title, request: 'OAuth/Provider'
+    verbose_name = 'Supervisr mod/auth/oauth/provider'

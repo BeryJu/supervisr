@@ -12,7 +12,7 @@ class SupervisrModAuthSAMLProvider(SupervisrAppConfig):
 
     name = 'supervisr.mod.auth.saml.idp'
     label = 'supervisr/mod/auth/saml/idp'
-    verbose_name = 'Supervisr SAML2 IDP'
+    verbose_name = 'Supervisr mod/auth/saml/idp'
     title_moddifier = lambda self, title, request: 'SAML2/IDP'
     admin_url_name = 'supervisr/mod/auth/saml/idp:admin_settings'
     init_modules = [
