@@ -154,6 +154,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
         'providers.internal',
     ]
     navbar_title = 'Core'
+    verbose_name = 'Supervisr Core'
 
     def ready(self):
         super(SupervisrCoreConfig, self).ready()

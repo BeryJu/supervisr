@@ -14,3 +14,4 @@ class SupervisrModAuthOAuthClientConfig(SupervisrAppConfig):
     title_moddifier = lambda self, title, request: 'OAuth/Client'
     label = 'supervisr/mod/auth/oauth/client'
     view_user_settings = 'user_settings'
+    verbose_name = 'Supervisr mod/auth/oauth/client'

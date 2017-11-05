@@ -20,6 +20,7 @@ class SupervisrModStatInfluxConfig(SupervisrAppConfig):
     name = 'supervisr.mod.stats.influx'
     admin_url_name = 'supervisr/mod/stats/influx:admin_settings'
     label = 'supervisr/mod/stats/influx'
+    verbose_name = 'Supervisr mod/stats/influx'
     title_moddifier = lambda self, title, request: 'Stats/Influx'
 
     def ready(self):

@@ -14,6 +14,7 @@ class SupervisrModAuthLDAPConfig(SupervisrAppConfig):
     label = 'supervisr/mod/auth/ldap'
     title_moddifier = lambda self, title, request: 'LDAP'
     admin_url_name = 'supervisr/mod/auth/ldap:admin_settings'
+    verbose_name = 'Supervisr mod/auth/ldap'
 
     def ensure_settings(self):
         return {
