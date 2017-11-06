@@ -15,6 +15,8 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.html import escape
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
+from OpenSSL.crypto import Error as CryptoError
+from OpenSSL.crypto import FILETYPE_PEM, load_certificate
 
 from supervisr.core.models import Event, Setting, UserProductRelationship
 from supervisr.core.utils import render_to_string
@@ -208,6 +210,14 @@ def admin_settings(request, mod):
     """
     metadata = descriptor(request).content
 
+    # Show the certificate fingerprint
+    sha1_fingerprint = _('<failed to parse certificate>')
+    try:
+        cert = load_certificate(FILETYPE_PEM, Setting.get('certificate'))
+        sha1_fingerprint = cert.digest("sha1")
+    except CryptoError:
+        pass
+
     keys = ['issuer', 'certificate', 'private_key', 'signing']
     initial_data = {}
     for key in keys:
@@ -227,5 +237,6 @@ def admin_settings(request, mod):
     return render(request, 'saml/idp/settings.html', {
         'metadata': escape(metadata),
         'mod': mod,
+        'fingerprint': sha1_fingerprint,
         'settings_form': settings_form
         })

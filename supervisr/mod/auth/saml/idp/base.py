@@ -206,7 +206,7 @@ class Processor(object):
         """
         Formats _response_params as _response_xml.
         """
-        sign_it = Setting.get('signing')
+        sign_it = Setting.get_bool('signing')
         self._response_xml = xml_render.get_response_xml(self._response_params,
                                                          signed=sign_it,
                                                          assertion_id=
