@@ -11,9 +11,7 @@ class SettingsForm(forms.Form):
     Settings Form
     """
 
-    order = ['issuer', 'signing', 'autosubmit', 'certificate', 'private_key']
     issuer = forms.CharField(label=_('Issuer'))
     signing = forms.BooleanField(label=_('Signing'), initial=True, required=False)
-    autosubmit = forms.BooleanField(label=_('Auto-Submit'), initial=True, required=False)
     certificate = forms.CharField(label=_('Certificate'), widget=forms.Textarea())
     private_key = forms.CharField(label=_('Private Key'), widget=forms.Textarea())

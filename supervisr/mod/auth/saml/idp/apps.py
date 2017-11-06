@@ -19,7 +19,7 @@ class SupervisrModAuthSAMLProvider(SupervisrAppConfig):
         'processors.demo',
         'processors.shib',
         'processors.salesforce',
-        'processors.google_apps',
+        'processors.gitlab',
         'processors.generic',
         'processors.nextcloud',
         'models',

@@ -91,15 +91,16 @@ def get_response_xml(parameters, signed=False, assertion_id=''):
     if not signed:
         return unsigned
 
+    raw_response = render_to_string('saml/xml/response.xml', params)
     # Sign it.
     if signed:
         signature_xml = get_signature_xml()
         params['RESPONSE_SIGNATURE'] = signature_xml
-        raw_response = render_to_string('saml/xml/response.xml', params)
         # LOGGER.debug("Raw response: %s", raw_response)
-        raw_cert = load_certificate()
+
         signed = sign_with_signxml(
-            load_private_key(), raw_response, raw_cert, reference_uri=assertion_id) \
+            load_private_key(), raw_response, [load_certificate(True)],
+            reference_uri=assertion_id) \
             .decode("utf-8")
         return signed
-    return render_to_string('saml/xml/response.xml', params)
+    return raw_response
