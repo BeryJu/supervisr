@@ -28,12 +28,13 @@ def zone_to_rec(data, root_zone=''):
     for name in names:
         for dset in zone[name].rdatasets:
             for dset_data in dset:
+                print(name)
                 r_name = str(name).replace(root_zone, '')
                 # Remove trailing dot since powerdns trims this too
-                if '.' in r_name and r_name[-1] == '.':
-                    r_name = r_name[:-1]
+                while r_name.endswith('..'):
+                    r_name = r_name[:-2]
                 # Root records are renamed to be @
-                if r_name == '':
+                if r_name == '.':
                     r_name = '@'
                 content = str(dset_data)
                 # MX records need to have their exchange extracted seperately
