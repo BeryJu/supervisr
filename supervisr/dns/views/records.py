@@ -142,6 +142,7 @@ def delete(req, zone, record, uuid):
         'object': 'Record %s' % r_record.name,
         'delete_url': reverse('supervisr/dns:dns-record-delete', kwargs={
             'zone': zone,
-            'record': record
+            'record': record,
+            'uuid': r_record.uuid,
             })
         })

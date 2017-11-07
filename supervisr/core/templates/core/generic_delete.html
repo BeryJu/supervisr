@@ -28,7 +28,9 @@
         <a href="{% back %}" class="btn btn-outline" type="button">{% trans 'Cancel' %}</a>
         <form action="{{ delete_url }}" method="POST">
           {% csrf_token %}
-          <button type="submit" name="confirmdelete" class="btn btn-danger">{% trans primary_action|default:'Confirm Deletion' %}</button>
+          <button type="submit" name="confirmdelete" class="btn btn-danger-outline btn-submit-spinner">
+            {% trans primary_action|default:'Confirm Deletion' %}
+          </button>
         </form>
       </div>
     </div>
