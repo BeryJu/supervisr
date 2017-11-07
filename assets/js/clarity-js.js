@@ -19,6 +19,12 @@ $('document').ready(function() {
     $('.clr-root-container').removeClass('open-overflow-menu');
     $('.clr-root-container').removeClass('open-hamburger-menu');
   });
+
+  $('.btn-submit-spinner').on('click', function (e) {
+    if ($(this).html().indexOf('spinner') === -1) {
+      $(this).prepend('<span class="spinner spinner-inline"></span>');
+    }
+  });
 });
 
 var clrWizard = function (containerId, initialPage) {
