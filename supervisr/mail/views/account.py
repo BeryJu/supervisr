@@ -77,10 +77,11 @@ class AccountNewView(BaseWizardView):
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
+        domain = form_dict['0'].cleaned_data.get('domain')
         m_acc = MailAccount.objects.create(
             name="Mail Account %s" % form_dict['0'].cleaned_data.get('address'),
             address=form_dict['0'].cleaned_data.get('address'),
-            domain=form_dict['0'].cleaned_data.get('domain'),
+            domain=domain,
             can_send=form_dict['0'].cleaned_data.get('can_send'),
             can_receive=form_dict['0'].cleaned_data.get('can_receive'),
             is_catchall=form_dict['0'].cleaned_data.get('is_catchall'),
