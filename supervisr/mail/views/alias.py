@@ -54,7 +54,7 @@ class AliasNewView(BaseWizardView):
             domains = MailDomain.objects.filter(users__in=[self.request.user])
             form.fields['accounts'].queryset = \
                 MailAccount.objects \
-                    .filter(domain__in=domains, account__users__in=[self.request.user]) \
+                    .filter(domain__in=domains, users__in=[self.request.user]) \
                     .order_by('domain', 'address')
         return form
 
