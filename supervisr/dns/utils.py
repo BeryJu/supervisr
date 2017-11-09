@@ -28,7 +28,6 @@ def zone_to_rec(data, root_zone=''):
     for name in names:
         for dset in zone[name].rdatasets:
             for dset_data in dset:
-                print(name)
                 r_name = str(name).replace(root_zone, '')
                 # Remove trailing dot since powerdns trims this too
                 while r_name.endswith('..'):

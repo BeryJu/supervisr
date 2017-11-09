@@ -24,6 +24,9 @@ class SupervisrAuthorizationView(AuthorizationView):
         Check if request.user has a relationship with product
         """
         full_res = super(SupervisrAuthorizationView, self).get(request, *args, **kwargs)
+        # If application cannot be found, oauth2_data is {}
+        if self.oauth2_data == {}:
+            return full_res
         # self.oauth2_data['application'] should be set, if not an error occured
         if 'application' in self.oauth2_data:
             app = self.oauth2_data['application']
