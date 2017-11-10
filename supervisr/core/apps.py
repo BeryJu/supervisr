@@ -4,10 +4,10 @@ Supervisr core app config
 
 from __future__ import unicode_literals
 
-import uuid
 import importlib
 import logging
 import os
+import uuid
 
 import pkg_resources
 from django.apps import AppConfig

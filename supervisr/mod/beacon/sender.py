@@ -1,20 +1,20 @@
 """Supervisr Beacon sender"""
-import json
-import sys
-import platform
-import logging
 import importlib
-
+import json
+import logging
+import platform
+import sys
 from random import uniform
-from django.core import serializers
-from django.utils.translation import ugettext as _
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
+from django.utils.translation import ugettext as _
 
-from supervisr.core.models import Setting, Domain
-from supervisr.mod.beacon.models import Pulse, PulseModule, PulseModuleVersion
+from supervisr.core.models import Domain, Setting
 from supervisr.core.thread.background import catch_exceptions
+from supervisr.mod.beacon.models import Pulse, PulseModule
+
 LOGGER = logging.getLogger(__name__)
 
 class Sender(object):
@@ -83,7 +83,7 @@ class Sender(object):
         """Send json string to endpoint"""
         pass
 
-    # @catch_exceptions
+    @catch_exceptions
     def tick(self):
         """This method is called by supervisr.core.thread.background.BackgroundThread."""
         self._collect_count()

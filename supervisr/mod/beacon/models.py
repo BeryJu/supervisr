@@ -3,6 +3,7 @@
 from django.db import models
 from django.utils.translation import ugettext as _
 
+
 class Pulse(models.Model):
     """Model to store data received by and install"""
 

@@ -2,8 +2,10 @@
 Supervisr module beacon app config
 """
 from django.conf import settings
+
 from supervisr.core.apps import SupervisrAppConfig
 from supervisr.core.thread.background import SCHEDULER
+
 
 class SupervisrModBeaconConfig(SupervisrAppConfig):
     """

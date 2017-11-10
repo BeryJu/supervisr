@@ -1,1 +1,2 @@
+"""Supervisr Beacon URLs"""
 urlpatterns = []
