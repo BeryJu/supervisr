@@ -35,7 +35,7 @@ def supervisr_dyn_modlist(context):
             except LookupError:
                 mod = mod.split('.')[:-2][-1]
                 config = apps.get_app_config(mod)
-            title = config.title_moddifier(config.label, context.request)
+            title = config.title_modifier(config.label, context.request)
             view_list.append({
                 'url': apps.get_app_config(mod).admin_url_name,
                 'name': title,

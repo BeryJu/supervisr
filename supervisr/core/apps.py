@@ -30,7 +30,7 @@ class SupervisrAppConfig(AppConfig):
     admin_url_name = 'admin-mod_default'
     view_user_settings = None
     navbar_enabled = lambda self, request: False
-    title_moddifier = lambda self, label, request: label.title()
+    title_modifier = lambda self, label, request: label.title()
 
     def __init__(self, *args, **kwargs):
         """

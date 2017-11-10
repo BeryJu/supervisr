@@ -12,4 +12,4 @@ class SupervisrModProviderGoogleConfig(SupervisrAppConfig):
 
     name = 'supervisr.mod.provider.google'
     label = 'supervisr/mod/provider/google'
-    title_moddifier = lambda self, title, request: 'Provider/Google'
+    title_modifier = lambda self, title, request: 'Provider/Google'

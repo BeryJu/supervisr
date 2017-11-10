@@ -39,3 +39,4 @@ prospector
 django-debug-toolbar
 sphinx
 recommonmark
+autopep8

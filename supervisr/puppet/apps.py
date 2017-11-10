@@ -13,7 +13,7 @@ class SupervisrPuppetConfig(SupervisrAppConfig):
     name = 'supervisr.puppet'
     verbose_name = 'Supervisr Puppet'
     navbar_enabled = lambda self, request: request.user.is_superuser
-    title_moddifier = lambda self, title, request: 'Puppet'
+    title_modifier = lambda self, title, request: 'Puppet'
 
     def ensure_settings(self):
         """ensure puppet settings"""
