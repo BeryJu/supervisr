@@ -19,6 +19,7 @@ class PulseAPI(ModelAPI):
     def send(self, request, data):
         """Create pulse with modules from data"""
         modules = data.pop('modules')
+        install_id = data.get('install_id')
         pul = Pulse.objects.create(**data)
         for mod in modules:
             root = mod.get('module_root')
@@ -29,6 +30,8 @@ class PulseAPI(ModelAPI):
             else:
                 r_pmod = matching.first()
             pul.modules.add(r_pmod)
+        for old_pmod in Pulse.objects.filter(install_id=install_id).exclude(pk=pul.pk):
+            old_pmod.delete()
         return {'status': 'ok'}
 
     @staticmethod
