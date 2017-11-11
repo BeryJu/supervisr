@@ -22,5 +22,5 @@ class SupervisrModBeaconConfig(SupervisrAppConfig):
         if getattr(settings, 'BEACON_ENABLED', True):
             from supervisr.mod.beacon.sender import Sender
             sender = Sender()
-            SCHEDULER.every(15).seconds.do(sender.tick)
+            SCHEDULER.every(15).minutes.do(sender.tick)
             sender.tick()

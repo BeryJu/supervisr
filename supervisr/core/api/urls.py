@@ -28,6 +28,7 @@ def auto_discover():
     for module_path in versions:
         # We want the urls module, not the version module itself
         module_path = module_path.replace('__init__', 'urls') \
+                                 .replace('./', '') \
                                  .replace('.py', '') \
                                  .replace(settings.BASE_DIR, 'supervisr') \
                                  .replace(os.sep, '.')
