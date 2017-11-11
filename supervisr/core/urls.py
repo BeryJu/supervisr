@@ -90,7 +90,7 @@ urlpatterns = [
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),
     # General API Urls
-    url(r'^api/app/core/', include('supervisr.core.api.urls')),
+    url(r'^api/core/', include('supervisr.core.api.urls')),
     # Robots.txt to stop 404s
     url(r'^robots\.txt', TemplateView.as_view(template_name='common/robots.txt')),
 ]

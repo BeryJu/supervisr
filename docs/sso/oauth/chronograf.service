@@ -15,7 +15,7 @@ Environment=GENERIC_CLIENT_ID=<client_id>
 Environment=GENERIC_CLIENT_SECRET=<client_secret>
 Environment=GENERIC_AUTH_URL=https://<supervisr install url>/app/mod/auth/oauth/provider/authorize/
 Environment=GENERIC_TOKEN_URL=https://<supervisr install url>/app/mod/auth/oauth/provider/token/
-Environment=GENERIC_API_URL=https://<supervisr install url>/api/r2/account/me?format=openid
+Environment=GENERIC_API_URL=https://<supervisr install url>/api/r2/account/me/?type=openid
 Environment=PUBLIC_URL=http://<external chronograf URL with port>
 Environment=TOKEN_SECRET=supersupersecret
 Environment=GENERIC_SCOPES=read

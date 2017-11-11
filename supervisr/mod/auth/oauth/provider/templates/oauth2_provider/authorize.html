@@ -11,50 +11,57 @@
 {% block body %}
 <div class="login-wrapper">
   <form class="login" method="post">
-    {% csrf_token %}
-    {% for field in form %}
-      {% if field.is_hidden %}
-        {{ field }}
-      {% endif %}
-    {% endfor %}
     <label class="title">
-      <clr-icon shape="supervisr" class="is-info" size="48"></clr-icon>
-      {% supervisr_setting 'branding' %}
+        <clr-icon shape="supervisr" class="is-info" size="48"></clr-icon>
+        {% supervisr_setting 'branding' %}
     </label>
     <label class="subtitle">
-      {% trans 'SSO - Authorize External Source' %}
+        {% trans 'SSO - Authorize External Source' %}
     </label>
-    <div class="login-group">
-      <p class="subtitle">
-        {% blocktrans with remote=application.name %}
-          You're about to sign into {{ remote }}
-        {% endblocktrans %}
-      </p>
-      <p>{% trans "Application requires following permissions" %}</p>
-      <ul>
-        {% for scope in scopes_descriptions %}
-          <li>{{ scope }}</li>
+    {% if not error %}
+        {% csrf_token %}
+        {% for field in form %}
+        {% if field.is_hidden %}
+            {{ field }}
+        {% endif %}
         {% endfor %}
-      </ul>
-
-      {{ form.errors }}
-      {{ form.non_field_errors }}
-
-      <p>
-        {% blocktrans with user=user %}
-          You are logged in as {{ user }}. Not you?
-        {% endblocktrans %}
-        <a href="{% url 'account-logout' %}">{% trans 'Logout' %}</a>
-      </p>
-      <div class="row">
-        <div class="col-md-6">
-          <input class="btn btn-success btn-block" name="allow" value="Authorize" type="submit" value="{% trans "Continue" %}" />
+        <div class="login-group">
+            <p class="subtitle">
+                {% blocktrans with remote=application.name %}
+                You're about to sign into {{ remote }}
+                {% endblocktrans %}
+            </p>
+            <p>{% trans "Application requires following permissions" %}</p>
+            <ul>
+                {% for scope in scopes_descriptions %}
+                <li>{{ scope }}</li>
+                {% endfor %}
+            </ul>
+            {{ form.errors }}
+            {{ form.non_field_errors }}
+            <p>
+                {% blocktrans with user=user %}
+                You are logged in as {{ user }}. Not you?
+                {% endblocktrans %}
+                <a href="{% url 'account-logout' %}">{% trans 'Logout' %}</a>
+            </p>
+            <div class="row">
+                <div class="col-md-6">
+                    <input class="btn btn-success btn-block" name="allow" value="Authorize" type="submit" value="{% trans "Continue" %}" />
+                </div>
+                <div class="col-md-6">
+                    <a href="{% url 'common-index' %}" class="btn btn-outline btn-block">{% trans "Cancel" %}</a>
+                </div>
+            </div>
         </div>
-        <div class="col-md-6">
-          <a href="{% url 'common-index' %}" class="btn btn-outline btn-block">{% trans "Cancel" %}</a>
-        </div>
-      </div>
+    {% else %}
+    <div class="login-group">
+        <p class="subtitle">
+            {% blocktrans with err=error.error %}Error: {{ err }}{% endblocktrans %}
+        </p>
+        <p>{{ error.description }}</p>
     </div>
+    {% endif %}
   </form>
 </div>
 {% endblock %}
