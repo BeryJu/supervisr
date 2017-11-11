@@ -15,7 +15,7 @@ For example:
 ```
 curl -X GET \
      -H "Authorization: Bearer your_api_token" \
-     "https://<installation URL>/api/r2/account/me/?type=json"
+     "https://<installation URL>/api/core/v1/account/me/?type=openid"
 ```
 
 ...which would return...
