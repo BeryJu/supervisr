@@ -27,7 +27,7 @@ def impersonate(get_response):
         if req.user.is_superuser and 'impersonate_id' in req.session:
             req.user = User.objects.get(id=req.session['impersonate_id'])
             messages_add_once(req, messages.ERROR, _("You are impersonating %s. %s"
-                              % (req.user.email, stop_link)))
+                                                     % (req.user.email, stop_link)))
         response = get_response(req)
         return response
     return middleware
