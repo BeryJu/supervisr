@@ -70,7 +70,6 @@ class TestUser(TestCase):
     #                                 'news_accept': True
     #                             })
     #     self.assertEqual(edit_res.status_code, 200)
-    #     print(edit_res.content)
     #     self.assertTrue(m_user.userprofile.news_subscribe, True)
 
     def test_user_events(self):

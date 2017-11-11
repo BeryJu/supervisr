@@ -95,7 +95,7 @@ urlpatterns = [
     url(r'^robots\.txt', TemplateView.as_view(template_name='common/robots.txt')),
 ]
 
-def get_patterns(mount_path, module, namespace):
+def get_patterns(mount_path, module, namespace=''):
     """Check if module exists and return an array with urlpatterns"""
     # Check every part of the module chain
     mod_parts = module.split('.')
@@ -126,8 +126,7 @@ for app in get_apps():
     # Only add if module could be loaded
     urlpatterns += get_patterns(r"^app/%s/" % mount_path, "%s.urls" % module_base,
                                 namespace)
-    urlpatterns += get_patterns(r"^api/app/%s/" % mount_path, "%s.api.urls" % module_base,
-                                api_namespace)
+    urlpatterns += get_patterns(r"^api/app/%s/" % mount_path, "%s.api.urls" % module_base)
 
 if settings.DEBUG or settings.TEST:
     import debug_toolbar

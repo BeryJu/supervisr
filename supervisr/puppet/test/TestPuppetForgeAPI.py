@@ -8,9 +8,9 @@ from django.test import TestCase
 
 from supervisr.core.models import Setting
 from supervisr.core.test.utils import test_request
+from supervisr.puppet.api.v1 import forge_api
 from supervisr.puppet.builder import ReleaseBuilder
 from supervisr.puppet.models import PuppetModule
-from supervisr.puppet.views import forge_api
 
 
 class TestPuppetForgeAPI(TestCase):

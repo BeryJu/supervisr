@@ -9,7 +9,7 @@ from django.test import TestCase
 from supervisr.core.test.utils import call_command_ret
 
 
-class TestManagementCommandss(TestCase):
+class TestManagementCommands(TestCase):
     """
     Supervisr Core ManagementCommands Test
     """

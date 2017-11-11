@@ -90,7 +90,6 @@ def release_list(req):
             query = query & Q(module__name__icontains=req.GET.get('module'))
 
     releases = PuppetModuleRelease.objects.filter(query)
-
     return JsonResponse({
         "pagination": {
             "limit": 20,
@@ -156,7 +155,7 @@ def file(req, user, module, version):
 def _json_release(release):
     """Convert a single release"""
     return {
-        "uri": reverse('supervisr/puppet:release', kwargs={
+        "uri": reverse('supervisr/puppet/api/v1:release', kwargs={
             'user': release.module.owner.username,
             'module': release.module.name,
             'version': release.version,
@@ -165,7 +164,7 @@ def _json_release(release):
         "slug": "%s-%s-%s" % (release.module.owner.username, release.module.name, release.version),
         "version": release.version,
         "module": {
-            "uri": reverse('supervisr/puppet:module', kwargs={
+            "uri": reverse('supervisr/puppet/api/v1:module', kwargs={
                 'user': release.module.owner.username,
                 'module': release.module.name,
                 'key': Setting.get('url_key')
@@ -173,7 +172,7 @@ def _json_release(release):
             "slug": "%s-%s" % (release.module.owner.username, release.module.name),
             "name": release.module.name,
             "owner": {
-                "url": reverse('supervisr/puppet:user', kwargs={
+                "url": reverse('supervisr/puppet/api/v1:user', kwargs={
                     'user': release.module.owner.username,
                     'key': Setting.get('url_key')
                     }),
@@ -206,7 +205,7 @@ def _json_release_list(releases):
 def _json_module(module):
     """Convert a single module"""
     return {
-        "uri": reverse('supervisr/puppet:module', kwargs={
+        "uri": reverse('supervisr/puppet/api/v1:module', kwargs={
             'user': module.owner.username,
             'module': module.name,
             'key': Setting.get('url_key')
@@ -218,7 +217,7 @@ def _json_module(module):
         "supported": True,
         "slug": "%s-%s" % (module.owner.username, module.name),
         "owner": {
-            "uri": reverse('supervisr/puppet:user', kwargs={
+            "uri": reverse('supervisr/puppet/api/v1:user', kwargs={
                 'user': module.owner.username,
                 'key': Setting.get('url_key')
                 }),

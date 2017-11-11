@@ -34,7 +34,6 @@ def index(req):
                             .order_by('-pk')
         if latest_releases.exists():
             versions[mod] = latest_releases.first()
-    print(versions)
     return render(req, 'puppet/index.html', {
         'module_count': module_count,
         'versions': versions,
