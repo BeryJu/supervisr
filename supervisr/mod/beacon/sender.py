@@ -6,6 +6,7 @@ import platform
 import sys
 from random import uniform
 
+import requests
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
@@ -29,7 +30,7 @@ class Sender(object):
     def __init__(self):
         self._enabled = getattr(settings, 'BEACON_ENABLED', True)
         self._endpoint = getattr(settings, 'BEACON_REMOTE', '')
-        self._install_id = Setting.get('install_id', namespace='supervisr/core')
+        self._install_id = Setting.get('install_id', namespace='supervisr.core')
         self._smear_amount = uniform(0.5, 1.5) # Smear between 0.5 and 1.5
         self._pulse = Pulse(
             install_id=self._install_id,
@@ -42,7 +43,7 @@ class Sender(object):
         # Collect python version
         self._pulse.python_version = sys.version
         # Collect OS Uname
-        self._pulse.os_uname = platform.uname()
+        self._pulse.os_uname = str(platform.uname())
 
     def _collect_count(self):
         """Collect Counts of user and domains, and smear them some"""
@@ -79,13 +80,14 @@ class Sender(object):
         pu_dict['modules'] = mods
         return json.dumps(pu_dict)
 
-    def send(self):
+    def send(self, data):
         """Send json string to endpoint"""
-        pass
+        endp = "%s/app/mod/beacon/receive/" % self._endpoint
+        req = requests.post(endp, data=data)
+        LOGGER.debug(req.text)
 
-    @catch_exceptions
+    @catch_exceptions()
     def tick(self):
         """This method is called by supervisr.core.thread.background.BackgroundThread."""
         self._collect_count()
-        # self.send(self.bundle())
-        LOGGER.debug(self.bundle())
+        self.send(self.bundle())

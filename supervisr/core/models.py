@@ -161,9 +161,11 @@ class Setting(CreatedUpdatedModel):
         Setting._ALLOWED_NAMESPACES.append('supervisr.core')
 
     @property
-    def value_bool(self):
-        """
-        Return value converted to boolean
+    def value_bool(self) -> bool:
+        """Return value converted to boolean
+
+        Returns:
+            True if value converted to lowercase equals 'true'. Otherwise False.
         """
         return self.value.lower() == 'true'
 
@@ -171,9 +173,22 @@ class Setting(CreatedUpdatedModel):
         return "Setting %s/%s" % (self.namespace, self.key)
 
     @staticmethod
-    def get(key, namespace='', default='', inspect_offset=1):
-        """
-        Get value, when Setting doesn't exist, it's created with default
+    def get(key: str, namespace='', default='', inspect_offset=1) -> str:
+        """Get value, when Setting doesn't exist, it's created with default
+
+        Args:
+            key: Key for which to look
+            namespace: Optional. Namespace in which to look. By Default this is determined by
+                looking up into the stack and extracting the module.
+            default: This value is returned if the namespace is invalid / not allowed. If no
+                Setting with the specified namespace/key combo is found, one is created with
+                default as value.
+            inspect_offset: The offset by which the stack should be looked up. Defaults to 1.
+                This can be used if you wrap this function (like `Setting.get_bool`) and need
+                to increase the offset to 2.
+
+        Returns:
+            The data currently saved if the Setting exists. Otherwise `default` is returned.
         """
         if not Setting._ALLOWED_NAMESPACES:
             Setting._init_allowed()
@@ -199,22 +214,38 @@ class Setting(CreatedUpdatedModel):
             return default
 
     @staticmethod
-    def get_bool(*args, **kwargs):
-        """
-        Return value cast to boolean
+    def get_bool(*args, **kwargs) -> bool:
+        """Return value cast to boolean
+
+        This is wrapper around `Setting.get`, which returns a boolean.
+
+        Returns:
+            True if the Setting's value in lowercase is equal to 'true'. Otherwise False.
         """
         value = Setting.get(*args, inspect_offset=2, **kwargs)
         return str(value).lower() == 'true'
 
     @staticmethod
-    def set(key, value, namespace=''):
-        """
-        Set value, when Setting doesn't exist, it's created with value
+    def set(key: str, value: str, namespace='', inspect_offset=1) -> bool:
+        """Set value, when Setting doesn't exist, it's created with value
+
+        Args:
+            key: The key with which the setting should be created
+            value: Value to write to the Setting.
+            namespace: Namespace under which this Setting should be saved. By Default this is
+                determined by looking up into the stack and extracting the module.
+            inspect_offset: The offset by which the stack should be looked up. Defaults to 1.
+                This can be used if you wrap this function (like `Setting.get_bool`) and need
+                to increase the offset to 2.
+
+        Returns:
+            True if savving the Setting succeeded, otherwise False.
         """
         if not Setting._ALLOWED_NAMESPACES:
             Setting._init_allowed()
         if namespace == '':
-            namespace = inspect.getmodule(inspect.stack()[1][0]).__name__
+            namespace = inspect.getmodule(
+                inspect.stack()[inspect_offset][0]).__name__
         for name in Setting._ALLOWED_NAMESPACES:
             if namespace.startswith(name):
                 namespace = name

@@ -23,3 +23,4 @@ class SupervisrModBeaconConfig(SupervisrAppConfig):
             from supervisr.mod.beacon.sender import Sender
             sender = Sender()
             SCHEDULER.every(15).seconds.do(sender.tick)
+            sender.tick()
