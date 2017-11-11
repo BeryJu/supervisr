@@ -239,7 +239,7 @@ class Setting(CreatedUpdatedModel):
                 to increase the offset to 2.
 
         Returns:
-            True if savving the Setting succeeded, otherwise False.
+            True if saving the Setting succeeded, otherwise False.
         """
         if not Setting._ALLOWED_NAMESPACES:
             Setting._init_allowed()

@@ -1,7 +1,9 @@
 """
-Supervisr Core APIv2
+Supervisr Core APIv1
 """
 
+# TODO: This import should not be hard-coded. It should dynamically be
+# loaded when mod/auth/oauth/client is active.
 from oauth2_provider.decorators import protected_resource
 
 from supervisr.core.api.utils import api_response

@@ -1,5 +1,5 @@
 """
-Supervisr Core r2 Domain API
+Supervisr Core Domain APIv1
 """
 
 from supervisr.core.api.models import ProductAPI

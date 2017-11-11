@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "${workspaceRoot}/env/bin/python",
+    "python.pythonPath": "${workspaceRoot}\\env\\Scripts\\python.exe",
     "python.unitTest.unittestArgs": [
         "-v",
         "-s",

@@ -1,5 +1,5 @@
 """
-Supervisr Core APIv2
+Supervisr Core APIv1
 """
 
 from django.core.cache import cache

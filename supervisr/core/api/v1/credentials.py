@@ -1,5 +1,5 @@
 """
-Supervisr Core r2 Credential API
+Supervisr Core Credential APIv1
 """
 
 from supervisr.core.api.models import ProductAPI
