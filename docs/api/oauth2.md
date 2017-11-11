@@ -2,9 +2,9 @@
 
 ## OAuth 2 endpoint URLs
 
-Authorize: `https://my.beryju.org/api/oauth2/authorize/`
+Authorize: `https://<installation URL>/app/mod/auth/oauth/provider/authorize//`
 
-Token: `https://my.beryju.org/api/oauth2/token/`
+Token: `https://<installation URL>/app/mod/auth/oauth/provider/token/`
 
 ## API calls
 
@@ -15,7 +15,7 @@ For example:
 ```
 curl -X GET \
      -H "Authorization: Bearer your_api_token" \
-     "https://my.beryju.org/api/r2/account/me?type=json"
+     "https://<installation URL>/api/r2/account/me/?type=json"
 ```
 
 ...which would return...

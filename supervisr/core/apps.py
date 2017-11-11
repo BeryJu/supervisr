@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import importlib
 import logging
 import os
+import uuid
 
 import pkg_resources
 from django.apps import AppConfig
@@ -29,7 +30,7 @@ class SupervisrAppConfig(AppConfig):
     admin_url_name = 'admin-mod_default'
     view_user_settings = None
     navbar_enabled = lambda self, request: False
-    title_moddifier = lambda self, label, request: label.title()
+    title_modifier = lambda self, label, request: label.title()
 
     def __init__(self, *args, **kwargs):
         """
@@ -174,12 +175,13 @@ class SupervisrCoreConfig(SupervisrAppConfig):
             'banner:message': '',
             'branding': 'supervisr',
             'branding:icon': '',
-            'domain': 'https://localhost/',
+            'domain': 'http://localhost/',
             'maintenancemode': False,
             'password:filter': r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])'
                                r'[A-Za-z\d$@$!%*?&]{8,}',
-            'password:filter:description': 'Minimum 8 characters at least 1 Uppercase Alphabet, 1 L'
-                                           'owercase Alphabet, 1 Number and 1 Special Character',
+            'password:filter:description': 'Minimum 8 characters at least 1 Uppercase Alphabet, 1'
+                                           'Lowercase Alphabet, 1 Number and 1 Special Character',
             'recaptcha:private': '',
             'recaptcha:public': '',
+            'install_id': uuid.uuid4(),
         }

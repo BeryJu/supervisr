@@ -13,9 +13,11 @@ from uuid import uuid4
 
 from django.apps import apps
 from django.conf import settings
+from django.contrib import messages
 from django.core.cache import cache
 from django.shortcuts import render
 from django.template import loader
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.statistics import stat_set
@@ -237,3 +239,14 @@ def check_db_connection(connection_name: str = 'default') -> bool:
         return False
     else:
         return True
+
+def messages_add_once(req, level, text, **kwargs):
+    """Add text to messages, but make sure no duplicates exist"""
+    exists = False
+    storage = messages.get_messages(req)
+    for msg in storage:
+        if msg.message == text:
+            exists = True
+    storage.used = False
+    if not exists:
+        return messages.add_message(req, level, mark_safe(text), **kwargs)

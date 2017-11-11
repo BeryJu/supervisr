@@ -5,37 +5,20 @@ Supervisr Core Middleware to add a banner message
 from django.contrib import messages
 
 from supervisr.core.models import Setting
+from supervisr.core.utils import messages_add_once
 
 
 def permanent_message(get_response):
-    """
-    Middleware Permenently add a message
-    """
+    """Middleware Permanently add a message"""
 
     def middleware(req):
-        """
-        Middleware Permenently add a message
-        """
-        m_enabled = Setting.objects.get(
-            key='banner:enabled',
-            namespace='supervisr.core').value_bool
-        m_text = Setting.objects.get(
-            key='banner:message',
-            namespace='supervisr.core').value
-        m_level = Setting.objects.get(
-            key='banner:level',
-            namespace='supervisr.core').value
+        """Middleware Permanently add a message"""
+        m_enabled = Setting.get_bool('banner:enabled')
+        m_text = Setting.get('banner:message')
+        m_level = Setting.get('banner:level')
 
-        if m_enabled is True:
-            # Get existing Messages and only add if we're not in there
-            storage = messages.get_messages(req)
-            m_exists = False
-            for message in storage:
-                if message.message == m_text:
-                    m_exists = True
-            storage.used = False
-            if not m_exists and req.user.is_authenticated:
-                messages.add_message(req, getattr(messages, m_level.upper()), m_text)
-        response = get_response(req)
-        return response
+        if m_enabled is True and req.user.is_authenticated:
+            messages_add_once(req, getattr(messages, m_level.upper()), m_text)
+        return get_response(req)
+
     return middleware

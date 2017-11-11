@@ -4,7 +4,6 @@ supervisr core urls
 import importlib
 import logging
 
-from django.apps import apps
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin as admin_django
@@ -91,32 +90,43 @@ urlpatterns = [
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),
     # General API Urls
-    url(r'^api/', include('supervisr.core.views.api.urls')),
+    url(r'^api/core/', include('supervisr.core.api.urls')),
     # Robots.txt to stop 404s
     url(r'^robots\.txt', TemplateView.as_view(template_name='common/robots.txt')),
 ]
 
+def get_patterns(mount_path, module, namespace=''):
+    """Check if module exists and return an array with urlpatterns"""
+    # Check every part of the module chain
+    mod_parts = module.split('.')
+    for _count in range(len(mod_parts) - 1, 0, -1):
+        path = '.'.join(mod_parts[:-_count])
+        if not importlib.util.find_spec(path):
+            LOGGER.debug("Didn't find module '%s', not importing URLs from it.", path)
+            return []
+    if importlib.util.find_spec(module) is not None:
+        LOGGER.info("Loaded %s (namespace=%s)", module, namespace)
+        return [
+            url(mount_path, include(module, namespace=namespace)),
+        ]
+    return []
+
 # Load Urls for all sub apps
 for app in get_apps():
-    # Remove .apps.Supervisr stuff
-    app = '.'.join(app.split('.')[:-2])
-    # Check if app uses old or new label
-    namespace = None
+    # Get Module base path
+    module_base = '.'.join(app.split('.')[:-2])
     # Try new format first
     # from supervisr.mod.auth.oauth.client
     # to mod/auth/oauth/client
-    new_name = '/'.join(app.split('.'))
-    mount_path = new_name.replace('supervisr/', '')
-    app_config = apps.get_app_config(new_name)
-    namespace = new_name
+    namespace = '/'.join(module_base.split('.'))
+    api_namespace = '/'.join(module_base.split('.')+['api'])
+    # remove `supervisr/` for mountpath
+    mount_path = namespace.replace('supervisr/', '')
 
-    url_module = "%s.urls" % app
     # Only add if module could be loaded
-    if importlib.util.find_spec(url_module) is not None:
-        urlpatterns += [
-            url(r"^app/%s/" % mount_path, include(url_module, namespace=namespace)),
-        ]
-        LOGGER.info("Loaded %s (namespace=%s)", url_module, namespace)
+    urlpatterns += get_patterns(r"^app/%s/" % mount_path, "%s.urls" % module_base,
+                                namespace)
+    urlpatterns += get_patterns(r"^api/app/%s/" % mount_path, "%s.api.urls" % module_base)
 
 if settings.DEBUG or settings.TEST:
     import debug_toolbar

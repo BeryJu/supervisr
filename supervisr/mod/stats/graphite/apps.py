@@ -21,7 +21,7 @@ class SupervisrModStatGraphiteConfig(SupervisrAppConfig):
     name = 'supervisr.mod.stats.graphite'
     admin_url_name = 'supervisr/mod/stats/graphite:admin_settings'
     label = 'supervisr/mod/stats/graphite'
-    title_moddifier = lambda self, title, request: 'Stats/Graphite'
+    title_modifier = lambda self, title, request: 'Stats/Graphite'
 
     def ready(self):
         super(SupervisrModStatGraphiteConfig, self).ready()

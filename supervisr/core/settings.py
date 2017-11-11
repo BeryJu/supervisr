@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     'supervisr.web.apps.SupervisrWebConfig',
     'supervisr.mail.apps.SupervisrMailConfig',
     'supervisr.static.apps.SupervisrStaticConfig',
+    'supervisr.mod.beacon.apps.SupervisrModBeaconConfig',
     'supervisr.mod.auth.ldap.apps.SupervisrModAuthLDAPConfig',
     'supervisr.mod.auth.saml.idp.apps.SupervisrModAuthSAMLProvider',
     'supervisr.mod.auth.oauth.provider.apps.SupervisrModAuthOAuthProviderConfig',

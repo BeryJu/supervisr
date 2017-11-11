@@ -13,4 +13,4 @@ class SupervisrModProviderOnlineNetConfig(SupervisrAppConfig):
     name = 'supervisr.mod.provider.onlinenet'
     init_modules = ['models', 'providers.core']
     label = 'supervisr/mod/provider/onlinenet'
-    title_moddifier = lambda self, title, request: 'Provider/Online.net'
+    title_modifier = lambda self, title, request: 'Provider/Online.net'

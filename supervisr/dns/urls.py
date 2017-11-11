@@ -2,7 +2,7 @@
 Supervisr DNS URLs
 """
 
-from django.conf.urls import include, url
+from django.conf.urls import url
 
 from supervisr.core.regex import DOMAIN_REGEX, UUID_REGEX
 from supervisr.dns.views import migrate, records, zones
@@ -22,5 +22,4 @@ urlpatterns = [
         (DOMAIN_REGEX, UUID_REGEX), records.delete, name='dns-record-delete'),
     url(r'^migrate/import/bind/$',
         migrate.BindZoneImportWizard.as_view(), name='migrate-import-bind'),
-    url(r'^api/', include('supervisr.dns.views.api.urls')),
 ]

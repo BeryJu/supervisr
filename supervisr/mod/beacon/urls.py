@@ -1,0 +1,3 @@
+"""Supervisr Beacon URLs"""
+
+urlpatterns = []

@@ -42,7 +42,7 @@ def supervisr_dyn_user(context):
             if view is not None:
                 view = '%s:%s' % (mod, view)
                 mod = mod.replace('supervisr.', '').replace('mod.', '')
-                title = config.title_moddifier(config.label, context.request)
+                title = config.title_modifier(config.label, context.request)
                 app_list.append({
                     'title': title,
                     'view': view

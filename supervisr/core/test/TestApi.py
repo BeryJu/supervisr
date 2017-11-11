@@ -5,9 +5,9 @@ Supervisr Core API Test
 from django.contrib.auth.models import User
 from django.test import TestCase
 
+from supervisr.core.api.v1 import user as v1_user
 from supervisr.core.models import get_system_user
 from supervisr.core.test.utils import oauth2_get_token, test_request
-from supervisr.core.views.api.r2 import user as r2_user
 
 
 class TestAPIs(TestCase):
@@ -28,7 +28,7 @@ class TestAPIs(TestCase):
         """
         self.assertEqual(
             test_request(
-                r2_user.account_me,
+                v1_user.account_me,
                 user=self.user,
                 req_kwargs={'format': 'json'},
                 headers={'HTTP_AUTHORIZATION': self.token}
@@ -40,7 +40,7 @@ class TestAPIs(TestCase):
         """
         self.assertEqual(
             test_request(
-                r2_user.account_me,
+                v1_user.account_me,
                 user=self.user,
                 req_kwargs={'format': 'openid'},
                 headers={'HTTP_AUTHORIZATION': self.token}
@@ -52,7 +52,7 @@ class TestAPIs(TestCase):
         """
         self.assertEqual(
             test_request(
-                r2_user.account_me,
+                v1_user.account_me,
                 user=self.user,
                 req_kwargs={'format': 'yaml'},
                 headers={'HTTP_AUTHORIZATION': self.token}
@@ -64,7 +64,7 @@ class TestAPIs(TestCase):
         """
         self.assertEqual(
             test_request(
-                r2_user.account_me,
+                v1_user.account_me,
                 user=self.user,
                 req_kwargs={'format': 'invalid'},
                 headers={'HTTP_AUTHORIZATION': self.token}

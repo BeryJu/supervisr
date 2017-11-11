@@ -45,7 +45,7 @@ def supervisr_dyn_navapps(context):
                 mod = mod.split('.')[:-2][-1]
                 config = apps.get_app_config(mod)
             view_prefix = mod.split('/')[-1]
-            title = config.title_moddifier(config.label, context.request)
+            title = config.title_modifier(config.label, context.request)
             if config.navbar_enabled(context.request):
                 mod = mod.replace('supervisr.', '')
                 index = '%s:%s-index' % (mod, view_prefix)

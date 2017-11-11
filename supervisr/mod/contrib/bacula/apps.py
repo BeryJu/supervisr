@@ -17,7 +17,7 @@ class SupervisrModContribBaculaConfig(SupervisrAppConfig):
     name = 'supervisr.mod.contrib.bacula'
     label = 'supervisr/mod/contrib/bacula'
     verbose_name = 'Supervisr mod/contrib/bacula'
-    title_moddifier = lambda self, title, request: 'Bacula'
+    title_modifier = lambda self, title, request: 'Bacula'
 
     def ready(self):
         super(SupervisrModContribBaculaConfig, self).ready()
