@@ -1,6 +1,8 @@
 """
 Supervisr Core Base API
 """
+import json
+import logging
 
 from django.http import Http404, QueryDict
 from django.utils.decorators import method_decorator
@@ -9,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from supervisr.core.api.utils import api_response
 
+LOGGER = logging.getLogger(__name__)
 
 class API(View):
     """
@@ -27,12 +30,15 @@ class API(View):
         if verb not in my_allowed:
             return api_response(request, {'error': 'verb not allowed in HTTP VERB'})
 
-        API.init_user_filter(request.user)
+        self.init_user_filter(request.user)
 
         if request.method in ['PUT', 'DELETE']:
             data = QueryDict(request.body).dict()
         elif request.method == 'POST':
             data = request.POST.dict()
+            if data == {}:
+                # data was no form-encoded, so parse JSON from request body
+                data = json.loads(request.body.decode('utf-8'))
         elif request.method == 'GET':
             data = request.GET.dict()
 
@@ -44,7 +50,7 @@ class API(View):
             try:
                 return api_response(request, handler(request, data))
             except Http404:
-                return api_response(request, {'error': '404'})
+                return api_response(request, {'error': 404})
             except KeyError as exc:
                 return api_response(request, {'error': exc.args[0]})
 

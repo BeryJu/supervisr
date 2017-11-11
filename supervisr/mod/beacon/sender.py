@@ -1,6 +1,5 @@
 """Supervisr Beacon sender"""
 import importlib
-import json
 import logging
 import platform
 import sys
@@ -10,6 +9,7 @@ import requests
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
+from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.models import Domain, Setting
@@ -71,19 +71,21 @@ class Sender(object):
                     setattr(pmod, new_key, value)
                 self._modules += [pmod]
 
-    def bundle(self) -> str:
+    def bundle(self) -> dict:
         """Bundle Pulse instance into json string"""
         pu_dict = model_to_dict(self._pulse)
         mods = []
         for mod in self._modules:
             mods.append(model_to_dict(mod))
         pu_dict['modules'] = mods
-        return json.dumps(pu_dict)
+        return pu_dict
 
     def send(self, data):
         """Send json string to endpoint"""
-        endp = "%s/app/mod/beacon/receive/" % self._endpoint
-        req = requests.post(endp, data=data)
+        endpoint = self._endpoint + \
+            reverse('supervisr/mod/beacon/api/v1:pulse',
+                    kwargs={'verb': 'send'})
+        req = requests.post(endpoint, json=data)
         LOGGER.debug(req.text)
 
     @catch_exceptions()
