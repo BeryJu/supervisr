@@ -14,6 +14,12 @@ class TestAdminViews(TestCase):
 
     def test_index(self):
         """Test index view"""
+        self.assertEqual(test_request(admin.debug_build,
+                                        user=get_system_user(),
+                                        url_kwargs={
+                                            'user': 'supervisr',
+                                            'module': 'supervisr_core'
+                                        }).status_code, 302)
         self.assertEqual(test_request(admin.index, user=get_system_user()).status_code, 200)
 
     def test_debug_build_valid(self):
