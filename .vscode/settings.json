@@ -13,5 +13,8 @@
     "editor.detectIndentation": false,
     "files.insertFinalNewline": true,
     "python.unitTest.pyTestEnabled": false,
-    "python.unitTest.nosetestsEnabled": false
+    "python.unitTest.nosetestsEnabled": false,
+    "[html]": {
+        "editor.tabSize": 2
+    }
 }
