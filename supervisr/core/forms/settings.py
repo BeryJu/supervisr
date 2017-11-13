@@ -5,6 +5,7 @@ from django.utils.translation import ugettext as _
 
 from supervisr.core.models import Setting
 
+
 class SettingsForm(forms.Form):
     """Form to easily edit settings"""
 
@@ -55,5 +56,13 @@ class SettingsForm(forms.Form):
 
     def save(self):
         """Save data back to settings"""
+        updated_count = 0
         for ns_key, value in self.cleaned_data.items():
-            namespace, key = ns_key.split('/')
+            # check if this setting is even meant for us
+            if ns_key in self.fields:
+                # Only update if needed
+                if self._set_objects[ns_key] != value:
+                    self._set_objects[ns_key].value = value
+                    self._set_objects[ns_key].save()
+                    updated_count += 1
+        return updated_count
