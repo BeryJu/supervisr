@@ -59,7 +59,7 @@ class SettingsForm(forms.Form):
     def _apply_attrs_map(self):
         """Apply attributes from self.attrs_map to widgets"""
         for name, attrs in self.attrs_map.items():
-            ns_key = '%s/%s' % (self.namespace, name) if not '/' in name else name
+            ns_key = '%s/%s' % (self.namespace, name) if '/' not in name else name
             if ns_key in self.fields:
                 self.fields[ns_key].attrs = attrs
 
