@@ -5,6 +5,7 @@ from django.utils.translation import ugettext as _
 
 from supervisr.core.models import Setting
 
+
 class SettingsForm(forms.Form):
     """Form to easily edit settings"""
 
