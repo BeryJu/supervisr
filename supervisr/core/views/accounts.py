@@ -145,7 +145,7 @@ class LoginView(View):
         # Check if the user's account is pending
         # and inform that, they need to check their emails
         users = User.objects.filter(username=username)
-        if users.exists():
+        if users.exists() and users.first().is_active:
             # Check is maybe not confirmed yet
             acc_confs = AccountConfirmation.objects.filter(
                 user=users.first(),
@@ -357,19 +357,21 @@ def reset_password_init(req):
     if req.method == 'POST':
         form = PasswordResetInitForm(req.POST)
         if form.is_valid():
-            user = User.objects.get(email=form.cleaned_data.get('email'))
-            AccountConfirmation.objects.create(
-                user=user,
-                kind=AccountConfirmation.KIND_PASSWORD_RESET)
-            SIG_USER_PASS_RESET_INIT.send(
-                sender=reset_password_init, user=user)
-            messages.success(req, _('Reset Link sent successfully'))
+            users = User.objects.filter(email=form.cleaned_data.get('email'))
+            if users.exists():
+                r_user = users.first()
+                AccountConfirmation.objects.create(
+                    user=r_user,
+                    kind=AccountConfirmation.KIND_PASSWORD_RESET)
+                SIG_USER_PASS_RESET_INIT.send(
+                    sender=reset_password_init, user=r_user)
+            messages.success(req, _('Reset link sent successfully if user exists.'))
     else:
         form = PasswordResetInitForm()
     return render(req, 'core/generic_form_login.html', {
         'form': form,
-        'title': _("SSO - Reset your Password - Step 1/3"),
-        'primary_action': _("Send Confirmation Email")
+        'title': _("SSO - Reset your password - Step 1/3"),
+        'primary_action': _("Send confirmation Email")
         })
 
 @anonymous_required

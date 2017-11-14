@@ -5,7 +5,6 @@ from django.utils.translation import ugettext as _
 
 from supervisr.core.models import Setting
 
-
 class SettingsForm(forms.Form):
     """Form to easily edit settings"""
 
@@ -13,11 +12,13 @@ class SettingsForm(forms.Form):
     settings = []
     widgets = {}
     _set_objects = {}
+    attrs_map = {}
 
     def __init__(self, *args, **kwargs):
         super(SettingsForm, self).__init__(*args, **kwargs)
         self._validate_settings()
         self._make_widgets()
+        self._apply_attrs_map()
 
     def _validate_settings(self):
         """Make sure all settings can be found"""
@@ -53,6 +54,13 @@ class SettingsForm(forms.Form):
             # Set label if not overridden
             if not self.fields[ns_key].label:
                 self.fields[ns_key].label = _(key.title())
+
+    def _apply_attrs_map(self):
+        """Apply attributes from self.attrs_map to widgets"""
+        for name, attrs in self.attrs_map.items():
+            ns_key = '%s/%s' % (self.namespace, name) if not '/' in name else name
+            if ns_key in self.fields:
+                self.fields[ns_key].attrs = attrs
 
     def save(self):
         """Save data back to settings"""
