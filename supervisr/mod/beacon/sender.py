@@ -86,7 +86,7 @@ class Sender(object):
             reverse('supervisr/mod/beacon/api/v1:pulse',
                     kwargs={'verb': 'send'})
         req = requests.post(endpoint, json=data)
-        LOGGER.debug(req.text)
+        LOGGER.debug(req.json)
 
     @catch_exceptions()
     def tick(self):

@@ -1,6 +1,7 @@
 {% extends "_admin/base.html" %}
 
 {% load supervisr_title %}
+{% load supervisr_setting %}
 {% load i18n %}
 {% load setting %}
 
@@ -29,6 +30,10 @@
         <tr>
           <td>{% trans 'Version' %}</td>
           <td>{% setting 'VERSION_HASH' %}</td>
+        </tr>
+        <tr>
+          <td>{% trans 'Install ID' %}</td>
+          <td>{% supervisr_setting 'install_id' %}</td>
         </tr>
       </tbody>
     </table>

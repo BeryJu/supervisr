@@ -27,7 +27,7 @@
     </label>
     {% for c in field %}
     <div class="radio">
-      <input type="radio" id="{{ field.name }}-{{ forloop.counter0 }}" name="{{ wizard.steps.current }}-{{ field.name }}" value="{{ c.choice_value }}" {% if c.is_checked %} checked {% endif %}>
+      <input type="radio" id="{{ field.name }}-{{ forloop.counter0 }}" name="{% if wizard %}{{ wizard.steps.current }}-{% endif %}{{ field.name }}" value="{{ c.data.value }}" {% if c.data.selected %} checked {% endif %}>
       <label for="{{ field.name }}-{{ forloop.counter0 }}">{{ c.choice_label }}</label>
     </div>
     {% endfor %}
