@@ -11,6 +11,7 @@ from django.http import Http404
 from supervisr.core.api.crud import CRUDAPI
 from supervisr.core.models import Product, UserProductRelationship
 
+
 class ModelAPI(CRUDAPI):
     """
     Basic API for Models

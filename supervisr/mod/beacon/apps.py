@@ -23,4 +23,6 @@ class SupervisrModBeaconConfig(SupervisrAppConfig):
             from supervisr.mod.beacon.sender import Sender
             sender = Sender()
             SCHEDULER.every(15).minutes.do(sender.tick)
-            sender.tick()
+            # Running a tick when the app starts breaks the admin interface somehow
+            # since sender.tick calls reverse internally to figure out the endpoint URL.
+            # sender.tick()
