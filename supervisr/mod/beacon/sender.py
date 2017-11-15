@@ -86,7 +86,11 @@ class Sender(object):
             reverse('supervisr/mod/beacon/api/v1:pulse',
                     kwargs={'verb': 'send'})
         req = requests.post(endpoint, json=data)
-        LOGGER.debug(req.json)
+        result = req.json()
+        if result['status'] == 'ok':
+            LOGGER.debug("Successfully pulsed beacon")
+        else:
+            LOGGER.debug("Failed to pulse: %r", result)
 
     @catch_exceptions()
     def tick(self):
