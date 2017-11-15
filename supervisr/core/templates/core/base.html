@@ -61,15 +61,19 @@
         <img class="branding" src="{% gravatar user.email %}" alt="">
       </span>
       <div class="dropdown bottom-right">
-        <button style="background:url('{% gravatar user.email %}') no-repeat center;background-size: cover;" class="dropdown-toggle btn btn-primary hidden-sm-up" clrDropdown>
+        <button style="background:url('{% gravatar user.email %}') no-repeat center;background-size: cover;" class="dropdown-toggle btn {% if 'impersonate_id' in request.session %}btn-danger{% else %}btn-primary{% endif %} hidden-sm-up" clrDropdown>
           {# hidden in sm and bigger #}
         </button>
-        <button class="dropdown-toggle btn btn-primary hidden-sm-down" clrDropdown>
+        <button class="dropdown-toggle btn {% if 'impersonate_id' in request.session %}btn-danger{% else %}btn-primary{% endif %} hidden-sm-down" clrDropdown>
           {# hidden in sm and smaller #}
           {{ user.userprofile.username }}
           <clr-icon shape="caret down"></clr-icon>
         </button>
         <div class="dropdown-menu">
+          {% if 'impersonate_id' in request.session %}
+          <a class="dropdown-item" href="?__unimpersonate=True">{% trans 'Stop impersonation' %}</a>
+          <div class="dropdown-divider"></div>
+          {% endif %}
           <a class="dropdown-item" href="{% url 'user-index' %}">{% trans "Profile" %}</a>
           <a class="dropdown-item" href="{% url 'account-change_password' %}">{% trans "Change Password" %}</a>
           <div class="dropdown-divider"></div>

@@ -1,5 +1,7 @@
 """Supervisr mod beacon Pulse API"""
 
+from django.db import IntegrityError
+
 from supervisr.core.api.models import ModelAPI
 from supervisr.mod.beacon.models import Pulse, PulseModule
 
@@ -31,7 +33,12 @@ class PulseAPI(ModelAPI):
                 r_pmod = matching.first()
             pul.modules.add(r_pmod)
         for old_pmod in Pulse.objects.filter(install_id=install_id).exclude(pk=pul.pk):
-            old_pmod.delete()
+            try:
+                old_pmod.delete()
+            except IntegrityError:
+                # Ignore IntegrityError, which happen if the same install sends twice
+                # at the same time
+                pass
         return {'status': 'ok'}
 
     @staticmethod
