@@ -2,7 +2,6 @@
 Supervisr Core r1 Model API
 """
 import collections
-import logging
 
 from django import forms
 from django.db import models
@@ -11,8 +10,6 @@ from django.http import Http404
 
 from supervisr.core.api.crud import CRUDAPI
 from supervisr.core.models import Product, UserProductRelationship
-
-LOGGER = logging.getLogger(__name__)
 
 class ModelAPI(CRUDAPI):
     """
@@ -139,7 +136,6 @@ class ModelAPI(CRUDAPI):
         sanitized = self.resolve_foreign_key(sanitized)
         # # Check if all necessary keys are existent
         # self.check_keys(sanitized, self.editable_fields)
-        print(sanitized)
         inst = self.model.objects.create(**sanitized)
         return self.model_to_dict([inst, ])
 
