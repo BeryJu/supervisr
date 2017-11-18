@@ -201,7 +201,7 @@ class LDAPConnector(object):
                 ):
                 response = self.con.response[0]
                 # If user has no email set in AD, use UPN
-                if not 'mail' in response.get('attributes'):
+                if 'mail' not in response.get('attributes'):
                     response['attributes']['mail'] = response['attributes']['userPrincipalName']
                 return self._get_or_create_user(response, password)
             LOGGER.warning("LDAP user lookup failed")
