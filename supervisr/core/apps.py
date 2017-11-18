@@ -87,7 +87,11 @@ class SupervisrAppConfig(AppConfig):
         for module in self.init_modules:
             if importlib.util.find_spec("%s.%s" % (self.name, module)) is not None:
                 LOGGER.info("Loaded %s.%s", self.name, module)
-                importlib.import_module("%s.%s" % (self.name, module))
+                try:
+                    importlib.import_module("%s.%s" % (self.name, module))
+                except Exception as exc:  # pylint: disable=broad-except
+                    # Log the error but continue starting
+                    LOGGER.error(exc)
 
     def check_requirements(self):
         """
