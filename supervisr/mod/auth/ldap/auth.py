@@ -16,4 +16,6 @@ class LDAPBackend(ModelBackend):
 
     def authenticate(self, **kwargs):
         """Try to authenticate a user via ldap"""
+        if 'password' not in kwargs:
+            return None
         return self._ldap.auth_user(**kwargs)

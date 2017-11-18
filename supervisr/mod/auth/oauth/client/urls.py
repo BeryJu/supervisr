@@ -5,8 +5,8 @@ Supervisr auth oauth client urls
 from django.conf.urls import url
 
 from supervisr.mod.auth.oauth.client.views import core, settings
-from supervisr.mod.auth.oauth.client.views.providers import (facebook, github,
-                                                             supervisr,
+from supervisr.mod.auth.oauth.client.views.providers import (discord, facebook,
+                                                             github, supervisr,
                                                              twitter)
 
 urlpatterns = [
@@ -20,6 +20,10 @@ urlpatterns = [
         facebook.FacebookOAuth2Callback.as_view(), name='oauth-client-callback'),
     url(r'^login/(?P<provider>facebook)/$',
         facebook.FacebookOAuthRedirect.as_view(), name='oauth-client-login'),
+    url(r'^callback/(?P<provider>discord)/$',
+        discord.DiscordOAuth2Callback.as_view(), name='oauth-client-callback'),
+    url(r'^login/(?P<provider>discord)/$',
+        discord.DiscordOAuthRedirect.as_view(), name='oauth-client-login'),
 
     url(r'^login/(?P<provider>(\w|-)+)/$', core.OAuthRedirect.as_view(),
         name='oauth-client-login'),
