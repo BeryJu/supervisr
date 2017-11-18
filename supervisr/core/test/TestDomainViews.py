@@ -5,11 +5,11 @@ Supervisr Core DomainView Test
 
 import os
 
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
-from supervisr.core.models import get_system_user
+from supervisr.core.models import User, get_system_user
 from supervisr.core.views import domains
 
 

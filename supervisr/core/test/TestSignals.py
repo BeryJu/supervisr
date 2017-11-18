@@ -20,12 +20,14 @@ class TestSignals(TestCase):
         Test RobustSignal's error catching
         """
         self.sig_test.disconnect()
+
         # pylint: disable=unused-argument
         def handler(*args, **kwargs):
             """
             Throw an exception
             """
             return 0/0
+
         self.sig_test.connect(handler)
         try:
             self.sig_test.send(sender=None)

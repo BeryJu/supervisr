@@ -12,7 +12,6 @@ from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -27,7 +26,7 @@ from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
                                            PasswordResetFinishForm,
                                            PasswordResetInitForm, ReauthForm,
                                            SignupForm)
-from supervisr.core.models import (AccountConfirmation, Setting, UserProfile,
+from supervisr.core.models import (AccountConfirmation, Setting, User,
                                    make_username)
 from supervisr.core.signals import (SIG_USER_CHANGE_PASS, SIG_USER_CONFIRM,
                                     SIG_USER_LOGIN, SIG_USER_LOGOUT,
@@ -88,11 +87,11 @@ class LoginView(View):
         form = LoginForm(request.POST)
         if form.is_valid():
             user = authenticate(
-                username=form.cleaned_data.get('email'),
+                email=form.cleaned_data.get('email'),
                 password=form.cleaned_data.get('password'))
             if user:
                 return self.handle_login(request, user, form.cleaned_data)
-            return self.handle_disabled_login(request, username=form.cleaned_data.get('email'))
+            return self.handle_disabled_login(request, email=form.cleaned_data.get('email'))
         LOGGER.info("LoginForm invalid")
         return self.render(request, form=form)
 
@@ -111,9 +110,9 @@ class LoginView(View):
         assert user is not None
         django_login(request, user)
         # Set updated password in user profile for PAM
-        user.userprofile.crypt6_password = \
+        user.crypt6_password = \
             sha512_crypt.hash(cleaned_data.get('password'))
-        user.userprofile.save()
+        user.save()
 
         if cleaned_data.get('remember') is True:
             request.session.set_expiry(settings.REMEMBER_SESSION_AGE)
@@ -130,22 +129,22 @@ class LoginView(View):
         # Otherwise just index
         return redirect(reverse('common-index'))
 
-    def handle_disabled_login(self, request: HttpRequest, username: str) -> HttpResponse:
+    def handle_disabled_login(self, request: HttpRequest, email: str) -> HttpResponse:
         """Handle login for disabled users
 
         This informs users that their email is not confirmed yet
 
         Args:
             request: The current request
-            username: Username to search the user by
+            email: email to search the user by
 
         Returns:
             Either redirect to ?next or if not present to common-index
         """
         # Check if the user's account is pending
         # and inform that, they need to check their emails
-        users = User.objects.filter(username=username)
-        if users.exists() and users.first().is_active:
+        users = User.objects.filter(email=email)
+        if users.exists() and not users.first().is_active:
             # Check is maybe not confirmed yet
             acc_confs = AccountConfirmation.objects.filter(
                 user=users.first(),
@@ -159,7 +158,7 @@ class LoginView(View):
                                            'email.')) % {'url': url})
                 return redirect(reverse('account-login'))
         messages.error(request, _("Invalid Login"))
-        LOGGER.info("Failed to log in %s", username)
+        LOGGER.info("Failed to log in %s", email)
         return redirect(reverse('account-login'))
 
 @method_decorator(anonymous_required, name='dispatch')
@@ -183,7 +182,7 @@ class SignupView(View):
             })
 
     def create_user(self, data: Dict, request: HttpRequest = None) -> User:
-        """Create user and userprofile from data
+        """Create user from data
 
         Args:
             data: Dictionary as returned by SignupForm's cleaned_data
@@ -197,20 +196,16 @@ class SignupView(View):
         """
         # Create user
         new_user = User.objects.create_user(
-            username=data.get('email'),
+            username=data.get('username'),
             email=data.get('email'),
-            first_name=data.get('name'))
+            first_name=data.get('name'),
+            crypt6_password=sha512_crypt.hash(data.get('password')),
+            unix_username=make_username(data.get('username'))
+            )
         new_user.save()
         new_user.is_active = False
         new_user.set_password(data.get('password'))
         new_user.save()
-        # Create user profile
-        new_profile = UserProfile(
-            user=new_user,
-            username=data.get('username'),
-            crypt6_password=sha512_crypt.hash(data.get('password')),
-            unix_username=make_username(data.get('username')))
-        new_profile.save()
         # Send signal for other auth sources
         try:
             SIG_USER_SIGN_UP.send(
@@ -227,7 +222,6 @@ class SignupView(View):
                 req=request)
         except SignalException as exception:
             LOGGER.warning("Failed to sign up user %s", exception)
-            new_profile.delete()
             new_user.delete()
             raise
         return new_user

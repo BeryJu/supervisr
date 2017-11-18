@@ -12,7 +12,7 @@ from supervisr.core.models import get_system_user
 def create_default_pages(apps, schema_editor):
     names = ['CHANGELOG.md', 'ATTRIBUTIONS.md']
     FilePage = apps.get_model('supervisr/static', 'FilePage')
-    User = apps.get_model('auth', 'User')
+    User = apps.get_model('supervisr/core', 'User')
     sys_user = User.objects.get(pk=get_system_user())
     for name in names:
         b_name = name.split('.')[0]

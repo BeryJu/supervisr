@@ -5,10 +5,9 @@ Supervisr Core SearchView Test
 
 import os
 
-from django.contrib.auth.models import User
 from django.test import TestCase
 
-from supervisr.core.models import Domain, Setting, get_system_user
+from supervisr.core.models import Domain, Setting, User, get_system_user
 from supervisr.core.test.utils import internal_provider, test_request
 from supervisr.core.views import search
 

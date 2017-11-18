@@ -6,13 +6,12 @@ import traceback
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from supervisr.core.models import get_system_user
+from supervisr.core.models import User, get_system_user
 from supervisr.puppet.builder import ReleaseBuilder
 from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 

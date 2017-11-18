@@ -9,7 +9,7 @@ from supervisr.core.models import get_system_user
 
 def create_module(apps, schema_editor):
     PuppetModule = apps.get_model('supervisr/puppet', 'PuppetModule')
-    User = apps.get_model('auth', 'User')
+    User = apps.get_model('supervisr/core', 'User')
     system_user = User.objects.get(pk=get_system_user())
 
     PuppetModule.objects.get_or_create(
@@ -18,7 +18,7 @@ def create_module(apps, schema_editor):
         source_path='supervisr/core/server/config/')
 
 def create_userprofile(apps, schema_editor):
-    User = apps.get_model('auth', 'User')
+    User = apps.get_model('supervisr/core', 'User')
     UserProfile = apps.get_model('supervisr/core', 'UserProfile')
     system_user = User.objects.get(pk=get_system_user())
 

@@ -2,11 +2,10 @@
 Supervisr Mail Test
 """
 
-from django.contrib.auth.models import User
 from django.test import TestCase
 
 from supervisr.core.models import (BaseCredential, Domain, ProviderInstance,
-                                   get_system_user)
+                                   User, get_system_user)
 from supervisr.mail.models import MailAccount, MailDomain
 
 

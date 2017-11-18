@@ -16,5 +16,6 @@
     "python.unitTest.nosetestsEnabled": false,
     "[html]": {
         "editor.tabSize": 2
-    }
+    },
+    "python.formatting.provider": "none"
 }

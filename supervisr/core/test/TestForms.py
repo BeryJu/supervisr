@@ -4,15 +4,13 @@ Supervisr Core Form Test
 
 import os
 
-from django.contrib.auth.models import User
 from django.test import TestCase
 
 from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
                                            PasswordResetFinishForm, SignupForm)
 from supervisr.core.forms.domains import DomainForm
-from supervisr.core.models import (ProviderInstance, Setting,
-                                   UserProductRelationship, UserProfile,
-                                   get_system_user)
+from supervisr.core.models import (ProviderInstance, Setting, User,
+                                   UserProductRelationship, get_system_user)
 from supervisr.core.providers.internal import InternalCredential
 from supervisr.core.test.utils import test_request
 from supervisr.core.views.common import index
@@ -56,13 +54,11 @@ class TestForms(TestCase):
 
         # Test duplicate username
         user_b = User.objects.create(username='form_test_1')
-        prof_b = UserProfile.objects.create(username='form_test_1', user=user_b)
         self.signup_data['username'] = 'form_test_1'
         form_b = SignupForm(data=self.signup_data)
         self.assertFalse(form_b.is_valid())
         self.signup_data['username'] = 'beryjuorg'
         user_b.delete()
-        prof_b.delete()
 
         # Test duplicate email
         user_c = User.objects.create(username='form_test_1', email='dupe@test.test')

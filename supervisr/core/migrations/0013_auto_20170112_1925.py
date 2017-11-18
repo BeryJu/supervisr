@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.db import migrations
 
 
@@ -21,6 +20,7 @@ def create_settings(apps, schema_editor):
             defaults={'value': value})
 
 def create_user(apps, schema_editor):
+    User = apps.get_model('supervisr/core', 'User')
     system_user = User.objects.get_or_create(
         username=settings.SYSTEM_USER_NAME,
         is_active=False,

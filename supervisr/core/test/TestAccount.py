@@ -4,13 +4,12 @@ Supervisr Core Account Test
 
 import os
 
-from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
 from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
                                            SignupForm)
-from supervisr.core.models import AccountConfirmation, get_system_user
+from supervisr.core.models import AccountConfirmation, User, get_system_user
 from supervisr.core.signals import SIG_USER_RESEND_CONFIRM
 from supervisr.core.test.utils import test_request
 from supervisr.core.views import accounts, common

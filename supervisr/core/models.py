@@ -15,7 +15,7 @@ from difflib import get_close_matches
 from importlib import import_module
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Max, options
@@ -67,7 +67,7 @@ def get_userid():
     # AutoField as non-primary-key. Also so we can set a custom start,
     # which is settings.USER_PROFILE_ID_START
     try:
-        highest = UserProfile.objects.all().aggregate(Max('unix_userid'))['unix_userid__max']
+        highest = User.objects.all().aggregate(Max('unix_userid'))['unix_userid__max']
         return highest + 1 if highest is not None else settings.USER_PROFILE_ID_START
     except (AppRegistryNotReady, ObjectDoesNotExist,
             OperationalError, InternalError, ProgrammingError):
@@ -119,20 +119,26 @@ class CreatedUpdatedModel(models.Model):
     class Meta:
         abstract = True
 
-class UserProfile(CreatedUpdatedModel):
-    """
-    Save settings associated with user, since we don't want a custom user Model
-    """
-    user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
-    username = models.TextField()
+# class SVAbsUser(AbstractUser):
+#     class Meta:
+#         abstract = True
+
+# # Need to do this after the class object is created, because we need _meta access
+# SVAbsUser._meta.get_field('groups').rel.related_name = 'special_users'
+# SVAbsUser._meta.get_field('groups').rel.related_query_name = 'special_users'
+
+# SVAbsUser._meta.get_field('user_permissions').rel.related_name = 'special_users'
+# SVAbsUser._meta.get_field('user_permissions').rel.related_query_name = 'special_users'
+
+# class User(SVAbsUser):
+class User(AbstractUser):
+    """Custom Usermodel which has a few extra fields"""
+
     crypt6_password = models.CharField(max_length=128, blank=True, default='')
     unix_username = models.CharField(max_length=32, default=get_random_string, editable=False)
     unix_userid = models.IntegerField(default=get_userid)
     locale = models.CharField(max_length=5, default='en-US')
     news_subscribe = models.BooleanField(default=False)
-
-    def __str__(self):
-        return "UserProfile %s (uid: %d)" % (self.user.email, self.unix_userid)
 
 # class GroupProfile(CreatedUpdatedModel):
 #     """
@@ -265,7 +271,6 @@ class Setting(CreatedUpdatedModel):
     class Meta:
 
         unique_together = (('key', 'namespace'), )
-
 
 class AccountConfirmation(CreatedUpdatedModel):
     """
