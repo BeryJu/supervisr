@@ -9,8 +9,10 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.core.models import Setting
-from supervisr.mod.auth.ldap.forms.settings import SettingsForm
+from supervisr.mod.auth.ldap.forms.settings import (AuthenticationBackendSettings,
+                                                    ConnectionSettings,
+                                                    CreateUsersSettings,
+                                                    GeneralSettingsForm)
 
 
 @login_required
@@ -19,30 +21,21 @@ def admin_settings(req, mod):
     """
     Default view for modules without admin view
     """
-    initial_data = {
-        'enabled':       Setting.get_bool('enabled', default=False),
-        'host':          Setting.get('server', default=None),
-        'base':          Setting.get('base', default=None),
-        'create_base':   Setting.get('create_base', default=None),
-        'bind_user':     Setting.get('bind:user', default=None),
-        'bind_password': Setting.get('bind:password', default=None),
-        'domain':        Setting.get('domain', default=None),
+    form_classes = {
+        'general': GeneralSettingsForm,
+        'connection': ConnectionSettings,
+        'authentication': AuthenticationBackendSettings,
+        'create_users': CreateUsersSettings,
     }
+    render_data = {}
+    for form_key, form_class in form_classes.items():
+        render_data[form_key] = form_class(req.POST if req.method == 'POST' else None)
     if req.method == 'POST':
-        form = SettingsForm(req.POST)
-        if form.is_valid():
-            Setting.set('enabled', form.cleaned_data.get('enabled'))
-            Setting.set('server', form.cleaned_data.get('host'))
-            Setting.set('base', form.cleaned_data.get('base'))
-            Setting.set('create_base', form.cleaned_data.get('create_base'))
-            Setting.set('bind:user', form.cleaned_data.get('bind_user'))
-            Setting.set('bind:password', form.cleaned_data.get('bind_password'))
-            Setting.set('domain', form.cleaned_data.get('domain'))
-            Setting.objects.update()
-            messages.success(req, _('Settings successfully updated'))
+        update_count = 0
+        for form_key, form_class in form_classes.items():
+            form = form_class(req.POST)
+            if form.is_valid():
+                update_count += form.save()
+        messages.success(req, _('Successfully updated %d settings.' % update_count))
         return redirect(reverse('supervisr/mod/auth/ldap:admin_settings', kwargs={'mod': mod}))
-    else:
-        form = SettingsForm(initial=initial_data)
-    return render(req, 'ldap/settings.html', {
-        'form': form
-        })
+    return render(req, 'ldap/settings.html', render_data)
