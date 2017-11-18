@@ -11,6 +11,10 @@ class Migration(migrations.Migration):
         ('supervisr/puppet', '0003_auto_20170416_1550'),
     ]
 
+    run_before = [
+        ('supervisr/core', '0032_auto_20170423_1805')
+    ]
+
     operations = [
         migrations.AddField(
             model_name='puppetmodule',

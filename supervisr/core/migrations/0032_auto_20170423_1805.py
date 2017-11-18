@@ -28,7 +28,6 @@ def create_userprofile(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/puppet', '0004_puppetmodule_source_path'),
         ('supervisr/core', '0031_remove_userprofile__purgeable'),
     ]
 

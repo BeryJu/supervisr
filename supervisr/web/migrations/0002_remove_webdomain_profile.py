@@ -11,6 +11,10 @@ class Migration(migrations.Migration):
         ('supervisr/web', '0001_initial'),
     ]
 
+    run_before = [
+        ('supervisr/core', '0061_auto_20171118_1229'),
+    ]
+
     operations = [
         migrations.RemoveField(
             model_name='webdomain',

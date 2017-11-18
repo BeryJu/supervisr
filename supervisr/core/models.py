@@ -119,18 +119,6 @@ class CreatedUpdatedModel(models.Model):
     class Meta:
         abstract = True
 
-# class SVAbsUser(AbstractUser):
-#     class Meta:
-#         abstract = True
-
-# # Need to do this after the class object is created, because we need _meta access
-# SVAbsUser._meta.get_field('groups').rel.related_name = 'special_users'
-# SVAbsUser._meta.get_field('groups').rel.related_query_name = 'special_users'
-
-# SVAbsUser._meta.get_field('user_permissions').rel.related_name = 'special_users'
-# SVAbsUser._meta.get_field('user_permissions').rel.related_query_name = 'special_users'
-
-# class User(SVAbsUser):
 class User(AbstractUser):
     """Custom Usermodel which has a few extra fields"""
 
