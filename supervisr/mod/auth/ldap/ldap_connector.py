@@ -6,16 +6,18 @@ import os
 import sys
 import time as py_time
 
-from ldap3 import (MOCK_SYNC, MODIFY_ADD, MODIFY_DELETE, MODIFY_REPLACE,
-                   OFFLINE_AD_2012_R2, Connection, Server)
-from ldap3.core.exceptions import LDAPException, LDAPInvalidCredentialsResult
+import ldap3
+import ldap3.core.exceptions
+from django.contrib.auth.models import User
+from passlib.hash import sha512_crypt
 
-from supervisr.core.models import Setting
+from supervisr.core.models import Setting, UserProfile, make_username
 from supervisr.core.utils import time
-# from supervisr.mod.auth.ldap.errors import LDAPUserNotFound
 from supervisr.mod.auth.ldap.models import LDAPModification
 
 LOGGER = logging.getLogger(__name__)
+
+USERNAME_FIELD = 'userPrincipalName'
 
 class LDAPConnector(object):
     """
@@ -37,21 +39,21 @@ class LDAPConnector(object):
         if mock is False and 'test' not in sys.argv:
             self.domain = Setting.get('domain')
             self.base_dn = Setting.get('base')
-            full_user = Setting.get('bind:user')+'@'+self.domain
-            self.server = Server(Setting.get('server'))
-            self.con = Connection(self.server, raise_exceptions=True,
-                                  user=full_user,
-                                  password=Setting.get('bind:password'))
+            self.server = ldap3.Server(Setting.get('server'))
+            self.con = ldap3.Connection(self.server, raise_exceptions=True,
+                                        user=Setting.get('bind:user'),
+                                        password=Setting.get('bind:password'))
             self.con.bind()
-            self.con.start_tls()
+            if Setting.get_bool('server:tls'):
+                self.con.start_tls()
         else:
             self.mock = True
             self.domain = 'mock.beryju.org'
             self.base_dn = 'OU=customers,DC=mock,DC=beryju,DC=org'
-            self.server = Server('dc1.mock.beryju.org', get_info=OFFLINE_AD_2012_R2)
-            self.con = Connection(self.server, raise_exceptions=True,
-                                  user='CN=mockadm,OU=customers,DC=mock,DC=beryju,DC=org',
-                                  password='b3ryju0rg!', client_strategy=MOCK_SYNC)
+            self.server = ldap3.Server('dc1.mock.beryju.org', get_info=ldap3.OFFLINE_AD_2012_R2)
+            self.con = ldap3.Connection(self.server, raise_exceptions=True,
+                                        user='CN=mockadm,OU=customers,DC=mock,DC=beryju,DC=org',
+                                        password='b3ryju0rg!', client_strategy=ldap3.MOCK_SYNC)
             json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock.json')
             self.con.strategy.entries_from_json(json_path)
             self.con.bind()
@@ -78,7 +80,7 @@ class LDAPConnector(object):
 
                 # Object has been successfully applied to LDAP
                 obj.delete()
-            except LDAPException as exc:
+            except ldap3.core.exceptions.LDAPException as exc:
                 LOGGER.error(exc)
         LOGGER.info("Recovered %d Modifications from DB.", len(to_apply))
 
@@ -98,7 +100,7 @@ class LDAPConnector(object):
         """
         Returns whether LDAP is enabled or not
         """
-        return Setting.get(key='enabled') == 'True' or 'test' in sys.argv
+        return Setting.get_bool('enabled') or 'test' in sys.argv
 
     @staticmethod
     def get_server():
@@ -115,39 +117,100 @@ class LDAPConnector(object):
         return '"{}"'.format(password).encode('utf-16-le')
 
     @time(statistic_key='ldap.ldap_connector.lookup')
-    def lookup(self, **fields):
+    def lookup(self, generate_only=False, **fields):
         """
         Search email in LDAP and return the DN.
         Returns False if nothing was found.
         """
         filters = []
         for item, value in fields.items():
-            filters.append("(%s=%s" % (item, value))
-        ldap_filter = "&(%s)" % "".join(filters)
-        self.con.search(self.base_dn, ldap_filter)
-        results = self.con.response
+            filters.append("(%s=%s)" % (item, value))
+        ldap_filter = "(&%s)" % "".join(filters)
+        LOGGER.debug("Constructed filter: '%s'", ldap_filter)
+        if generate_only:
+            return ldap_filter
+        try:
+            self.con.search(self.base_dn, ldap_filter)
+            results = self.con.response
+            if len(results) >= 1:
+                return str(results[0]['dn'])
+        except ldap3.core.exceptions.LDAPNoSuchObjectResult as exc:
+            LOGGER.debug(exc)
+            return False
+        return False
 
-        if len(results) >= 1:
-            return str(results[0]['dn'])
-        return None
+    def _get_or_create_user(self, user_data, password):
+        """Returns a Django user for the given LDAP user data.
+        If the user does not exist, then it will be created.
+        """
+        attributes = user_data.get("attributes")
+        if attributes is None:
+            LOGGER.warning("LDAP user attributes empty")
+            return None
+        # Create the user data.
+        field_map = {
+            'username': '%('+USERNAME_FIELD+')s',
+            'first_name': '%(givenName)s %(sn)s',
+            'email': '%(mail)s',
+        }
+        user_fields = {}
+        for dj_field, ldap_field in field_map.items():
+            user_fields[dj_field] = ldap_field % attributes
+
+        # Update or create the user.
+        user, created = User.objects.update_or_create(
+            defaults=user_fields,
+            username=user_fields.pop('username', "")
+        )
+        # If the user was created, set them an unusable password.
+        if created:
+            user.set_unusable_password()
+            user.save()
+            UserProfile.objects.create(
+                user=user,
+                username=attributes.get('sAMAccountName'),
+                crypt6_password=sha512_crypt.hash(password),
+                unix_username=make_username(attributes.get('sAMAccountName')))
+        # All done!
+        LOGGER.info("LDAP user lookup succeeded")
+        return user
 
     def auth_user(self, password, **filters):
         """
         Try to bind as either user_dn or mail with password.
         Returns True on success, otherwise False
         """
-        user_dn = self.lookup(**filters)
+        filters.pop('request')
+        username = filters.pop('username', '')
+        user_dn = self.lookup(**{USERNAME_FIELD: username})
+        if not user_dn:
+            return None
         # Try to bind as new user
         LOGGER.debug("Binding as '%s'", user_dn)
         try:
-            t_con = Connection(self.server, user=user_dn, password=password, raise_exceptions=True)
+            t_con = ldap3.Connection(self.server, user=user_dn,
+                                     password=password, raise_exceptions=True)
             t_con.bind()
-            return True
-        except LDAPInvalidCredentialsResult as exception:
+            if self.con.search(
+                    search_base=self.base_dn,
+                    search_filter=self.lookup(generate_only=True, **{USERNAME_FIELD: username}),
+                    search_scope=ldap3.SUBTREE,
+                    attributes=ldap3.ALL_ATTRIBUTES,
+                    get_operational_attributes=True,
+                    size_limit=1,
+                ):
+                response = self.con.response[0]
+                # If user has no email set in AD, use UPN
+                if not 'mail' in response.get('attributes'):
+                    response['attributes']['mail'] = response['attributes']['userPrincipalName']
+                return self._get_or_create_user(response, password)
+            LOGGER.warning("LDAP user lookup failed")
+            return None
+        except ldap3.core.exceptions.LDAPInvalidCredentialsResult as exception:
             LOGGER.debug("User '%s' failed to login (Wrong credentials)", user_dn)
-        except LDAPException as exception:
+        except ldap3.core.exceptions.LDAPException as exception:
             LOGGER.warning(exception)
-        return False
+        return None
 
     def is_email_used(self, mail):
         """
@@ -155,8 +218,8 @@ class LDAPConnector(object):
         """
         return self.lookup(mail=mail)
 
-    @time(statistic_key='ldap.ldap_connector.create_user')
-    def create_user(self, user, raw_password):
+    @time(statistic_key='ldap.ldap_connector.create_ldap_user')
+    def create_ldap_user(self, user, raw_password):
         """
         Creates a new LDAP User from a django user and raw_password.
         Returns True on success, otherwise False
@@ -184,7 +247,7 @@ class LDAPConnector(object):
         }
         try:
             self.con.add(user_dn, attributes=attrs)
-        except LDAPException as exception:
+        except ldap3.core.exceptions.LDAPException as exception:
             LOGGER.warning("Failed to create user ('%s'), saved to DB", exception)
             LDAPConnector.handle_ldap_error(user_dn, LDAPModification.ACTION_ADD, attrs)
         LOGGER.info("Signed up user %s", user.email)
@@ -198,7 +261,7 @@ class LDAPConnector(object):
         user_dn = self.lookup(**fields)
         try:
             self.con.modify(user_dn, diff)
-        except LDAPException as exception:
+        except ldap3.core.exceptions.LDAPException as exception:
             LOGGER.warning("Failed to modify %s ('%s'), saved to DB", user_dn, exception)
             LDAPConnector.handle_ldap_error(user_dn, LDAPModification.ACTION_MODIFY, diff)
         LOGGER.debug("modified account '%s' [%s]", user_dn, ','.join(diff.keys()))
@@ -210,7 +273,7 @@ class LDAPConnector(object):
         Returns True on success, otherwise False
         """
         diff = {
-            'userAccountControl': [(MODIFY_REPLACE, [str(66050)])],
+            'userAccountControl': [(ldap3.MODIFY_REPLACE, [str(66050)])],
         }
         return self._do_modify(diff, **fields)
 
@@ -220,7 +283,7 @@ class LDAPConnector(object):
         Returns True on success, otherwise False
         """
         diff = {
-            'userAccountControl': [(MODIFY_REPLACE, [str(66048)])],
+            'userAccountControl': [(ldap3.MODIFY_REPLACE, [str(66048)])],
         }
         return self._do_modify(diff, **fields)
 
@@ -230,7 +293,7 @@ class LDAPConnector(object):
         Returns True on success, otherwise False
         """
         diff = {
-            'unicodePwd': [(MODIFY_REPLACE, [LDAPConnector.encode_pass(new_password)])],
+            'unicodePwd': [(ldap3.MODIFY_REPLACE, [LDAPConnector.encode_pass(new_password)])],
         }
         return self._do_modify(diff, **fields)
 
@@ -241,7 +304,7 @@ class LDAPConnector(object):
         """
         user_dn = self.lookup(**fields)
         diff = {
-            'member': [(MODIFY_ADD), [user_dn]]
+            'member': [(ldap3.MODIFY_ADD), [user_dn]]
         }
         return self._do_modify(diff, user_dn=group_dn)
 
@@ -252,6 +315,6 @@ class LDAPConnector(object):
         """
         user_dn = self.lookup(**fields)
         diff = {
-            'member': [(MODIFY_DELETE), [user_dn]]
+            'member': [(ldap3.MODIFY_DELETE), [user_dn]]
         }
         return self._do_modify(diff, user_dn=group_dn)

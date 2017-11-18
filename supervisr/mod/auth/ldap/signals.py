@@ -27,7 +27,7 @@ def ldap_handle_user_sign_up(sender, signal, user, password, **kwargs):
     """
     if LDAP:
         # Returns false if user could not be created
-        if not LDAP.create_user(user, password):
+        if not LDAP.create_ldap_user(user, password):
             # Add message what happend and return
             user.delete()
             return False

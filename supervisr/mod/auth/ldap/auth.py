@@ -20,5 +20,4 @@ class LDAPBackend(ModelBackend):
 
     def authenticate(self, **kwargs):
         """Try to authenticate a user via ldap"""
-        password = kwargs.pop('password')
-        return self._ldap.auth_user(password, **kwargs)
+        return self._ldap.auth_user(**kwargs)
