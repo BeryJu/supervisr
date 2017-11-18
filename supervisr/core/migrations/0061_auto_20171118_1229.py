@@ -47,7 +47,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(migrate_profile_data),
         migrations.RemoveField(
             model_name='userprofile',
             name='user',
