@@ -2,7 +2,7 @@
 Supervisr DNS Models
 """
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 
 from supervisr.core.models import (CreatedUpdatedModel, Domain, Product,
@@ -58,7 +58,7 @@ class Comment(CreatedUpdatedModel):
     zone_id = models.ForeignKey('Zone', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=10)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     account = models.CharField(max_length=40)
     comment = models.TextField()
 

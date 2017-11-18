@@ -5,13 +5,13 @@ Supervisr Core Decorator Test
 import os
 import time
 
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.models import AnonymousUser
 from django.http import HttpResponse
 from django.test import TestCase
 
 from supervisr.core.decorators import (REAUTH_KEY, REAUTH_MARGIN, ifapp,
                                        logged_in_or_basicauth, reauth_required)
-from supervisr.core.models import Setting, get_system_user
+from supervisr.core.models import Setting, User, get_system_user
 from supervisr.core.test.utils import test_request
 from supervisr.core.utils import b64encode
 from supervisr.core.views import accounts, common
@@ -96,7 +96,7 @@ class TestDecorators(TestCase):
         user.save()
 
         headers = {
-            'HTTP_AUTHORIZATION': 'Basic %s' % b64encode(':'.join([user.username, 'temppw']))
+            'HTTP_AUTHORIZATION': 'Basic %s' % b64encode(':'.join([user.email, 'temppw']))
         }
 
         # Test already logged in

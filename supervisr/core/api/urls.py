@@ -50,4 +50,5 @@ def auto_discover():
                  version_hash[newest].namespace)
     return urlpatterns
 
+
 urlpatterns = auto_discover()

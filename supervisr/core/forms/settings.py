@@ -1,4 +1,5 @@
 """supervisr settings form"""
+from collections import OrderedDict
 
 from django import forms
 from django.utils.translation import ugettext as _
@@ -17,12 +18,13 @@ class SettingsForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(SettingsForm, self).__init__(*args, **kwargs)
-        self._validate_settings()
+        self._set_objects = self._get_setting_objs()
         self._make_widgets()
         self._apply_attrs_map()
 
-    def _validate_settings(self):
+    def _get_setting_objs(self) -> dict:
         """Make sure all settings can be found"""
+        objects = OrderedDict()
         for setting in self.settings:
             namespace = self.namespace
             key = setting
@@ -33,7 +35,8 @@ class SettingsForm(forms.Form):
             if not matching.exists():
                 raise ValueError("Setting '%s' in namespace '%s' does not exist" %
                                  (key, namespace))
-            self._set_objects['%s/%s' % (namespace, key)] = matching.first()
+            objects['%s/%s' % (namespace, key)] = matching.first()
+        return objects
 
     def _make_widgets(self):
         """Create widgets from settings"""
@@ -44,7 +47,7 @@ class SettingsForm(forms.Form):
             elif key in self.widgets:
                 self.fields[ns_key] = self.widgets[key]
             else:
-                self.fields[ns_key] = forms.CharField()
+                self.fields[ns_key] = forms.CharField(required=False)
             # Set initial from DB. This will override the Widget's setting
             if isinstance(self.fields[ns_key], forms.fields.BooleanField):
                 self.fields[ns_key].initial = setting_obj.value_bool
@@ -70,7 +73,7 @@ class SettingsForm(forms.Form):
             # check if this setting is even meant for us
             if ns_key in self.fields:
                 # Only update if needed
-                if self._set_objects[ns_key] != value:
+                if self._set_objects[ns_key].value != value:
                     self._set_objects[ns_key].value = value
                     self._set_objects[ns_key].save()
                     updated_count += 1

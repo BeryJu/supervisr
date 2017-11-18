@@ -3,11 +3,10 @@ Supervisr Core ProductView Test
 """
 import os
 
-from django.contrib.auth.models import User
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
-from supervisr.core.models import Product, get_system_user
+from supervisr.core.models import Product, User, get_system_user
 from supervisr.core.views import products
 
 

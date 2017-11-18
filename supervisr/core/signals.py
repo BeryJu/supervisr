@@ -82,10 +82,9 @@ def crypt6_handle_user_change_pass(signal, user, password, **kwargs):
     """
     Update crypt6_password
     """
-    # Also update UserProfile's crypt6_pass
-    upro = user.userprofile
-    upro.crypt6_password = sha512_crypt.hash(password)
-    upro.save()
+    # Also update user's crypt6_pass
+    user.crypt6_password = sha512_crypt.hash(password)
+    user.save()
 
 @receiver(SIG_SET_STAT)
 # pylint: disable=unused-argument

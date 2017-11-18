@@ -198,6 +198,12 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'supervisr/core.User'
+
+AUTHENTICATION_BACKENDS = [
+    'supervisr.core.auth.EmailBackend',
+]
+
 DATABASE_ROUTERS = []
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -247,6 +253,7 @@ def load_local_settings(mod):
     except ImportError as exception:
         LOGGER.info('Not loaded %s because %s', mod, exception)
         return False
+
 
 for modu in [os.environ.get('SUPERVISR_LOCAL_SETTINGS', 'supervisr.local_settings'), 'config']:
     if load_local_settings(modu):

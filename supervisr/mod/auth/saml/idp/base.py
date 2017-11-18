@@ -196,7 +196,7 @@ class Processor(object):
             {
                 'FriendlyName': 'displayName',
                 'Name': 'urn:oid:2.16.840.1.113730.3.1.241',
-                'Value': self._django_request.user.userprofile.username,
+                'Value': self._django_request.user.username,
             },
         ]
         self._assertion_xml = xml_render.get_assertion_xml(

@@ -5,12 +5,11 @@ Supervisr Puppet Forge API views
 import logging
 from wsgiref.util import FileWrapper
 
-from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import Http404, HttpResponse, JsonResponse
 from django.urls import reverse
 
-from supervisr.core.models import Setting
+from supervisr.core.models import Setting, User
 from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 
 LOGGER = logging.getLogger(__name__)

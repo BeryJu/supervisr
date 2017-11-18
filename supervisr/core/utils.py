@@ -65,7 +65,7 @@ def send_admin_mail(exception, message):
     """
     Send Email to all superusers
     """
-    from django.contrib.auth.models import User
+    from supervisr.core.models import User
     from .mailer import send_message
     emails = [x.email for x in User.objects.filter(is_superuser=True)]
     return send_message(

@@ -5,10 +5,9 @@ Supervisr Static Model Test
 import os
 import time
 
-from django.contrib.auth.models import User
 from django.test import TestCase
 
-from supervisr.core.models import get_system_user
+from supervisr.core.models import User, get_system_user
 from supervisr.static.models import FilePage
 
 

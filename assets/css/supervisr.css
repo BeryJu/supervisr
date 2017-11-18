@@ -1,5 +1,5 @@
 .nav-link img.branding {
-    min-width: initial;
+    min-width: 60px;
     padding: 0 !important;
 }
 
@@ -169,10 +169,17 @@ h1 > clr-icon {
     margin-right: 8px;
 }
 
-h2 > clr-icon {
+h2 > clr-icon,
+h3 > clr-icon {
     margin-left: 8px;
     margin-bottom: 4px;
     margin-right: 8px;
+}
+
+h3,
+h4 {
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
 }
 
 .card-header>h1,
@@ -180,7 +187,6 @@ h2 > clr-icon {
 .card-header>h3 {
     margin-top: 0;
 }
-
 
 .sidenav .nav-group > a.nav-link {
     color: #313131;

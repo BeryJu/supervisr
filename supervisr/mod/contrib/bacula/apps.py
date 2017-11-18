@@ -26,6 +26,13 @@ class SupervisrModContribBaculaConfig(SupervisrAppConfig):
             settings.DATABASES['bacula'] = {}
             for key in ['ENGINE', 'NAME', 'USER', 'PASSWORD', 'HOST']:
                 settings.DATABASES['bacula'][key] = Setting.get(key.lower())
+            # Manually set strict mode if mysql
+            if 'mysql' in settings.DATABASES['bacula']['ENGINE']:
+                settings.DATABASES['bacula']['OPTIONS'] = {
+                    'init_command': """
+                    SET sql_mode='STRICT_TRANS_TABLES';
+                    """
+                }
 
     def ensure_settings(self):
         return {

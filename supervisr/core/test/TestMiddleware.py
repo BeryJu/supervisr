@@ -5,14 +5,14 @@ Supervisr Core Middleware Test
 import os
 
 from django.contrib import messages
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
 from supervisr.core.middleware.MaintenanceMode import maintenance_mode
 from supervisr.core.middleware.PermanentMessage import permanent_message
-from supervisr.core.models import Setting, get_system_user
+from supervisr.core.models import Setting, User, get_system_user
 from supervisr.core.views import accounts, common
 
 

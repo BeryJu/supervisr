@@ -4,7 +4,7 @@ Supervisr Web Models
 
 from django.db import models
 
-from supervisr.core.models import Domain, Product, UserProfile
+from supervisr.core.models import Domain, Product
 
 
 class WebDomain(Product):
@@ -14,7 +14,6 @@ class WebDomain(Product):
 
     domain_web = models.OneToOneField(Domain, on_delete=models.CASCADE)
     root = models.TextField(default='/')
-    profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     quota = models.BigIntegerField(default=0) # domain quota in MB. 0 == unlimited
     is_php_enabled = models.BooleanField(default=True)
     custom_config = models.TextField(blank=True)
