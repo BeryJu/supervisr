@@ -8,16 +8,16 @@ import time as py_time
 
 import ldap3
 import ldap3.core.exceptions
-from django.contrib.auth.models import User
 from passlib.hash import sha512_crypt
 
-from supervisr.core.models import Setting, UserProfile, make_username
+from supervisr.core.models import Setting, User, make_username
 from supervisr.core.utils import time
-from supervisr.mod.auth.ldap.models import LDAPModification
+from supervisr.mod.auth.ldap.models import LDAPGroupMapping, LDAPModification
 
 LOGGER = logging.getLogger(__name__)
 
-USERNAME_FIELD = 'userPrincipalName'
+USERNAME_FIELD = 'sAMAccountName'
+LOGIN_FIELD = 'userPrincipalName'
 
 class LDAPConnector(object):
     """
@@ -133,7 +133,8 @@ class LDAPConnector(object):
             self.con.search(self.base_dn, ldap_filter)
             results = self.con.response
             if len(results) >= 1:
-                return str(results[0]['dn'])
+                if 'dn' in results[0]:
+                    return str(results[0]['dn'])
         except ldap3.core.exceptions.LDAPNoSuchObjectResult as exc:
             LOGGER.debug(exc)
             return False
@@ -152,6 +153,8 @@ class LDAPConnector(object):
             'username': '%('+USERNAME_FIELD+')s',
             'first_name': '%(givenName)s %(sn)s',
             'email': '%(mail)s',
+            'crypt6_password': sha512_crypt.hash(password),
+            'unix_username': make_username(attributes.get('sAMAccountName')),
         }
         user_fields = {}
         for dj_field, ldap_field in field_map.items():
@@ -162,15 +165,19 @@ class LDAPConnector(object):
             defaults=user_fields,
             username=user_fields.pop('username', "")
         )
+
+        # Update groups
+        if 'memberOf' in attributes:
+            applicable_groups = LDAPGroupMapping.objects.filter(ldap_dn__in=attributes['memberOf'])
+            for group in applicable_groups:
+                if group.group not in user.groups.all():
+                    user.groups.add(group.group)
+                    user.save()
+
         # If the user was created, set them an unusable password.
         if created:
             user.set_unusable_password()
             user.save()
-            UserProfile.objects.create(
-                user=user,
-                username=attributes.get('sAMAccountName'),
-                crypt6_password=sha512_crypt.hash(password),
-                unix_username=make_username(attributes.get('sAMAccountName')))
         # All done!
         LOGGER.info("LDAP user lookup succeeded")
         return user
@@ -181,8 +188,8 @@ class LDAPConnector(object):
         Returns True on success, otherwise False
         """
         filters.pop('request')
-        username = filters.pop('username', '')
-        user_dn = self.lookup(**{USERNAME_FIELD: username})
+        email = filters.pop('email', '')
+        user_dn = self.lookup(**{LOGIN_FIELD: email})
         if not user_dn:
             return None
         # Try to bind as new user
@@ -193,9 +200,9 @@ class LDAPConnector(object):
             t_con.bind()
             if self.con.search(
                     search_base=self.base_dn,
-                    search_filter=self.lookup(generate_only=True, **{USERNAME_FIELD: username}),
+                    search_filter=self.lookup(generate_only=True, **{LOGIN_FIELD: email}),
                     search_scope=ldap3.SUBTREE,
-                    attributes=ldap3.ALL_ATTRIBUTES,
+                    attributes=[ldap3.ALL_ATTRIBUTES, ldap3.ALL_OPERATIONAL_ATTRIBUTES],
                     get_operational_attributes=True,
                     size_limit=1,
                 ):
