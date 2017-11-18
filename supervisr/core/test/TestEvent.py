@@ -2,10 +2,9 @@
 Supervisr Core Event Test
 """
 
-from django.contrib.auth.models import User
 from django.test import TestCase
 
-from supervisr.core.models import Event
+from supervisr.core.models import Event, User
 
 
 class TestEvent(TestCase):

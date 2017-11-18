@@ -5,7 +5,6 @@ Supervisr Core User Views
 from django.contrib import messages
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
@@ -17,7 +16,7 @@ from django.views import View
 from supervisr.core.decorators import reauth_required
 from supervisr.core.forms.users import EditUserForm, FeedbackForm
 from supervisr.core.mailer import send_message
-from supervisr.core.models import Event
+from supervisr.core.models import Event, User
 
 
 @login_required
@@ -27,18 +26,18 @@ def index(req):
     """
     initial_data = {
         'name': req.user.first_name,
-        'username': req.user.userprofile.username,
+        'username': req.user.username,
         'email': req.user.email,
-        'unix_username': req.user.userprofile.unix_username,
-        'unix_userid': req.user.userprofile.unix_userid,
+        'unix_username': req.user.unix_username,
+        'unix_userid': req.user.unix_userid,
     }
     if req.method == 'POST':
         form = EditUserForm(req.POST, initial=initial_data)
         if form.is_valid():
             req.user.first_name = form.cleaned_data.get('name')
             req.user.save()
-            req.user.userprofile.username = form.cleaned_data.get('username')
-            req.user.userprofile.save()
+            req.user.username = form.cleaned_data.get('username')
+            req.user.save()
             messages.success(req, _('User updated successfully'))
     else:
         form = EditUserForm(initial=initial_data)

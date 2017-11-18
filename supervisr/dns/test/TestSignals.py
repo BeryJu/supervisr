@@ -3,10 +3,9 @@ Supervisr DNS Signal Test
 """
 from datetime import datetime
 
-from django.contrib.auth.models import User
 from django.test import TestCase
 
-from supervisr.core.models import Domain, get_system_user
+from supervisr.core.models import Domain, User, get_system_user
 from supervisr.core.test.utils import internal_provider
 from supervisr.dns.models import Record, Zone
 from supervisr.dns.utils import rec_to_rd

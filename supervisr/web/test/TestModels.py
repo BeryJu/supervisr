@@ -2,11 +2,10 @@
 Supervisr Web Model Test
 """
 
-from django.contrib.auth.models import User
 from django.test import TestCase
 
 from supervisr.core.models import (BaseCredential, Domain, ProviderInstance,
-                                   get_system_user)
+                                   User, get_system_user)
 from supervisr.web.models import WebDomain
 
 
@@ -31,8 +30,7 @@ class TestModels(TestCase):
             name='beryjuorgtesting.xyz',
             provider=self.provider)
         web_domain = WebDomain.objects.create(
-            domain_web=domain,
-            profile=User.objects.get(pk=get_system_user()).userprofile)
+            domain_web=domain)
         self.assertEqual(web_domain.domain, domain)
         web_domain.domain = domain
         web_domain.save()

@@ -7,12 +7,11 @@ import logging
 from captcha.fields import ReCaptchaField
 from django import forms
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.forms import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.forms.core import check_password
-from supervisr.core.models import Setting, UserProfile
+from supervisr.core.models import Setting, User
 from supervisr.core.signals import SIG_CHECK_USER_EXISTS
 
 LOGGER = logging.getLogger(__name__)
@@ -21,7 +20,6 @@ class LoginForm(forms.Form):
     """
     Form to handle logins
     """
-    order = ['email', 'password', 'remember', 'captcha']
     email = forms.EmailField(label=_('Mail'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     remember = forms.BooleanField(required=False, label=_('Remember'))
@@ -34,7 +32,6 @@ class SignupForm(forms.Form):
     """
     Form to handle signups
     """
-    order = ['name', 'username', 'email', 'password', 'password_rep', 'captcha', 'tos_accept']
     name = forms.CharField(label=_('Name'))
     username = forms.CharField(label=_('Username'))
     email = forms.EmailField(label=_('Email'))
@@ -51,7 +48,7 @@ class SignupForm(forms.Form):
         Check if username is used already
         """
         username = self.cleaned_data.get('username')
-        if UserProfile.objects.filter(username=username).exists():
+        if User.objects.filter(username=username).exists():
             LOGGER.warning("Username %s already exists", username)
             raise ValidationError(_("Username already exists"))
         return username
@@ -84,7 +81,6 @@ class ChangePasswordForm(forms.Form):
     """
     Form to handle password changes
     """
-    order = ['password', 'password_rep']
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
 
@@ -98,7 +94,6 @@ class PasswordResetInitForm(forms.Form):
     """
     Form to initiate password resets
     """
-    order = ['email', 'captcha']
     email = forms.EmailField(label=_('Mail'))
     captcha = ReCaptchaField(
         required=(not settings.DEBUG),
@@ -109,7 +104,6 @@ class PasswordResetFinishForm(forms.Form):
     """
     Form to finish password resets
     """
-    order = ['password', 'password_rep']
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
 
@@ -123,6 +117,5 @@ class ReauthForm(forms.Form):
     """
     Form to reauthenticate users
     """
-    order = ['email', 'password']
     email = forms.CharField(disabled=True, label=_('Email'), required=False)
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))

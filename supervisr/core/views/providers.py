@@ -27,6 +27,7 @@ def instance_index(req):
     user_providers = ProviderInstance.objects.filter(users__in=[req.user])
     return render(req, 'provider/instance-index.html', {'providers': user_providers})
 
+
 PROVIDER_TEMPLATES = {
     '0': 'provider/instance-wizard.html',
     '1': 'core/generic_wizard.html',

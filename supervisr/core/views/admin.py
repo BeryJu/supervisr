@@ -10,12 +10,11 @@ from django import get_version as django_version
 from django.conf import settings as django_settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.models import User
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
 
-from supervisr.core.models import Event, Setting, get_system_user
+from supervisr.core.models import Event, Setting, User, get_system_user
 from supervisr.core.signals import SIG_GET_MOD_INFO
 from supervisr.core.utils import get_reverse_dns
 

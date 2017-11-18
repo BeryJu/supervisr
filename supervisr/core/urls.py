@@ -111,6 +111,7 @@ def get_patterns(mount_path, module, namespace=''):
         ]
     return []
 
+
 # Load Urls for all sub apps
 for app in get_apps():
     # Get Module base path

@@ -74,8 +74,6 @@ class SettingsForm(forms.Form):
             if ns_key in self.fields:
                 # Only update if needed
                 if self._set_objects[ns_key].value != value:
-                    print(self._set_objects[ns_key].value)
-                    print(value)
                     self._set_objects[ns_key].value = value
                     self._set_objects[ns_key].save()
                     updated_count += 1

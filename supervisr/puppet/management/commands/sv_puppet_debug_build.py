@@ -5,8 +5,9 @@ Supervisr Puppet Debug Builder
 import logging
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
+
+from supervisr.core.models import User
 
 from ...builder import ReleaseBuilder
 from ...models import PuppetModule

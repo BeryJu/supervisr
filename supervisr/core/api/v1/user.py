@@ -12,11 +12,10 @@ from supervisr.core.api.utils import api_response
 @protected_resource()
 def account_me(req):
     """
-    Return oursevles as json
+    Return ourselves as json
     """
     data = {}
-    for field in ['pk', 'first_name', 'email']:
+    for field in ['pk', 'first_name', 'email', 'username']:
         data[field] = getattr(req.user, field)
-    data['username'] = req.user.userprofile.username
     data['id'] = req.user.pk
     return api_response(req, data)

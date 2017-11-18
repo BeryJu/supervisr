@@ -4,10 +4,10 @@ Supervisr Core User Test
 
 import os
 
-from django.contrib.auth.models import User
 from django.test import TestCase
 
 from supervisr.core.forms.accounts import SignupForm
+from supervisr.core.models import User
 from supervisr.core.test.utils import test_request
 from supervisr.core.views import accounts, users
 
