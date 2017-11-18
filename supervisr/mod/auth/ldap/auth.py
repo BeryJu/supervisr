@@ -14,10 +14,6 @@ class LDAPBackend(ModelBackend):
         super(LDAPBackend, self).__init__(*args, **kwargs)
         self._ldap = LDAPConnector()
 
-    # def user_can_authenticate(self, user):
-    #     """Check if user is disabled in LDAP"""
-    #     pass
-
     def authenticate(self, **kwargs):
         """Try to authenticate a user via ldap"""
         return self._ldap.auth_user(**kwargs)

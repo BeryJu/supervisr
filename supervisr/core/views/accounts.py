@@ -88,7 +88,8 @@ class LoginView(View):
         if form.is_valid():
             user = authenticate(
                 email=form.cleaned_data.get('email'),
-                password=form.cleaned_data.get('password'))
+                password=form.cleaned_data.get('password'),
+                request=request)
             if user:
                 return self.handle_login(request, user, form.cleaned_data)
             return self.handle_disabled_login(request, email=form.cleaned_data.get('email'))
@@ -457,7 +458,8 @@ def reauth(req):
         if form.is_valid():
             user = authenticate(
                 username=req.user.email,
-                password=form.cleaned_data.get('password'))
+                password=form.cleaned_data.get('password'),
+                request=req)
             if user == req.user:
                 messages.success(req, _('Successfully Re-Authenticated'))
                 req.session['supervisr_require_reauth_done'] = time.time()
