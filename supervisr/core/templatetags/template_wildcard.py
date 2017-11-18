@@ -23,7 +23,7 @@ def template_wildcard(*args):
                 prefix = os.path.abspath(os.path.join(settings.BASE_DIR, app_dir, 'templates/'))
                 path = os.path.join(prefix, tmpl_dir)
                 if os.path.isdir(path):
-                    files = glob.glob(path+'*.html')
+                    files = sorted(glob.glob(path+'*.html'))
                     for file in files:
                         templates.append(os.path.relpath(file, start=prefix))
     return templates
