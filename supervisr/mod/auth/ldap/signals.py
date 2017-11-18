@@ -31,7 +31,7 @@ def ldap_handle_user_sign_up(sender, signal, user, password, **kwargs):
             # Add message what happend and return
             user.delete()
             return False
-        LDAP.disable_user(user.email)
+        LDAP.disable_user(mail=user.email)
 
 @receiver(SIG_USER_CHANGE_PASS)
 # pylint: disable=unused-argument
@@ -49,7 +49,7 @@ def ldap_handle_user_confirm(sender, signal, user, **kwargs):
     activate LDAP user
     """
     if LDAP:
-        LDAP.enable_user(user.email)
+        LDAP.enable_user(mail=user.email)
 
 @receiver(SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
 # pylint: disable=unused-argument

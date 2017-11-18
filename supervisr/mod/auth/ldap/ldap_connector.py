@@ -11,8 +11,8 @@ from ldap3 import (MOCK_SYNC, MODIFY_ADD, MODIFY_DELETE, MODIFY_REPLACE,
 from ldap3.core.exceptions import LDAPException, LDAPInvalidCredentialsResult
 
 from supervisr.core.models import Setting
-from supervisr.core.utils import send_admin_mail, time
-from supervisr.mod.auth.ldap.errors import LDAPUserNotFound
+from supervisr.core.utils import time
+# from supervisr.mod.auth.ldap.errors import LDAPUserNotFound
 from supervisr.mod.auth.ldap.models import LDAPModification
 
 LOGGER = logging.getLogger(__name__)
@@ -60,28 +60,14 @@ class LDAPConnector(object):
 
     @staticmethod
     def cleanup_mock():
-        """
-        Cleanup mock files which are not this PID's
-        """
+        """Cleanup mock files which are not this PID's"""
         pid = os.getpid()
         json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock_%d.json' % pid)
         os.unlink(json_path)
         LOGGER.info("Cleaned up LDAP Mock from PID %d", pid)
 
-    def __del__(self):
-        """
-        Write entries to json
-        """
-        # pid = os.getpid()
-        # json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock_%d.json' % pid)
-        # if self.con.search(self.base_dn, '(objectclass=*)', attributes=ALL_ATTRIBUTES):
-        #     self.con.response_to_file(json_path, raw=True)
-        # LOGGER.info("Saved LDAP State as %s" % json_path)
-
     def apply_db(self):
-        """
-        Check if any unapplied LDAPModification's are left
-        """
+        """Check if any unapplied LDAPModification's are left"""
         to_apply = LDAPModification.objects.filter(_purgeable=False)
         for obj in to_apply:
             try:
@@ -93,10 +79,8 @@ class LDAPConnector(object):
                 # Object has been successfully applied to LDAP
                 obj.delete()
             except LDAPException as exc:
-                send_admin_mail(exc, """
-                    Failed to apply LDAPModification#%s
-                    """ % obj.ldap_moddification_id)
-        LOGGER.info("Recovered %s Modifications from DB.", len(to_apply))
+                LOGGER.error(exc)
+        LOGGER.info("Recovered %d Modifications from DB.", len(to_apply))
 
     @staticmethod
     def handle_ldap_error(object_dn, action, data):
@@ -130,33 +114,31 @@ class LDAPConnector(object):
         """
         return '"{}"'.format(password).encode('utf-16-le')
 
-    @time(statistic_key='ldap.ldap_connector.mail_to_dn')
-    def mail_to_dn(self, mail):
+    @time(statistic_key='ldap.ldap_connector.lookup')
+    def lookup(self, **fields):
         """
         Search email in LDAP and return the DN.
         Returns False if nothing was found.
         """
-        # Find out dn for user
-        ldap_filter = "(mail=%s)" % mail
+        filters = []
+        for item, value in fields.items():
+            filters.append("(%s=%s" % (item, value))
+        ldap_filter = "&(%s)" % "".join(filters)
         self.con.search(self.base_dn, ldap_filter)
         results = self.con.response
 
         if len(results) >= 1:
             return str(results[0]['dn'])
-        else:
-            raise LDAPUserNotFound("User '%s' not found" % mail)
+        return None
 
-    def auth_user(self, password, user_dn=None, mail=None):
+    def auth_user(self, password, **filters):
         """
         Try to bind as either user_dn or mail with password.
         Returns True on success, otherwise False
         """
-        if user_dn is None and mail is None:
-            return False
-        if user_dn is None:
-            user_dn = self.mail_to_dn(mail)
+        user_dn = self.lookup(**filters)
         # Try to bind as new user
-        LOGGER.debug("binding as '%s'", user_dn)
+        LOGGER.debug("Binding as '%s'", user_dn)
         try:
             t_con = Connection(self.server, user=user_dn, password=password, raise_exceptions=True)
             t_con.bind()
@@ -171,8 +153,7 @@ class LDAPConnector(object):
         """
         Checks whether an email address is already registered in LDAP
         """
-        ldap_filter = "(mail=%s)" % mail
-        return self.con.search(self.base_dn, ldap_filter)
+        return self.lookup(mail=mail)
 
     @time(statistic_key='ldap.ldap_connector.create_user')
     def create_user(self, user, raw_password):
@@ -210,24 +191,20 @@ class LDAPConnector(object):
         return self.change_password(raw_password, mail=user.email)
 
     @time(statistic_key='ldap.ldap_connector._do_modify')
-    def _do_modify(self, diff, mail=None, user_dn=None):
+    def _do_modify(self, diff, **fields):
         """
         Do the LDAP modification itself
         """
-        if mail is None and user_dn is None:
-            return False
-        if user_dn is None and mail is not None:
-            user_dn = self.mail_to_dn(mail)
-
+        user_dn = self.lookup(**fields)
         try:
             self.con.modify(user_dn, diff)
         except LDAPException as exception:
             LOGGER.warning("Failed to modify %s ('%s'), saved to DB", user_dn, exception)
             LDAPConnector.handle_ldap_error(user_dn, LDAPModification.ACTION_MODIFY, diff)
-        LOGGER.debug("moddified account '%s' [%s]", user_dn, ','.join(diff.keys()))
+        LOGGER.debug("modified account '%s' [%s]", user_dn, ','.join(diff.keys()))
         return 'result' in self.con.result and self.con.result['result'] == 0
 
-    def disable_user(self, mail=None, user_dn=None):
+    def disable_user(self, **fields):
         """
         Disables LDAP user based on mail or user_dn.
         Returns True on success, otherwise False
@@ -235,9 +212,9 @@ class LDAPConnector(object):
         diff = {
             'userAccountControl': [(MODIFY_REPLACE, [str(66050)])],
         }
-        return self._do_modify(diff, mail=mail, user_dn=user_dn)
+        return self._do_modify(diff, **fields)
 
-    def enable_user(self, mail=None, user_dn=None):
+    def enable_user(self, **fields):
         """
         Enables LDAP user based on mail or user_dn.
         Returns True on success, otherwise False
@@ -245,9 +222,9 @@ class LDAPConnector(object):
         diff = {
             'userAccountControl': [(MODIFY_REPLACE, [str(66048)])],
         }
-        return self._do_modify(diff, mail=mail, user_dn=user_dn)
+        return self._do_modify(diff, **fields)
 
-    def change_password(self, new_password, mail=None, user_dn=None):
+    def change_password(self, new_password, **fields):
         """
         Changes LDAP user's password based on mail or user_dn.
         Returns True on success, otherwise False
@@ -255,31 +232,25 @@ class LDAPConnector(object):
         diff = {
             'unicodePwd': [(MODIFY_REPLACE, [LDAPConnector.encode_pass(new_password)])],
         }
-        return self._do_modify(diff, mail=mail, user_dn=user_dn)
+        return self._do_modify(diff, **fields)
 
-    def add_to_group(self, group_dn, mail=None, user_dn=None):
+    def add_to_group(self, group_dn, **fields):
         """
         Adds mail or user_dn to group_dn
         Returns True on success, otherwise False
         """
-        if mail is None and user_dn is None:
-            return False
-        if user_dn is None and mail is not None:
-            user_dn = self.mail_to_dn(mail)
+        user_dn = self.lookup(**fields)
         diff = {
             'member': [(MODIFY_ADD), [user_dn]]
         }
         return self._do_modify(diff, user_dn=group_dn)
 
-    def remove_from_group(self, group_dn, mail=None, user_dn=None):
+    def remove_from_group(self, group_dn, **fields):
         """
         Removes mail or user_dn from group_dn
         Returns True on success, otherwise False
         """
-        if mail is None and user_dn is None:
-            return False
-        if user_dn is None and mail is not None:
-            user_dn = self.mail_to_dn(mail)
+        user_dn = self.lookup(**fields)
         diff = {
             'member': [(MODIFY_DELETE), [user_dn]]
         }

@@ -19,7 +19,9 @@ class SupervisrModAuthLDAPConfig(SupervisrAppConfig):
     def ensure_settings(self):
         return {
             'enabled': False,
+            'mode': 0,
             'server': '',
+            'server:tls': False,
             'base': '',
             'create_base': '',
             'bind:user': '',
