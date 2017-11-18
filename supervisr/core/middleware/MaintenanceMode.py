@@ -20,7 +20,7 @@ def maintenance_mode(get_response):
             key='maintenancemode',
             namespace='supervisr.core',
             defaults={'value': 'False'})[0]
-        if setting.value_bool is True:
+        if setting.value_bool is True and 'user' not in req and not req.user.is_superuser:
             return render(req, 'common/maintenance.html')
         response = get_response(req)
         return response
