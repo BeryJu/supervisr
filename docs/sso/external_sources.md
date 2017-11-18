@@ -37,3 +37,12 @@ authorization_url: https://discordapp.com/api/oauth2/authorize
 access_token_url: https://discordapp.com/api/oauth2/token
 profile_url: https://discordapp.com/api/users/@me
 ```
+
+## Google
+
+```
+name: google
+authorization_url: https://accounts.google.com/o/oauth2/auth
+access_token_url: https://accounts.google.com/o/oauth2/token
+profile_url: https://www.googleapis.com/oauth2/v1/userinfo
+```
