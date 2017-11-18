@@ -4,10 +4,9 @@ Supervisr Core Product Test
 
 import os
 
-from django.contrib.auth.models import User
 from django.test import TestCase
 
-from supervisr.core.models import Event, Product, UserProductRelationship
+from supervisr.core.models import Event, Product, User, UserProductRelationship
 from supervisr.core.signals import SIG_USER_POST_SIGN_UP
 
 

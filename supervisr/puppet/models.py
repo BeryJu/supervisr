@@ -6,7 +6,7 @@ import json
 import logging
 import tarfile
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 from pymysql.err import InternalError
 
@@ -96,7 +96,7 @@ class PuppetModule(models.Model):
     downloads = models.IntegerField(default=0)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     supported = models.BooleanField(default=False)
     source_path = models.TextField(default='', blank=True)
 

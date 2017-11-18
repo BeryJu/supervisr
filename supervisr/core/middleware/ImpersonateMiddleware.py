@@ -1,6 +1,6 @@
 """Supervisr Core Middleware to impersonate users"""
 
-from django.contrib.auth.models import User
+from supervisr.core.models import User
 
 
 def impersonate(get_response):

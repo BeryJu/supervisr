@@ -7,12 +7,11 @@ from random import uniform
 
 import requests
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.core.models import Domain, Setting
+from supervisr.core.models import Domain, Setting, User
 from supervisr.core.thread.background import catch_exceptions
 from supervisr.mod.beacon.models import Pulse, PulseModule
 

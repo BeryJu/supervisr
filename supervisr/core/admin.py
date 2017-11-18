@@ -5,6 +5,9 @@ supervisr core admin
 from django.apps import apps
 from django.contrib import admin
 from django.contrib.admin.sites import AlreadyRegistered
+from django.contrib.auth.admin import UserAdmin
+
+from supervisr.core.models import User
 
 
 def admin_autoregister(app):
@@ -18,4 +21,6 @@ def admin_autoregister(app):
         except AlreadyRegistered:
             pass
 
+
+admin.site.register(User, UserAdmin)
 admin_autoregister('supervisr/core')

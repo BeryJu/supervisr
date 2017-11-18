@@ -2,10 +2,9 @@
 Supervisr Static View Test
 """
 
-from django.contrib.auth.models import User
 from django.test import TestCase
 
-from supervisr.core.models import get_system_user
+from supervisr.core.models import User, get_system_user
 from supervisr.core.test.utils import test_request
 from supervisr.static import views
 

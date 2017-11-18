@@ -5,7 +5,7 @@ Supervisr Core test utils
 from datetime import timedelta
 from io import StringIO
 
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.backends.cached_db import SessionStore
 from django.core.management import call_command
@@ -15,7 +15,7 @@ from django.test import RequestFactory
 from django.utils import timezone
 from oauth2_provider.models import AccessToken, Application
 
-from supervisr.core.models import ProviderInstance
+from supervisr.core.models import ProviderInstance, User
 from supervisr.core.providers.internal import InternalCredential
 
 

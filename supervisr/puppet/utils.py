@@ -9,9 +9,9 @@ import shutil
 
 import requests
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.files import File
 
+from supervisr.core.models import User
 from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 
 LOGGER = logging.getLogger(__name__)

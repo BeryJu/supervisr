@@ -4,8 +4,9 @@ Supervisr Core Account Test
 
 import os
 
-from django.contrib.auth.models import User
 from django.test import TestCase
+
+from supervisr.core.models import User
 
 from ..ldap_connector import LDAPConnector
 

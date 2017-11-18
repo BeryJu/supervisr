@@ -102,5 +102,6 @@ def register_dns_internal():
     from supervisr.dns.providers.internal import InternalDNSProvider
     setattr(InternalBaseProvider, 'dns_provider', InternalDNSProvider)
 
+
 register_mail_internal()
 register_dns_internal()

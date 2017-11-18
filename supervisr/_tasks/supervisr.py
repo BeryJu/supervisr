@@ -7,7 +7,6 @@ from invoke import task
 
 try:
     import django
-    from django.db.utils import IntegrityError
 except ImportError:
     print("Django could not be imported")
 
@@ -29,11 +28,11 @@ def list_users(ctx):
     Show a list of all users
     """
     django.setup()
-    from django.contrib.auth.models import User
+    from supervisr.core.models import User
     users = User.objects.all().order_by('pk')
     LOGGER.info("Listing users...")
     for user in users:
-        LOGGER.info("id=%d username=%s", user.pk, user.username)
+        LOGGER.info("id=%d username=%s email=%s", user.pk, user.username, user.email)
 
 @task
 # pylint: disable=unused-argument
@@ -44,20 +43,13 @@ def make_superuser(ctx, uid):
     after you sign up on the webinterface as first user
     """
     django.setup()
-    from supervisr.core.models import UserProfile
-    from django.contrib.auth.models import User
+    from supervisr.core.models import User
     user = User.objects.filter(pk=uid).first()
     LOGGER.info("About to make '%s' superuser...", user.username)
     user.is_staff = True
     user.is_superuser = True
     user.is_active = True
     user.save()
-    try:
-        # UserProfile might already exist
-        # if user signed up with webinterface
-        UserProfile.objects.create(user=user)
-    except IntegrityError:
-        pass
     LOGGER.info("Done!")
 
 @task

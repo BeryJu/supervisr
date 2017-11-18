@@ -2,7 +2,7 @@
 Supervisr DNS View Test
 """
 
-# from django.contrib.auth.models import User
+# from supervisr.core.models import User
 from django.test import RequestFactory, TestCase
 
 # from django.urls import reverse

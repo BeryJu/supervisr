@@ -2,7 +2,7 @@
 Supervisr Static Models
 """
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 
 from supervisr.core.models import CastableModel, CreatedUpdatedModel, Product
@@ -16,7 +16,7 @@ class StaticPage(CreatedUpdatedModel, CastableModel):
     template = models.TextField(default='static/generic.html')
     title = models.TextField()
     slug = models.SlugField()
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     published = models.BooleanField(default=False)
     listed = models.BooleanField(default=True)
     views = models.BigIntegerField(default=0)
