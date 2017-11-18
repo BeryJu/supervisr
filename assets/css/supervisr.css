@@ -114,6 +114,10 @@ tr.selected {
     margin-bottom: -12px !important;
 }
 
+.login-group .btn-group {
+    margin-top: -6px;
+}
+
 /* fix for forms surrounding wizards */
 
 .modal-content-wrapper form,

@@ -147,9 +147,6 @@ class OAuthCallback(OAuthClientMixin, View):
     # pylint: disable=unused-argument, no-self-use
     def get_login_redirect(self, provider, user, access, new=False):
         "Return url to redirect authenticated users."
-        messages.success(self.request, _("Successfully linked %(provider)s!" % {
-            'provider': self.provider.ui_name
-            }))
         return 'common-index'
 
     # pylint: disable=unused-argument, no-self-use
@@ -183,23 +180,39 @@ class OAuthCallback(OAuthClientMixin, View):
     # pylint: disable=unused-argument
     def handle_existing_user(self, provider, user, access, info):
         "Login user and redirect."
-        login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
+        login(self.request, user)
+        messages.success(self.request, _("Successfully authenticated with %(provider)s!" % {
+            'provider': self.provider.ui_name
+            }))
         return redirect(self.get_login_redirect(provider, user, access))
 
     def handle_login_failure(self, provider, reason):
         "Message user and redirect on error."
-        LOGGER.warning('Authenication Failure: %s', reason)
-        messages.error(self.request, _('Authenication Failed.'))
+        LOGGER.warning('Authentication Failure: %s', reason)
+        messages.error(self.request, _('Authentication Failed.'))
         return redirect(self.get_error_redirect(provider, reason))
 
     def handle_new_user(self, provider, access, info):
         "Create a shell auth.User and redirect."
-        user = self.get_or_create_user(provider, access, info)
-        access.user = user
-        AccountAccess.objects.filter(pk=access.pk).update(user=user)
-        user = authenticate(provider=access.provider, identifier=access.identifier)
-        login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
-        return redirect(self.get_login_redirect(provider, user, access, True))
+        if self.request.user.is_authenticated: # pylint: disable=no-else-return
+            # there's already a user logged in, just link them up
+            user = self.request.user
+            access.user = user
+            AccountAccess.objects.filter(pk=access.pk).update(user=user)
+            messages.success(self.request, _("Successfully linked %(provider)s!" % {
+                'provider': self.provider.ui_name
+                }))
+            return redirect(reverse('supervisr/mod/auth/oauth/client:user_settings'))
+        else:
+            user = self.get_or_create_user(provider, access, info)
+            access.user = user
+            AccountAccess.objects.filter(pk=access.pk).update(user=user)
+            user = authenticate(provider=access.provider, identifier=access.identifier)
+            login(self.request, user)
+            messages.success(self.request, _("Successfully authenticated with %(provider)s!" % {
+                'provider': self.provider.ui_name
+                }))
+            return redirect(self.get_login_redirect(provider, user, access, True))
 
 @login_required
 def disconnect(req, provider):
