@@ -5,7 +5,7 @@ Supervisr mod_ldap Signals
 from django.conf import settings
 from django.dispatch import receiver
 from ldap3 import version as ldap3_version
-from ldap3.core.exceptions import LDAPException
+from ldap3.core.exceptions import LDAPCommunicationError, LDAPException
 
 from supervisr.core.signals import (SIG_CHECK_USER_EXISTS, SIG_GET_MOD_HEALTH,
                                     SIG_GET_MOD_INFO, SIG_USER_CHANGE_PASS,
@@ -25,7 +25,7 @@ def ldap_handle_user_sign_up(sender, signal, user, password, **kwargs):
     """
     Create LDAP user if LDAP is active
     """
-    if LDAP:
+    if LDAP and LDAP.create_users_enabled:
         # Returns false if user could not be created
         if not LDAP.create_ldap_user(user, password):
             # Add message what happend and return
@@ -39,7 +39,7 @@ def ldap_handle_change_pass(sender, signal, user, password, **kwargs):
     """
     Update ldap password if LDAP is enabled
     """
-    if LDAP:
+    if LDAP and LDAP.create_users_enabled:
         LDAP.change_password(password, mail=user.email)
 
 @receiver(SIG_USER_CONFIRM)
@@ -48,7 +48,7 @@ def ldap_handle_user_confirm(sender, signal, user, **kwargs):
     """
     activate LDAP user
     """
-    if LDAP:
+    if LDAP and LDAP.create_users_enabled:
         LDAP.enable_user(mail=user.email)
 
 @receiver(SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
@@ -57,7 +57,7 @@ def ldap_handle_upr_created(sender, signal, upr, **kwargs):
     """
     Handle creation of user_product_relationship, add to ldap group if needed
     """
-    if LDAP:
+    if LDAP and LDAP.create_users_enabled:
         exts = upr.product.extensions.filter(productextensionldap__isnull=False)
         if exts.exists():
             LDAP.add_to_group(
@@ -70,7 +70,7 @@ def ldap_handle_upr_deleted(sender, signal, upr, **kwargs):
     """
     Handle deletion of user_product_relationship, remove from group if needed
     """
-    if LDAP:
+    if LDAP and LDAP.create_users_enabled:
         exts = upr.product.extensions.filter(productextensionldap__isnull=False)
         if exts.exists():
             LDAP.remove_from_group(
@@ -83,9 +83,12 @@ def ldap_handle_check_user(sender, signal, email, **kwargs):
     """
     Check if user exists in LDAP
     """
-    if LDAP:
-        if LDAP.is_email_used(email) and not settings.TEST:
-            return True
+    if LDAP and LDAP.create_users_enabled:
+        try:
+            if LDAP.is_email_used(email) and not settings.TEST:
+                return True
+        except LDAPCommunicationError:
+            return False
     return False
 
 @receiver(SIG_GET_MOD_INFO)

@@ -100,6 +100,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.admindocs',
     'raven.contrib.django.raven_compat',
+
 ]
 
 VERSION_HASH = raven.fetch_git_sha(os.path.dirname(os.pardir))
@@ -155,6 +156,8 @@ MIDDLEWARE = [
     'supervisr.core.middleware.ImpersonateMiddleware.impersonate',
     'supervisr.core.middleware.MaintenanceMode.maintenance_mode',
     'supervisr.core.middleware.PermanentMessage.permanent_message',
+    'htmlmin.middleware.HtmlMinifyMiddleware',
+    'htmlmin.middleware.MarkRequestMiddleware',
 ]
 
 # Message Tag fix for bootstrap CSS Classes

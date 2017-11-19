@@ -6,9 +6,9 @@ import os
 
 from django.test import TestCase
 
-from supervisr.core.models import User
-
-from ..ldap_connector import LDAPConnector
+from supervisr.core.models import Setting, User
+from supervisr.mod.auth.ldap.forms.settings import GeneralSettingsForm
+from supervisr.mod.auth.ldap.ldap_connector import LDAPConnector
 
 
 class TestAccountLDAP(TestCase):
@@ -18,6 +18,13 @@ class TestAccountLDAP(TestCase):
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
+        Setting.set('domain', 'mock.beryju.org')
+        Setting.set('base', 'OU=customers,DC=mock,DC=beryju,DC=org')
+        Setting.set('server', 'dc1.mock.beryju.org')
+        Setting.set('server:tls', False)
+        Setting.set('mode', GeneralSettingsForm.MODE_CREATE_USERS)
+        Setting.set('bind:user', 'CN=mockadm,OU=customers,DC=mock,DC=beryju,DC=org')
+        Setting.set('bind:password', 'b3ryju0rg!')
         self.ldap = LDAPConnector(mock=True)
         self.password = 'b3ryju0rg!'
         self.user = User.objects.create_user(

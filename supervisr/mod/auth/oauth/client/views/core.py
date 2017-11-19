@@ -19,6 +19,7 @@ from django.utils.encoding import force_text, smart_bytes
 from django.utils.translation import ugettext as _
 from django.views.generic import RedirectView, View
 
+from supervisr.core.models import Event
 from supervisr.mod.auth.oauth.client.clients import get_client
 from supervisr.mod.auth.oauth.client.errors import (OAuthClientEmailMissingError,
                                                     OAuthClientError)
@@ -199,6 +200,12 @@ class OAuthCallback(OAuthClientMixin, View):
             user = self.request.user
             access.user = user
             AccountAccess.objects.filter(pk=access.pk).update(user=user)
+            Event.create(
+                user=user,
+                message=_("Linked user with OAuth Provider %s" % self.provider.ui_name),
+                request=self.request,
+                hidden=True,
+                current=False)
             messages.success(self.request, _("Successfully linked %(provider)s!" % {
                 'provider': self.provider.ui_name
                 }))
@@ -209,6 +216,12 @@ class OAuthCallback(OAuthClientMixin, View):
             AccountAccess.objects.filter(pk=access.pk).update(user=user)
             user = authenticate(provider=access.provider, identifier=access.identifier)
             login(self.request, user)
+            Event.create(
+                user=user,
+                message=_("Authenticated user with OAuth Provider %s" % self.provider.ui_name),
+                request=self.request,
+                hidden=True,
+                current=False)
             messages.success(self.request, _("Successfully authenticated with %(provider)s!" % {
                 'provider': self.provider.ui_name
                 }))

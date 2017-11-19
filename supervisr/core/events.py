@@ -75,7 +75,7 @@ def event_handler_user_login(sender, signal, user, req, **kwargs):
     """
     Event.create(
         user=user,
-        message=_("You logged in"),
+        message=_("You logged in with backend %s" % user.backend),
         request=req,
         hidden=True,
         current=False)
@@ -88,7 +88,7 @@ def event_handler_user_logout(sender, signal, user, req, **kwargs):
     """
     Event.create(
         user=user,
-        message=_("You logged in"),
+        message=_("You logged out"),
         request=req,
         hidden=True,
         current=False)

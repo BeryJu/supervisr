@@ -12,6 +12,7 @@ from passlib.hash import sha512_crypt
 
 from supervisr.core.models import Setting, User, make_username
 from supervisr.core.utils import time
+from supervisr.mod.auth.ldap.forms.settings import GeneralSettingsForm
 from supervisr.mod.auth.ldap.models import LDAPGroupMapping, LDAPModification
 
 LOGGER = logging.getLogger(__name__)
@@ -28,35 +29,47 @@ class LDAPConnector(object):
     domain = None
     base_dn = None
     mock = False
+    create_users_enabled = False
+    authbackend_enabled = False
 
     @time(statistic_key='ldap.ldap_connector.init')
-    def __init__(self, mock=False):
+    def __init__(self, mock=False, con_args=None, server_args=None):
         super(LDAPConnector, self).__init__()
         if LDAPConnector.enabled() is False:
             LOGGER.warning("LDAP not Enabled")
             return
+        mode = Setting.get('mode')
+        if mode == GeneralSettingsForm.MODE_AUTHENTICATION_BACKEND:
+            self.authbackend_enabled = True
+            self.create_users_enabled = False
+        elif mode == GeneralSettingsForm.MODE_CREATE_USERS:
+            self.authbackend_enabled = False
+            self.create_users_enabled = True
+
+        if not con_args:
+            con_args = {}
+        if not server_args:
+            server_args = {}
         # Either use mock argument or test is in argv
-        if mock is False and 'test' not in sys.argv:
-            self.domain = Setting.get('domain')
-            self.base_dn = Setting.get('base')
-            self.server = ldap3.Server(Setting.get('server'))
-            self.con = ldap3.Connection(self.server, raise_exceptions=True,
-                                        user=Setting.get('bind:user'),
-                                        password=Setting.get('bind:password'))
-            self.con.bind()
-            if Setting.get_bool('server:tls'):
-                self.con.start_tls()
-        else:
+        self.domain = Setting.get('domain')
+        self.base_dn = Setting.get('base')
+        if mock or 'test' in sys.argv:
             self.mock = True
-            self.domain = 'mock.beryju.org'
-            self.base_dn = 'OU=customers,DC=mock,DC=beryju,DC=org'
-            self.server = ldap3.Server('dc1.mock.beryju.org', get_info=ldap3.OFFLINE_AD_2012_R2)
-            self.con = ldap3.Connection(self.server, raise_exceptions=True,
-                                        user='CN=mockadm,OU=customers,DC=mock,DC=beryju,DC=org',
-                                        password='b3ryju0rg!', client_strategy=ldap3.MOCK_SYNC)
+            con_args['client_strategy'] = ldap3.MOCK_SYNC
+            server_args['get_info'] = ldap3.OFFLINE_AD_2012_R2
+
+        self.server = ldap3.Server(Setting.get('server'), **server_args)
+        self.con = ldap3.Connection(self.server, raise_exceptions=True,
+                                    user=Setting.get('bind:user'),
+                                    password=Setting.get('bind:password'), **con_args)
+
+        if self.mock:
             json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock.json')
             self.con.strategy.entries_from_json(json_path)
-            self.con.bind()
+
+        self.con.bind()
+        if Setting.get_bool('server:tls'):
+            self.con.start_tls()
         # Apply LDAPModification's from DB
         # self.apply_db()
 
@@ -137,6 +150,8 @@ class LDAPConnector(object):
                     return str(results[0]['dn'])
         except ldap3.core.exceptions.LDAPNoSuchObjectResult as exc:
             LOGGER.debug(exc)
+            return False
+        except ldap3.core.exceptions.LDAPInvalidDnError:
             return False
         return False
 
@@ -223,7 +238,9 @@ class LDAPConnector(object):
         """
         Checks whether an email address is already registered in LDAP
         """
-        return self.lookup(mail=mail)
+        if self.create_users_enabled:
+            return self.lookup(mail=mail)
+        return False
 
     @time(statistic_key='ldap.ldap_connector.create_ldap_user')
     def create_ldap_user(self, user, raw_password):
@@ -231,6 +248,8 @@ class LDAPConnector(object):
         Creates a new LDAP User from a django user and raw_password.
         Returns True on success, otherwise False
         """
+        if not self.create_users_enabled:
+            return False
         # The dn of our new entry/object
         username = 'c_' + str(user.id) + '_' + user.username
         # sAMAccountName is limited to 20 chars

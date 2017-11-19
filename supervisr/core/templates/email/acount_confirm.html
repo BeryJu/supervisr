@@ -1,22 +1,29 @@
-{% extends "core/base_email.html" %}
+{% extends "email/base.html" %}
+
+{% load supervisr_setting %}
+{% load i18n %}
 
 {% block content %}
-<p style="font-family:sans-serif;font-size:14px;font-weight:normal;margin:0;Margin-bottom:15px;">Yo waddup,</p>
-<p style="font-family:sans-serif;font-size:14px;font-weight:normal;margin:0;Margin-bottom:15px;">Confirm your email ya dingus.</p>
-<table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;box-sizing:border-box;width:100%;">
-  <tbody>
-    <tr>
-      <td align="left" style="font-family:sans-serif;font-size:14px;vertical-align:top;padding-bottom:15px;">
-        <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%;width:auto;">
-          <tbody>
-            <tr>
-              <td style="font-family:sans-serif;font-size:14px;vertical-align:top;background-color:#ffffff;border-radius:5px;text-align:center;background-color:#3498db;"> <a href="{{ url }}" target="_blank" style="text-decoration:underline;background-color:#ffffff;border:solid 1px #3498db;border-radius:5px;box-sizing:border-box;color:#3498db;cursor:pointer;display:inline-block;font-size:14px;font-weight:bold;margin:0;padding:12px 25px;text-decoration:none;text-transform:capitalize;background-color:#3498db;border-color:#3498db;color:#ffffff;">Do it now!</a> </td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<p style="font-family:sans-serif;font-size:14px;font-weight:normal;margin:0;Margin-bottom:15px;">If you didn't sign up, then you can safely ignore this email. You should sign up though.</p>
+<tr>
+  <td style="padding: 40px; font-family: sans-serif; font-size: 15px; line-height: 140%; color: #555555;">
+    <h1 style="margin: 0 0 10px 0; font-family: sans-serif; font-size: 24px; line-height: 125%; color: #333333; font-weight: normal;">{% supervisr_setting 'branding' as branding %}{% blocktrans with branding=branding %}Welcome to {{ branding }}.{% endblocktrans %}</h1>
+    <p style="margin: 0;">{% trans "supervisr aims to be a single pane of glass solution for most of your needs." %}</p>
+  </td>
+</tr>
+<tr>
+  <td style="padding: 0 40px; font-family: sans-serif; font-size: 15px; line-height: 140%; color: #555555;">
+    <!-- Button : BEGIN -->
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin: auto;">
+      <tr>
+        <td style="border-radius: 3px; background: #222222; text-align: center;" class="button-td">
+          <a href="{{ url }}" style="background: #222222; border: 15px solid #222222; font-family: sans-serif; font-size: 13px; line-height: 110%; text-align: center; text-decoration: none; display: block; border-radius: 3px; font-weight: bold;"
+            class="button-a">
+            <span style="color:#ffffff;" class="button-link">&nbsp;&nbsp;&nbsp;&nbsp;{% trans 'Confirm E-Mail' %}&nbsp;&nbsp;&nbsp;&nbsp;</span>
+          </a>
+        </td>
+      </tr>
+    </table>
+    <!-- Button : END -->
+  </td>
+</tr>
 {% endblock %}

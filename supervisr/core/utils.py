@@ -61,20 +61,6 @@ def do_404(req, message=None):
         'message': _(message) if message is not None else None
     }, status=404)
 
-def send_admin_mail(exception, message):
-    """
-    Send Email to all superusers
-    """
-    from supervisr.core.models import User
-    from .mailer import send_message
-    emails = [x.email for x in User.objects.filter(is_superuser=True)]
-    return send_message(
-        recipients=emails,
-        subject=_("Supervisr Error %(exception)s" % {
-            'exception': exception}),
-        template='email/admin_mail.html',
-        template_context={'exception': exception, 'message': message})
-
 def render_to_string(tmpl, ctx):
     """
     Render a template to string

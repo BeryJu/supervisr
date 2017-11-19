@@ -10,3 +10,4 @@ passlib
 Pillow
 schedule
 raven
+django-htmlmin
