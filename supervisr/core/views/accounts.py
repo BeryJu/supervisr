@@ -203,7 +203,6 @@ class SignupView(View):
             crypt6_password=sha512_crypt.hash(data.get('password')),
             unix_username=make_username(data.get('username'))
             )
-        new_user.save()
         new_user.is_active = False
         new_user.set_password(data.get('password'))
         new_user.save()

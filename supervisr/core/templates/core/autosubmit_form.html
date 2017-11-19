@@ -1,6 +1,7 @@
 {% extends "core/skel.html" %}
 
 {% load supervisr_title %}
+{% load i18n %}
 
 {% block title %}
 {% supervisr_title 'Redirecting...' %}
@@ -11,6 +12,7 @@
   {% for key, value in attrs.items %}
     <input type="hidden" name="{{ key }}" value="{{ value }}">
   {% endfor %}
+  <button type="submit">{% trans "Click here if your browser doesn't redirect you automatically" %}</button>
 </form>
 {% endblock %}
 

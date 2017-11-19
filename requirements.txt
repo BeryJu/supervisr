@@ -10,24 +10,26 @@ passlib
 Pillow
 schedule
 raven
-markdown
+django-htmlmin
 dnspython
 requests
-# In here you can specify pip modules that should be installed
+markdown
+requests
 django-two-factor-auth
+# In here you can specify pip modules that should be installed
 ldap3
 pyasn1<=0.3.0
-slumber
 google-api-python-client
+slumber
 pyvmomi
+psutil
 influxdb>=4.1.1
 psutil
-psutil
-django-oauth-toolkit
-django-cors-middleware
 pycrypto>=2.4
 requests_oauthlib>=0.4.2
 oauthlib>=2.0.6
+django-oauth-toolkit
+django-cors-middleware
 beautifulsoup4>=4.6.0
 lxml>=3.8.0
 signxml

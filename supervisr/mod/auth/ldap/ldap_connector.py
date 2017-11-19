@@ -12,6 +12,7 @@ from passlib.hash import sha512_crypt
 
 from supervisr.core.models import Setting, User, make_username
 from supervisr.core.utils import time
+from supervisr.mod.auth.ldap.forms.settings import GeneralSettingsForm
 from supervisr.mod.auth.ldap.models import LDAPGroupMapping, LDAPModification
 
 LOGGER = logging.getLogger(__name__)
@@ -28,6 +29,8 @@ class LDAPConnector(object):
     domain = None
     base_dn = None
     mock = False
+    create_users_enabled = False
+    authbackend_enabled = False
 
     @time(statistic_key='ldap.ldap_connector.init')
     def __init__(self, mock=False):
@@ -35,6 +38,13 @@ class LDAPConnector(object):
         if LDAPConnector.enabled() is False:
             LOGGER.warning("LDAP not Enabled")
             return
+        mode = Setting.get('mode')
+        if mode == GeneralSettingsForm.MODE_AUTHENTICATION_BACKEND:
+            self.authbackend_enabled = True
+            self.create_users_enabled = False
+        elif mode == GeneralSettingsForm.MODE_CREATE_USERS:
+            self.authbackend_enabled = False
+            self.create_users_enabled = True
         # Either use mock argument or test is in argv
         if mock is False and 'test' not in sys.argv:
             self.domain = Setting.get('domain')
@@ -223,7 +233,9 @@ class LDAPConnector(object):
         """
         Checks whether an email address is already registered in LDAP
         """
-        return self.lookup(mail=mail)
+        if self.create_users_enabled:
+            return self.lookup(mail=mail)
+        return False
 
     @time(statistic_key='ldap.ldap_connector.create_ldap_user')
     def create_ldap_user(self, user, raw_password):
@@ -231,6 +243,8 @@ class LDAPConnector(object):
         Creates a new LDAP User from a django user and raw_password.
         Returns True on success, otherwise False
         """
+        if not self.create_users_enabled:
+            return False
         # The dn of our new entry/object
         username = 'c_' + str(user.id) + '_' + user.username
         # sAMAccountName is limited to 20 chars
