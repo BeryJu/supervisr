@@ -10,7 +10,7 @@ from django.test import RequestFactory, TestCase
 
 from supervisr.core.test.utils import test_request
 from supervisr.core.utils import (do_404, get_remote_ip, get_reverse_dns,
-                                  render_to_string, send_admin_mail, uuid)
+                                  render_to_string, uuid)
 
 
 class TestUtils(TestCase):
@@ -65,14 +65,8 @@ class TestUtils(TestCase):
         req = self.factory.get('/')
         self.assertEqual(do_404(req).status_code, 404)
 
-    def test_send_admin_mail(self):
-        """
-        test send_admin_mail
-        """
-        self.assertTrue(send_admin_mail(None, 'test'), True)
-
     def test_render_to_string(self):
         """
         test render_to_string
         """
-        self.assertTrue(render_to_string('core/base_email.html', {}))
+        self.assertTrue(render_to_string('email/base.html', {}))

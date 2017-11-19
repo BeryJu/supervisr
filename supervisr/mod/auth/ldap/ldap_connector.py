@@ -33,7 +33,7 @@ class LDAPConnector(object):
     authbackend_enabled = False
 
     @time(statistic_key='ldap.ldap_connector.init')
-    def __init__(self, mock=False):
+    def __init__(self, mock=False, con_args=None, server_args=None):
         super(LDAPConnector, self).__init__()
         if LDAPConnector.enabled() is False:
             LOGGER.warning("LDAP not Enabled")
@@ -45,28 +45,31 @@ class LDAPConnector(object):
         elif mode == GeneralSettingsForm.MODE_CREATE_USERS:
             self.authbackend_enabled = False
             self.create_users_enabled = True
+
+        if not con_args:
+            con_args = {}
+        if not server_args:
+            server_args = {}
         # Either use mock argument or test is in argv
-        if mock is False and 'test' not in sys.argv:
-            self.domain = Setting.get('domain')
-            self.base_dn = Setting.get('base')
-            self.server = ldap3.Server(Setting.get('server'))
-            self.con = ldap3.Connection(self.server, raise_exceptions=True,
-                                        user=Setting.get('bind:user'),
-                                        password=Setting.get('bind:password'))
-            self.con.bind()
-            if Setting.get_bool('server:tls'):
-                self.con.start_tls()
-        else:
+        self.domain = Setting.get('domain')
+        self.base_dn = Setting.get('base')
+        if mock or 'test' in sys.argv:
             self.mock = True
-            self.domain = 'mock.beryju.org'
-            self.base_dn = 'OU=customers,DC=mock,DC=beryju,DC=org'
-            self.server = ldap3.Server('dc1.mock.beryju.org', get_info=ldap3.OFFLINE_AD_2012_R2)
-            self.con = ldap3.Connection(self.server, raise_exceptions=True,
-                                        user='CN=mockadm,OU=customers,DC=mock,DC=beryju,DC=org',
-                                        password='b3ryju0rg!', client_strategy=ldap3.MOCK_SYNC)
+            con_args['client_strategy'] = ldap3.MOCK_SYNC
+            server_args['get_info'] = ldap3.OFFLINE_AD_2012_R2
+
+        self.server = ldap3.Server(Setting.get('server'), **server_args)
+        self.con = ldap3.Connection(self.server, raise_exceptions=True,
+                                    user=Setting.get('bind:user'),
+                                    password=Setting.get('bind:password'), **con_args)
+
+        if self.mock:
             json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock.json')
             self.con.strategy.entries_from_json(json_path)
-            self.con.bind()
+
+        self.con.bind()
+        if Setting.get_bool('server:tls'):
+            self.con.start_tls()
         # Apply LDAPModification's from DB
         # self.apply_db()
 
@@ -147,6 +150,8 @@ class LDAPConnector(object):
                     return str(results[0]['dn'])
         except ldap3.core.exceptions.LDAPNoSuchObjectResult as exc:
             LOGGER.debug(exc)
+            return False
+        except ldap3.core.exceptions.LDAPInvalidDnError:
             return False
         return False
 
