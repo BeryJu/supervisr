@@ -4,7 +4,8 @@ omit =
     env/
     manage.py
     supervisr/core/wsgi.py
-    *settings.py
+    supervisr/*settings*.py
+    supervisr/_tasks/*
     */migrations/*
     */apps.py
     docs/

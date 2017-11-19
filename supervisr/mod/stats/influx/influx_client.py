@@ -11,6 +11,7 @@ from supervisr.core.models import Setting
 
 LOGGER = logging.getLogger(__name__)
 
+# pylint: disable=too-many-instance-attributes
 class InfluxClient(object):
     """
     Simple Write-only Influx CLient
@@ -23,6 +24,7 @@ class InfluxClient(object):
     database = 'supervisr'
 
     _fqdn = None
+    _install_id = ''
     _client = None
 
     def __init__(self):
@@ -35,6 +37,7 @@ class InfluxClient(object):
         self.password = Setting.get('password')
         self.database = Setting.get('database')
         self._fqdn = socket.getfqdn()
+        self._install_id = Setting.get('install_id', namespace='supervisr.core')
 
     def connect(self):
         """
@@ -56,6 +59,7 @@ class InfluxClient(object):
             tags = {}
         all_tags = {
             'host': self._fqdn,
+            'install_id': self._install_id,
             }
         all_tags.update(tags)
         try:

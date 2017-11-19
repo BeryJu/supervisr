@@ -4,7 +4,8 @@ Supervisr Core API Test
 
 from django.test import TestCase
 
-from supervisr.core.api.v1 import user as v1_user
+from supervisr.core.api.v1.accounts import AccountAPI
+from supervisr.core.api.v1.credentials import CredentialAPI
 from supervisr.core.models import User, get_system_user
 from supervisr.core.test.utils import oauth2_get_token, test_request
 
@@ -21,16 +22,20 @@ class TestAPIs(TestCase):
         self.user = User.objects.get(pk=get_system_user())
         self.token = oauth2_get_token(self.user)
 
+    def test_credentials(self):
+        """Test Credentials API"""
+        CredentialAPI()
+
     def test_json(self):
         """
         Test json request
         """
         self.assertEqual(
             test_request(
-                v1_user.account_me,
+                AccountAPI.as_view(),
                 user=self.user,
+                url_kwargs={'verb': 'me'},
                 req_kwargs={'format': 'json'},
-                headers={'HTTP_AUTHORIZATION': self.token}
                 ).status_code, 200)
 
     def test_openid(self):
@@ -39,10 +44,10 @@ class TestAPIs(TestCase):
         """
         self.assertEqual(
             test_request(
-                v1_user.account_me,
+                AccountAPI.as_view(),
                 user=self.user,
+                url_kwargs={'verb': 'me'},
                 req_kwargs={'format': 'openid'},
-                headers={'HTTP_AUTHORIZATION': self.token}
                 ).status_code, 200)
 
     def test_yaml(self):
@@ -51,10 +56,10 @@ class TestAPIs(TestCase):
         """
         self.assertEqual(
             test_request(
-                v1_user.account_me,
+                AccountAPI.as_view(),
                 user=self.user,
+                url_kwargs={'verb': 'me'},
                 req_kwargs={'format': 'yaml'},
-                headers={'HTTP_AUTHORIZATION': self.token}
                 ).status_code, 200)
 
     def test_invalid(self):
@@ -63,8 +68,15 @@ class TestAPIs(TestCase):
         """
         self.assertEqual(
             test_request(
-                v1_user.account_me,
+                AccountAPI.as_view(),
                 user=self.user,
+                url_kwargs={'verb': 'me'},
                 req_kwargs={'format': 'invalid'},
-                headers={'HTTP_AUTHORIZATION': self.token}
+                ).status_code, 200)
+        self.assertEqual(
+            test_request(
+                AccountAPI.as_view(),
+                user=self.user,
+                url_kwargs={'verb': 'invalid'},
+                req_kwargs={'format': 'invalid'},
                 ).status_code, 200)

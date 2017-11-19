@@ -192,6 +192,10 @@ h4 {
     margin-top: 0;
 }
 
+.sidenav {
+    background-color: white;
+}
+
 .sidenav .nav-group > a.nav-link {
     color: #313131;
     font-size: 14px;

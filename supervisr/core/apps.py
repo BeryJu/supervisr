@@ -168,6 +168,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
         # Set external_domain on raven
         from supervisr.core.models import Setting
         settings.RAVEN_CONFIG['tags']['external_domain'] = Setting.get('domain')
+        settings.RAVEN_CONFIG['tags']['install_id'] = Setting.get('install_id')
 
     def ensure_settings(self):
         """ensure Core settings"""

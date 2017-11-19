@@ -88,19 +88,20 @@ INSTALLED_APPS = [
     'supervisr.mail.apps.SupervisrMailConfig',
     'supervisr.static.apps.SupervisrStaticConfig',
     'supervisr.mod.beacon.apps.SupervisrModBeaconConfig',
+    'supervisr.mod.contrib.bacula.apps.SupervisrModContribBaculaConfig',
     'supervisr.mod.auth.ldap.apps.SupervisrModAuthLDAPConfig',
     'supervisr.mod.auth.saml.idp.apps.SupervisrModAuthSAMLProvider',
     'supervisr.mod.auth.oauth.provider.apps.SupervisrModAuthOAuthProviderConfig',
     'supervisr.mod.auth.oauth.client.apps.SupervisrModAuthOAuthClientConfig',
     'supervisr.mod.tfa.apps.SupervisrModTFAConfig',
-    'supervisr.mod.stats.graphite.apps.SupervisrModStatGraphiteConfig',
+    'supervisr.mod.stats.influx.apps.SupervisrModStatInfluxConfig',
     'supervisr.mod.provider.google.apps.SupervisrModProviderGoogleConfig',
+    'supervisr.mod.provider.vmware.apps.SupervisrModProviderVMwareConfig',
     'supervisr.mod.provider.onlinenet.apps.SupervisrModProviderOnlineNetConfig',
     'formtools',
     'django.contrib.admin',
     'django.contrib.admindocs',
     'raven.contrib.django.raven_compat',
-
 ]
 
 VERSION_HASH = raven.fetch_git_sha(os.path.dirname(os.pardir))
