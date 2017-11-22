@@ -23,22 +23,22 @@ class PulseAPI(ModelAPI):
         modules = data.pop('modules')
         install_id = data.get('install_id')
         pul = Pulse.objects.create(**data)
-        for mod in modules:
-            root = mod.get('module_root')
-            matching = PulseModule.objects.filter(module_root=root)
-            r_pmod = None
-            if not matching.exists():
-                r_pmod = PulseModule.objects.create(**mod)
-            else:
-                r_pmod = matching.first()
-            pul.modules.add(r_pmod)
-        for old_pmod in Pulse.objects.filter(install_id=install_id).exclude(pk=pul.pk):
-            try:
-                old_pmod.delete()
-            except IntegrityError:
-                # Ignore IntegrityError, which happen if the same install sends twice
-                # at the same time
-                pass
+        try:
+            for mod in modules:
+                root = mod.get('module_root')
+                matching = PulseModule.objects.filter(module_root=root)
+                r_pmod = None
+                if not matching.exists():
+                    r_pmod = PulseModule.objects.create(**mod)
+                else:
+                    r_pmod = matching.first()
+                pul.modules.add(r_pmod)
+            for old_pulses in Pulse.objects.filter(install_id=install_id).exclude(pk=pul.pk):
+                old_pulses.delete()
+        except IntegrityError:
+            # Ignore IntegrityError, which happen if the same install sends twice
+            # at the same time
+            pass
         return {'status': 'ok'}
 
     @staticmethod
