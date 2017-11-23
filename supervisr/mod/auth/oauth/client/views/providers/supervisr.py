@@ -49,12 +49,12 @@ class SupervisrOAuthCallback(OAuthCallback):
     def get_or_create_user(self, provider, access, info):
         user = get_user_model()
         user_data = {
-            user.USERNAME_FIELD: info['username'],
-            'email': info['email'],
-            'first_name': info['first_name'],
+            user.USERNAME_FIELD: info.get('username'),
+            'email': info.get('email', ''),
+            'first_name': info.get('first_name'),
             'password': None,
             'crypt6_password': '',  # Set password to empty to disable login
-            'unix_username': make_username(info['first_name'])
+            'unix_username': make_username(info.get('first_name'))
         }
         sv_user = user_get_or_create(user_model=user, **user_data)
         return sv_user
