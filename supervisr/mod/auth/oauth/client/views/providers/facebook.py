@@ -31,12 +31,12 @@ class FacebookOAuth2Callback(OAuthCallback):
             raise OAuthClientEmailMissingError()
         user = get_user_model()
         user_data = {
-            user.USERNAME_FIELD: info['name'],
-            'email': info['email'],
-            'first_name': info['name'],
+            user.USERNAME_FIELD: info.get('name'),
+            'email': info.get('email', ''),
+            'first_name': info.get('name'),
             'password': None,
             'crypt6_password': '',  # Set password to empty to disable login
-            'unix_username': make_username(info['name'])
+            'unix_username': make_username(info.get('name'))
         }
         fb_user = user_get_or_create(user_model=user, **user_data)
         return fb_user

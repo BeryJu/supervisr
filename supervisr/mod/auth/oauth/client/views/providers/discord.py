@@ -56,12 +56,12 @@ class DiscordOAuth2Callback(OAuthCallback):
     def get_or_create_user(self, provider, access, info):
         user = get_user_model()
         user_data = {
-            user.USERNAME_FIELD: info['username'],
-            'email': info['email'],
-            'first_name': info['username'],
+            user.USERNAME_FIELD: info.get('username'),
+            'email': info.get('email', 'None'),
+            'first_name': info.get('username'),
             'password': None,
             'crypt6_password': '',  # Set password to empty to disable login
-            'unix_username': make_username(info['username'])
+            'unix_username': make_username(info.get('username'))
         }
         discord_user = user_get_or_create(user_model=user, **user_data)
         return discord_user

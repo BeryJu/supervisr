@@ -27,12 +27,12 @@ class GoogleOAuth2Callback(OAuthCallback):
     def get_or_create_user(self, provider, access, info):
         user = get_user_model()
         user_data = {
-            user.USERNAME_FIELD: info['email'],
-            'email': info['email'],
-            'first_name': info['name'],
+            user.USERNAME_FIELD: info.get('email'),
+            'email': info.get('email', ''),
+            'first_name': info.get('name'),
             'password': None,
             'crypt6_password': '',  # Set password to empty to disable login
-            'unix_username': make_username(info['id'])
+            'unix_username': make_username(info.get('id'))
         }
         google_user = user_get_or_create(user_model=user, **user_data)
         return google_user

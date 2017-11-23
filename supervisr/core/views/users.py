@@ -21,9 +21,7 @@ from supervisr.core.models import Event, User
 
 @login_required
 def index(req):
-    """
-    Show index view User informations
-    """
+    """Show index view User information"""
     initial_data = {
         'name': req.user.first_name,
         'username': req.user.username,
@@ -35,6 +33,7 @@ def index(req):
         form = EditUserForm(req.POST, initial=initial_data)
         if form.is_valid():
             req.user.first_name = form.cleaned_data.get('name')
+            req.user.email = form.cleaned_data.get('email')
             req.user.save()
             req.user.username = form.cleaned_data.get('username')
             req.user.save()
