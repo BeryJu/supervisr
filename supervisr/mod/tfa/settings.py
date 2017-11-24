@@ -2,7 +2,7 @@
 Supervisr 2FA Settings
 """
 
-OTP_LOGIN_URL = 'tfa:tfa-verify'
+OTP_LOGIN_URL = 'supervisr/mod/tfa:tfa-verify'
 OTP_TOTP_ISSUER = 'supervisr'
 MIDDLEWARE = [
     'django_otp.middleware.OTPMiddleware',
