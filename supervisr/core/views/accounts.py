@@ -456,7 +456,7 @@ def reauth(req):
         form = ReauthForm(req.POST)
         if form.is_valid():
             user = authenticate(
-                username=req.user.email,
+                email=req.user.email,
                 password=form.cleaned_data.get('password'),
                 request=req)
             if user == req.user:
