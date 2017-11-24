@@ -22,7 +22,8 @@ from django.views.decorators.http import require_GET
 from passlib.hash import sha512_crypt
 
 from supervisr.core.decorators import anonymous_required, require_setting
-from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
+from supervisr.core.forms.accounts import (ChangePasswordForm,
+                                           EmailMissingForm, LoginForm,
                                            PasswordResetFinishForm,
                                            PasswordResetInitForm, ReauthForm,
                                            SignupForm)
@@ -476,3 +477,60 @@ def reauth(req):
         'title': _("SSO - Re-Authenticate"),
         'primary_action': _("Login"),
         })
+
+@method_decorator(anonymous_required, name='dispatch')
+class EmailMissingView(View):
+    """View to ask user for missing email"""
+
+    def render(self, request: HttpRequest, form: EmailMissingForm) -> HttpResponse:
+        """Render our template
+
+        Args:
+            request: The current request
+
+        Returns:
+            Login template
+        """
+        return render(request, 'account/login.html', {
+            'form': form,
+            'title': _("SSO - Add missing E-Mail"),
+            'primary_action': _("Add"),
+            })
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Handle Get request
+
+        Args:
+            request: The current request
+
+        Returns:
+            Login template
+        """
+        form = EmailMissingForm()
+        return self.render(request, form)
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        """Handle Post request
+
+        Args:
+            request: The current request
+
+        Returns:
+            Either a redirect to next view or login template if any errors exist
+        """
+        form = EmailMissingForm(request.POST)
+        if form.is_valid():
+            request.user.is_active = False
+            request.user.email = form.cleaned_data.get('email')
+            request.user.save()
+            # Create new AccountConfirmation UUID set
+            AccountConfirmation.objects.create(user=request.user)
+            SIG_USER_RESEND_CONFIRM.send(
+                sender=self,
+                user=request.user,
+                req=request
+            )
+            messages.success(request, _('Successfully sent confirmation E-Mail'))
+            django_logout(request)
+            return redirect(reverse('common-loign'))
+        return self.render(request, form=form)

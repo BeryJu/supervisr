@@ -34,7 +34,7 @@ class SignupForm(forms.Form):
     """
     name = forms.CharField(label=_('Name'))
     username = forms.CharField(label=_('Username'))
-    email = forms.EmailField(label=_('Email'))
+    email = forms.EmailField(label=_('E-Mail'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
     captcha = ReCaptchaField(
@@ -117,5 +117,12 @@ class ReauthForm(forms.Form):
     """
     Form to reauthenticate users
     """
-    email = forms.CharField(disabled=True, label=_('Email'), required=False)
+    email = forms.EmailField(disabled=True, label=_('E-Mail'), required=False)
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
+
+class EmailMissingForm(forms.Form):
+    """
+    Form to ask user for email address if theirs is not set
+    """
+
+    email = forms.EmailField(label=_('E-Mail'), required=True)

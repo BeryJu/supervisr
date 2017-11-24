@@ -39,6 +39,8 @@ urlpatterns = [
     url(r'^accounts/login/reauth/$', accounts.reauth, name='account-reauth'),
     url(r'^accounts/signup/$', accounts.SignupView.as_view(), name='account-signup'),
     url(r'^accounts/logout/$', accounts.logout, name='account-logout'),
+    url(r'^accounts/email_missing/$', accounts.EmailMissingView.as_view(),
+        name='accounts-email-missing'),
     url(r'^accounts/confirm/(?P<uuid>%s)/$' % UUID_REGEX, accounts.confirm, name='account-confirm'),
     url(r'^accounts/confirm/resend/(?P<email>%s)/$' % EMAIL_REGEX,
         accounts.confirmation_resend, name='account-confirmation_resend'),
