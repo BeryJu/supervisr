@@ -26,7 +26,7 @@ class TestAccount(TestCase):
         self.signup_data = {
             'name': 'Test user',
             'username': 'beryjuorg',
-            'email': 'test@test.test',
+            'email': 'unittest@supervisr.beryju.org',
             'password': 'B3ryju0rg!',
             'password_rep': 'B3ryju0rg!',
             'tos_accept': True,
@@ -34,7 +34,7 @@ class TestAccount(TestCase):
             'captcha': 'PASSED',
         }
         self.login_data = {
-            'email': 'test@test.test',
+            'email': 'unittest@supervisr.beryju.org',
             'password': 'B3ryju0rg!',
             'g-recaptcha-response': 'PASSED',
             'captcha': 'PASSED',

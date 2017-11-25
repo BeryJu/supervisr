@@ -38,6 +38,15 @@ class MailAccountGeneralForm(forms.Form):
 
         return address
 
+    def clean_is_catchall(self):
+        """Check if domain already has a catch-all set"""
+        domain = self.cleaned_data.get('domain')
+        catch_alls = MailAccount.objects.filter(domain=domain, is_catchall=True)
+        if catch_alls.exists():
+            raise forms.ValidationError("Domain '%s' already has a catch-all account." % domain)
+
+        return self.cleaned_data.get('is_catchall')
+
 class MailAccountFormCredentials(forms.Form):
     """
     Step 2 for Mail Account Creation

@@ -19,15 +19,15 @@ class RecordForm(forms.ModelForm):
 
     def clean_name(self):
         """Make sure name doesn't end with `.`"""
-        name = self.clean_content.get('name')
+        name = self.cleaned_data.get('name')
         if name[-1] == '.':
             raise ValidationError(_('Name may not end with dot.'), code='invalid')
         return name
 
     def clean_content(self):
         """Clean content based on selected type"""
-        data = self.cleaned_data['content']
-        type = self.cleaned_data['type']
+        data = self.cleaned_data.get('content')
+        type = self.cleaned_data.get('type')
         if type == 'A':
             validate_ipv4_address(data)
         elif type == 'AAAA':
