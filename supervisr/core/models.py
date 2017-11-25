@@ -163,6 +163,18 @@ class Setting(CreatedUpdatedModel):
         """
         return self.value.lower() == 'true'
 
+    @property
+    def value_int(self, default: int = 0) -> int:
+        """Return value converted to integer
+
+        Returns:
+            True if value converted to lowercase equals 'true'. Otherwise False.
+        """
+        try:
+            return int(self.value)
+        except ValueError:
+            return default
+
     def __str__(self):
         return "Setting %s/%s" % (self.namespace, self.key)
 

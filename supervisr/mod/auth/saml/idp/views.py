@@ -4,7 +4,7 @@ Supervisr SAML IDP Views
 import logging
 
 from django.contrib import auth, messages
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.core.validators import URLValidator
@@ -21,8 +21,9 @@ from OpenSSL.crypto import FILETYPE_PEM, load_certificate
 from supervisr.core.models import Event, Setting, UserProductRelationship
 from supervisr.core.utils import render_to_string
 from supervisr.core.views.common import error_response
+from supervisr.core.views.settings import GenericSettingView
 from supervisr.mod.auth.saml.idp import exceptions, registry, xml_signing
-from supervisr.mod.auth.saml.idp.forms.settings import SettingsForm
+from supervisr.mod.auth.saml.idp.forms.settings import IDPSettingsForm
 
 LOGGER = logging.getLogger(__name__)
 
@@ -202,41 +203,21 @@ def descriptor(request):
     response['Content-Disposition'] = 'attachment; filename="sv_metadata.xml'
     return response
 
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def admin_settings(request, mod):
-    """
-    Show view with metadata xml
-    """
-    metadata = descriptor(request).content
+class IDPSettingsView(GenericSettingView):
+    """IDP Settings"""
 
-    # Show the certificate fingerprint
-    sha1_fingerprint = _('<failed to parse certificate>')
-    try:
-        cert = load_certificate(FILETYPE_PEM, Setting.get('certificate'))
-        sha1_fingerprint = cert.digest("sha1")
-    except CryptoError:
-        pass
+    form = IDPSettingsForm
+    template_name = 'saml/idp/settings.html'
 
-    keys = ['issuer', 'certificate', 'private_key', 'signing']
-    initial_data = {}
-    for key in keys:
-        initial_data[key] = Setting.get(key)
-    if request.method == 'POST':
-        settings_form = SettingsForm(request.POST)
-        if settings_form.is_valid():
-            for key in keys:
-                Setting.set(key, settings_form.cleaned_data.get(key))
-            Setting.objects.update()
-            messages.success(request, _('Settings successfully updated'))
-        else:
-            messages.error(request, _('Failed to update settings'))
-        return redirect(reverse('supervisr/mod/auth/saml/idp:admin_settings', kwargs={'mod': mod}))
-    else:
-        settings_form = SettingsForm(initial=initial_data)
-    return render(request, 'saml/idp/settings.html', {
-        'metadata': escape(metadata),
-        'mod': mod,
-        'fingerprint': sha1_fingerprint,
-        'settings_form': settings_form
-        })
+    def dispatch(self, request, *args, **kwargs):
+        self.extra_data['metadata'] = escape(descriptor(request).content)
+
+        # Show the certificate fingerprint
+        sha1_fingerprint = _('<failed to parse certificate>')
+        try:
+            cert = load_certificate(FILETYPE_PEM, Setting.get('certificate'))
+            sha1_fingerprint = cert.digest("sha1")
+        except CryptoError:
+            pass
+        self.extra_data['fingerprint'] = sha1_fingerprint
+        return super(IDPSettingsView, self).dispatch(request, *args, **kwargs)

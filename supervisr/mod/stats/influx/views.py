@@ -16,7 +16,7 @@ from supervisr.mod.stats.influx.influx_client import InfluxClient
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def admin_settings(req, mod):
+def admin_settings(req):
     """
     Default view for modules without admin view
     """
@@ -40,7 +40,7 @@ def admin_settings(req, mod):
             with InfluxClient() as client:
                 client.write("test", 128)
             messages.success(req, _('Successfully Sent test message'))
-        return redirect(reverse('supervisr/mod/stats/influx:admin_settings', kwargs={'mod': mod}))
+        return redirect(reverse('supervisr/mod/stats/influx:admin_settings'))
     else:
         form = SettingsForm(initial=initial_data)
     return render(req, 'stats/influx/settings.html', {
