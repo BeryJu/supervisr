@@ -10,8 +10,10 @@ from django.db.models import Q, Sum
 from django.shortcuts import render
 from django.utils import timezone
 
+from supervisr.core.views.settings import GenericSettingView
 from supervisr.mod.contrib.bacula.decorators import check_bacula_db
-from supervisr.mod.contrib.bacula.forms.filter import JobFilterForm
+from supervisr.mod.contrib.bacula.forms.filter import (BaculaSettingsForm,
+                                                       JobFilterForm)
 from supervisr.mod.contrib.bacula.models import (Client, File, Job, Log, Media,
                                                  Pool)
 from supervisr.mod.contrib.bacula.utils import db_size, size_human
@@ -146,3 +148,9 @@ def job_file(req, jobid):
         'pages': pages,
         'job': Job.objects.get(JobId=jobid),
         })
+
+class BaculaSettings(GenericSettingView):
+    """Bacula settings"""
+
+    form = BaculaSettingsForm
+    template_name = 'mod/contrib/bacula/settings.html'

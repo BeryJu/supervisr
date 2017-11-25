@@ -95,7 +95,7 @@ class Processor(object):
             'AUTH_INSTANT': get_time_string(),
             'ISSUE_INSTANT': get_time_string(),
             'NOT_BEFORE': get_time_string(-1 * HOURS), #TODO: Make these settings.
-            'NOT_ON_OR_AFTER': get_time_string(15 * MINUTES),
+            'NOT_ON_OR_AFTER': get_time_string(int(Setting.get('assertion_valid_for')) * MINUTES),
             'SESSION_INDEX': self._session_index,
             'SESSION_NOT_ON_OR_AFTER': get_time_string(8 * HOURS),
             'SP_NAME_QUALIFIER': self._audience,

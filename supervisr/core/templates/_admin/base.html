@@ -24,7 +24,7 @@
       <ul class="nav-list">
         {% supervisr_dyn_modlist as apps %}
         {% for app in apps %}
-        <li><a href="{% url app.url app.name %}" class="nav-link {% is_active_url app.url app.name %}">{{ app.name }}</a></li>
+        <li><a href="{% url app.url %}{% if app.default %}?mod={{ app.name }}{% endif %}" class="nav-link {% if app.default %}{% if request.GET.mod == app.name %}active{% endif %}{% else %}{% is_active_url app.url %}{% endif %}">{{ app.name }}</a></li>
         {% endfor %}
       </ul>
     </section>

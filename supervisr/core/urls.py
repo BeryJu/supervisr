@@ -4,7 +4,7 @@ supervisr core urls
 import importlib
 import logging
 
-from django.conf import settings
+from django.conf import settings as django_settings
 from django.conf.urls import include, url
 from django.contrib import admin as admin_django
 from django.utils.translation import ugettext_lazy as _
@@ -15,7 +15,7 @@ from supervisr.core.regex import (DOMAIN_REGEX, EMAIL_REGEX, MOD_REGEX,
                                   UUID_REGEX)
 from supervisr.core.utils import get_apps
 from supervisr.core.views import (accounts, admin, common, domains, products,
-                                  providers, search, users)
+                                  providers, search, settings, users)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ handler500 = 'supervisr.core.views.common.uncaught_500'
 
 admin_django.site.index_title = _('Supervisr Admin')
 admin_django.site.site_title = _('supervisr')
-admin_django.site.login = RedirectView.as_view(pattern_name=settings.LOGIN_URL,
+admin_django.site.login = RedirectView.as_view(pattern_name=django_settings.LOGIN_URL,
                                                permanent=True, query_string=True)
 admin_django.site.logout = RedirectView.as_view(pattern_name='account-logout',
                                                 permanent=True, query_string=True)
@@ -35,7 +35,7 @@ urlpatterns = [
     # Account views
     url(r'^$', common.index, name='common-index'),
     url(r'^search/$', search.search, name='search'),
-    url(r'^accounts/login/$', accounts.LoginView.as_view(), name=settings.LOGIN_URL),
+    url(r'^accounts/login/$', accounts.LoginView.as_view(), name=django_settings.LOGIN_URL),
     url(r'^accounts/login/reauth/$', accounts.reauth, name='account-reauth'),
     url(r'^accounts/signup/$', accounts.SignupView.as_view(), name='account-signup'),
     url(r'^accounts/logout/$', accounts.logout, name='account-logout'),
@@ -80,14 +80,14 @@ urlpatterns = [
     # Admin views
     url(r'^admin/$', admin.index, name='admin-index'),
     url(r'^admin/users/$', admin.users, name='admin-users'),
-    url(r'^admin/settings/(?P<namespace>%s)/$' % MOD_REGEX,
-        admin.settings, name='admin-settings'),
-    url(r'^admin/mod/default/(?P<mod>%s)/$' % MOD_REGEX,
-        admin.mod_default, name='admin-mod_default'),
     url(r'^admin/info/$', admin.info, name='admin-info'),
     url(r'^admin/events/$', admin.events, name='admin-events'),
     url(r'^admin/debug/$', admin.debug, name='admin-debug'),
     url(r'^admin/products/$', products.admin_index, name='admin-product_index'),
+    # Settings
+    url(r'^admin/settings/mod/default/$', settings.mod_default, name='admin-mod_default'),
+    url(r'^admin/settings/(?P<namespace>%s)/$' % MOD_REGEX,
+        settings.settings, name='admin-settings'),
     # Include django-admin
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),
@@ -131,7 +131,7 @@ for app in get_apps():
                                 namespace)
     urlpatterns += get_patterns(r"^api/app/%s/" % mount_path, "%s.api.urls" % module_base)
 
-if settings.DEBUG or settings.TEST:
+if django_settings.DEBUG or django_settings.TEST:
     import debug_toolbar
     urlpatterns += [
         url(r'^__debug__/', include(debug_toolbar.urls)),

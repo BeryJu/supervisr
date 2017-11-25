@@ -17,7 +17,7 @@ from supervisr.mod.auth.ldap.forms.settings import (AuthenticationBackendSetting
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def admin_settings(req, mod):
+def admin_settings(req):
     """
     Default view for modules without admin view
     """
@@ -37,5 +37,5 @@ def admin_settings(req, mod):
             if form.is_valid():
                 update_count += form.save()
         messages.success(req, _('Successfully updated %d settings.' % update_count))
-        return redirect(reverse('supervisr/mod/auth/ldap:admin_settings', kwargs={'mod': mod}))
+        return redirect(reverse('supervisr/mod/auth/ldap:admin_settings'))
     return render(req, 'ldap/settings.html', render_data)

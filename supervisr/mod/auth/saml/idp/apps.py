@@ -13,7 +13,7 @@ class SupervisrModAuthSAMLProvider(SupervisrAppConfig):
     name = 'supervisr.mod.auth.saml.idp'
     label = 'supervisr/mod/auth/saml/idp'
     verbose_name = 'Supervisr mod/auth/saml/idp'
-    title_moddifier = lambda self, title, request: 'SAML2/IDP'
+    title_modifier = lambda self, title, request: 'SAML2/IDP'
     admin_url_name = 'supervisr/mod/auth/saml/idp:admin_settings'
     init_modules = [
         'processors.demo',
@@ -34,4 +34,5 @@ class SupervisrModAuthSAMLProvider(SupervisrAppConfig):
             'private_key': '',
             'signing': True,
             'autosubmit': True,
+            'assertion_valid_for': 15
         }

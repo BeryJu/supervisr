@@ -6,6 +6,7 @@ from django import template
 from django.apps import apps
 from django.core.cache import cache
 
+from supervisr.core.apps import SupervisrAppConfig
 from supervisr.core.utils import get_apps
 
 register = template.Library()
@@ -36,8 +37,10 @@ def supervisr_dyn_modlist(context):
                 mod = mod.split('.')[:-2][-1]
                 config = apps.get_app_config(mod)
             title = config.title_modifier(config.label, context.request)
+            url = apps.get_app_config(mod).admin_url_name
             view_list.append({
-                'url': apps.get_app_config(mod).admin_url_name,
+                'url': url,
+                'default': True if url == SupervisrAppConfig.admin_url_name else False,
                 'name': title,
                 })
         sorted_list = sorted(view_list, key=lambda x: x['name'])
