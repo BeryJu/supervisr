@@ -1,0 +1,44 @@
+site_name: 'supervisr docs'
+site_description: 'supervisr your IT.'
+site_author: 'BeryJu.org'
+site_url: 'https://my.beryju.org/docs/'
+
+repo_name: 'BeryJu.org/supervisr'
+repo_url: 'https://git.beryju.org/BeryJu.org/supervisr'
+
+copyright: 'Copyright &copy; 2017-2018 BeryJu.org'
+
+extra:
+  social:
+    - type: 'github'
+      link: 'https://git.beryju.org/BeryJu.org'
+    - type: 'twitter'
+      link: 'https://twitter.com/beryju'
+
+theme:
+  name: 'material'
+  logo: 'theme_images/icon_white.png'
+  favion: 'theme_images/icon.png'
+  feature:
+    tabs: true
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde

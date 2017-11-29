@@ -194,6 +194,9 @@ h4 {
 
 .sidenav {
     background-color: white;
+    max-width: 10rem;
+    min-width: 7rem;
+    width: 18%;
 }
 
 .sidenav .nav-group > a.nav-link {

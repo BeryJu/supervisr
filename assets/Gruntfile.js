@@ -10,7 +10,6 @@ module.exports = function(grunt) {
     },
     uglify: {
       options: {
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
         sourceMap: true,
       },
       supervisr: {
@@ -61,6 +60,11 @@ module.exports = function(grunt) {
       fonts: {
         files: [
           { expand: true, cwd: 'node_modules/font-awesome/fonts/', src: ['*'], dest: '../supervisr/core/static/fonts/' },
+        ]
+      },
+      image_doc: {
+        files: [
+          { expand: true, cwd: 'img', src: ['icon.png', 'icon_white.png'], dest: '../docs/img/'},
         ]
       }
     }
