@@ -1,5 +1,8 @@
 # OAuth 2
 
+!!! note
+    This requires `supervisr/mod/auth/oauth/provider`.
+
 ## OAuth 2 endpoint URLs
 
 Authorize: `https://<installation URL>/app/mod/auth/oauth/provider/authorize//`
@@ -12,15 +15,15 @@ API calls should be made with a `Authorization: Bearer` Header, which contains y
 
 For example:
 
-```
+```bash
 curl -X GET \
      -H "Authorization: Bearer your_api_token" \
-     "https://<installation URL>/api/core/v1/account/me/?type=openid"
+     "https://<installation URL>/api/core/v1/accounts/me/?format=openid"
 ```
 
 ...which would return...
 
-```
+```json
 {
     'id': 1,
     'pk': 1,
