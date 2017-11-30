@@ -79,4 +79,4 @@ class TestAPIs(TestCase):
                 user=self.user,
                 url_kwargs={'verb': 'invalid'},
                 req_kwargs={'format': 'invalid'},
-                ).status_code, 200)
+                ).status_code, 400)
