@@ -38,14 +38,14 @@ class TestManagementCommands(TestCase):
         """
         pass
 
-    def test_sv_puppet_import(self):
-        """
-        Test PuppetForge import
-        """
-        self.assertEqual(call_command_ret('sv_puppet_import', '--module', 'beryju-windows_oem'),
-                         'Done!\n')
-        self.assertEqual(call_command_ret('sv_puppet_import', '--module', 'beryju-windows_oem'),
-                         'Done!\n')
+    # def test_sv_puppet_import(self):
+    #     """
+    #     Test PuppetForge import
+    #     """
+    #     self.assertEqual(call_command_ret('sv_puppet_import', '--module', 'beryju-windows_oem'),
+    #                      'Done!\n')
+    #     self.assertEqual(call_command_ret('sv_puppet_import', '--module', 'beryju-windows_oem'),
+    #                      'Done!\n')
 
     @expectedFailure
     # pylint: disable=invalid-name, no-self-use

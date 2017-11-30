@@ -92,13 +92,8 @@ def get_app_labels():
         # Make a list of all short names for all apps
         app_cache = []
         for app in get_apps():
-            try:
-                mod_new = '/'.join(app.split('.')[:-2])
-                config = apps.get_app_config(mod_new)
-                mod = mod_new
-            except LookupError:
-                mod = app.split('.')[:-2][-1]
-                config = apps.get_app_config(mod)
+            mod = '/'.join(app.split('.')[:-2])
+            config = apps.get_app_config(mod)
             app_cache.append(config.label)
         cache.set(cache_key, app_cache, 1000)
         return app_cache
@@ -205,7 +200,7 @@ def b64decode(*args):
     """
     String wrapper around b64decode to remove binary fuckery
     """
-    return b64decode(''.join(args)).decode()
+    return base64.b64decode(''.join(args)).decode()
 
 def check_db_connection(connection_name: str = 'default') -> bool:
     """Check if a database connection can be made
@@ -217,11 +212,11 @@ def check_db_connection(connection_name: str = 'default') -> bool:
         True if connection could be made, otherwise False
     """
     from django.db import connections
-    from django.db.utils import OperationalError
-    db_conn = connections[connection_name]
+    from django.db.utils import OperationalError, ConnectionDoesNotExist
     try:
+        db_conn = connections[connection_name]
         db_conn.cursor()
-    except OperationalError:
+    except (OperationalError, ConnectionDoesNotExist):
         return False
     else:
         return True

@@ -6,7 +6,7 @@ import logging
 
 from django.core.management.base import BaseCommand
 
-from ...models import Setting
+from supervisr.core.models import Setting
 
 LOGGER = logging.getLogger(__name__)
 

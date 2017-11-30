@@ -4,6 +4,7 @@ Supervisr Core r1 Model API
 import collections
 
 from django import forms
+from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.db.models.fields import NOT_PROVIDED
 from django.http import Http404
@@ -55,7 +56,7 @@ class ModelAPI(CRUDAPI):
         This method is used to check if the user has access
         """
         if not user.is_authenticated:
-            raise Http404
+            raise PermissionDenied
         return queryset.filter(users__in=[user])
 
     def model_to_dict(self, qs):

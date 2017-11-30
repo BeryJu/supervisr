@@ -4,6 +4,7 @@ Supervisr Core Base API
 import json
 import logging
 
+from django.core.exceptions import PermissionDenied
 from django.http import Http404, QueryDict
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -28,31 +29,32 @@ class API(View):
         my_allowed = self.ALLOWED_VERBS[request.method]
         verb = kwargs['verb']
         if verb not in my_allowed:
-            return api_response(request, {'error': 'verb not allowed in HTTP VERB'})
-
-        self.init_user_filter(request.user)
+            return api_response(request, {'error': 'verb not allowed in HTTP VERB', 'code': 400})
 
         if request.method in ['PUT', 'DELETE']:
             data = QueryDict(request.body).dict()
         elif request.method == 'POST':
             data = request.POST.dict()
-            if data == {}:
-                # data was no form-encoded, so parse JSON from request body
-                data = json.loads(request.body.decode('utf-8'))
         elif request.method == 'GET':
             data = request.GET.dict()
 
+        if data == {} and request.body.decode('utf-8') != '':
+            # data was no form-encoded, so parse JSON from request body
+            data = json.loads(request.body.decode('utf-8'))
+
         handler = getattr(self, verb, None)
 
-        self.pre_handler(request, handler)
-
-        if handler:
-            try:
+        try:
+            self.init_user_filter(request.user)
+            self.pre_handler(request, handler)
+            if handler:
                 return api_response(request, handler(request, data))
-            except Http404:
-                return api_response(request, {'error': 404})
-            except KeyError as exc:
-                return api_response(request, {'error': exc.args[0]})
+        except PermissionDenied:
+            return api_response(request, {'error': 'permission denied', 'code': 403})
+        except Http404:
+            return api_response(request, {'error': 'not found', 'code': 404})
+        except KeyError as exc:
+            return api_response(request, {'error': exc.args[0], 'code': 404})
 
     # pylint: disable=unused-argument
     def pre_handler(self, handler, request):
@@ -67,5 +69,5 @@ class API(View):
         This method is used to check if the user has access
         """
         if not user.is_authenticated:
-            raise Http404
+            raise PermissionDenied
         return True
