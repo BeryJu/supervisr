@@ -14,7 +14,7 @@ def google_analytics(context):
     """
     Returns the GA Script with tracking_id inserted
     """
-    if Setting.get('analytics:ga:enabled') != 'True':
+    if not Setting.get_bool('analytics:ga:enabled'):
         # Google Analytics is not enabled
         return ''
     tracking_id = Setting.get('analytics:ga:tracking_id')

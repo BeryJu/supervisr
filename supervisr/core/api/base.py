@@ -36,11 +36,12 @@ class API(View):
             data = QueryDict(request.body).dict()
         elif request.method == 'POST':
             data = request.POST.dict()
-            if data == {}:
-                # data was no form-encoded, so parse JSON from request body
-                data = json.loads(request.body.decode('utf-8'))
         elif request.method == 'GET':
             data = request.GET.dict()
+
+        if data == {}:
+            # data was no form-encoded, so parse JSON from request body
+            data = json.loads(request.body.decode('utf-8'))
 
         handler = getattr(self, verb, None)
 
