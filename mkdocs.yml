@@ -19,8 +19,7 @@ theme:
   name: 'material'
   logo: 'theme_images/icon_white.png'
   favion: 'theme_images/icon.png'
-  feature:
-    tabs: true
+
 markdown_extensions:
   - admonition
   - codehilite
