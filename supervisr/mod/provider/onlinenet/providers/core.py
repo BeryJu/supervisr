@@ -54,7 +54,7 @@ class OnlineNetProvider(BaseProvider):
         try:
             self.api.user.info.get()
             return True
-        except HttpClientError as exc:
+        except (HttpClientError, requests.exceptions.SSLError) as exc:
             return str(exc)
 
     class Meta(ProviderMetadata):
