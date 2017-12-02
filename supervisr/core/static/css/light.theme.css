@@ -10156,6 +10156,32 @@ body.layout-home section.home-contact {
 .home-process > .row {
   margin: 0;
 }
+.apps ul {
+  background: #fff;
+  margin: 0;
+  overflow: hidden;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+}
+.apps ul li {
+  width: 33%;
+  min-width: 100px;
+  color: black;
+  padding: 18px 0;
+  text-align: center;
+}
+.apps ul li a {
+  color: black;
+  display: flex;
+  flex-direction: column;
+}
+.apps ul li a img,
+.apps ul li a clr-icon {
+  width: 64px;
+  height: 64px;
+  margin: auto;
+}
 .login-wrapper .login .login-group .success {
   background: #266900;
 }

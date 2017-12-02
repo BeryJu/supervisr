@@ -9,40 +9,6 @@
 {% supervisr_title "Overview" %}
 {% endblock %}
 
-{% block header %}
-<style>
-  .apps ul {
-    background: #fff;
-    margin: 0;
-    overflow: hidden;
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-  }
-
-  .apps ul li {
-    width: 33%;
-    min-width: 100px;
-    color: black;
-    padding: 18px 0;
-    text-align: center;
-  }
-
-  .apps ul li a {
-    color: black;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .apps ul li a img,
-  .apps ul li a clr-icon {
-    width: 64px;
-    height: 64px;
-    margin: auto;
-  }
-</style>
-{% endblock %}
-
 {% block content_area %}
 <div class="container">
   <h1><clr-icon shape="dashboard" size="48"></clr-icon>{% trans "Overview" %}</h1>
@@ -82,8 +48,10 @@
                 {% with status=instance.provider.check_status %}
                   {% if status == True %}
                     <span class="label label-success">{% trans "OK" %}</span>
+                  {% elif status == False %}
+                    <span class="label is-error">{% trans 'Error' %}</span>
                   {% else %}
-                    <span class="label is-error">{{ status }}</span>
+                    <span class="label">{{ status }}</span>
                   {% endif %}
                 {% endwith %}
               </td>
