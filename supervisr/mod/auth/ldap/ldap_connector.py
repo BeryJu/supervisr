@@ -202,6 +202,8 @@ class LDAPConnector(object):
         Try to bind as either user_dn or mail with password.
         Returns True on success, otherwise False
         """
+        if not self.authbackend_enabled:
+            return None
         filters.pop('request')
         email = filters.pop('email', '')
         user_dn = self.lookup(**{LOGIN_FIELD: email})
