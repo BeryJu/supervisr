@@ -39,6 +39,7 @@ header.header form.active {
 
 .sidenav {
     background-color: #1b2a32;
+    border-right: none;
 }
 
 .sidenav .sidenav-content > .nav-link,
@@ -54,7 +55,9 @@ header.header form.active {
     background: #eee;
 }
 
-.sidenav .nav-group > a.nav-link.active {
-    background: #d9e4ea;
+.sidenav .sidenav-content > .nav-link.active,
+.sidenav .nav-group > a.nav-link.active,
+.sidenav .nav-group .nav-list .nav-link.active {
+    background: #fafafa !important;
     color: #000;
 }

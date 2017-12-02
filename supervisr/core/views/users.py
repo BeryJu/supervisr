@@ -28,14 +28,18 @@ def index(req):
         'email': req.user.email,
         'unix_username': req.user.unix_username,
         'unix_userid': req.user.unix_userid,
+        'theme': req.user.theme,
+        'rows_per_page': req.user.rows_per_page
     }
+    print(req.user.rows_per_page)
     if req.method == 'POST':
         form = EditUserForm(req.POST, initial=initial_data)
         if form.is_valid():
             req.user.first_name = form.cleaned_data.get('name')
             req.user.email = form.cleaned_data.get('email')
-            req.user.save()
             req.user.username = form.cleaned_data.get('username')
+            req.user.theme = form.cleaned_data.get('theme')
+            req.user.rows_per_page = form.cleaned_data.get('rows_per_page')
             req.user.save()
             messages.success(req, _('User updated successfully'))
     else:

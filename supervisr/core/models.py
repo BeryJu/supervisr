@@ -127,6 +127,8 @@ class User(AbstractUser):
     unix_userid = models.IntegerField(default=get_userid)
     locale = models.CharField(max_length=5, default='en-US')
     news_subscribe = models.BooleanField(default=False)
+    theme = models.CharField(max_length=200, default='light')
+    rows_per_page = models.IntegerField(default=50)
 
 # class GroupProfile(CreatedUpdatedModel):
 #     """
