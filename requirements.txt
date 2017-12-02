@@ -1,4 +1,4 @@
-django>=1.10.0
+django
 invoke
 cherrypy<=11.0.0
 pymysql
@@ -11,6 +11,7 @@ Pillow
 schedule
 raven
 django-htmlmin
+mkdocs-material
 dnspython
 requests
 markdown
@@ -22,7 +23,6 @@ pyasn1<=0.3.0
 google-api-python-client
 slumber
 pyvmomi
-psutil
 influxdb>=4.1.1
 psutil
 pycrypto>=2.4

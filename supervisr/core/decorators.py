@@ -30,7 +30,7 @@ def anonymous_required(view_function):
         Check if request's user is authenticated and route back to index
         """
         req = args[0] if args else None
-        if req and req.user is not None and req.user.is_authenticated():
+        if req and req.user is not None and req.user.is_authenticated:
             return redirect(reverse('common-index'))
         return view_function(*args, **kwargs)
 
@@ -48,7 +48,7 @@ def reauth_required(view_function):
         """
         req = args[0] if args else None
         # Check if user is authenticated at all
-        if not req or not req.user or not req.user.is_authenticated():
+        if not req or not req.user or not req.user.is_authenticated:
             return redirect(reverse('account-login'))
 
         now = time.time()
@@ -228,7 +228,7 @@ def logged_in_or_basicauth(realm=""):
             Inner wrapper
             """
             return view_or_basicauth(func, request,
-                                     lambda u: u.is_authenticated(),
+                                     lambda u: u.is_authenticated,
                                      realm, *args, **kwargs)
         return wrapper
     return view_decorator

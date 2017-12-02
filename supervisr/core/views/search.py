@@ -26,7 +26,7 @@ def search(req):
     #     """
     #     Create a url for model
     #     """
-    #     from django.core.urlresolvers import reverse
+    #     from django.urls import reverse
     #     if getattr(model._meta, 'sv_search_url', None) is not None:
     #         # if '%' in model._meta.sv_search_url:
     #         return model._meta.sv_search_url

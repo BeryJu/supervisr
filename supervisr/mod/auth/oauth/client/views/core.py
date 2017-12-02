@@ -12,9 +12,9 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.encoding import force_text, smart_bytes
 from django.utils.translation import ugettext as _
 from django.views.generic import RedirectView, View
