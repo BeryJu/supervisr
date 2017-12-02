@@ -14,6 +14,7 @@ import uuid
 from difflib import get_close_matches
 from importlib import import_module
 
+import django.contrib.auth.models as django_auth_models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
@@ -129,6 +130,17 @@ class User(AbstractUser):
     news_subscribe = models.BooleanField(default=False)
     theme = models.CharField(max_length=200, default='light')
     rows_per_page = models.IntegerField(default=50)
+
+# pylint: disable=abstract-method
+class SVAnonymousUser(django_auth_models.AnonymousUser):
+    """Custom Anonymous User with extra attributes"""
+
+    locale = 'en-US'
+    news_subscribe = True
+    theme = 'light'
+    rows_per_page = 50
+
+django_auth_models.AnonymousUser = SVAnonymousUser
 
 # class GroupProfile(CreatedUpdatedModel):
 #     """
