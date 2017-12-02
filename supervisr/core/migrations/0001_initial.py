@@ -42,6 +42,8 @@ class Migration(migrations.Migration):
                 ('news_subscribe', models.BooleanField(default=False)),
                 ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.Group', verbose_name='groups')),
                 ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.Permission', verbose_name='user permissions')),
+                ('rows_per_page',models.IntegerField(default=50),),
+                ('theme', models.CharField(default='light', max_length=200)),
             ],
             options={
                 'verbose_name_plural': 'users',

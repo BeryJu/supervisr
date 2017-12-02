@@ -28,7 +28,7 @@ def list_records(req, zone):
     # get all records for the zone
     all_records = Record.objects.filter(domain=r_zone, users__in=[req.user]).order_by('name')
 
-    paginator = Paginator(all_records, max(int(req.GET.get('per_page', 50)), 1))
+    paginator = Paginator(all_records, req.user.rows_per_page)
 
     page = req.GET.get('page')
     try:

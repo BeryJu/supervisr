@@ -1,5 +1,17 @@
 module.exports = function(grunt) {
 
+  var theme = function (name) {
+    var files = {}
+    files['../supervisr/core/static/css/' + name + '.theme.css'] = 'less/' + name + '.theme.less';
+    return {
+      options: {
+        style: 'expanded',
+        paths: ['node_modules', '.'],
+      },
+      files: files
+    };
+  };
+
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -16,24 +28,15 @@ module.exports = function(grunt) {
         src: [
             'node_modules/clarity-icons/clarity-icons.min.js',
             'node_modules/jquery/dist/jquery.js',
+            'node_modules/tablesorter/dist/js/jquery.tablesorter.js',
             'js/*.js',
         ],
         dest: '../supervisr/core/static/js/app.min.js',
       },
     },
-    cssmin: {
-      supervisr: {
-        sourceMap: true,
-        files: [{
-          src: [
-              'node_modules/clarity-icons/clarity-icons.min.css',
-              'node_modules/clarity-ui/clarity-ui.min.css',
-              'node_modules/font-awesome/css/font-awesome.min.css',
-              'css/*.css',
-          ],
-          dest: '../supervisr/core/static/css/app.min.css',
-        }],
-      }
+    less: {
+      light: theme('light'),
+      dark: theme('dark'),
     },
     copy: {
       custom_elements: {
@@ -71,10 +74,10 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-npm-command');
   grunt.loadNpmTasks('grunt-contrib-copy');
 
-  grunt.registerTask('default', ['uglify', 'cssmin', 'copy']);
+  grunt.registerTask('default', ['uglify', 'less', 'copy']);
 
 };

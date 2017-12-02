@@ -169,3 +169,5 @@ typings/
 
 supervisr/media/
 supervisr/cache/
+
+.sass-cache

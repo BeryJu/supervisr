@@ -23,7 +23,7 @@ def index(req):
     fwd_accounts = MailAlias.objects \
         .filter(account__domain__in=domains, account__users__in=[req.user]) \
         .order_by('account__domain', 'account__address')
-    paginator = Paginator(fwd_accounts, max(int(req.GET.get('per_page', 50)), 1))
+    paginator = Paginator(fwd_accounts, req.user.rows_per_page)
 
     page = req.GET.get('page')
     try:

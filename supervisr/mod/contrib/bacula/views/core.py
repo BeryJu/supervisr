@@ -68,7 +68,7 @@ def jobs(req):
             query = query & Q(Pool=filter_form.cleaned_data.get('pool'))
 
     all_jobs = Job.objects.filter(query).order_by('-JobId')
-    paginator = Paginator(all_jobs, 50)
+    paginator = Paginator(all_jobs, req.user.rows_per_page)
 
     page = req.GET.get('page')
     try:
@@ -93,7 +93,7 @@ def volumes(req):
     Return a list of all volumes
     """
     all_volumes = Media.objects.all().order_by('-MediaId')
-    paginator = Paginator(all_volumes, 50)
+    paginator = Paginator(all_volumes, req.user.rows_per_page)
 
     page = req.GET.get('page')
     try:
@@ -131,7 +131,7 @@ def job_file(req, jobid):
     Return files for jobid
     """
     files = File.objects.filter(JobId=jobid).order_by('-PathId__Path')
-    paginator = Paginator(files, 50)
+    paginator = Paginator(files, req.user.rows_per_page)
 
     page = req.GET.get('page')
     try:
