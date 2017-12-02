@@ -25,7 +25,7 @@ def index(req):
     all_domains = Domain.objects.filter(users__in=[req.user])
     dns_domains = Zone.objects.filter(domain__in=all_domains).order_by('domain__domain')
 
-    paginator = Paginator(dns_domains, max(int(req.GET.get('per_page', 50)), 1))
+    paginator = Paginator(dns_domains, req.user.rows_per_page)
 
     page = req.GET.get('page')
     try:

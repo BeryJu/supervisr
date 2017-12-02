@@ -53,7 +53,7 @@ def events(req):
     """
     event_list = Event.objects.filter(
         user=req.user, hidden=False).order_by('-create_date')
-    paginator = Paginator(event_list, 25)
+    paginator = Paginator(event_list, req.user.rows_per_page)
 
     page = req.GET.get('page')
     try:

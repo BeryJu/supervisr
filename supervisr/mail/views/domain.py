@@ -32,7 +32,7 @@ def view(req, domain):
         .filter(domain=r_domain, users__in=[req.user]) \
         .order_by('address')
 
-    acc_paginator = Paginator(acc_accounts, max(int(req.GET.get('per_page', 50)), 1))
+    acc_paginator = Paginator(acc_accounts, req.user.rows_per_page)
     page = req.GET.get('accountPage')
     try:
         accounts = acc_paginator.page(page)
@@ -44,7 +44,7 @@ def view(req, domain):
     fwd_accounts = MailAlias.objects \
         .filter(account__domain=r_domain, account__users__in=[req.user]) \
         .order_by('account__domain', 'account__address')
-    ali_paginator = Paginator(fwd_accounts, max(int(req.GET.get('per_page', 50)), 1))
+    ali_paginator = Paginator(fwd_accounts, req.user.rows_per_page)
 
     page = req.GET.get('aliasPage')
     try:

@@ -32,7 +32,7 @@ def index(req):
         .filter(domain__in=domains, users__in=[req.user]) \
         .order_by('domain', 'address')
 
-    paginator = Paginator(acc_accounts, max(int(req.GET.get('per_page', 50)), 1))
+    paginator = Paginator(acc_accounts, req.user.rows_per_page)
 
     page = req.GET.get('page')
     try:

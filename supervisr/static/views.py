@@ -43,7 +43,7 @@ def feed(req):
         query = Q(published=True) & Q(listed=True)
     all_pages = StaticPage.objects.filter(query)
     all_pages = all_pages.order_by('-created')
-    paginator = Paginator(all_pages, 25) # Show 25 entries per page
+    paginator = Paginator(all_pages, req.user.rows_per_page)
 
     page = req.GET.get('page')
     try:
