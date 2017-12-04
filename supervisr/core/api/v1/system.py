@@ -16,6 +16,13 @@ class SystemAPI(API):
         'GET': ['health']
     }
 
+    @staticmethod
+    def init_user_filter(user):
+        """
+        This method is used to check if the user has access
+        """
+        return True
+
     def _cache_status(self):
         """Check cache status by setting and getting a value"""
         cache.set('djangohealtcheck_test', 'itworks', 1)
