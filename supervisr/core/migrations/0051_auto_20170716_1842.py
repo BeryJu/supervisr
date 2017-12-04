@@ -7,6 +7,8 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
+    atomic = False
+
     dependencies = [
         ('supervisr/core', '0050_auto_20170707_1121'),
     ]

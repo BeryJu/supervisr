@@ -101,6 +101,11 @@ def get_patterns(mount_path, module, namespace=''):
     """Check if module exists and return an array with urlpatterns"""
     # Check every part of the module chain
     mod_parts = module.split('.')
+    # Walk through module to check existence
+    # i.e.
+    # check supervisr
+    # check supervisr.core
+    # check supervisr.core.url
     for _count in range(len(mod_parts) - 1, 0, -1):
         path = '.'.join(mod_parts[:-_count])
         if not importlib.util.find_spec(path):
@@ -109,10 +114,9 @@ def get_patterns(mount_path, module, namespace=''):
     if importlib.util.find_spec(module) is not None:
         LOGGER.info("Loaded %s (namespace=%s)", module, namespace)
         return [
-            url(mount_path, include(module, namespace=namespace)),
+            url(mount_path, include((module, namespace), namespace=namespace)),
         ]
     return []
-
 
 # Load Urls for all sub apps
 for app in get_apps():

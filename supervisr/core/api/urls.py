@@ -36,12 +36,14 @@ def auto_discover():
         importlib.import_module(module_path)
         version_name = module_path.split('.')[-2] # get the second last module name (version)
         namespace = '/'.join(module_path.split('.')[:-1])
-        urlpatterns.append(url('%s/' % version_name, include(module_path, namespace=namespace)))
+        urlpatterns.append(url('%s/' % version_name, include((module_path, namespace),
+                                                             namespace=namespace)))
         # get numerical api version to determine default
         version = int(version_name.replace('v', ''))
         # append to version_hash
         default_namespace = namespace.replace(version_name, 'default')
-        version_hash[version] = url('', include(module_path, namespace=default_namespace))
+        version_hash[version] = url('', include((module_path, default_namespace),
+                                                namespace=default_namespace))
         LOGGER.debug("Found API module '%s' (namespace=%s)", version_name, namespace)
     # set default to highest version
     newest = max(version_hash, key=int)

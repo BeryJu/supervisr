@@ -6,11 +6,11 @@ import logging
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
 from django.core.validators import URLValidator
 from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
                          HttpResponseRedirect)
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.html import escape
 from django.utils.translation import ugettext as _

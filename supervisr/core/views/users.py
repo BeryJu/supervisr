@@ -31,7 +31,6 @@ def index(req):
         'theme': req.user.theme,
         'rows_per_page': req.user.rows_per_page
     }
-    print(req.user.rows_per_page)
     if req.method == 'POST':
         form = EditUserForm(req.POST, initial=initial_data)
         if form.is_valid():

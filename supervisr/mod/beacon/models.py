@@ -35,7 +35,7 @@ class PulseModuleVersion(models.Model):
     """Store different versions of modules"""
 
     pulse_module_version_id = models.AutoField(primary_key=True)
-    pulse_module = models.ForeignKey('PulseModule')
+    pulse_module = models.ForeignKey('PulseModule', on_delete=models.CASCADE)
     version = models.TextField()
 
     def __str__(self):

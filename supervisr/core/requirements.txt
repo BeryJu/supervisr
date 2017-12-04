@@ -1,4 +1,4 @@
-django>=1.10.0
+django<2.0
 invoke
 cherrypy<=11.0.0
 pymysql

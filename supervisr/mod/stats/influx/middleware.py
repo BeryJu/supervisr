@@ -5,7 +5,7 @@ Supervisr Core Middleware to detect Maintenance Mode
 import time
 
 from django.contrib import messages
-from django.core.urlresolvers import resolve
+from django.urls import resolve
 from django.utils.translation import ugettext_lazy as _
 from influxdb.exceptions import InfluxDBClientError, InfluxDBServerError
 from requests.exceptions import ConnectionError as reqConnectionError
