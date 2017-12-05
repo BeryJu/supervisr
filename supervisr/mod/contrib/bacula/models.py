@@ -190,7 +190,7 @@ class Job(models.Model):
             'E': 'warning-standard',
             'f': 'error-standard',
             'A': 'info-standard',
-            'I': 'terminal'
+            'I': 'terminal',
             'F': 'clock',
             'S': 'clock',
             'm': 'clock',
