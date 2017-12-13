@@ -165,10 +165,23 @@ class SupervisrCoreConfig(SupervisrAppConfig):
         super(SupervisrCoreConfig, self).ready()
         self.clear_cache()
         BackgroundThread().start()
+        # Check for invalid settings
+        self.cleanup_settings()
         # Set external_domain on raven
         from supervisr.core.models import Setting
         settings.RAVEN_CONFIG['tags']['external_domain'] = Setting.get('domain')
         settings.RAVEN_CONFIG['tags']['install_id'] = Setting.get('install_id')
+
+    def cleanup_settings(self):
+        """Cleanup settings without namespace or key"""
+        try:
+            from supervisr.core.models import Setting
+            for setting in Setting.objects.all():
+                if setting.namespace == '' or \
+                    setting.key == '':
+                    setting.delete()
+        except (OperationalError, ProgrammingError):
+            pass
 
     def ensure_settings(self):
         """ensure Core settings"""
