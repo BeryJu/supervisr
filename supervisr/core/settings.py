@@ -147,6 +147,7 @@ CACHES = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -234,7 +235,7 @@ STATICFILES_FINDERS = (
 EMAIL_FROM = 'Supervisr <supervisr@localhost>'
 
 LOG_LEVEL_FILE = 'DEBUG'
-LOG_LEVEL_CONSOLE = 'DEBUG'
+LOG_LEVEL_CONSOLE = 'INFO'
 LOG_FILE = '/dev/null'
 
 LOG_SYSLOG_HOST = '127.0.0.1'

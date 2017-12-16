@@ -511,6 +511,11 @@ class Event(CreatedUpdatedModel):
         return reverse(self.action_view, kwargs=self.action_parmas)
 
     @property
+    def create_timestamp(self):
+        """Get create date as timestmap"""
+        return self.create_date.timestamp()
+
+    @property
     def get_localized_age(self):
         """
         Return age as a localized String

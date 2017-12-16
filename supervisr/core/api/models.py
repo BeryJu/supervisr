@@ -63,15 +63,16 @@ class ModelAPI(CRUDAPI):
         """
         Convert queryset to dict
         """
-        final_dict = {}
+        final_arr = []
         for m_inst in qs:
-            final_dict[m_inst.pk] = {}
+            inst_dict = {'pk': m_inst.pk}
             for field in self.viewable_fields:
                 data = getattr(m_inst, field, None)
                 if isinstance(data, models.Model):
                     data = data.pk
-                final_dict[m_inst.pk][field] = data
-        return final_dict
+                inst_dict[field] = data
+            final_arr.append(inst_dict)
+        return final_arr
 
     @staticmethod
     def sanitize_data(data, keyset):
@@ -204,7 +205,7 @@ class ProductAPI(ModelAPI):
         Create instance based on request data
         """
         orig = super(ProductAPI, self).create(request, data)
-        prod = list(orig.values())[0]
+        prod = orig[0]
         UserProductRelationship.objects.create(
             product=prod,
             user=request.user)
