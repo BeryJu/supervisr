@@ -72,7 +72,7 @@ class TestAPIs(TestCase):
                 user=self.user,
                 url_kwargs={'verb': 'me'},
                 req_kwargs={'format': 'invalid'},
-                ).status_code, 200)
+                ).status_code, 400)
         self.assertEqual(
             test_request(
                 AccountAPI.as_view(),

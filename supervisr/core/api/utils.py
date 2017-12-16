@@ -19,10 +19,10 @@ def api_response(req, data):
     if not isinstance(data, dict) or 'data' not in data:
         data = {'data': data}
     code = data.get('code', 200)
-    handler = _globals[handler_name] if handler_name in _globals else None
+    handler = _globals.get(handler_name, None)
     if handler is not None:
         return handler(data=data, code=code)
-    return JsonResponse({'error': "type '%s' not found" % selected_format, 'code': 400})
+    return JsonResponse({'error': "type '%s' not found" % selected_format, 'code': 400}, status=400)
 
 def api_response_openid(code, data):
     """This method only renames some keys for OpenID, then uses JSON"""
