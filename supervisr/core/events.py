@@ -2,16 +2,17 @@
 Supervisr Core Events
 """
 
+from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
-from .mailer import send_message
-from .models import Event
-from .signals import (SIG_USER_LOGIN, SIG_USER_LOGOUT,
-                      SIG_USER_POST_CHANGE_PASS, SIG_USER_POST_SIGN_UP,
-                      SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
-                      SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
+from supervisr.core.mailer import send_message
+from supervisr.core.models import Event
+from supervisr.core.signals import (SIG_USER_POST_CHANGE_PASS,
+                                    SIG_USER_POST_SIGN_UP,
+                                    SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
+                                    SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
 
 
 @receiver(SIG_USER_POST_SIGN_UP)
@@ -67,29 +68,29 @@ def event_handle_upr_deleted(sender, signal, upr, **kwargs):
             }),
         current=True)
 
-@receiver(SIG_USER_LOGIN)
+@receiver(user_logged_in)
 # pylint: disable=unused-argument
-def event_handler_user_login(sender, signal, user, req, **kwargs):
+def event_handler_user_login(sender, signal, user, request, **kwargs):
     """
     Create a hidden event when a user logs in
     """
     Event.create(
         user=user,
         message=_("You logged in with backend %s" % user.backend),
-        request=req,
+        request=request,
         hidden=True,
         current=False)
 
-@receiver(SIG_USER_LOGOUT)
+@receiver(user_logged_out)
 # pylint: disable=unused-argument
-def event_handler_user_logout(sender, signal, user, req, **kwargs):
+def event_handler_user_logout(sender, signal, user, request, **kwargs):
     """
     Create a hidden event when a user logs out
     """
     Event.create(
         user=user,
         message=_("You logged out"),
-        request=req,
+        request=request,
         hidden=True,
         current=False)
 

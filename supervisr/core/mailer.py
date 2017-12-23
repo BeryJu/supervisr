@@ -52,12 +52,12 @@ def send_message(recipients, subject, **kwargs):
         # Actually send the mail
         sent = send_mail(subject, django_text, django_from, \
             recipients, **django_kwargs)
-        LOGGER.info("Sent '%s' email to %s: %s", subject, recipients, sent)
+        LOGGER.debug("Sent '%s' email to %s: %s", subject, recipients, sent)
         return sent == 1 # send_mail returns either 0 or 1
     except (ConnectionRefusedError, gaierror) as exc:
         # Always return true when debugging
         if settings.DEBUG:
-            LOGGER.info("Failed to send email %s", str(exc))
+            LOGGER.warning("Failed to send email %s", str(exc))
             return True
         else:
             raise

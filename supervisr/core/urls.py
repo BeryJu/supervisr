@@ -112,7 +112,7 @@ def get_patterns(mount_path, module, namespace=None):
             LOGGER.debug("Didn't find module '%s', not importing URLs from it.", path)
             return []
     if importlib.util.find_spec(module) is not None:
-        LOGGER.info("Loaded %s (namespace=%s)", module, namespace)
+        LOGGER.debug("Loaded %s (namespace=%s)", module, namespace)
         return [
             url(mount_path, include((module, namespace), namespace=namespace)),
         ]

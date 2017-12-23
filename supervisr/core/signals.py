@@ -38,8 +38,6 @@ SIG_USER_POST_CHANGE_PASS = RobustSignal(providing_args=['user', 'req', 'was_res
 SIG_USER_PASS_RESET_INIT = RobustSignal(providing_args=['user'])
 SIG_USER_PASS_RESET_FIN = RobustSignal(providing_args=['user'])
 SIG_USER_CONFIRM = RobustSignal(providing_args=['user', 'req'])
-SIG_USER_LOGIN = RobustSignal(providing_args=['user, req'])
-SIG_USER_LOGOUT = RobustSignal(providing_args=['user, req'])
 SIG_USER_RESEND_CONFIRM = RobustSignal(providing_args=['user', 'req'])
 
 SIG_DOMAIN_CREATED = RobustSignal(providing_args=['domain'])
@@ -72,7 +70,7 @@ def core_handle_post_migrate(sender, *args, **kwargs):
     Trigger SIG_DO_SETUP
     """
     if isinstance(sender, SupervisrAppConfig):
-        LOGGER.info("Running Post-Migrate for '%s'...", sender.name)
+        LOGGER.debug("Running Post-Migrate for '%s'...", sender.name)
         sender.run_ensure_settings()
         SIG_DO_SETUP.send(sender.name)
 
@@ -92,7 +90,7 @@ def stat_output_verbose(signal, key, value, **kwargs):
     """
     Output stats to LOGGER
     """
-    LOGGER.info("Stats: '%s': '%s'", key, value)
+    LOGGER.debug("Stats: '%s': '%s'", key, value)
 
 @receiver(post_save)
 # pylint: disable=unused-argument

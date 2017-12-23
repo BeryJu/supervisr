@@ -1,7 +1,11 @@
 """supervisr core emailbackend"""
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
+from django.core.exceptions import ValidationError
+
+from supervisr.core.models import SVAnonymousUser
 
 
 class EmailBackend(ModelBackend):
@@ -15,5 +19,28 @@ class EmailBackend(ModelBackend):
             return None
         else:
             if user.check_password(password) and self.user_can_authenticate(user):
+                return user
+        return None
+
+class APIKeyBackend(ModelBackend):
+    """Authenticate user by API Key"""
+
+    def authenticate(self, request, **creds):
+        user_model = get_user_model()
+        try:
+            key = SVAnonymousUser.api_key
+            if settings.API_KEY_PARAM in request.GET:
+                key = request.GET.get(settings.API_KEY_PARAM)
+            elif settings.API_KEY_PARAM in request.POST:
+                key = request.POST.get(settings.API_KEY_PARAM)
+            elif settings.API_KEY_PARAM in request.META:
+                key = request.META.get(settings.API_KEY_PARAM)
+            user = user_model.objects.get(api_key=key)
+        except user_model.DoesNotExist:
+            return None
+        except ValidationError:
+            return None
+        else:
+            if self.user_can_authenticate(user):
                 return user
         return None

@@ -73,6 +73,7 @@ def info(req):
         },
         'Settings': {
             'Debug Enabled': django_settings.DEBUG,
+            'Authentication Backends': django_settings.AUTHENTICATION_BACKENDS,
         }
     }
     results = SIG_GET_MOD_INFO.send(sender=None)

@@ -3,12 +3,12 @@ Supervisr Stats influx Signals
 """
 
 
+from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.dispatch import receiver
 
 from supervisr.core.models import Setting
 from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_GET_MOD_HEALTH,
                                     SIG_SET_STAT, SIG_USER_CONFIRM,
-                                    SIG_USER_LOGIN, SIG_USER_LOGOUT,
                                     SIG_USER_PASS_RESET_FIN,
                                     SIG_USER_POST_CHANGE_PASS,
                                     SIG_USER_POST_SIGN_UP,
@@ -126,11 +126,11 @@ def stats_influx_handle_user_confirm(sender, user, **kwargs):
                          },
                          count=1)
 
-@receiver(SIG_USER_LOGIN)
+@receiver(user_logged_in)
 # pylint: disable=unused-argument,invalid-name
 def stats_influx_handle_user_login(sender, user, **kwargs):
     """
-    Handle stats for SIG_USER_LOGIN
+    Handle stats for user_logged_in
     """
     if Setting.get_bool('enabled'):
         with InfluxClient() as client:
@@ -142,11 +142,11 @@ def stats_influx_handle_user_login(sender, user, **kwargs):
                          },
                          count=1)
 
-@receiver(SIG_USER_LOGOUT)
+@receiver(user_logged_out)
 # pylint: disable=unused-argument,invalid-name
 def stats_influx_handle_user_logout(sender, user, **kwargs):
     """
-    Handle stats for SIG_USER_LOGOUT
+    Handle stats for user_logged_out
     """
     if Setting.get_bool('enabled'):
         with InfluxClient() as client:

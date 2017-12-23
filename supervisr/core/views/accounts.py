@@ -12,6 +12,7 @@ from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -30,7 +31,6 @@ from supervisr.core.forms.accounts import (ChangePasswordForm,
 from supervisr.core.models import (AccountConfirmation, Setting, User,
                                    make_username)
 from supervisr.core.signals import (SIG_USER_CHANGE_PASS, SIG_USER_CONFIRM,
-                                    SIG_USER_LOGIN, SIG_USER_LOGOUT,
                                     SIG_USER_PASS_RESET_INIT,
                                     SIG_USER_POST_CHANGE_PASS,
                                     SIG_USER_POST_SIGN_UP,
@@ -94,7 +94,7 @@ class LoginView(View):
             if user:
                 return self.handle_login(request, user, form.cleaned_data)
             return self.handle_disabled_login(request, email=form.cleaned_data.get('email'))
-        LOGGER.info("LoginForm invalid")
+        LOGGER.debug("LoginForm invalid")
         return self.render(request, form=form)
 
     def handle_login(self, request: HttpRequest, user: User, cleaned_data: Dict) -> HttpResponse:
@@ -122,9 +122,9 @@ class LoginView(View):
             request.session.set_expiry(0) # Expires when browser is closed
         messages.success(request, _("Successfully logged in!"))
         # Send event that we're logged in now
-        SIG_USER_LOGIN.send(
-            sender=self, user=user, req=request)
-        LOGGER.info("Successfully logged in %s", user.username)
+        user_logged_in.send(
+            sender=self, user=user, request=request)
+        LOGGER.debug("Successfully logged in %s", user.username)
         # Check if there is a next GET parameter and redirect to that
         if 'next' in request.GET:
             return redirect(request.GET.get('next'))
@@ -160,7 +160,7 @@ class LoginView(View):
                                            'email.')) % {'url': url})
                 return redirect(reverse('account-login'))
         messages.error(request, _("Invalid Login"))
-        LOGGER.info("Failed to log in %s", email)
+        LOGGER.debug("Failed to log in %s", email)
         return redirect(reverse('account-login'))
 
 @method_decorator(anonymous_required, name='dispatch')
@@ -241,7 +241,7 @@ class SignupView(View):
             try:
                 self.create_user(form.cleaned_data, request)
                 messages.success(request, _("Successfully signed up!"))
-                LOGGER.info("Successfully signed up %s",
+                LOGGER.debug("Successfully signed up %s",
                             form.cleaned_data.get('email'))
                 return redirect(reverse('account-login'))
             except SignalException:
@@ -305,8 +305,8 @@ def logout(req):
     View to handle Browser logout Requests
     """
     # Send event first because we still have the user
-    SIG_USER_LOGOUT.send(
-        sender=logout, user=req.user, req=req)
+    user_logged_out.send(
+        sender=logout, user=req.user, request=req)
     django_logout(req)
     messages.success(req, _("Successfully logged out!"))
     return redirect(reverse('common-index'))
