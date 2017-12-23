@@ -129,10 +129,6 @@ RECAPTCHA_PRIVATE_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 
 INTERNAL_IPS = ['127.0.0.1']
 
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-]
-
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
@@ -155,6 +151,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
+    'supervisr.core.middleware.APIKeyAuthMiddleware.api_key_auth',
     'supervisr.core.middleware.EmailMissingMiddleware.check_email',
     'supervisr.core.middleware.ImpersonateMiddleware.impersonate',
     'supervisr.core.middleware.MaintenanceMode.maintenance_mode',
