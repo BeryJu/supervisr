@@ -36,7 +36,7 @@ signxml
 astroid==1.5.3
 coverage
 isort
-pylint
+pylint==1.7.5
 pylint-django
 prospector
 django-debug-toolbar
