@@ -97,7 +97,7 @@ urlpatterns = [
     url(r'^robots\.txt', TemplateView.as_view(template_name='common/robots.txt')),
 ]
 
-def get_patterns(mount_path, module, namespace=''):
+def get_patterns(mount_path, module, namespace=None):
     """Check if module exists and return an array with urlpatterns"""
     # Check every part of the module chain
     mod_parts = module.split('.')

@@ -18,6 +18,7 @@ class EditUserForm(forms.Form):
     unix_userid = forms.CharField(label=_('Unix ID'), disabled=True, required=False)
     theme = forms.ChoiceField(label=_('Theme'), choices=())
     rows_per_page = forms.IntegerField(label=_('Rows per page'))
+    api_key = forms.CharField(label=_('API Key'), disabled=True, required=False)
 
     def __init__(self, *args, **kwargs):
         super(EditUserForm, self).__init__(*args, **kwargs)

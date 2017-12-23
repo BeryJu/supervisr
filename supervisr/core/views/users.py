@@ -29,7 +29,8 @@ def index(req):
         'unix_username': req.user.unix_username,
         'unix_userid': req.user.unix_userid,
         'theme': req.user.theme,
-        'rows_per_page': req.user.rows_per_page
+        'rows_per_page': req.user.rows_per_page,
+        'api_key': req.user.api_key,
     }
     if req.method == 'POST':
         form = EditUserForm(req.POST, initial=initial_data)

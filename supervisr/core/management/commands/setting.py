@@ -10,9 +10,9 @@ from supervisr.core.models import Setting
 LOGGER = logging.getLogger(__name__)
 
 class Command(BaseCommand):
-    """Turns maintenance Mode on or off via manage.py"""
+    """Edit settings via manage.py"""
 
-    help = 'Turns maintenance Mode on or off'
+    help = 'Edit settings'
 
     def add_arguments(self, parser: ArgumentParser):
         parser.add_argument('-vo', '--value-only', action='store_true')

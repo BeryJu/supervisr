@@ -130,6 +130,7 @@ class User(AbstractUser):
     news_subscribe = models.BooleanField(default=False)
     theme = models.CharField(max_length=200, default='light')
     rows_per_page = models.IntegerField(default=50)
+    api_key = models.UUIDField(default=uuid.uuid4)
 
 # pylint: disable=abstract-method
 class SVAnonymousUser(django_auth_models.AnonymousUser):
@@ -139,6 +140,7 @@ class SVAnonymousUser(django_auth_models.AnonymousUser):
     news_subscribe = True
     theme = 'light'
     rows_per_page = 50
+    api_key = '00000000-0000-0000-0000-000000000000'
 
 django_auth_models.AnonymousUser = SVAnonymousUser
 
@@ -509,6 +511,11 @@ class Event(CreatedUpdatedModel):
         Returns relative url for action with params
         """
         return reverse(self.action_view, kwargs=self.action_parmas)
+
+    @property
+    def create_timestamp(self):
+        """Get create date as timestmap"""
+        return self.create_date.timestamp()
 
     @property
     def get_localized_age(self):

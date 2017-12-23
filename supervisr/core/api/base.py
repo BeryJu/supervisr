@@ -48,26 +48,23 @@ class API(View):
             self.init_user_filter(request.user)
             self.pre_handler(request, handler)
             if handler:
-                return api_response(request, handler(request, data))
+                result = handler(request, data)
+                return api_response(request, {'code': 200, 'data': result})
         except PermissionDenied:
             return api_response(request, {'error': 'permission denied', 'code': 403})
-        except Http404:
-            return api_response(request, {'error': 'not found', 'code': 404})
         except KeyError as exc:
             return api_response(request, {'error': exc.args[0], 'code': 404})
+        except Http404:
+            return api_response(request, {'error': 'not found', 'code': 404})
 
     # pylint: disable=unused-argument
     def pre_handler(self, handler, request):
-        """
-        Optional Handler, which is run before the chosen handler is run
-        """
+        """Optional Handler, which is run before the chosen handler is run"""
         pass
 
     @staticmethod
     def init_user_filter(user):
-        """
-        This method is used to check if the user has access
-        """
+        """This method is used to check if the user has access"""
         if not user.is_authenticated:
             raise PermissionDenied
         return True
