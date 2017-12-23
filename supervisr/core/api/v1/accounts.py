@@ -3,7 +3,7 @@ Supervisr Core Account APIv1
 """
 
 from supervisr.core.api.models import ModelAPI
-from supervisr.core.models import User
+from supervisr.core.models import Product, User
 
 
 class AccountAPI(ModelAPI):
@@ -14,7 +14,7 @@ class AccountAPI(ModelAPI):
     editable_fields = []
 
     ALLOWED_VERBS = {
-        'GET': ['me']
+        'GET': ['me', 'has_product']
     }
 
     # pylint: disable=invalid-name,unused-argument
@@ -25,3 +25,17 @@ class AccountAPI(ModelAPI):
             user_data[field] = getattr(request.user, field)
         user_data['id'] = request.user.pk
         return user_data
+
+    def has_product(self, request, data):
+        """Check if we have access to product"""
+        product = None
+        if 'product_pk' in data:
+            product = Product.objects.filter(pk=data.get('product_pk'))
+        elif 'product_name' in data:
+            product = Product.objects.filter(name=data.get('product_name'))
+
+        if product and product.exists():
+            if product.first() in request.user.product_set.all():
+                return {'result': True}
+
+        return {'result': False}
