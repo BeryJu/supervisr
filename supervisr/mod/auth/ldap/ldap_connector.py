@@ -67,9 +67,14 @@ class LDAPConnector(object):
             json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock.json')
             self.con.strategy.entries_from_json(json_path)
 
-        self.con.bind()
-        if Setting.get_bool('server:tls'):
-            self.con.start_tls()
+        try:
+            self.con.bind()
+            if Setting.get_bool('server:tls'):
+                self.con.start_tls()
+        except ldap3.core.exceptions.LDAPInvalidCredentialsResult:
+            # Invalid bind credentials
+            Setting.set('enabled', False)
+
         # Apply LDAPModification's from DB
         # self.apply_db()
 
