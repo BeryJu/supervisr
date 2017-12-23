@@ -97,6 +97,7 @@ INSTALLED_APPS = [
     'supervisr.mod.stats.influx.apps.SupervisrModStatInfluxConfig',
     'supervisr.mod.provider.google.apps.SupervisrModProviderGoogleConfig',
     'supervisr.mod.provider.vmware.apps.SupervisrModProviderVMwareConfig',
+    'supervisr.mod.provider.foreman.apps.SupervisrModProviderForemanConfig',
     'supervisr.mod.provider.onlinenet.apps.SupervisrModProviderOnlineNetConfig',
     'formtools',
     'django.contrib.admin',
