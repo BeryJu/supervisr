@@ -151,7 +151,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-    'supervisr.core.middleware.APIKeyAuthMiddleware.api_key_auth',
     'supervisr.core.middleware.EmailMissingMiddleware.check_email',
     'supervisr.core.middleware.ImpersonateMiddleware.impersonate',
     'supervisr.core.middleware.MaintenanceMode.maintenance_mode',
@@ -192,6 +191,8 @@ TEMPLATES = [
 CSRF_COOKIE_NAME = 'supervisr_csrf'
 SESSION_COOKIE_NAME = 'supervisr_sessionid'
 
+API_KEY_PARAM = 'sv-api-key'
+
 WSGI_APPLICATION = 'supervisr.core.wsgi.application'
 
 DATABASES = {
@@ -205,6 +206,7 @@ AUTH_USER_MODEL = 'supervisr/core.User'
 
 AUTHENTICATION_BACKENDS = [
     'supervisr.core.auth.EmailBackend',
+    'supervisr.core.auth.APIKeyBackend',
 ]
 
 DATABASE_ROUTERS = []

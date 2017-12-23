@@ -4,8 +4,11 @@ Supervisr Core Base API
 import json
 import logging
 
+from django.conf import settings
+from django.contrib.auth import login as django_login
+from django.contrib.auth import authenticate
 from django.core.exceptions import PermissionDenied
-from django.http import Http404, QueryDict
+from django.http import Http404, HttpRequest, QueryDict
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
@@ -30,6 +33,9 @@ class API(View):
         verb = kwargs['verb']
         if verb not in my_allowed:
             return api_response(request, {'error': 'verb not allowed in HTTP VERB', 'code': 400})
+
+        # Check if API Key in request, if so try to authenticate with it
+        self.authenticate_with_key(request)
 
         if request.method in ['PUT', 'DELETE']:
             data = QueryDict(request.body).dict()
@@ -68,3 +74,13 @@ class API(View):
         if not user.is_authenticated:
             raise PermissionDenied
         return True
+
+    def authenticate_with_key(self, request: HttpRequest):
+        """Try to authenticate with request data"""
+        if settings.API_KEY_PARAM in request.GET or \
+            settings.API_KEY_PARAM in request.POST or \
+            settings.API_KEY_PARAM in request.META:
+
+            user = authenticate(request)
+            if user:
+                django_login(request, user)

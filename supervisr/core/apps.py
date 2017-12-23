@@ -52,7 +52,7 @@ class SupervisrAppConfig(AppConfig):
         Clear cache on startup
         """
         cache.clear()
-        LOGGER.info("Successfully cleared Cache")
+        LOGGER.debug("Successfully cleared Cache")
 
     # pylint: disable=no-self-use
     def run_ensure_settings(self):
@@ -69,7 +69,7 @@ class SupervisrAppConfig(AppConfig):
                     namespace=namespace,
                     defaults={'value': defv})
             if items:
-                LOGGER.info("Ensured %d settings", len(items))
+                LOGGER.debug("Ensured %d settings", len(items))
         except (OperationalError, ProgrammingError):
             pass
 
@@ -83,10 +83,10 @@ class SupervisrAppConfig(AppConfig):
         """
         Load initial modules for decorators
         """
-        LOGGER.info("Loaded %s", self.name)
+        LOGGER.debug("Loaded %s", self.name)
         for module in self.init_modules:
             if importlib.util.find_spec("%s.%s" % (self.name, module)) is not None:
-                LOGGER.info("Loaded %s.%s", self.name, module)
+                LOGGER.debug("Loaded %s.%s", self.name, module)
                 try:
                     importlib.import_module("%s.%s" % (self.name, module))
                 except Exception as exc:  # pylint: disable=broad-except
@@ -137,7 +137,7 @@ class SupervisrAppConfig(AppConfig):
                         setattr(settings, key, value)
                         counter += 1
             if counter > 0:
-                LOGGER.info("Overwrote %s settings for %s", counter, self.name)
+                LOGGER.debug("Overwrote %s settings for %s", counter, self.name)
         except ImportError:
             pass # ignore non-existant modules
 

@@ -56,7 +56,7 @@ class Sender(object):
                 continue
             mod_base = '.'.join(_mod.split('.')[:-2])
             if importlib.util.find_spec(mod_base) is not None:
-                LOGGER.info("Loaded %s", mod_base)
+                LOGGER.debug("Loaded %s", mod_base)
                 base = importlib.import_module(mod_base)
                 pmod = PulseModule(
                     module_root=mod_base,

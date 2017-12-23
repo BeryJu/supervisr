@@ -38,7 +38,7 @@ class SupervisrStaticConfig(SupervisrAppConfig):
             if fpage.update_from_file():
                 LOGGER.debug("Successfully updated %s with '%s'", fpage.title, fpage.path)
                 count += 1
-        LOGGER.info("Successfully updated %d FilePages", count)
+        LOGGER.debug("Successfully updated %d FilePages", count)
 
     # pylint: disable=no-self-use
     def ensure_product_pages(self):
@@ -58,4 +58,4 @@ class SupervisrStaticConfig(SupervisrAppConfig):
                 listed=(not prod.invite_only),
                 content=prod.description,
                 product=prod)
-        LOGGER.info("Created %d ProductPages", len(products))
+        LOGGER.debug("Created %d ProductPages", len(products))
