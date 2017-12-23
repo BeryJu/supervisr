@@ -33,9 +33,10 @@ oauthlib>=2.0.6
 beautifulsoup4>=4.6.0
 lxml>=3.8.0
 signxml
+astroid==1.5.3
 coverage
 isort
-pylint==1.7.5
+pylint
 pylint-django
 prospector
 django-debug-toolbar
