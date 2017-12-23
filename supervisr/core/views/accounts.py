@@ -242,7 +242,7 @@ class SignupView(View):
                 self.create_user(form.cleaned_data, request)
                 messages.success(request, _("Successfully signed up!"))
                 LOGGER.debug("Successfully signed up %s",
-                            form.cleaned_data.get('email'))
+                             form.cleaned_data.get('email'))
                 return redirect(reverse('account-login'))
             except SignalException:
                 messages.error(request, _("Failed to sign up."))
