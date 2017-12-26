@@ -46,7 +46,7 @@ class ModelAPI(CRUDAPI):
                         # Remove excluded fields from model
                         model = frm_inst.Meta.model
                         fields = [x.name for x in model._meta.get_fields()
-                                  if not x.name in frm_inst.Meta.exclude]
+                                  if x.name not in frm_inst.Meta.exclude]
                     # Add all fields from all arrays into our fields
                     new_fields += fields
             # convert concatenated list into set to remove duplicates
