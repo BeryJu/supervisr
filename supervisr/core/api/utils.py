@@ -2,6 +2,8 @@
 Supervisr Core API Utils
 """
 
+from datetime import date, datetime, timezone
+
 from django.http import HttpResponse, JsonResponse
 
 
@@ -42,7 +44,17 @@ def api_response_openid(code, data):
 def api_response_json(code, data):
     """Pass dict to django and let it handle the encoding etc"""
     import json
-    data = json.dumps(data, sort_keys=True, indent=4)
+    def date_helper(obj):
+        """JSON serializer for objects not serializable by default json code"""
+
+        if isinstance(obj, date):
+            obj = datetime.combine(obj, datetime.min.time())
+        if isinstance(obj, datetime):
+            return obj.replace(tzinfo=timezone.utc).timestamp()
+
+        raise TypeError("Type %s not serializable" % type(obj))
+
+    data = json.dumps(data, sort_keys=True, indent=4, default=date_helper)
     return HttpResponse(data, content_type='application/json', status=code)
 
 def api_response_yaml(code, data):

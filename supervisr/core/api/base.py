@@ -57,11 +57,11 @@ class API(View):
                 result = handler(request, data)
                 return api_response(request, {'code': 200, 'data': result})
         except PermissionDenied:
-            return api_response(request, {'error': 'permission denied', 'code': 403})
+            return api_response(request, {'data': {'error': 'permission denied'}, 'code': 403})
         except KeyError as exc:
-            return api_response(request, {'error': exc.args[0], 'code': 404})
+            return api_response(request, {'data': {'error': exc.args[0]}, 'code': 404})
         except Http404:
-            return api_response(request, {'error': 'not found', 'code': 404})
+            return api_response(request, {'data': {'error': 'not found'}, 'code': 404})
 
     # pylint: disable=unused-argument
     def pre_handler(self, handler, request):
