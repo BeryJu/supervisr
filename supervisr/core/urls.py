@@ -16,6 +16,7 @@ from supervisr.core.regex import (DOMAIN_REGEX, EMAIL_REGEX, MOD_REGEX,
 from supervisr.core.utils import get_apps
 from supervisr.core.views import (accounts, admin, common, domains, products,
                                   providers, search, settings, users)
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 LOGGER = logging.getLogger(__name__)
 
@@ -92,6 +93,9 @@ urlpatterns = [
     url(r'^admin/django/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/django/', admin_django.site.urls),
     # General API Urls
+    # url(r'^api/auth/', include('rest_framework.urls')),
+    url(r'^api/auth/token/', obtain_jwt_token),
+    url(r'^api/auth/token/refresh/', refresh_jwt_token),
     url(r'^api/core/', include('supervisr.core.api.urls')),
     # Robots.txt to stop 404s
     url(r'^robots\.txt', TemplateView.as_view(template_name='common/robots.txt')),

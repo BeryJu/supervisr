@@ -26,7 +26,7 @@ class ModelAPI(CRUDAPI):
     editable_fields = ['name']
 
     # pylint: disable=unused-argument
-    def pre_handler(self, request, handler):
+    def pre_handler(self, handler, request):
         """
         Check if form is set and read fields from it
         """
@@ -35,11 +35,17 @@ class ModelAPI(CRUDAPI):
             if not isinstance(self.form, collections.Sequence):
                 self.form = [self.form]
             new_fields = []
-            for frm in self.forms:
+            for frm in self.form:
                 # pylint: disable=not-callable
                 frm_inst = frm()
                 if isinstance(frm_inst, forms.ModelForm):
-                    fields = self.frm_inst.Meta.fields
+                    if getattr(frm_inst.Meta, 'fields', None):
+                        # Add stated fields
+                        fields = frm_inst.Meta.fields
+                    elif getattr(frm_inst.Meta, 'exclude', None):
+                        # Remove excluded fields from model
+                        model = frm_inst.Meta.model
+                        fields = [x.name for x in model._meta.get_fields() if not x.name in frm_inst.Meta.exclude]
                     # Add all fields from all arrays into our fields
                     new_fields += fields
             # convert concatenated list into set to remove duplicates
@@ -57,7 +63,7 @@ class ModelAPI(CRUDAPI):
         """
         if not user.is_authenticated:
             raise PermissionDenied
-        return queryset.filter(users__in=[user])
+        return queryset
 
     def model_to_dict(self, qs):
         """

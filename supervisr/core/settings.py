@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'captcha',
+    'rest_framework',
     'supervisr.core.apps.SupervisrCoreConfig',
     'supervisr.puppet.apps.SupervisrPuppetConfig',
     'supervisr.dns.apps.SupervisrDNSConfig',
@@ -104,6 +105,19 @@ INSTALLED_APPS = [
     'django.contrib.admindocs',
     'raven.contrib.django.raven_compat',
 ]
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissions'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # 'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
 
 VERSION_HASH = raven.fetch_git_sha(os.path.dirname(os.pardir))
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
