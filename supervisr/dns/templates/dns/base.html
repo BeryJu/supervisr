@@ -17,9 +17,17 @@
         {% endfor %}
       </ul>
     </section>
-    <a href="" class="nav-link">
-    {% trans "TSIG" %}
-    </a>
+    <section class="nav-group">
+      <a href="{% url 'supervisr/dns:rset-new' %}" class="nav-link {% is_active 'rset-create' %}">{% trans "Resource Sets" %}</a>
+      <ul class="nav-list">
+        {% related_products 'supervisr.dns.models.ResourceSet' as rsets %}
+        {% for r in rsets %}
+        <li>
+          <a href="{% url 'supervisr/dns:rset-view' rset_uuid=r.uuid %}" class="nav-link {% is_active_url 'supervisr/dns:rset-view' rset_uuid=r.uuid %}">{{ r.name }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
   </section>
 </nav>
 {% endblock %}

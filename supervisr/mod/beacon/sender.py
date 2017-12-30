@@ -86,7 +86,7 @@ class Sender(object):
                     kwargs={'verb': 'send'})
         req = requests.post(endpoint, json=data)
         result = req.json()
-        if result['status'] == 'ok':
+        if 'code' in result and result.get('code') == 200:
             LOGGER.debug("Successfully pulsed beacon")
         else:
             LOGGER.debug("Failed to pulse: %r", result)

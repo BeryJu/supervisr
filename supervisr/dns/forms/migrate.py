@@ -1,14 +1,18 @@
+"""supervisr dns migration forms"""
+
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 
 class ZoneImportForm(forms.Form):
+    """Bind zone import form"""
 
     title = _('Zone Data')
 
     zone_data = forms.CharField(widget=forms.Textarea, label=_('Zone Data'))
 
 class ZoneImportPreviewForm(forms.Form):
+    """Zone import preview form"""
 
     title = _('Preview Results')
 
