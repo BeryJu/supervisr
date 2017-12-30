@@ -26,7 +26,7 @@ module.exports = function(grunt) {
       },
       supervisr: {
         src: [
-            'node_modules/clarity-icons/clarity-icons.min.js',
+            'node_modules/@clr/icons/clr-icons.min.js',
             'node_modules/jquery/dist/jquery.js',
             'node_modules/tablesorter/dist/js/jquery.tablesorter.js',
             'js/*.js',
