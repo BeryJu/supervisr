@@ -10,7 +10,6 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(settings.OAUTH2_PROVIDER_APPLICATION_MODEL),
         ('supervisr/core', '0026_auto_20170323_2101'),
     ]
 
@@ -18,10 +17,5 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='product',
             name='ldap_group',
-        ),
-        migrations.AddField(
-            model_name='product',
-            name='oauth2_application',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.OAUTH2_PROVIDER_APPLICATION_MODEL),
         ),
     ]

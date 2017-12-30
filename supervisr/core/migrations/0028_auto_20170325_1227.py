@@ -10,7 +10,6 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(settings.OAUTH2_PROVIDER_APPLICATION_MODEL),
         ('supervisr/core', '0027_auto_20170325_1103'),
     ]
 
@@ -25,21 +24,6 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-        ),
-        migrations.RemoveField(
-            model_name='product',
-            name='oauth2_application',
-        ),
-        migrations.CreateModel(
-            name='ProductExtensionOAuth2',
-            fields=[
-                ('productextension_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/core.ProductExtension')),
-                ('application', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.OAUTH2_PROVIDER_APPLICATION_MODEL)),
-            ],
-            options={
-                'abstract': False,
-            },
-            bases=('supervisr/core.productextension',),
         ),
         migrations.AddField(
             model_name='product',
