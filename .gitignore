@@ -171,3 +171,5 @@ supervisr/media/
 supervisr/cache/
 
 .sass-cache
+
+.vscode/settings.json
