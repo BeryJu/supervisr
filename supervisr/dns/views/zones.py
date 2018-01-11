@@ -79,7 +79,9 @@ class ZoneNewView(BaseWizardView):
 
 @login_required
 def edit(req, zone):
-    """Edit a zone"""
+    """
+    Edit a zone
+    """
     # Check if zone exists before doing anything else
     zones = Zone.objects.filter(domain__domain=zone, users__in=[req.user])
     if not zones.exists():
@@ -109,7 +111,9 @@ def edit(req, zone):
 
 @login_required
 def delete(req, zone):
-    """Delete a zone"""
+    """
+    Delete a zone
+    """
     # Check if zone exists before doing anything else
     zones = Zone.objects.filter(domain__domain=zone, users__in=[req.user])
     if not zones.exists():
@@ -124,5 +128,5 @@ def delete(req, zone):
 
     return render(req, 'core/generic_delete.html', {
         'object': 'Zone %s' % r_zone.domain,
-        'delete_url': reverse('supervisr/dns:zone-delete', kwargs={'zone': r_zone.domain})
+        'delete_url': reverse('supervisr/dns:dns-zone-delete', kwargs={'zone': r_zone.domain})
         })

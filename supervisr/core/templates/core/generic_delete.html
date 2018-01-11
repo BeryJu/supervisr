@@ -19,14 +19,14 @@
         <h3 class="modal-title">{% trans "Attention" %}</h3>
       </div>
       <div class="modal-body" id="delete_form">
-        <p>{% blocktrans %}Are you sure you want to delete {{ verbose_name }} {{instance_name}}?{% endblocktrans %}</p>
+        <p>{% blocktrans %}Are you sure you want to delete {{ object }}?{% endblocktrans %}</p>
         {% if extra_markup %}
         {{ extra_markup|safe }}
         {% endif %}
       </div>
       <div class="modal-footer">
         <a href="{% back %}" class="btn btn-outline" type="button">{% trans 'Cancel' %}</a>
-        <form action="" method="POST">
+        <form action="{{ delete_url }}" method="POST">
           {% csrf_token %}
           <button type="submit" name="confirmdelete" class="btn btn-danger-outline btn-submit-spinner">
             {% trans primary_action|default:'Confirm Deletion' %}
