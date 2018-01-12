@@ -86,7 +86,7 @@ class InternalBaseProvider(BaseProvider):
                 'This Provider is used to provide service with Supervisr managed servers.')
             self.ui_name = _('Internal Provider')
 
-@ifapp('supervisr/mail')
+@ifapp('supervisr_mail')
 def register_mail_internal():
     """
     if Mail app is installed, add Internal Mail Provider to dummy class
@@ -94,7 +94,7 @@ def register_mail_internal():
     from supervisr.mail.providers.internal import InternalMailProvider
     setattr(InternalBaseProvider, 'mail_provider', InternalMailProvider)
 
-@ifapp('supervisr/dns')
+@ifapp('supervisr_dns')
 def register_dns_internal():
     """
     if dns app is installed, add Internal dns Provider to dummy class

@@ -71,7 +71,7 @@ class ZoneNewView(BaseWizardView):
             product=zone,
             user=self.request.user)
         messages.success(self.request, _('DNS Domain successfully created'))
-        return redirect(reverse('supervisr/dns:dns-index'))
+        return redirect(reverse('supervisr_dns:index'))
 
 @login_required
 def edit(request: HttpRequest, zone: str) -> HttpResponse:
@@ -93,7 +93,7 @@ def edit(request: HttpRequest, zone: str) -> HttpResponse:
         if form.is_valid():
             form.save()
             messages.success(request, _('Successfully edited Zone'))
-            return redirect(reverse('supervisr/dns:dns-index'))
+            return redirect(reverse('supervisr_dns:index'))
     else:
         form = ZoneForm(instance=r_zone)
         form.fields['provider'].queryset = provider_instance
@@ -116,9 +116,9 @@ def delete(request: HttpRequest, zone: str) -> HttpResponse:
         # User confirmed deletion
         r_zone.delete()
         messages.success(request, _('Zone successfully deleted'))
-        return redirect(reverse('supervisr/dns:dns-index'))
+        return redirect(reverse('supervisr_dns:index'))
 
     return render(request, 'core/generic_delete.html', {
         'object': 'Zone %s' % r_zone.domain,
-        'delete_url': reverse('supervisr/dns:dns-zone-delete', kwargs={'zone': r_zone.domain})
+        'delete_url': reverse('supervisr_dns:dns-zone-delete', kwargs={'zone': r_zone.domain})
         })

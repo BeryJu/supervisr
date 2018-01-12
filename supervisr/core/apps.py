@@ -1,8 +1,4 @@
-"""
-Supervisr core app config
-"""
-
-from __future__ import unicode_literals
+"""Supervisr core app config"""
 
 import importlib
 import logging
@@ -22,21 +18,17 @@ LOGGER = logging.getLogger(__name__)
 
 
 class SupervisrAppConfig(AppConfig):
-    """
-    Base AppConfig Class that logs when it's loaded
-    """
+    """Base AppConfig Class that logs when it's loaded"""
 
     init_modules = ['signals', 'models']
     admin_url_name = 'admin-mod_default'
     view_user_settings = None
     navbar_enabled = lambda self, request: False
-    title_modifier = lambda self, label, request: label.title()
+    title_modifier = lambda self, request: self.verbose_name.title()
 
     def __init__(self, *args, **kwargs):
-        """
-        Set app Label based on full name
-        """
-        self.label = self.name.replace('.', '/')
+        """Set app Label based on full name"""
+        self.label = self.name.replace('.', '_')
         super(SupervisrAppConfig, self).__init__(*args, **kwargs)
 
     def ready(self):
@@ -48,17 +40,13 @@ class SupervisrAppConfig(AppConfig):
 
     # pylint: disable=no-self-use
     def clear_cache(self):
-        """
-        Clear cache on startup
-        """
+        """Clear cache on startup"""
         cache.clear()
         LOGGER.debug("Successfully cleared Cache")
 
     # pylint: disable=no-self-use
     def run_ensure_settings(self):
-        """
-        Make sure settings defined in `ensure_settings` are theere
-        """
+        """Make sure settings defined in `ensure_settings` are theere"""
         try:
             from supervisr.core.models import Setting
             items = self.ensure_settings()
@@ -74,15 +62,11 @@ class SupervisrAppConfig(AppConfig):
             pass
 
     def ensure_settings(self):
-        """
-        By Default ensure no settings
-        """
+        """By Default ensure no settings"""
         return {}
 
     def load_init(self):
-        """
-        Load initial modules for decorators
-        """
+        """Load initial modules for decorators"""
         LOGGER.debug("Loaded %s", self.name)
         for module in self.init_modules:
             if importlib.util.find_spec("%s.%s" % (self.name, module)) is not None:
@@ -94,9 +78,7 @@ class SupervisrAppConfig(AppConfig):
                     LOGGER.error(exc)
 
     def check_requirements(self):
-        """
-        Check requirements(-dev) and see if everything is installed
-        """
+        """Check requirements(-dev) and see if everything is installed"""
         def _check_file(self, path):
             # Basedir
             basedir = (os.path.dirname(os.path.dirname(os.path.dirname(
@@ -120,9 +102,7 @@ class SupervisrAppConfig(AppConfig):
             _check_file(self, 'requirements-dev.txt')
 
     def merge_settings(self, overwrite=False):
-        """
-        Load settings file and add/overwrite
-        """
+        """Load settings file and add/overwrite"""
         blacklist = ['INSTALLED_APPS', 'MIDDLEWARE', 'SECRET_KEY']
         try:
             counter = 0
@@ -143,12 +123,10 @@ class SupervisrAppConfig(AppConfig):
 
 
 class SupervisrCoreConfig(SupervisrAppConfig):
-    """
-    Supervisr core app config
-    """
+    """Supervisr core app config"""
 
     name = 'supervisr.core'
-    label = 'supervisr/core'
+    label = 'supervisr_core'
     init_modules = [
         'signals',
         'events',

@@ -6,7 +6,7 @@ from django.db import migrations
 
 
 def create_settings(apps, schema_editor):
-    Setting = apps.get_model('supervisr/core', 'Setting')
+    Setting = apps.get_model('supervisr_core', 'Setting')
     settings = {
         'password:filter:description': 'One Letter, one Number and one speical Character',
         'password:filter': r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&\.])[A-Za-z\d$@$!%*?&\.]{8,}$",
@@ -19,7 +19,7 @@ def create_settings(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/core', '0015_product_auto_all_add'),
+        ('supervisr_core', '0015_product_auto_all_add'),
     ]
 
     operations = [

@@ -23,4 +23,4 @@ def admin_autoregister(app):
 
 
 admin.site.register(User, UserAdmin)
-admin_autoregister('supervisr/core')
+admin_autoregister('supervisr_core')

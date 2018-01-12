@@ -10,7 +10,7 @@
 {% block content %}
 <h1><clr-icon shape="router" size="48"></clr-icon>{% trans 'DNS Zones' %}</h1>
 <div class="btn-group btn-link btn-icon-link">
-  <a href="{% url 'supervisr/dns:dns-zone-new' %}" class="btn">
+  <a href="{% url 'supervisr_dns:dns-zone-new' %}" class="btn">
     <clr-icon shape="add"></clr-icon>
   </a>
   <a data-ctx-name="edit" class="btn">
@@ -24,7 +24,7 @@
       <clr-icon shape="ellipsis-horizontal"></clr-icon>
     </button>
     <div class="dropdown-menu">
-      <a href="{% url 'supervisr/dns:migrate-import-bind' %}" class="dropdown-item">{% trans 'Import from Bind Zone' %}</a>
+      <a href="{% url 'supervisr_dns:migrate-import-bind' %}" class="dropdown-item">{% trans 'Import from Bind Zone' %}</a>
     </div>
   </div>
 </div>
@@ -39,7 +39,7 @@
   </thead>
   <tbody>
     {% for dom in zones %}
-    <tr data-selectable data-ctx-edit="{% url 'supervisr/dns:dns-zone-edit' zone=dom.domain %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr/dns:dns-zone-delete' zone=dom.domain %}?back={{ request.get_full_path }}">
+    <tr data-selectable data-ctx-edit="{% url 'supervisr_dns:dns-zone-edit' zone=dom.domain %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr_dns:dns-zone-delete' zone=dom.domain %}?back={{ request.get_full_path }}">
       <td>{{ dom.domain }}</td>
       <td>{{ dom.users.all|join:"," }}</td>
       <td>{{ dom.record_set.all|length }}</td>

@@ -22,9 +22,9 @@ from qrcode.image.svg import SvgPathImage
 from supervisr.core.decorators import reauth_required
 from supervisr.core.models import Event
 from supervisr.core.views.wizards import BaseWizardView
-
-from ..forms.tfa import TFASetupInitForm, TFASetupStaticForm, TFAVerifyForm
-from ..utils import otpauth_url
+from supervisr.mod.tfa.forms.tfa import (TFASetupInitForm, TFASetupStaticForm,
+                                         TFAVerifyForm)
+from supervisr.mod.tfa.utils import otpauth_url
 
 TFA_SESSION_KEY = 'supervisr_mod_2fa_key'
 
@@ -162,7 +162,7 @@ class TFASetupView(BaseWizardView):
         if step == '0':
             form.confirmed = self.confirmed
             form.device = self.totp_device
-            form.fields['qr_code'].initial = reverse('supervisr/mod/tfa:tfa-qr')
+            form.fields['qr_code'].initial = reverse('supervisr_mod_tfa:tfa-qr')
         elif step == '1':
             # This is a bit of a hack, but the 2fa token from step 1 has been checked here
             # And we need to save it, otherwise it's going to fail in render_done
@@ -187,7 +187,7 @@ class TFASetupView(BaseWizardView):
             current=True,
             request=self.request,
             send_notification=True)
-        return redirect(reverse('supervisr/mod/tfa:tfa-index'))
+        return redirect(reverse('supervisr_mod_tfa:tfa-index'))
 
 @never_cache
 @login_required

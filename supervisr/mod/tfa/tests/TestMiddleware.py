@@ -9,8 +9,7 @@ from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
 from supervisr.core.views import common
-
-from ..middleware import tfa_force_verify
+from supervisr.mod.tfa.middleware import tfa_force_verify
 
 
 class TestMiddleware(TestCase):

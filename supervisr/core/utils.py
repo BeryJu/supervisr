@@ -10,7 +10,6 @@ from time import time as timestamp
 from uuid import uuid4
 
 from django.apps import apps
-from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
 from django.shortcuts import render
@@ -18,6 +17,7 @@ from django.template import loader
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
+from supervisr.core.apps import SupervisrAppConfig, SupervisrCoreConfig
 from supervisr.core.statistics import stat_set
 
 LOGGER = logging.getLogger(__name__)
@@ -56,16 +56,18 @@ def render_to_string(tmpl, ctx):
     template = loader.get_template(tmpl)
     return template.render(ctx)
 
-def get_apps(mod_only=False):
+def get_apps(exclude=None):
     """Get a list of all installed apps"""
+    if exclude is None:
+        exclude = [SupervisrCoreConfig]
     app_list = []
-    for app in settings.INSTALLED_APPS:
-        if app.startswith('supervisr') and \
-            not app.startswith('supervisr.core'):
-            if mod_only:
-                if app.startswith('supervisr.mod'):
-                    app_list.append(app)
-            else:
+    for app in apps.get_app_configs():
+        if isinstance(app, SupervisrAppConfig):
+            is_excluded = False
+            for exclusion in exclude:
+                if isinstance(app, exclusion):
+                    is_excluded = True
+            if not is_excluded:
                 app_list.append(app)
     return app_list
 
@@ -76,9 +78,7 @@ def get_app_labels():
         # Make a list of all short names for all apps
         app_cache = []
         for app in get_apps():
-            mod = '/'.join(app.split('.')[:-2])
-            config = apps.get_app_config(mod)
-            app_cache.append(config.label)
+            app_cache.append(app.label)
         cache.set(cache_key, app_cache, 1000)
         return app_cache
     return cache.get(cache_key) # pragma: no cover

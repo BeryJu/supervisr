@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('supervisr/core', '0051_auto_20170716_1842'),
+        ('supervisr_core', '0051_auto_20170716_1842'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Record',
             fields=[
-                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/core.Product')),
+                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr_core.Product')),
                 ('type', models.CharField(max_length=10)),
                 ('content', models.TextField()),
                 ('ttl', models.IntegerField(default=3600)),
@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=('supervisr/core.product',),
+            bases=('supervisr_core.product',),
         ),
         migrations.CreateModel(
             name='SuperMaster',
@@ -88,20 +88,20 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Zone',
             fields=[
-                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/core.Product')),
+                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr_core.Product')),
                 ('master', models.CharField(max_length=128)),
                 ('last_check', models.IntegerField(default=0)),
                 ('type', models.CharField(max_length=6)),
                 ('notified_serial', models.IntegerField(default=0)),
                 ('account', models.CharField(max_length=40)),
                 ('enabled', models.BooleanField(default=True)),
-                ('domain', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='supervisr/core.Domain')),
-                ('provider', models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='supervisr/core.ProviderInstance')),
+                ('domain', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='supervisr_core.Domain')),
+                ('provider', models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='supervisr_core.ProviderInstance')),
             ],
             options={
                 'abstract': False,
             },
-            bases=('supervisr/core.product',),
+            bases=('supervisr_core.product',),
         ),
         migrations.AlterUniqueTogether(
             name='tsigkey',
@@ -114,21 +114,21 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='record',
             name='domain',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/dns.Zone'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_dns.Zone'),
         ),
         migrations.AddField(
             model_name='domainmetadata',
             name='zone_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/dns.Zone'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_dns.Zone'),
         ),
         migrations.AddField(
             model_name='cryptokey',
             name='zone_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/dns.Zone'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_dns.Zone'),
         ),
         migrations.AddField(
             model_name='comment',
             name='zone_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/dns.Zone'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_dns.Zone'),
         ),
     ]

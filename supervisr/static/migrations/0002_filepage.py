@@ -11,8 +11,8 @@ from supervisr.core.models import get_system_user
 
 def create_default_pages(apps, schema_editor):
     names = ['CHANGELOG.md', 'ATTRIBUTIONS.md']
-    FilePage = apps.get_model('supervisr/static', 'FilePage')
-    User = apps.get_model('supervisr/core', 'User')
+    FilePage = apps.get_model('supervisr_static', 'FilePage')
+    User = apps.get_model('supervisr_core', 'User')
     sys_user = User.objects.get(pk=get_system_user())
     for name in names:
         b_name = name.split('.')[0]
@@ -27,21 +27,21 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('supervisr/core', '0013_auto_20170112_1925'),
-        ('supervisr/static', '0001_initial'),
+        ('supervisr_core', '0013_auto_20170112_1925'),
+        ('supervisr_static', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='FilePage',
             fields=[
-                ('staticpage_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/static.StaticPage')),
+                ('staticpage_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr_static.StaticPage')),
                 ('path', models.TextField()),
             ],
             options={
                 'abstract': False,
             },
-            bases=('supervisr/static.staticpage',),
+            bases=('supervisr_static.staticpage',),
         ),
         migrations.RunPython(
             code=create_default_pages,

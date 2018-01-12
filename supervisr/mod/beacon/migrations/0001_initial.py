@@ -41,12 +41,12 @@ class Migration(migrations.Migration):
             fields=[
                 ('pulse_module_version_id', models.AutoField(primary_key=True, serialize=False)),
                 ('version', models.TextField()),
-                ('pulse_module', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/mod/beacon.PulseModule')),
+                ('pulse_module', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_mod_beacon.PulseModule')),
             ],
         ),
         migrations.AddField(
             model_name='pulse',
             name='modules',
-            field=models.ManyToManyField(to='supervisr/mod/beacon.PulseModule'),
+            field=models.ManyToManyField(to='supervisr_mod_beacon.PulseModule'),
         ),
     ]

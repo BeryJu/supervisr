@@ -61,7 +61,7 @@ class TestDecorators(TestCase):
         """
         Test ifapp decorator
         """
-        @ifapp('supervisr/core')
+        @ifapp('supervisr_core')
         def test_core():
             """
             Only run this function if app core is present

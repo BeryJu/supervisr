@@ -167,8 +167,7 @@ class Setting(CreatedUpdatedModel):
     @staticmethod
     def _init_allowed():
         from supervisr.core.utils import get_apps
-        Setting._ALLOWED_NAMESPACES = ['.'.join(x.split('.')[:-2]) for x in get_apps()]
-        Setting._ALLOWED_NAMESPACES.append('supervisr.core')
+        Setting._ALLOWED_NAMESPACES = [x.name for x in get_apps(exclude=[])]
 
     @property
     def value_bool(self) -> bool:

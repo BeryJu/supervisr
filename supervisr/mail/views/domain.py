@@ -90,4 +90,4 @@ class DomainNewView(BaseWizardView):
             product=m_dom,
             user=self.request.user)
         messages.success(self.request, _('Mail Domain successfully created'))
-        return redirect(reverse('supervisr/mail:mail-index'))
+        return redirect(reverse('supervisr_mail:index'))

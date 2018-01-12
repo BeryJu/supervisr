@@ -52,7 +52,7 @@ def debug_build(request: HttpRequest, user: str, module: str) -> HttpResponse:
     rel_builder = ReleaseBuilder(p_module)
     rel_builder.build()
     messages.success(request, 'Successfully built %s-%s' % (user, module))
-    return redirect(reverse('supervisr/puppet:puppet-index'))
+    return redirect(reverse('supervisr_puppet:index'))
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)

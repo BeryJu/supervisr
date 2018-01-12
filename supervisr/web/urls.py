@@ -4,8 +4,8 @@ Supervisr Web URLs
 
 from django.conf.urls import url
 
-from .views import web
+from supervisr.web.views import web
 
 urlpatterns = [
-    url(r'^$', web.index, name='web-index'),
+    url(r'^$', web.index, name='index'),
 ]

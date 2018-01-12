@@ -26,7 +26,7 @@ def index(request):
 @login_required
 def view(request, slug):
     """Show more specific Information about a product"""
-    @ifapp('supervisr/static')
+    @ifapp('supervisr_static')
     def redirect_to_static(request, slug):
         """if static app is installed, use static's productpage"""
         from supervisr.static.views import view

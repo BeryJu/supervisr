@@ -11,9 +11,10 @@ class SupervisrStaticConfig(SupervisrAppConfig):
     """supervisr Static app config"""
 
     name = 'supervisr.static'
-    label = 'supervisr/static'
+    label = 'supervisr_static'
     verbose_name = 'Supervisr Static'
     navbar_enabled = lambda self, request: False
+    title_modifier = lambda self, request: 'Static'
 
     def ready(self):
         super(SupervisrStaticConfig, self).ready()

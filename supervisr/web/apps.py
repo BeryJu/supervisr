@@ -11,7 +11,7 @@ class SupervisrWebConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr.web'
-    label = 'supervisr/web'
+    label = 'supervisr_web'
     verbose_name = 'Supervisr Web'
     navbar_enabled = lambda self, request: True
-    title_modifier = lambda self, title, request: 'Web'
+    title_modifier = lambda self, request: 'Web'

@@ -64,7 +64,7 @@ class AliasNewView(BaseWizardView):
                     destination=alias_dest
                     )
         messages.success(self.request, _('Mail Aliases successfully created'))
-        return redirect(reverse('supervisr/mail:mail-domain-view',
+        return redirect(reverse('supervisr_mail:mail-domain-view',
                                 kwargs={'domain': m_acc.domain.domain})+'#clr_tab=aliases')
 
 @login_required
@@ -86,7 +86,7 @@ def alias_edit(request: HttpRequest, domain: str, dest: str) -> HttpResponse:
         if form.is_valid():
             form.save()
             messages.success(request, _('Successfully updated Alias'))
-            return redirect(reverse('supervisr/mail:mail-domain-view',
+            return redirect(reverse('supervisr_mail:mail-domain-view',
                                     kwargs={'domain': domain})+'#clr_tab=aliases')
     else:
         form = MailAliasForm(instance=r_alias)
@@ -116,12 +116,12 @@ def alias_delete(request: HttpRequest, domain: str, dest: str) -> HttpResponse:
         # User confirmed deletion
         r_alias.delete()
         messages.success(request, _('Alias successfully deleted'))
-        return redirect(reverse('supervisr/mail:mail-domain-view',
+        return redirect(reverse('supervisr_mail:mail-domain-view',
                                 kwargs={'domain': domain})+'#clr_tab=aliases')
 
     return render(request, 'core/generic_delete.html', {
         'object': 'Alias %s' % r_alias.destination,
-        'delete_url': reverse('supervisr/mail:mail-alias-delete', kwargs={
+        'delete_url': reverse('supervisr_mail:mail-alias-delete', kwargs={
             'domain': r_domain.domain.domain,
             'dest': r_alias.destination
             })

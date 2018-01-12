@@ -11,19 +11,19 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('supervisr/core', '0058_internalcredential'),
+        ('supervisr_core', '0058_internalcredential'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='UserPasswordServerCredential',
             fields=[
-                ('userpasswordcredential_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/core.UserPasswordCredential')),
+                ('userpasswordcredential_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr_core.UserPasswordCredential')),
                 ('server', models.CharField(max_length=255)),
             ],
             options={
                 'abstract': False,
             },
-            bases=('supervisr/core.userpasswordcredential',),
+            bases=('supervisr_core.userpasswordcredential',),
         ),
     ]

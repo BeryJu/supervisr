@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('auth', '0008_alter_user_username_max_length'),
-        ('supervisr/mod/auth/ldap', '0001_initial'),
+        ('supervisr_mod_auth_ldap', '0001_initial'),
     ]
 
     operations = [

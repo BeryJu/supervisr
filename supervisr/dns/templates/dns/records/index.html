@@ -20,7 +20,7 @@
 <div class="container">
   <h1><clr-icon shape="view-list" size="48"></clr-icon>{% blocktrans with z=zone.domain.domain %}Records for {{ z }}{% endblocktrans %}</h1>
   <div class="btn-group btn-link btn-icon-link">
-    <a href="{% url 'supervisr/dns:dns-record-new' zone=zone.domain.domain %}" class="btn">
+    <a href="{% url 'supervisr_dns:dns-record-new' zone=zone.domain.domain %}" class="btn">
       <clr-icon shape="add"></clr-icon>
     </a>
     <a data-ctx-name="edit" class="btn">
@@ -34,7 +34,7 @@
         <clr-icon shape="ellipsis-horizontal"></clr-icon>
       </button>
       <div class="dropdown-menu">
-        <a href="{% url 'supervisr/dns:migrate-import-bind' %}" class="dropdown-item">{% trans 'Import from Bind Zone' %}</a>
+        <a href="{% url 'supervisr_dns:migrate-import-bind' %}" class="dropdown-item">{% trans 'Import from Bind Zone' %}</a>
       </div>
     </div>
   </div>
@@ -52,7 +52,7 @@
   </thead>
   <tbody>
     {% for rec in records %}
-    <tr data-selectable data-ctx-edit="{% url 'supervisr/dns:dns-record-edit' zone=zone.domain.domain record=rec.name uuid=rec.uuid %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr/dns:dns-record-delete' zone=zone.domain.domain record=rec.name uuid=rec.uuid %}?back={{ request.get_full_path }}">
+    <tr data-selectable data-ctx-edit="{% url 'supervisr_dns:dns-record-edit' zone=zone.domain.domain record=rec.name uuid=rec.uuid %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr_dns:dns-record-delete' zone=zone.domain.domain record=rec.name uuid=rec.uuid %}?back={{ request.get_full_path }}">
       <td>{{ rec.name|default:'@' }}</td>
       <td>{{ rec.type }}</td>
       <td>{{ rec.prio }}</td>

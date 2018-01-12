@@ -36,7 +36,7 @@
       </a>
       {% supervisr_dyn_navapps as installed_apps %}
       {% for app in installed_apps %}
-      <a class="nav-link {% is_active app.short %}" href="{% url app.index %}">
+      <a class="nav-link {% is_active_app app.label %}" href="{% url app.index %}">
         <span class="nav-text">{% trans app.title %}</span>
       </a>
       {% endfor %}
@@ -79,9 +79,9 @@
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="{% url 'user-send_feedback' %}">{% trans 'Send Feedback' %}</a>
           <div class="dropdown-divider"></div>
-          {% ifapp 'supervisr/static' as static_enabled %}
+          {% ifapp 'supervisr_static' as static_enabled %}
           {% if static_enabled %}
-          <a class="dropdown-item" href="{% url 'supervisr/static:page-view' slug='attributions' %}">{% trans "Attributions" %}</a>
+          <a class="dropdown-item" href="{% url 'supervisr_static:page-view' slug='attributions' %}">{% trans "Attributions" %}</a>
           <div class="dropdown-divider"></div>
           {% endif %}
           <a class="dropdown-item" href="{% url 'account-logout' %}">{% trans "Logout" %}</a>

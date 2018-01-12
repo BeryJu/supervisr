@@ -8,11 +8,11 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/puppet', '0003_auto_20170416_1550'),
+        ('supervisr_puppet', '0003_auto_20170416_1550'),
     ]
 
     run_before = [
-        ('supervisr/core', '0032_auto_20170423_1805')
+        ('supervisr_core', '0032_auto_20170423_1805')
     ]
 
     operations = [

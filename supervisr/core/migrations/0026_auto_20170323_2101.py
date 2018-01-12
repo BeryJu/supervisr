@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/core', '0025_add_settings_branding_icon_message'),
+        ('supervisr_core', '0025_add_settings_branding_icon_message'),
     ]
 
     operations = [

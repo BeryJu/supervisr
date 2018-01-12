@@ -8,7 +8,7 @@
 {% block sidenav %}
 <nav class="sidenav clr-nav-level-2">
   <section class="sidenav-content">
-    <a href="{% url 'supervisr/mail:mail-index' %}" class="nav-link {% is_active 'mail-index' %}">
+    <a href="{% url 'supervisr/mail:index' %}" class="nav-link {% is_active 'index' %}">
     {% trans "Overview" %}
     </a>
     <a href="{% url 'supervisr/mail:mail-account-index' %}" class="nav-link {% is_active 'mail-account-index' %}">

@@ -120,20 +120,14 @@ def get_patterns(mount_path, module, namespace=None):
 
 # Load Urls for all sub apps
 for app in get_apps():
-    # Get Module base path
-    module_base = '.'.join(app.split('.')[:-2])
-    # Try new format first
-    # from supervisr.mod.auth.oauth.client
-    # to mod/auth/oauth/client
-    namespace = '/'.join(module_base.split('.'))
-    api_namespace = '/'.join(module_base.split('.')+['api'])
-    # remove `supervisr/` for mountpath
-    mount_path = namespace.replace('supervisr/', '')
+    # API namespace is always generated automatically
+    api_namespace = '_'.join(app.name.split('_')+['api'])
+    # remove `supervisr/` for mountpath and replace _ with /
+    mount_path = app.label.replace('supervisr_', '').replace('_', '/')
 
     # Only add if module could be loaded
-    urlpatterns += get_patterns(r"^app/%s/" % mount_path, "%s.urls" % module_base,
-                                namespace)
-    urlpatterns += get_patterns(r"^api/app/%s/" % mount_path, "%s.api.urls" % module_base)
+    urlpatterns += get_patterns(r"^app/%s/" % mount_path, "%s.urls" % app.name, app.label)
+    urlpatterns += get_patterns(r"^api/app/%s/" % mount_path, "%s.api.urls" % app.name)
 
 if django_settings.DEBUG or django_settings.TEST:
     import debug_toolbar

@@ -8,8 +8,8 @@ from supervisr.core.models import get_system_user
 
 
 def create_module(apps, schema_editor):
-    PuppetModule = apps.get_model('supervisr/puppet', 'PuppetModule')
-    User = apps.get_model('supervisr/core', 'User')
+    PuppetModule = apps.get_model('supervisr_puppet', 'PuppetModule')
+    User = apps.get_model('supervisr_core', 'User')
     system_user = User.objects.get(pk=get_system_user())
 
     PuppetModule.objects.get_or_create(
@@ -20,8 +20,8 @@ def create_module(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/puppet', '0004_puppetmodule_source_path'),
-        ('supervisr/mail', '0009_maildomain_enabled'),
+        ('supervisr_puppet', '0004_puppetmodule_source_path'),
+        ('supervisr_mail', '0009_maildomain_enabled'),
     ]
 
     operations = [

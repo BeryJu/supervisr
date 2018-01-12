@@ -8,8 +8,8 @@ from supervisr.core.models import get_system_user
 
 
 def create_module(apps, schema_editor):
-    PuppetModule = apps.get_model('supervisr/puppet', 'PuppetModule')
-    User = apps.get_model('supervisr/core', 'User')
+    PuppetModule = apps.get_model('supervisr_puppet', 'PuppetModule')
+    User = apps.get_model('supervisr_core', 'User')
     system_user = User.objects.get(pk=get_system_user())
 
     PuppetModule.objects.get_or_create(
@@ -18,8 +18,8 @@ def create_module(apps, schema_editor):
         source_path='supervisr/core/server/config/')
 
 def create_userprofile(apps, schema_editor):
-    User = apps.get_model('supervisr/core', 'User')
-    UserProfile = apps.get_model('supervisr/core', 'UserProfile')
+    User = apps.get_model('supervisr_core', 'User')
+    UserProfile = apps.get_model('supervisr_core', 'UserProfile')
     system_user = User.objects.get(pk=get_system_user())
 
     UserProfile.objects.get_or_create(
@@ -28,7 +28,7 @@ def create_userprofile(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/core', '0031_remove_userprofile__purgeable'),
+        ('supervisr_core', '0031_remove_userprofile__purgeable'),
     ]
 
     operations = [

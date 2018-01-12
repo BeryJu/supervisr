@@ -67,7 +67,7 @@ class RecordNewView(BaseWizardView):
             product=record,
             user=self.request.user)
         messages.success(self.request, _('DNS Record successfully created'))
-        return redirect(reverse('supervisr/dns:dns-record-list',
+        return redirect(reverse('supervisr_dns:dns-record-list',
                                 kwargs={'zone': self.kwargs['zone']}))
 
 @login_required
@@ -96,7 +96,7 @@ def edit(request: HttpRequest, zone: str, record: str, uuid):
         if form.is_valid():
             r_record.save()
             messages.success(request, _('Successfully edited Record'))
-            return redirect(reverse('supervisr/dns:dns-record-list', kwargs={'zone': zone}))
+            return redirect(reverse('supervisr_dns:dns-record-list', kwargs={'zone': zone}))
         messages.error(request, _("Invalid Record"))
     else:
         form = RecordForm(instance=r_record)
@@ -128,11 +128,11 @@ def delete(request, zone, record, uuid):
         # User confirmed deletion
         r_record.delete()
         messages.success(request, _('Record successfully deleted'))
-        return redirect(reverse('supervisr/dns:dns-record-list', kwargs={'zone': zone}))
+        return redirect(reverse('supervisr_dns:dns-record-list', kwargs={'zone': zone}))
 
     return render(request, 'core/generic_delete.html', {
         'object': 'Record %s' % r_record.name,
-        'delete_url': reverse('supervisr/dns:dns-record-delete', kwargs={
+        'delete_url': reverse('supervisr_dns:dns-record-delete', kwargs={
             'zone': zone,
             'record': record,
             'uuid': r_record.uuid,

@@ -24,7 +24,7 @@ class TestDNSViews(TestCase):
         Test module_list view
         """
         pass
-        # req = self.factory.get(reverse('dns:dns-index'))
+        # req = self.factory.get(reverse('dns:index'))
         # req.user = User.objects.get(pk=get_system_user())
         # res = dns.index(req)
         # self.assertEqual(res.status_code, 200)

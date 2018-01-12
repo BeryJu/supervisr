@@ -9,11 +9,11 @@
 <nav class="sidenav clr-nav-level-2">
   <section class="sidenav-content">
     <section class="nav-group">
-      <a href="{% url 'supervisr/dns:dns-index' %}" class="nav-link {% is_active 'dns-index' %}">{% trans "Zones" %}</a>
+      <a href="{% url 'supervisr_dns:index' %}" class="nav-link {% is_active 'index' %}">{% trans "Zones" %}</a>
       <ul class="nav-list">
         {% related_products 'supervisr.dns.models.Zone' as zones %}
         {% for z in zones %}
-        <li><a href="{% url 'supervisr/dns:dns-record-list' zone=z.domain %}" class="nav-link {% is_active_url 'supervisr/dns:dns-record-list' zone=z.domain %}">{{ z.domain }}</a></li>
+        <li><a href="{% url 'supervisr_dns:dns-record-list' zone=z.domain %}" class="nav-link {% is_active_url 'supervisr_dns:dns-record-list' zone=z.domain %}">{{ z.domain }}</a></li>
         {% endfor %}
       </ul>
     </section>

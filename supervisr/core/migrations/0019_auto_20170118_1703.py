@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/core', '0018_product_ldap_group'),
+        ('supervisr_core', '0018_product_ldap_group'),
     ]
 
     operations = [

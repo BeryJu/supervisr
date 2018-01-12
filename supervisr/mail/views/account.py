@@ -92,7 +92,7 @@ class AccountNewView(BaseWizardView):
                     destination=alias_dest
                     )
         messages.success(self.request, _('Mail Account successfully created'))
-        return redirect(reverse('supervisr/mail:mail-domain-view', kwargs=
+        return redirect(reverse('supervisr_mail:mail-domain-view', kwargs=
                                 {'domain': form_dict['0'].cleaned_data.get('domain').domain}))
 
 @login_required
@@ -127,7 +127,7 @@ def account_set_password(request: HttpRequest, domain: str, account: str) -> Htt
                 request=request,
                 current=False)
             LOGGER.info("Updated password for %s", r_account.email)
-            return redirect(reverse('supervisr/mail:mail-domain-view', kwargs={'domain': domain}))
+            return redirect(reverse('supervisr_mail:mail-domain-view', kwargs={'domain': domain}))
 
     else:
 
@@ -167,9 +167,9 @@ def account_edit(request: HttpRequest, domain: str, account: str) -> HttpRespons
         if form.is_valid():
             r_account.save()
             messages.success(request, _('Successfully edited Account'))
-            return redirect(reverse('supervisr/mail:mail-domain-view', kwargs={'domain': domain}))
+            return redirect(reverse('supervisr_mail:mail-domain-view', kwargs={'domain': domain}))
         messages.error(request, _("Invalid Account"))
-        return redirect(reverse('supervisr/mail:mail-domain-view', kwargs={'domain': domain}))
+        return redirect(reverse('supervisr_mail:mail-domain-view', kwargs={'domain': domain}))
     else:
         form = MailAccountForm(instance=r_account)
         form.fields['domain'].queryset = user_domains
@@ -200,11 +200,11 @@ def account_delete(request: HttpRequest, domain: str, account: str) -> HttpRespo
         # User confirmed deletion
         r_account.delete()
         messages.success(request, _('Account successfully deleted'))
-        return redirect(reverse('supervisr/mail:mail-domain-view', kwargs={'domain': domain}))
+        return redirect(reverse('supervisr_mail:mail-domain-view', kwargs={'domain': domain}))
 
     return render(request, 'core/generic_delete.html', {
         'object': 'Account %s' % r_account.email_raw,
-        'delete_url': reverse('supervisr/mail:mail-account-delete', kwargs={
+        'delete_url': reverse('supervisr_mail:mail-account-delete', kwargs={
             'domain': r_domain.domain.domain,
             'account': r_account.address
             })

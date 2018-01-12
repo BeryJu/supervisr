@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                 ('changelog', models.TextField(blank=True)),
                 ('license', models.TextField(blank=True)),
                 ('metadata', models.TextField()),
-                ('module', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/puppet.PuppetModule')),
+                ('module', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_puppet.PuppetModule')),
             ],
         ),
         migrations.CreateModel(
@@ -54,6 +54,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='puppetmodule',
             name='owner',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/puppet.PuppetUser'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_puppet.PuppetUser'),
         ),
     ]

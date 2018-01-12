@@ -79,7 +79,7 @@
             <span class="alert-text">
               {% trans "Also available in the following languages: " %}
               {% for lang in related_langs %}
-              <a style="color: initial" class="alert-action" href="{% url 'supervisr/static:page-view' slug=page.slug lang=lang %}">{{ lang|upper }}</a>
+              <a style="color: initial" class="alert-action" href="{% url 'supervisr_static:page-view' slug=page.slug lang=lang %}">{{ lang|upper }}</a>
               {% endfor %}
             </span>
           </div>

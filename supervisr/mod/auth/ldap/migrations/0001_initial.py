@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('supervisr/core', '0057_auto_20170818_1943'),
+        ('supervisr_core', '0057_auto_20170818_1943'),
     ]
 
     operations = [
@@ -34,12 +34,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ProductExtensionLDAP',
             fields=[
-                ('productextension_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/core.ProductExtension')),
+                ('productextension_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr_core.ProductExtension')),
                 ('ldap_group', models.TextField(blank=True)),
             ],
             options={
                 'abstract': False,
             },
-            bases=('supervisr/core.productextension',),
+            bases=('supervisr_core.productextension',),
         ),
     ]

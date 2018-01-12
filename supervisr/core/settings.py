@@ -203,7 +203,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = 'supervisr/core.User'
+AUTH_USER_MODEL = 'supervisr_core.User'
 
 AUTHENTICATION_BACKENDS = [
     'supervisr.core.auth.EmailBackend',

@@ -3,7 +3,6 @@ Supervisr Core NavApps Templatetag
 """
 
 from django import template
-from django.apps import apps
 from django.core.cache import cache
 
 from supervisr.core.utils import get_apps
@@ -25,24 +24,14 @@ def supervisr_dyn_user(context):
     key = 'supervisr_dyn_user_%s' % uniq
     if not cache.get(key):
         app_list = []
-        sub_apps = get_apps(mod_only=False)
+        sub_apps = get_apps()
         for mod in sub_apps:
-            config = None
-            try:
-                mod_new = '/'.join(mod.split('.')[:-2])
-                config = apps.get_app_config(mod_new)
-                mod = mod_new
-            except LookupError:
-                if 'mod' in mod:
-                    mod = mod.split('.')[:-2][-1]
-                else:
-                    mod = mod.split('.')[1]
-                config = apps.get_app_config(mod)
-            view = config.view_user_settings
+            if not mod.name.startswith('supervisr.mod'):
+                continue
+            view = mod.view_user_settings
             if view is not None:
-                view = '%s:%s' % (mod, view)
-                mod = mod.replace('supervisr.', '').replace('mod.', '')
-                title = config.title_modifier(config.label, context.request)
+                view = '%s:%s' % (mod.label, view)
+                title = mod.title_modifier(context.request)
                 app_list.append({
                     'title': title,
                     'view': view

@@ -25,7 +25,7 @@ class TestCoreViews(TestCase):
         """
         Test Index View (Anonymous)
         """
-        req = self.factory.get(reverse('supervisr/mail:mail-index'))
+        req = self.factory.get(reverse('supervisr_mail:index'))
         req.user = AnonymousUser()
         res = core.index(req)
         self.assertEqual(res.status_code, 302)
@@ -34,7 +34,7 @@ class TestCoreViews(TestCase):
         """
         Test Index View (Authenticated)
         """
-        req = self.factory.get(reverse('supervisr/mail:mail-index'))
+        req = self.factory.get(reverse('supervisr_mail:index'))
         req.user = User.objects.get(pk=get_system_user())
         res = core.index(req)
         self.assertEqual(res.status_code, 200)

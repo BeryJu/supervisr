@@ -5,7 +5,6 @@ supervisr view decorators
 import base64
 import time
 
-from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.core.cache import cache
@@ -109,26 +108,17 @@ def require_setting(path, value, message=_('This function has been administrativ
     return outer_wrap
 
 def ifapp(app_name):
-    """
-    Only executes ifapp_func if app_name is installed
-    """
+    """Only executes ifapp_func if app_name is installed"""
+
     def get_app_labels():
-        """
-        Cache all installed apps and return the list
-        """
+        """Cache all installed apps and return the list"""
+
         cache_key = 'ifapp_apps'
         if not cache.get(cache_key):
             # Make a list of all short names for all apps
             app_cache = []
             for app in get_apps():
-                try:
-                    mod_new = '/'.join(app.split('.')[:-2])
-                    config = apps.get_app_config(mod_new)
-                    mod = mod_new
-                except LookupError:
-                    mod = app.split('.')[:-2][-1]
-                    config = apps.get_app_config(mod)
-                app_cache.append(config.label)
+                app_cache.append(app.label)
             cache.set(cache_key, app_cache, 1000)
             return app_cache
         return cache.get(cache_key) # pragma: no cover
@@ -136,14 +126,11 @@ def ifapp(app_name):
     app_cache = get_app_labels()
 
     def outer_wrap(ifapp_func):
-        """
-        Only executes ifapp_func if app_name is installed
-        """
+        """Only executes ifapp_func if app_name is installed"""
+
         def wrap(*args, **kwargs):
-            """
-            Only executes ifapp_func if app_name is installed
-            """
-            if app_name in app_cache or app_name == 'supervisr/core':
+            """Only executes ifapp_func if app_name is installed"""
+            if app_name in app_cache or app_name == 'supervisr_core':
                 return ifapp_func(*args, **kwargs)
             return
         wrap.__doc__ = ifapp_func.__doc__
