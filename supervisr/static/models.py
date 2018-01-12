@@ -1,6 +1,4 @@
-"""
-Supervisr Static Models
-"""
+"""supervisr Static Models"""
 
 from django.conf import settings
 from django.db import models
@@ -9,9 +7,7 @@ from supervisr.core.models import CastableModel, CreatedUpdatedModel, Product
 
 
 class StaticPage(CreatedUpdatedModel, CastableModel):
-    """
-    Store static page
-    """
+    """Store static page"""
     content = models.TextField()
     template = models.TextField(default='static/generic.html')
     title = models.TextField()
@@ -31,15 +27,11 @@ class StaticPage(CreatedUpdatedModel, CastableModel):
         unique_together = (('slug', 'language',),)
 
 class FilePage(StaticPage):
-    """
-    Stora static page, which is read from file on start
-    """
+    """Stora static page, which is read from file on start"""
     path = models.TextField()
 
     def update_from_file(self):
-        """
-        Read data from file and write to DB
-        """
+        """Read data from file and write to DB"""
         with open(self.path, 'r') as file:
             new_content = file.read()
             if new_content != self.content:
@@ -52,9 +44,7 @@ class FilePage(StaticPage):
         return "FilePage %s (slug=%s, path=%s)" % (self.title, self.slug, self.path)
 
 class ProductPage(StaticPage):
-    """
-    A Page specific for a product
-    """
+    """A Page specific for a product"""
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def __str__(self):

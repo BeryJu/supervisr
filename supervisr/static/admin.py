@@ -1,6 +1,4 @@
-"""
-Supervisr Static Admin
-"""
+"""supervisr Static Admin"""
 
 from supervisr.core.admin import admin_autoregister
 
