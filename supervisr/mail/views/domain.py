@@ -1,11 +1,9 @@
-"""
-Supervisr Mail Domain Views
-"""
+"""Supervisr Mail Domain Views"""
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.http import Http404
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render, reverse
 from django.utils.translation import ugettext as _
 
@@ -18,22 +16,20 @@ from supervisr.mail.models import MailAccount, MailAlias, MailDomain
 
 
 @login_required
-def view(req, domain):
-    """
-    Show details to a domain
-    """
-    domains = MailDomain.objects.filter(domain__domain=domain, users__in=[req.user])
+def view(request: HttpRequest, domain: str) -> HttpResponse:
+    """Show details to a domain"""
+    domains = MailDomain.objects.filter(domain__domain=domain, users__in=[request.user])
 
     if not domains.exists():
         raise Http404
     r_domain = domains.first()
 
     acc_accounts = MailAccount.objects \
-        .filter(domain=r_domain, users__in=[req.user]) \
+        .filter(domain=r_domain, users__in=[request.user]) \
         .order_by('address')
 
-    acc_paginator = Paginator(acc_accounts, req.user.rows_per_page)
-    page = req.GET.get('accountPage')
+    acc_paginator = Paginator(acc_accounts, request.user.rows_per_page)
+    page = request.GET.get('accountPage')
     try:
         accounts = acc_paginator.page(page)
     except PageNotAnInteger:
@@ -42,11 +38,11 @@ def view(req, domain):
         accounts = acc_paginator.page(acc_paginator.num_pages)
 
     fwd_accounts = MailAlias.objects \
-        .filter(account__domain=r_domain, account__users__in=[req.user]) \
+        .filter(account__domain=r_domain, account__users__in=[request.user]) \
         .order_by('account__domain', 'account__address')
-    ali_paginator = Paginator(fwd_accounts, req.user.rows_per_page)
+    ali_paginator = Paginator(fwd_accounts, request.user.rows_per_page)
 
-    page = req.GET.get('aliasPage')
+    page = request.GET.get('aliasPage')
     try:
         aliases = ali_paginator.page(page)
     except PageNotAnInteger:
@@ -54,7 +50,7 @@ def view(req, domain):
     except EmptyPage:
         aliases = ali_paginator.page(ali_paginator.num_pages)
 
-    return render(req, 'mail/domain/view.html', {
+    return render(request, 'mail/domain/view.html', {
         'domain': r_domain,
         'acc_accounts': accounts,
         'acc_aliases': aliases,
@@ -63,9 +59,7 @@ def view(req, domain):
 
 # pylint: disable=too-many-ancestors
 class DomainNewView(BaseWizardView):
-    """
-    Wizard to create a Mail Domain
-    """
+    """Wizard to create a Mail Domain"""
 
     title = _('New Mail Domain')
     form_list = [MailDomainForm]

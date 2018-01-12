@@ -1,6 +1,4 @@
-"""
-Supervisr Core Maintenance ManagementCommand
-"""
+"""Supervisr Core Maintenance ManagementCommand"""
 
 import logging
 
@@ -11,9 +9,7 @@ from supervisr.core.models import Setting
 LOGGER = logging.getLogger(__name__)
 
 class Command(BaseCommand):
-    """
-    Turns maintenance Mode on or off via manage.py
-    """
+    """Turns maintenance Mode on or off via manage.py"""
 
     help = 'Turns maintenance Mode on or off'
 
@@ -30,4 +26,4 @@ class Command(BaseCommand):
         setting.value = value
         setting.save()
         word = 'Enabled' if value is True else 'Disabled'
-        LOGGER.info("%s maintenance mode.", word)
+        LOGGER.debug("%s maintenance mode.", word)

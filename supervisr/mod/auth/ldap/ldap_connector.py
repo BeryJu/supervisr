@@ -84,7 +84,7 @@ class LDAPConnector(object):
         pid = os.getpid()
         json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock_%d.json' % pid)
         os.unlink(json_path)
-        LOGGER.info("Cleaned up LDAP Mock from PID %d", pid)
+        LOGGER.debug("Cleaned up LDAP Mock from PID %d", pid)
 
     def apply_db(self):
         """Check if any unapplied LDAPModification's are left"""
@@ -100,7 +100,7 @@ class LDAPConnector(object):
                 obj.delete()
             except ldap3.core.exceptions.LDAPException as exc:
                 LOGGER.error(exc)
-        LOGGER.info("Recovered %d Modifications from DB.", len(to_apply))
+        LOGGER.debug("Recovered %d Modifications from DB.", len(to_apply))
 
     @staticmethod
     def handle_ldap_error(object_dn, action, data):
@@ -199,7 +199,7 @@ class LDAPConnector(object):
             user.set_unusable_password()
             user.save()
         # All done!
-        LOGGER.info("LDAP user lookup succeeded")
+        LOGGER.debug("LDAP user lookup succeeded")
         return user
 
     def auth_user(self, password, **filters):
@@ -265,7 +265,7 @@ class LDAPConnector(object):
         # AD doesn't like sAMAccountName's with . at the end
         username_trunk = username_trunk[:-1] if username_trunk[-1] == '.' else username_trunk
         user_dn = 'cn='+username+','+self.base_dn
-        LOGGER.info('New DN: '+user_dn)
+        LOGGER.debug('New DN: '+user_dn)
         attrs = {
             'distinguishedName' : str(user_dn),
             'cn'                : str(username),
@@ -283,7 +283,7 @@ class LDAPConnector(object):
         except ldap3.core.exceptions.LDAPException as exception:
             LOGGER.warning("Failed to create user ('%s'), saved to DB", exception)
             LDAPConnector.handle_ldap_error(user_dn, LDAPModification.ACTION_ADD, attrs)
-        LOGGER.info("Signed up user %s", user.email)
+        LOGGER.debug("Signed up user %s", user.email)
         return self.change_password(raw_password, mail=user.email)
 
     @time(statistic_key='ldap.ldap_connector._do_modify')

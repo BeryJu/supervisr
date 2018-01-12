@@ -12,7 +12,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth.decorators import login_required
-from django.http import Http404
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.encoding import force_text, smart_bytes
@@ -228,27 +228,25 @@ class OAuthCallback(OAuthClientMixin, View):
             return redirect(self.get_login_redirect(provider, user, access, True))
 
 @login_required
-def disconnect(req, provider):
-    """
-    Delete connection with provider
-    """
+def disconnect(request: HttpRequest, provider: str) -> HttpResponse:
+    """Delete connection with provider"""
     provider = Provider.objects.filter(name=provider)
     if not provider.exists():
         raise Http404
     r_provider = provider.first()
 
-    aas = AccountAccess.objects.filter(provider=r_provider, user=req.user)
+    aas = AccountAccess.objects.filter(provider=r_provider, user=request.user)
     if not aas.exists():
         raise Http404
     r_aas = aas.first()
 
-    if req.method == 'POST' and 'confirmdelete' in req.POST:
+    if request.method == 'POST' and 'confirmdelete' in request.POST:
         # User confirmed deletion
         r_aas.delete()
-        messages.success(req, _('Connection successfully deleted'))
+        messages.success(request, _('Connection successfully deleted'))
         return redirect(reverse('supervisr/mod/auth/oauth/client:user_settings'))
 
-    return render(req, 'core/generic_delete.html', {
+    return render(request, 'core/generic_delete.html', {
         'object': 'OAuth Connection with %s' % r_provider.ui_name,
         'delete_url': reverse('supervisr/mod/auth/oauth/client:oauth-client-disconnect', kwargs={
             'provider': r_provider.name,

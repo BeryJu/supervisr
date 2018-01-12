@@ -36,7 +36,7 @@ class TestProduct(TestCase):
         SIG_USER_POST_SIGN_UP.send(
             sender=None,
             user=self.user,
-            req=None)
+            request=None)
         rel = UserProductRelationship.objects.filter(
             product=self.product_a,
             user=self.user)

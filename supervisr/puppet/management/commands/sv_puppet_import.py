@@ -6,14 +6,12 @@ import logging
 
 from django.core.management.base import BaseCommand
 
-from ...utils import ForgeImporter
+from supervisr.puppet.utils import ForgeImporter
 
 LOGGER = logging.getLogger(__name__)
 
 class Command(BaseCommand):
-    """
-    Import a module from puppetforge
-    """
+    """Import a module from puppetforge"""
 
     help = 'Import a module from puppetforge'
 
@@ -24,5 +22,5 @@ class Command(BaseCommand):
         i = ForgeImporter()
         for mod in options['module']:
             i.import_module(mod)
-        LOGGER.info("Done!")
+        LOGGER.debug("Done!")
         return "Done!"

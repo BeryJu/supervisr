@@ -57,12 +57,12 @@ class ForgeImporter(object):
             first_name=result['display_name'])
 
         if not existing_user:
-            LOGGER.info("Created user '%s' from PuppetForge...", result['username'])
+            LOGGER.debug("Created user '%s' from PuppetForge...", result['username'])
             return User.objects.create(
                 username=result['username'],
                 first_name=result['display_name'])
 
-        LOGGER.info("User '%s' exists already", result['username'])
+        LOGGER.debug("User '%s' exists already", result['username'])
         return existing_user.first()
 
     def get_module_info(self, user, modulename):
@@ -76,13 +76,14 @@ class ForgeImporter(object):
             name=result['name'])
 
         if not existing_module:
-            LOGGER.info("Created module '%s-%s' from PuppetForge...", user.username, result['name'])
+            LOGGER.debug("Created module '%s-%s' from PuppetForge...",
+                         user.username, result['name'])
             return PuppetModule.objects.create(
                 owner=user,
                 name=result['name'],
                 supported=result['supported'])
 
-        LOGGER.info("Module '%s-%s' exists already", user.username, result['name'])
+        LOGGER.debug("Module '%s-%s' exists already", user.username, result['name'])
         return existing_module.first()
 
     def import_releases(self, user, module):
@@ -97,8 +98,8 @@ class ForgeImporter(object):
                 version=release['version'])
 
             if not existing_module:
-                LOGGER.info("Created release '%s-%s@%s' from PuppetForge...",
-                            user.username, module.name, release['version'])
+                LOGGER.debug("Created release '%s-%s@%s' from PuppetForge...",
+                             user.username, module.name, release['version'])
 
                 archive = requests.get(self.BASE_URL + release['file_uri'], stream=True)
                 filename = '%s/%s-%s-%s.tgz' \
@@ -119,5 +120,5 @@ class ForgeImporter(object):
 
                 os.remove(filename)
             else:
-                LOGGER.info("Release %s-%s@%s exists already", user.username,
-                            module.name, release['version'])
+                LOGGER.debug("Release %s-%s@%s exists already", user.username,
+                             module.name, release['version'])

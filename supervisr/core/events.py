@@ -17,7 +17,7 @@ from supervisr.core.signals import (SIG_USER_POST_CHANGE_PASS,
 
 @receiver(SIG_USER_POST_SIGN_UP)
 # pylint: disable=unused-argument
-def event_handle_user_signed_up(sender, signal, user, req, **kwargs):
+def event_handle_user_signed_up(sender, signal, user, request, **kwargs):
     """
     Create an Event when a user signed up
     """
@@ -25,11 +25,11 @@ def event_handle_user_signed_up(sender, signal, user, req, **kwargs):
         user=user,
         message=_("You Signed up"),
         current=False,
-        request=req)
+        request=request)
 
 @receiver(SIG_USER_POST_CHANGE_PASS)
 # pylint: disable=unused-argument
-def event_handle_user_changed_pass(signal, user, req, was_reset, **kwargs):
+def event_handle_user_changed_pass(signal, user, request, was_reset, **kwargs):
     """
     Create an Event when a user changes their password
     """
@@ -39,7 +39,7 @@ def event_handle_user_changed_pass(signal, user, req, was_reset, **kwargs):
             'kind': _("non-reset") if was_reset is False else _("reset")
             }),
         current=True,
-        request=req)
+        request=request)
 
 @receiver(SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
 # pylint: disable=unused-argument

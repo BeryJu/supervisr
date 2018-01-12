@@ -16,49 +16,41 @@ from supervisr.core.views.wizards import BaseWizardView
 
 
 @login_required
-def index(req):
-    """
-    Show an Index of all Products that a user can access
-    """
+def index(request):
+    """Show an Index of all Products that a user can access"""
     products = Product.objects.filter(invite_only=False)
-    return render(req, 'product/index.html', {
+    return render(request, 'product/index.html', {
         'products': products
     })
 
 @login_required
-def view(req, slug):
-    """
-    Show more specific Information about a product
-    """
+def view(request, slug):
+    """Show more specific Information about a product"""
     @ifapp('supervisr/static')
-    def redirect_to_static(req, slug):
-        """
-        if static app is installed, use static's productpage
-        """
+    def redirect_to_static(request, slug):
+        """if static app is installed, use static's productpage"""
         from supervisr.static.views import view
-        return view(req, slug)
-    static = redirect_to_static(req, slug)
+        return view(request, slug)
+    static = redirect_to_static(request, slug)
     if static:
         return static
     product = get_object_or_404(Product, slug=slug)
     # If the product is not invite_only
     # and the user is not associated with the product
     if product.invite_only is False or \
-        UserProductRelationship.objects.filter(user=req.user,
+        UserProductRelationship.objects.filter(user=request.user,
                                                product=product).exists():
-        return render(req, 'product/view.html', {
+        return render(request, 'product/view.html', {
             'product': product
         })
     raise Http404
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def admin_index(req):
-    """
-    Show product overview for admins
-    """
+def admin_index(request):
+    """Show product overview for admins"""
     products = Product.objects.filter(auto_generated=False)
-    return render(req, 'product/admin_index.html', {
+    return render(request, 'product/admin_index.html', {
         'products': products
         })
 
@@ -66,9 +58,7 @@ def admin_index(req):
 @method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 # pylint: disable=too-many-ancestors
 class ProductNewWizard(BaseWizardView):
-    """
-    Wizard to create a Product
-    """
+    """Wizard to create a Product"""
 
     title = _("New Product")
     form_list = [ProductForm]

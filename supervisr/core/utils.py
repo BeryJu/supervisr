@@ -1,6 +1,4 @@
-"""
-Supervisr Core utils
-"""
+"""Supervisr Core utils"""
 
 import base64
 import logging
@@ -26,9 +24,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def get_remote_ip(req):
-    """
-    Return the remote's IP
-    """
+    """Return the remote's IP"""
     if not req:
         return '0.0.0.0'
     if req.META.get('HTTP_X_FORWARDED_FOR'):
@@ -36,15 +32,11 @@ def get_remote_ip(req):
     return req.META.get('REMOTE_ADDR')
 
 def uuid():
-    """
-    Return a UUID as string with just alphanumeric-chars
-    """
+    """Return a UUID as string with just alphanumeric-chars"""
     return str(uuid4()).replace('-', '').upper()
 
 def get_reverse_dns(dev_ip):
-    """
-    Does a reverse DNS lookup and returns the first IP
-    """
+    """Does a reverse DNS lookup and returns the first IP"""
     try:
         rev = socket.gethostbyaddr(dev_ip)
         if rev:
@@ -52,26 +44,20 @@ def get_reverse_dns(dev_ip):
     except (socket.herror, TypeError, IndexError):
         return ''
 
-def do_404(req, message=None):
-    """
-    Boilerplate to return a 404 message
-    """
-    return render(req, 'common/error.html', {
+def do_404(request, message=None):
+    """Boilerplate to return a 404 message"""
+    return render(request, 'common/error.html', {
         'code': 404,
         'message': _(message) if message is not None else None
     }, status=404)
 
 def render_to_string(tmpl, ctx):
-    """
-    Render a template to string
-    """
+    """Render a template to string"""
     template = loader.get_template(tmpl)
     return template.render(ctx)
 
 def get_apps(mod_only=False):
-    """
-    Get a list of all installed apps
-    """
+    """Get a list of all installed apps"""
     app_list = []
     for app in settings.INSTALLED_APPS:
         if app.startswith('supervisr') and \
@@ -84,9 +70,7 @@ def get_apps(mod_only=False):
     return app_list
 
 def get_app_labels():
-    """
-    Cache all installed apps and return the list
-    """
+    """Cache all installed apps and return the list"""
     cache_key = 'core:app_labels'
     if not cache.get(cache_key):
         # Make a list of all short names for all apps
@@ -100,18 +84,13 @@ def get_app_labels():
     return cache.get(cache_key) # pragma: no cover
 
 def time(statistic_key):
-    """
-    Decorator to time a method call
-    """
+    """Decorator to time a method call"""
 
     def outer_wrapper(method):
-        """
-        Decorator to time a method call
-        """
+        """Decorator to time a method call"""
+
         def timed(*args, **kw):
-            """
-            Decorator to time a method call
-            """
+            """Decorator to time a method call"""
             time_start = timestamp()
             result = method(*args, **kw)
             time_end = timestamp()
@@ -124,15 +103,11 @@ def time(statistic_key):
     return outer_wrapper
 
 def class_to_path(cls):
-    """
-    Turn Class (Class or instance) into module path
-    """
+    """Turn Class (Class or instance) into module path"""
     return '%s.%s' % (cls.__module__, cls.__name__)
 
 def path_to_class(path):
-    """
-    Import module and return class
-    """
+    """Import module and return class"""
     if not path:
         return None
     parts = path.split('.')
@@ -141,9 +116,7 @@ def path_to_class(path):
     return _class
 
 def db_settings_from_dbconfig(config_path):
-    """
-    Generate Django DATABASE dict from dbconfig file
-    """
+    """Generate Django DATABASE dict from dbconfig file"""
     db_config = {}
     with open(config_path, 'r') as file:
         contents = file.read().split('\n')
@@ -173,16 +146,12 @@ def db_settings_from_dbconfig(config_path):
         return db_config
 
 def read_simple(path, mode='r'):
-    """
-    Simple wrapper for file reading
-    """
+    """Simple wrapper for file reading"""
     with open(path, mode) as file:
         return file.read()
 
 def import_dir(directory):
-    """
-    Import every file in a direct and call callback for each
-    """
+    """Import every file in a direct and call callback for each"""
     files = glob(directory+'/*.py', recursive=True)
     modules = []
     for file in files:
@@ -191,15 +160,11 @@ def import_dir(directory):
     return modules
 
 def b64encode(*args):
-    """
-    String wrapper around b64encode to removie binary fuckery
-    """
+    """String wrapper around b64encode to removie binary fuckery"""
     return base64.b64encode(str.encode(''.join(args))).decode()
 
 def b64decode(*args):
-    """
-    String wrapper around b64decode to remove binary fuckery
-    """
+    """String wrapper around b64decode to remove binary fuckery"""
     return base64.b64decode(''.join(args)).decode()
 
 def check_db_connection(connection_name: str = 'default') -> bool:
@@ -221,13 +186,13 @@ def check_db_connection(connection_name: str = 'default') -> bool:
     else:
         return True
 
-def messages_add_once(req, level, text, **kwargs):
+def messages_add_once(request, level, text, **kwargs):
     """Add text to messages, but make sure no duplicates exist"""
     exists = False
-    storage = messages.get_messages(req)
+    storage = messages.get_messages(request)
     for msg in storage:
         if msg.message == text:
             exists = True
     storage.used = False
     if not exists:
-        return messages.add_message(req, level, mark_safe(text), **kwargs)
+        return messages.add_message(request, level, mark_safe(text), **kwargs)

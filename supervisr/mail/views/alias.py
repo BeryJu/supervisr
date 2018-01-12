@@ -5,7 +5,7 @@ Supervisr Mail Alias Views
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.http import Http404
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render, reverse
 from django.utils.translation import ugettext as _
 
@@ -15,17 +15,15 @@ from supervisr.mail.models import MailAccount, MailAlias, MailDomain
 
 
 @login_required
-def index(req):
-    """
-    Index of aliases
-    """
-    domains = MailDomain.objects.filter(users__in=[req.user])
+def index(request: HttpRequest) -> HttpResponse:
+    """Index of aliases"""
+    domains = MailDomain.objects.filter(users__in=[request.user])
     fwd_accounts = MailAlias.objects \
-        .filter(account__domain__in=domains, account__users__in=[req.user]) \
+        .filter(account__domain__in=domains, account__users__in=[request.user]) \
         .order_by('account__domain', 'account__address')
-    paginator = Paginator(fwd_accounts, req.user.rows_per_page)
+    paginator = Paginator(fwd_accounts, request.user.rows_per_page)
 
-    page = req.GET.get('page')
+    page = request.GET.get('page')
     try:
         aliases = paginator.page(page)
     except PageNotAnInteger:
@@ -33,15 +31,13 @@ def index(req):
     except EmptyPage:
         aliases = paginator.page(paginator.num_pages)
 
-    return render(req, 'mail/alias/index.html', {
+    return render(request, 'mail/alias/index.html', {
         'fwd_accounts': aliases,
         })
 
 # pylint: disable=too-many-ancestors
 class AliasNewView(BaseWizardView):
-    """
-    Wizard to create a Mail Alias
-    """
+    """Wizard to create a Mail Alias"""
 
     title = _('New Mail Alias')
     form_list = [MailAliasWizardForm]
@@ -72,32 +68,30 @@ class AliasNewView(BaseWizardView):
                                 kwargs={'domain': m_acc.domain.domain})+'#clr_tab=aliases')
 
 @login_required
-def alias_edit(req, domain, dest):
-    """
-    Edit Alias
-    """
-    domains = MailDomain.objects.filter(domain__domain=domain, users__in=[req.user])
+def alias_edit(request: HttpRequest, domain: str, dest: str) -> HttpResponse:
+    """Edit Alias"""
+    domains = MailDomain.objects.filter(domain__domain=domain, users__in=[request.user])
     if not domains.exists():
         raise Http404
     r_domain = domains.first()
 
     aliases = MailAlias.objects.filter(account__domain=r_domain,
-                                       destination=dest, account__users__in=[req.user])
+                                       destination=dest, account__users__in=[request.user])
     if not aliases.exists():
         raise Http404
     r_alias = aliases.first()
 
-    if req.method == 'POST':
-        form = MailAliasForm(req.POST, instance=r_alias)
+    if request.method == 'POST':
+        form = MailAliasForm(request.POST, instance=r_alias)
         if form.is_valid():
             form.save()
-            messages.success(req, _('Successfully updated Alias'))
+            messages.success(request, _('Successfully updated Alias'))
             return redirect(reverse('supervisr/mail:mail-domain-view',
                                     kwargs={'domain': domain})+'#clr_tab=aliases')
     else:
         form = MailAliasForm(instance=r_alias)
 
-    return render(req, 'core/generic_form_modal.html', {
+    return render(request, 'core/generic_form_modal.html', {
         'form': form,
         'primary_action': 'Save',
         'title': 'Alias Edit',
@@ -105,29 +99,27 @@ def alias_edit(req, domain, dest):
         })
 
 @login_required
-def alias_delete(req, domain, dest):
-    """
-    Show view to delete alias
-    """
-    domains = MailDomain.objects.filter(domain__domain=domain, users__in=[req.user])
+def alias_delete(request: HttpRequest, domain: str, dest: str) -> HttpResponse:
+    """Show view to delete alias"""
+    domains = MailDomain.objects.filter(domain__domain=domain, users__in=[request.user])
     if not domains.exists():
         raise Http404
     r_domain = domains.first()
 
     aliases = MailAlias.objects.filter(account__domain=r_domain,
-                                       destination=dest, account__users__in=[req.user])
+                                       destination=dest, account__users__in=[request.user])
     if not aliases.exists():
         raise Http404
     r_alias = aliases.first()
 
-    if req.method == 'POST' and 'confirmdelete' in req.POST:
+    if request.method == 'POST' and 'confirmdelete' in request.POST:
         # User confirmed deletion
         r_alias.delete()
-        messages.success(req, _('Alias successfully deleted'))
+        messages.success(request, _('Alias successfully deleted'))
         return redirect(reverse('supervisr/mail:mail-domain-view',
                                 kwargs={'domain': domain})+'#clr_tab=aliases')
 
-    return render(req, 'core/generic_delete.html', {
+    return render(request, 'core/generic_delete.html', {
         'object': 'Alias %s' % r_alias.destination,
         'delete_url': reverse('supervisr/mail:mail-alias-delete', kwargs={
             'domain': r_domain.domain.domain,

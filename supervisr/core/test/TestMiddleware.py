@@ -55,13 +55,13 @@ class TestMiddleware(TestCase):
         Setting.set('banner:enabled', namespace='supervisr.core', value=True)
         Setting.set('banner:message', namespace='supervisr.core', value=test_message)
         Setting.set('banner:level', namespace='supervisr.core', value='info')
-        req = self.factory.get(reverse('common-index'))
+        request = self.factory.get(reverse('common-index'))
         # Fix django.contrib.messages.api.MessageFailure
         # because this request doesn't have a session or anything
-        setattr(req, 'session', 'session')
-        setattr(req, '_messages', FallbackStorage(req))
-        req.user = self.sys_user
-        res = permanent_message(common.index)(req)
+        setattr(request, 'session', 'session')
+        setattr(request, '_messages', FallbackStorage(request))
+        request.user = self.sys_user
+        res = permanent_message(common.index)(request)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(test_message in res.content.decode('utf-8'))
         self.assertEqual(res.content.decode('utf-8').count(test_message), 1)
@@ -73,14 +73,14 @@ class TestMiddleware(TestCase):
         Setting.set('banner:enabled', namespace='supervisr.core', value=True)
         Setting.set('banner:message', namespace='supervisr.core', value=test_message)
         Setting.set('banner:level', namespace='supervisr.core', value=test_level)
-        req = self.factory.get(reverse('common-index'))
+        request = self.factory.get(reverse('common-index'))
         # Fix django.contrib.messages.api.MessageFailure
         # because this request doesn't have a session or anything
-        setattr(req, 'session', 'session')
-        setattr(req, '_messages', FallbackStorage(req))
-        messages.add_message(req, getattr(messages, test_level.upper()), test_message)
-        req.user = self.sys_user
-        res = permanent_message(common.index)(req)
+        setattr(request, 'session', 'session')
+        setattr(request, '_messages', FallbackStorage(request))
+        messages.add_message(request, getattr(messages, test_level.upper()), test_message)
+        request.user = self.sys_user
+        res = permanent_message(common.index)(request)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(test_message in res.content.decode('utf-8'))
         self.assertEqual(res.content.decode('utf-8').count(test_message), 1)

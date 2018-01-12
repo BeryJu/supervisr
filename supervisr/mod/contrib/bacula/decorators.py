@@ -16,9 +16,9 @@ def check_bacula_db(view_function):
         """
         Decorator to check bacula DB before running
         """
-        req = args[0] if args else None
-        if not check_db_connection('bacula') and req:
-            return render(req, 'common/error.html', {
+        request = args[0] if args else None
+        if not check_db_connection('bacula') and request:
+            return render(request, 'common/error.html', {
                 'code': 500,
                 'exc_message': _('An error occured while trying to connect to the Bacula database.')
                 })

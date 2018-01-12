@@ -31,14 +31,14 @@ class RobustSignal(Signal):
 SIG_USER_PRODUCT_RELATIONSHIP_CREATED = RobustSignal(providing_args=['upr'])
 SIG_USER_PRODUCT_RELATIONSHIP_DELETED = RobustSignal(providing_args=['upr'])
 
-SIG_USER_SIGN_UP = RobustSignal(providing_args=['user', 'req', 'password'])
-SIG_USER_CHANGE_PASS = RobustSignal(providing_args=['user', 'req', 'password'])
-SIG_USER_POST_SIGN_UP = RobustSignal(providing_args=['user', 'req'])
-SIG_USER_POST_CHANGE_PASS = RobustSignal(providing_args=['user', 'req', 'was_reset'])
+SIG_USER_SIGN_UP = RobustSignal(providing_args=['user', 'request', 'password'])
+SIG_USER_CHANGE_PASS = RobustSignal(providing_args=['user', 'request', 'password'])
+SIG_USER_POST_SIGN_UP = RobustSignal(providing_args=['user', 'request'])
+SIG_USER_POST_CHANGE_PASS = RobustSignal(providing_args=['user', 'request', 'was_reset'])
 SIG_USER_PASS_RESET_INIT = RobustSignal(providing_args=['user'])
 SIG_USER_PASS_RESET_FIN = RobustSignal(providing_args=['user'])
-SIG_USER_CONFIRM = RobustSignal(providing_args=['user', 'req'])
-SIG_USER_RESEND_CONFIRM = RobustSignal(providing_args=['user', 'req'])
+SIG_USER_CONFIRM = RobustSignal(providing_args=['user', 'request'])
+SIG_USER_RESEND_CONFIRM = RobustSignal(providing_args=['user', 'request'])
 
 SIG_DOMAIN_CREATED = RobustSignal(providing_args=['domain'])
 
