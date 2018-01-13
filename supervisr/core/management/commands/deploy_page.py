@@ -75,7 +75,7 @@ DEPLOY_PAGE_HTML = """
   </div>
 </body>
 </html>
-"""
+""" # noqa
 
 class Command(BaseCommand):
     """Turns deploy page on or off via manage.py"""
