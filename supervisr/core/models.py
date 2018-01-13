@@ -536,11 +536,11 @@ class Event(CreatedUpdatedModel):
         """
         Create an event and set reverse DNS and remote IP
         """
-        if 'req' in kwargs or 'request' in kwargs:
-            req = kwargs['req' if 'req' in kwargs else 'request']
-            kwargs['remote_ip'] = get_remote_ip(req)
-            kwargs['remote_ip_rdns'] = get_reverse_dns(kwargs['remote_ip'])
-            del kwargs['req' if 'req' in kwargs else 'request']
+        if 'request' in kwargs:
+            request = kwargs.get('request')
+            kwargs['remote_ip'] = get_remote_ip(request)
+            kwargs['remote_ip_rdns'] = get_reverse_dns(kwargs.get('remote_ip'))
+            del kwargs['request']
         return Event.objects.create(**kwargs)
 
     def __str__(self):

@@ -142,6 +142,8 @@ CACHES = {
 }
 
 MIDDLEWARE = [
+    # Load DeployPage first so we can save unnecessary errores
+    'supervisr.core.middleware.DeployPageMiddleware.deploy_page',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -154,7 +156,6 @@ MIDDLEWARE = [
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
     'supervisr.core.middleware.EmailMissingMiddleware.check_email',
     'supervisr.core.middleware.ImpersonateMiddleware.impersonate',
-    'supervisr.core.middleware.DeployPageMiddleware.deploy_page',
     'supervisr.core.middleware.PermanentMessageMiddleware.permanent_message',
     'htmlmin.middleware.HtmlMinifyMiddleware',
     'htmlmin.middleware.MarkRequestMiddleware',

@@ -62,7 +62,7 @@ def search(request):
         app_result = None
         try:
             # if getattr(app, 'custom_search', None):
-            #     app_result = app.custom_search(query, req)
+            #     app_result = app.custom_search(query, request)
             # else:
             app_result = default_app_handler(app, query, request)
             if app_result is not None:

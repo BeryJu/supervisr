@@ -95,7 +95,7 @@ class SupervisrAppConfig(AppConfig):
             # Read file and parse all lines
             install_reqs = parse_requirements(path, session='hack')
 
-            pkg_resources.require([str(x.req) for x in install_reqs])
+            pkg_resources.require([str(x.requirement) for x in install_reqs])
 
         _check_file(self, 'requirements.txt')
         if settings.DEBUG:

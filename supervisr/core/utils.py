@@ -12,6 +12,7 @@ from uuid import uuid4
 from django.apps import apps
 from django.contrib import messages
 from django.core.cache import cache
+from django.http import HttpRequest
 from django.shortcuts import render
 from django.template import loader
 from django.utils.safestring import mark_safe
@@ -23,13 +24,13 @@ from supervisr.core.statistics import stat_set
 LOGGER = logging.getLogger(__name__)
 
 
-def get_remote_ip(req):
+def get_remote_ip(request: HttpRequest) -> str:
     """Return the remote's IP"""
-    if not req:
+    if not request:
         return '0.0.0.0'
-    if req.META.get('HTTP_X_FORWARDED_FOR'):
-        return req.META.get('HTTP_X_FORWARDED_FOR')
-    return req.META.get('REMOTE_ADDR')
+    if request.META.get('HTTP_X_FORWARDED_FOR'):
+        return request.META.get('HTTP_X_FORWARDED_FOR')
+    return request.META.get('REMOTE_ADDR')
 
 def uuid():
     """Return a UUID as string with just alphanumeric-chars"""

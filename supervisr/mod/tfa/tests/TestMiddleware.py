@@ -25,7 +25,7 @@ class TestMiddleware(TestCase):
         """
         Test Anonymous TFA Force
         """
-        req = self.factory.get(reverse('common-index'))
-        req.user = AnonymousUser()
-        res = tfa_force_verify(common.index)(req)
-        self.assertEqual(res.status_code, 302)
+        request = self.factory.get(reverse('common-index'))
+        request.user = AnonymousUser()
+        response = tfa_force_verify(common.index)(request)
+        self.assertEqual(response.status_code, 302)

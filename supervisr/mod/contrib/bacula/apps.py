@@ -43,9 +43,9 @@ class SupervisrModContribBaculaConfig(SupervisrAppConfig):
         }
 
     # pylint: disable=no-self-use
-    def navbar_enabled(self, req):
+    def navbar_enabled(self, request):
         """
         Only show in navbar if enabled and superuser
         """
         from supervisr.core.models import Setting
-        return req.user.is_superuser and Setting.get_bool('enabled')
+        return request.user.is_superuser and Setting.get_bool('enabled')

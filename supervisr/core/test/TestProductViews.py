@@ -23,10 +23,10 @@ class TestProductViews(TestCase):
         """
         Test Product Index
         """
-        req = self.factory.get(reverse('product-index'))
-        req.user = User.objects.get(pk=get_system_user())
-        res = products.index(req)
-        self.assertEqual(res.status_code, 200)
+        request = self.factory.get(reverse('product-index'))
+        request.user = User.objects.get(pk=get_system_user())
+        response = products.index(request)
+        self.assertEqual(response.status_code, 200)
 
     def test_product_view(self):
         """
@@ -38,9 +38,9 @@ class TestProductViews(TestCase):
             description="test product",
             price=0.000,
             invite_only=False)
-        req = self.factory.get(reverse('product-view', kwargs={
+        request = self.factory.get(reverse('product-view', kwargs={
             'slug': test_product.slug
             }))
-        req.user = User.objects.get(pk=get_system_user())
-        res = products.index(req)
-        self.assertEqual(res.status_code, 200)
+        request.user = User.objects.get(pk=get_system_user())
+        response = products.index(request)
+        self.assertEqual(response.status_code, 200)

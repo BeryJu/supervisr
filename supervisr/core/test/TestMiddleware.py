@@ -32,20 +32,20 @@ class TestMiddleware(TestCase):
     def test_deploy_page_off(self):
         """Test Enabled Deploy Page"""
         call_command('deploy_page', 'up')
-        req = self.factory.get(reverse('account-login'))
-        req.user = AnonymousUser()
-        res = deploy_page(accounts.LoginView.as_view())(req)
-        self.assertEqual(res.status_code, 200)
-        self.assertIn('Deploy in progress', res.content.decode('utf-8'))
+        request = self.factory.get(reverse('account-login'))
+        request.user = AnonymousUser()
+        response = deploy_page(accounts.LoginView.as_view())(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Deploy in progress', response.content.decode('utf-8'))
 
     def test_deploy_page_on(self):
         """Test Disabled Deploy Page"""
         call_command('deploy_page', 'down')
-        req = self.factory.get(reverse('account-login'))
-        req.user = AnonymousUser()
-        res = deploy_page(accounts.LoginView.as_view())(req)
-        self.assertEqual(res.status_code, 200)
-        self.assertNotIn('Deploy in progress', res.content.decode('utf-8'))
+        request = self.factory.get(reverse('account-login'))
+        request.user = AnonymousUser()
+        response = deploy_page(accounts.LoginView.as_view())(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('Deploy in progress', response.content.decode('utf-8'))
 
     def test_permanent_message(self):
         """Test Permanent Message Middleware"""
@@ -59,10 +59,10 @@ class TestMiddleware(TestCase):
         setattr(request, 'session', 'session')
         setattr(request, '_messages', FallbackStorage(request))
         request.user = self.sys_user
-        res = permanent_message(common.index)(request)
-        self.assertEqual(res.status_code, 200)
-        self.assertTrue(test_message in res.content.decode('utf-8'))
-        self.assertEqual(res.content.decode('utf-8').count(test_message), 1)
+        response = permanent_message(common.index)(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(test_message in response.content.decode('utf-8'))
+        self.assertEqual(response.content.decode('utf-8').count(test_message), 1)
 
     def test_permanent_message_dupe(self):
         """Test Permanent Message Middleware (message exists already)"""
@@ -78,10 +78,10 @@ class TestMiddleware(TestCase):
         setattr(request, '_messages', FallbackStorage(request))
         messages.add_message(request, getattr(messages, test_level.upper()), test_message)
         request.user = self.sys_user
-        res = permanent_message(common.index)(request)
-        self.assertEqual(res.status_code, 200)
-        self.assertTrue(test_message in res.content.decode('utf-8'))
-        self.assertEqual(res.content.decode('utf-8').count(test_message), 1)
+        response = permanent_message(common.index)(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(test_message in response.content.decode('utf-8'))
+        self.assertEqual(response.content.decode('utf-8').count(test_message), 1)
 
     def test_impersonate(self):
         """Test Impersonate Middleware"""
