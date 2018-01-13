@@ -7,12 +7,14 @@ import os
 from django.contrib import messages
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.core.management import call_command
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
+from supervisr.core.middleware.DeployPageMiddleware import deploy_page
 from supervisr.core.middleware.ImpersonateMiddleware import impersonate
-from supervisr.core.middleware.MaintenanceMode import maintenance_mode
-from supervisr.core.middleware.PermanentMessage import permanent_message
+from supervisr.core.middleware.PermanentMessageMiddleware import \
+    permanent_message
 from supervisr.core.models import Setting, User, get_system_user
 from supervisr.core.views import accounts, common
 
@@ -27,30 +29,26 @@ class TestMiddleware(TestCase):
         self.factory = RequestFactory()
         self.sys_user = User.objects.get(pk=get_system_user())
 
-    def test_maintenance_mode_off(self):
-        """
-        Test Enabled Maintenance Mode
-        """
-        Setting.set('maintenancemode', True)
+    def test_deploy_page_off(self):
+        """Test Enabled Deploy Page"""
+        call_command('deploy_page', 'up')
         req = self.factory.get(reverse('account-login'))
         req.user = AnonymousUser()
-        res = maintenance_mode(accounts.LoginView.as_view())(req)
+        res = deploy_page(accounts.LoginView.as_view())(req)
         self.assertEqual(res.status_code, 200)
+        self.assertIn('Deploy in progress', res.content.decode('utf-8'))
 
-    def test_maintenance_mode_on(self):
-        """
-        Test Disabled Maintenance Mode
-        """
-        Setting.set('maintenancemode', False)
+    def test_deploy_page_on(self):
+        """Test Disabled Deploy Page"""
+        call_command('deploy_page', 'down')
         req = self.factory.get(reverse('account-login'))
         req.user = AnonymousUser()
-        res = maintenance_mode(accounts.LoginView.as_view())(req)
+        res = deploy_page(accounts.LoginView.as_view())(req)
         self.assertEqual(res.status_code, 200)
+        self.assertNotIn('Deploy in progress', res.content.decode('utf-8'))
 
     def test_permanent_message(self):
-        """
-        Test Permanent Message Middleware
-        """
+        """Test Permanent Message Middleware"""
         test_message = 'Test Message'
         Setting.set('banner:enabled', namespace='supervisr.core', value=True)
         Setting.set('banner:message', namespace='supervisr.core', value=test_message)
