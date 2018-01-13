@@ -75,7 +75,7 @@ class RecordNewView(BaseWizardView):
                                 kwargs={'zone': self.kwargs['zone']}))
 
 @login_required
-def edit(req, zone, record, uuid):
+def update(req, zone, record, uuid):
     """
     Edit a record
     """

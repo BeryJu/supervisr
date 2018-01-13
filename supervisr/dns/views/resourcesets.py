@@ -3,29 +3,33 @@ Supervisr DNS record views
 """
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.shortcuts import redirect, reverse
 from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.models import UserProductRelationship
-from supervisr.core.views.generic import GenericDeleteView, GenericEditView
+from supervisr.core.views.generic import (GenericDeleteView, GenericReadView,
+                                          GenericUpdateView)
 from supervisr.core.views.wizards import BaseWizardView
 from supervisr.dns.forms.resourcesets import ResourceSetForm
 from supervisr.dns.models import ResourceSet
 
 
-@login_required
-def view(request, rset_uuid):
-    """View and edit ResourceSet"""
-    res_set = get_object_or_404(ResourceSet, uuid=rset_uuid, users__in=[request.user])
-    records = res_set.resource.filter(users__in=[request.user])
+# pylint: disable=abstract-method
+class ResourceSetReadView(GenericReadView):
+    """View Resource Set"""
 
-    return render(request, 'dns/resourcesets/view.html', {
-        'rset': res_set,
-        'records': records
-    })
+    model = ResourceSet
+    template = 'dns/resourcesets/view.html'
 
-class ResourceSetNewView(BaseWizardView):
+    def get_instance(self):
+        return ResourceSet.objects.filter(uuid=self.kwargs.get('rset_uuid'),
+                                          users__in=[self.request.user])
+
+    def update_kwargs(self, kwargs):
+        kwargs['records'] = kwargs.get('instance').resource.filter(users__in=[self.request.user])
+        return kwargs
+
+class ResourceSetCreateView(BaseWizardView):
     """Wizard to create a new ResourceSet"""
 
     title = _('New Resource Set')
@@ -41,8 +45,8 @@ class ResourceSetNewView(BaseWizardView):
         messages.success(self.request, _('Resource Set successfully created'))
         return redirect(reverse('supervisr/dns:rset-view', kwargs={'rset_uuid': rset.uuid}))
 
-class ResourceSetEditView(GenericEditView):
-    """Edit Resource Set"""
+class ResourceSetUpdateView(GenericUpdateView):
+    """Update Resource Set"""
 
     model = ResourceSet
     model_verbose_name = _('Resource Set')

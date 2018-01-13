@@ -2,13 +2,16 @@
 Supervisr DNS Signals
 """
 import logging
-# from datetime import datetime
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-# from dns.exception import SyntaxError as DNSSyntaxError
 
 from supervisr.core.signals import RobustSignal
+
+# from datetime import datetime
+
+# from dns.exception import SyntaxError as DNSSyntaxError
+
 # from supervisr.dns.utils import rec_to_rd
 
 LOGGER = logging.getLogger(__name__)

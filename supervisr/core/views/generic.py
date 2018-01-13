@@ -20,6 +20,7 @@ class GenericModelView(View):
 
     def __init__(self, *args, **kwargs):
         super(GenericModelView, self).__init__(*args, **kwargs)
+        assert self.template is not None, "`template` Property has to be overwritten"
         assert self.model is not None, "`model` Property has to be overwritten"
         if self.model_verbose_name == '':
             self.model_verbose_name = self.model._meta.verbose_name.title()
@@ -43,14 +44,36 @@ class GenericModelView(View):
         raise NotImplementedError()
 
 # pylint: disable=abstract-method
-class GenericEditView(GenericModelView):
+class GenericReadView(GenericModelView):
+    """Generic view to view an object instance"""
+
+    def render(self, kwargs) -> HttpResponse:
+        """Render template with kwargs"""
+        return render(self.request, self.template, kwargs)
+
+    def update_kwargs(self, kwargs):
+        """Add additional data to render kwargs"""
+        return kwargs
+
+    def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
+        """Handle get request"""
+        instances = self.get_instance()
+        if not instances.exists():
+            raise Http404
+        assert len(instances) == 1, "More than 1 Result found."
+        instance = instances.first()
+        render_kwargs = self.update_kwargs({'instance': instance})
+        return self.render(render_kwargs)
+
+# pylint: disable=abstract-method
+class GenericUpdateView(GenericModelView):
     """Generic view to edit an object instance"""
 
     form = None
     template = 'core/generic_form_modal.html'
 
     def __init__(self, *args, **kwargs):
-        super(GenericEditView, self).__init__(*args, **kwargs)
+        super(GenericUpdateView, self).__init__(*args, **kwargs)
         assert self.form is not None, "`form` Property has to be overwritten"
         assert issubclass(self.form, ModelForm), "`form` Property should be a ModelForm"
 

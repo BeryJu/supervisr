@@ -10,16 +10,16 @@
 {% block content %}
 <h1>
   <clr-icon shape="file-group" size="48"></clr-icon>
-  {% blocktrans with name=rset.name %}Resource Set '{{ name }}'{% endblocktrans %}
-  <a href="{% url 'supervisr/dns:rset-edit' rset_uuid=rset.uuid %}?back={{ request.get_full_path }}">
+  {% blocktrans with name=instance.name %}Resource Set '{{ name }}'{% endblocktrans %}
+  <a href="{% url 'supervisr/dns:rset-update' rset_uuid=instance.uuid %}?back={{ request.get_full_path }}">
     <clr-icon shape="edit"></clr-icon>
   </a>
-  <a href="{% url 'supervisr/dns:rset-delete' rset_uuid=rset.uuid %}?back={{ request.get_full_path }}">
+  <a href="{% url 'supervisr/dns:rset-delete' rset_uuid=instance.uuid %}?back={{ request.get_full_path }}">
     <clr-icon shape="trash"></clr-icon>
   </a>
 </h1>
 <div class="btn-group btn-link btn-icon-link">
-  <a href="" class="btn">
+  <a href="{% url 'supervisr/dns:rres-create' rset_uuid=instance.uuid %}" class="btn">
     <clr-icon shape="add"></clr-icon>
   </a>
   <a data-ctx-name="edit" class="btn">
@@ -40,6 +40,7 @@
 <table class="table">
   <thead>
     <tr>
+      <th>{% trans 'Name' %}</th>
       <th>{% trans 'Type' %}</th>
       <th>{% trans 'TTL' %}</th>
       <th>{% trans 'Enabled' %}</th>
@@ -48,7 +49,9 @@
   </thead>
   <tbody>
     {% for rec in records %}
-    <tr data-selectable>
+    <tr data-selectable data-ctx-edit="{% url 'supervisr/dns:rres-update' zone=dom.domain %}?back={{ request.get_full_path }}" data-ctx-trash="{%
+    url 'supervisr/dns:rres-delete' zone=dom.domain %}?back={{ request.get_full_path }}">
+      <td>{{ rec.name }}</td>
       <td>{{ rec.type }}</td>
       <td>{{ rec.ttl }}</td>
       <td>{{ rec.enabled }}</td>

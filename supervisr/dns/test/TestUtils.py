@@ -40,8 +40,8 @@ class TestUtils(TestCase):
     Supervisr DNS Util Test
     """
 
-    def test_util_zone_to_rec(self):
-        """
-        Test Util's domain setter and getter
-        """
-        zone_to_rec(BIND_ZONE)
+    # def test_util_zone_to_rec(self):
+    #     """
+    #     Test Util's domain setter and getter
+    #     """
+    #     zone_to_rec(BIND_ZONE)

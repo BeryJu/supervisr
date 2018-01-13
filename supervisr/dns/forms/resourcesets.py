@@ -9,9 +9,7 @@ from supervisr.dns.models import ResourceSet
 
 
 class ResourceSetForm(forms.ModelForm):
-    """
-    Create/edit ResourceSetForm
-    """
+    """Create/edit ResourceSetForm"""
 
     title = _('General Information')
 

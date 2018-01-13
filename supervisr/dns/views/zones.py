@@ -78,7 +78,7 @@ class ZoneNewView(BaseWizardView):
         return redirect(reverse('supervisr/dns:dns-index'))
 
 @login_required
-def edit(req, zone):
+def update(req, zone):
     """Edit a zone"""
     # Check if zone exists before doing anything else
     zones = Zone.objects.filter(domain__domain=zone, users__in=[req.user])
