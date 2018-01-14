@@ -7,13 +7,13 @@
 {% block sidenav %}
 <nav class="sidenav clr-nav-level-2">
   <section class="sidenav-content">
-    <a href="{% url 'supervisr/mod/contrib/bacula:bacula-index' %}" class="nav-link {% is_active 'supervisr/mod/contrib/bacula:bacula-index' %}">
+    <a href="{% url 'supervisr_mod_contrib_bacula:bacula-index' %}" class="nav-link {% is_active 'supervisr_mod_contrib_bacula:bacula-index' %}">
       {% trans "Overview" %}
     </a>
-    <a href="{% url 'supervisr/mod/contrib/bacula:bacula-jobs' %}" class="nav-link {% is_active 'bacula-job' %}">
+    <a href="{% url 'supervisr_mod_contrib_bacula:bacula-jobs' %}" class="nav-link {% is_active 'bacula-job' %}">
       {% trans "Jobs" %}
     </a>
-    <a href="{% url 'supervisr/mod/contrib/bacula:bacula-volumes' %}" class="nav-link {% is_active 'bacula-volumes' %}">
+    <a href="{% url 'supervisr_mod_contrib_bacula:bacula-volumes' %}" class="nav-link {% is_active 'bacula-volumes' %}">
       {% trans "Volumes" %}
     </a>
   </section>

@@ -15,18 +15,14 @@ LOGGER = logging.getLogger(__name__)
 @task()
 # pylint: disable=unused-argument
 def migrate(ctx):
-    """
-    Apply migrations
-    """
+    """Apply migrations"""
     from django.core.management import execute_from_command_line
     execute_from_command_line(['manage.py', 'migrate'])
 
 @task()
 # pylint: disable=unused-argument
 def list_users(ctx):
-    """
-    Show a list of all users
-    """
+    """Show a list of all users"""
     django.setup()
     from supervisr.core.models import User
     users = User.objects.all().order_by('pk')
@@ -36,28 +32,8 @@ def list_users(ctx):
 
 @task
 # pylint: disable=unused-argument
-def make_superuser(ctx, uid):
-    """
-    Make User with uid superuser.
-    This should be run after `./manage.py createsuperuser` or
-    after you sign up on the webinterface as first user
-    """
-    django.setup()
-    from supervisr.core.models import User
-    user = User.objects.filter(pk=uid).first()
-    LOGGER.info("About to make '%s' superuser...", user.username)
-    user.is_staff = True
-    user.is_superuser = True
-    user.is_active = True
-    user.save()
-    LOGGER.info("Done!")
-
-@task
-# pylint: disable=unused-argument
 def run(ctx, pidfile=''):
-    """
-    Run CherryPY-based application server
-    """
+    """Run CherryPY-based application server"""
     from django.conf import settings
     from supervisr.core.wsgi import application
     from cherrypy.process.plugins import PIDFile

@@ -34,5 +34,5 @@ def admin_settings(request: HttpRequest) -> HttpResponse:
             if form.is_valid():
                 update_count += form.save()
         messages.success(request, _('Successfully updated %d settings.' % update_count))
-        return redirect(reverse('supervisr/mod/auth/ldap:admin_settings'))
+        return redirect(reverse('supervisr_mod_auth_ldap:admin_settings'))
     return render(request, 'ldap/settings.html', render_data)

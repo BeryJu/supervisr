@@ -172,10 +172,10 @@ def check_db_connection(connection_name: str = 'default') -> bool:
     """Check if a database connection can be made
 
     Args:
-        connection_name: Name of the Django database connection Name
+        connection_name: Name of the Django database connection Name.
 
     Returns:
-        True if connection could be made, otherwise False
+        bool: True if connection could be made, otherwise False.
     """
     from django.db import connections
     from django.db.utils import OperationalError, ConnectionDoesNotExist

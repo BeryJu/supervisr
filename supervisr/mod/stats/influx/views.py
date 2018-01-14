@@ -39,7 +39,7 @@ def admin_settings(request: HttpRequest) -> HttpResponse:
             with InfluxClient() as client:
                 client.write("test", 128)
             messages.success(request, _('Successfully Sent test message'))
-        return redirect(reverse('supervisr/mod/stats/influx:admin_settings'))
+        return redirect(reverse('supervisr_mod_stats_influx:admin_settings'))
     else:
         form = SettingsForm(initial=initial_data)
     return render(request, 'stats/influx/settings.html', {

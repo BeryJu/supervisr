@@ -56,7 +56,7 @@ class OAuthRedirect(OAuthClientMixin, RedirectView):
     # pylint: disable=no-self-use
     def get_callback_url(self, provider):
         "Return the callback url for this provider."
-        return reverse('supervisr/mod/auth/oauth/client:oauth-client-callback',
+        return reverse('supervisr_mod_auth_oauth_client:oauth-client-callback',
                        kwargs={'provider': provider.name})
 
     def get_redirect_url(self, **kwargs):
@@ -209,7 +209,7 @@ class OAuthCallback(OAuthClientMixin, View):
             messages.success(self.request, _("Successfully linked %(provider)s!" % {
                 'provider': self.provider.ui_name
                 }))
-            return redirect(reverse('supervisr/mod/auth/oauth/client:user_settings'))
+            return redirect(reverse('supervisr_mod_auth_oauth_client:user_settings'))
         else:
             user = self.get_or_create_user(provider, access, info)
             access.user = user
@@ -244,11 +244,11 @@ def disconnect(request: HttpRequest, provider: str) -> HttpResponse:
         # User confirmed deletion
         r_aas.delete()
         messages.success(request, _('Connection successfully deleted'))
-        return redirect(reverse('supervisr/mod/auth/oauth/client:user_settings'))
+        return redirect(reverse('supervisr_mod_auth_oauth_client:user_settings'))
 
     return render(request, 'core/generic_delete.html', {
         'object': 'OAuth Connection with %s' % r_provider.ui_name,
-        'delete_url': reverse('supervisr/mod/auth/oauth/client:oauth-client-disconnect', kwargs={
+        'delete_url': reverse('supervisr_mod_auth_oauth_client:oauth-client-disconnect', kwargs={
             'provider': r_provider.name,
             })
         })

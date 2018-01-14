@@ -4,7 +4,6 @@ Supervisr Invoke Dev Tasks
 import logging
 import os
 import random
-import shutil
 from functools import wraps
 from glob import glob
 
@@ -18,9 +17,7 @@ else:
 LOGGER = logging.getLogger(__name__)
 
 def shell(func):
-    """
-    Fixes the Shell on Windows Systems
-    """
+    """Fixes the Shell on Windows Systems"""
     @wraps(func)
     def wrapped(ctx, *args, **kwargs):
         """
@@ -33,9 +30,7 @@ def shell(func):
 
 @task
 def build_static(ctx):
-    """
-    Build Static CSS and JS files and run collectstatic
-    """
+    """Build Static CSS and JS files and run collectstatic"""
     if WINDOWS:
         ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
     with ctx.cd('assets'):
@@ -46,9 +41,7 @@ def build_static(ctx):
 @task
 # pylint: disable=unused-argument
 def clean(ctx):
-    """
-    Clean Python cached files
-    """
+    """Clean Python cached files"""
     ctx.run(r'find . -name *.pyc -exec rm -rf {} \;', warn=True)
     print('Cleaned python cache')
     ctx.run(r'find supervisr/cache/ -name *.djcache -exec rm -rf {} \;', warn=True)
@@ -57,28 +50,8 @@ def clean(ctx):
     print('Cleaned puppet modules')
 
 @task
-def install(ctx, dev=False):
-    """
-    Install requirements for supervisr and all modules
-    """
-    if WINDOWS:
-        ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
-    requirements = glob("supervisr/**/requirements.txt")
-    requirements.extend(glob("supervisr/**/**/requirements.txt"))
-    requirements.extend(glob("supervisr/**/**/**/requirements.txt"))
-    requirements.extend(glob("supervisr/**/**/**/**/requirements.txt"))
-    if dev:
-        requirements.extend(glob("supervisr/**/requirements-dev.txt"))
-        requirements.extend(glob("supervisr/**/**/requirements-dev.txt"))
-        requirements.extend(glob("supervisr/**/**/**/requirements-dev.txt"))
-        requirements.extend(glob("supervisr/**/**/**/**/requirements-dev.txt"))
-    ctx.run("pip3 install -U -r %s" % ' -r '.join(requirements))
-
-@task
 def compile_reqs(ctx):
-    """
-    Compile all requirements into one requirements.txt
-    """
+    """Compile all requirements into one requirements.txt"""
     if WINDOWS:
         ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
     requirements = glob("supervisr/**/requirements.txt")
@@ -94,18 +67,14 @@ def compile_reqs(ctx):
 @task
 # pylint: disable=unused-argument
 def generate_secret_key(ctx):
-    """
-    Generate Django SECRET_KEY
-    """
+    """Generate Django SECRET_KEY"""
     print(''.join([random.SystemRandom() \
             .choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)]))
 
 @task
 # pylint: disable=unused-argument
 def lint(ctx, modules=None):
-    """
-    Run PyLint
-    """
+    """Run PyLint"""
     if modules is None:
         modules = ['tasks.py', 'supervisr']
     elif isinstance(modules, str):
@@ -117,24 +86,18 @@ def lint(ctx, modules=None):
 @task
 @shell
 def prospector(ctx):
-    """
-    Run prospector
-    """
+    """Run prospector"""
     ctx.run("prospector")
 
 @task
 @shell
 def isort(ctx):
-    """
-    Run isort
-    """
+    """Run isort"""
     ctx.run("isort -c -vb -sg env -b importlib")
 
 @task()
 def coverage(ctx, module='supervisr', post_action='report'):
-    """
-    Run Unittests and get coverage
-    """
+    """Run Unittests and get coverage"""
     if WINDOWS:
         ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
     ctx.run("coverage run --source=%s manage.py test --pattern=Test*.py" % module)
@@ -143,31 +106,20 @@ def coverage(ctx, module='supervisr', post_action='report'):
 @task
 @shell
 def unittest(ctx):
-    """
-    Run Unittests
-    """
+    """Run Unittests"""
     ctx.run("%s manage.py test --pattern=Test*.py" % PYTHON_EXEC)
 
 # Some tasks to make full testing easier
 @task(pre=[coverage, isort, lint, prospector, unittest])
 # pylint: disable=unused-argument
 def test(ctx):
-    """
-    Run all tests
-    """
+    """Run all tests"""
     pass
 
 @task
 @shell
 def docs(ctx):
-    """
-    Build sphinx docs
-    """
-    for gen in glob('docs/source/supervisr**'):
-        os.remove(gen)
-    os.remove('docs/source/modules.rst')
-    shutil.rmtree('docs/build', ignore_errors=True)
-    LOGGER.info("Cleaned!")
-    for module in glob('supervisr/**/'):
-        ctx.run('sphinx-apidoc -o docs/source %s' % module)
-    ctx.run('sphinx-build -b html docs/source docs/build')
+    """Build pdoc docs"""
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'supervisr.core.settings')
+    ctx.run("python env\\Scripts\\pdoc supervisr --html --html-dir=\"docgen\""
+            " --html-no-source  --overwrite --docstring-style=google")

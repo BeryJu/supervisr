@@ -75,7 +75,7 @@ def login_begin(request):
         return HttpResponseBadRequest('the SAML request payload is missing')
 
     request.session['RelayState'] = source.get('RelayState', '')
-    return redirect(reverse('supervisr/mod/auth/saml/idp:saml_login_process'))
+    return redirect(reverse('supervisr_mod_auth_saml_idp:saml_login_process'))
 
 def redirect_to_sp(request, acs_url, saml_response, relay_state):
     """
@@ -189,8 +189,8 @@ def descriptor(request):
     Replies with the XML Metadata IDSSODescriptor.
     """
     entity_id = Setting.get('issuer')
-    slo_url = request.build_absolute_uri(reverse('supervisr/mod/auth/saml/idp:saml_logout'))
-    sso_url = request.build_absolute_uri(reverse('supervisr/mod/auth/saml/idp:saml_login_begin'))
+    slo_url = request.build_absolute_uri(reverse('supervisr_mod_auth_saml_idp:saml_logout'))
+    sso_url = request.build_absolute_uri(reverse('supervisr_mod_auth_saml_idp:saml_login_begin'))
     pubkey = xml_signing.load_certificate(strip=True)
     ctx = {
         'entity_id': entity_id,

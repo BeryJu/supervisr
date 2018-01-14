@@ -82,7 +82,7 @@ class Sender(object):
     def send(self, data):
         """Send json string to endpoint"""
         endpoint = self._endpoint + \
-            reverse('supervisr/mod/beacon/api/v1:pulse',
+            reverse('supervisr_mod_beacon_api_v1:pulse',
                     kwargs={'verb': 'send'})
         req = requests.post(endpoint, json=data)
         result = req.json()

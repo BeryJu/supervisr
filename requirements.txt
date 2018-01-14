@@ -12,12 +12,12 @@ schedule
 raven
 django-htmlmin
 mkdocs-material
-markdown
 dnspython
 requests
-# In here you can specify pip modules that should be installed
-django-two-factor-auth
+markdown
 requests
+django-two-factor-auth
+# In here you can specify pip modules that should be installed
 ldap3
 pyasn1<=0.3.0
 slumber
@@ -26,11 +26,11 @@ slumber
 pyvmomi
 influxdb>=4.1.1
 psutil
-django-oauth-toolkit
-django-cors-middleware
 pycrypto>=2.4
 requests_oauthlib>=0.4.2
 oauthlib>=2.0.6
+django-oauth-toolkit
+django-cors-middleware
 beautifulsoup4>=4.6.0
 lxml>=3.8.0
 signxml
@@ -41,6 +41,6 @@ pylint==1.7.5
 pylint-django
 prospector
 django-debug-toolbar
-sphinx
 recommonmark
 autopep8
+-e git+https://github.com/BeryJu/pdoc.git#egg=pdoc
