@@ -14,7 +14,6 @@ django-htmlmin
 mkdocs-material
 dnspython
 requests
-markdown
 requests
 django-two-factor-auth
 # In here you can specify pip modules that should be installed
