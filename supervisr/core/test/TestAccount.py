@@ -151,7 +151,7 @@ class TestAccount(TestCase):
         self.assertEqual(res.status_code, 302)
         self.assertEqual(res.url, reverse('common-index'))
 
-        res = test_request(accounts.ChangePasswordView(),
+        res = test_request(accounts.ChangePasswordView.as_view(),
                            user=user, )
         self.assertEqual(res.status_code, 200)
 

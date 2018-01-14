@@ -138,7 +138,7 @@ def file(request: HttpRequest, user: str, module: str, version: str) -> HttpResp
 def _json_release(release: PuppetModuleRelease):
     """Convert a single release"""
     return {
-        "uri": reverse('supervisr/puppet/api/v1:release', kwargs={
+        "uri": reverse('supervisr_puppet_api_v1:release', kwargs={
             'user': release.module.owner.username,
             'module': release.module.name,
             'version': release.version,
@@ -147,7 +147,7 @@ def _json_release(release: PuppetModuleRelease):
         "slug": "%s-%s-%s" % (release.module.owner.username, release.module.name, release.version),
         "version": release.version,
         "module": {
-            "uri": reverse('supervisr/puppet/api/v1:module', kwargs={
+            "uri": reverse('supervisr_puppet_api_v1:module', kwargs={
                 'user': release.module.owner.username,
                 'module': release.module.name,
                 'key': Setting.get('url_key')
@@ -155,7 +155,7 @@ def _json_release(release: PuppetModuleRelease):
             "slug": "%s-%s" % (release.module.owner.username, release.module.name),
             "name": release.module.name,
             "owner": {
-                "url": reverse('supervisr/puppet/api/v1:user', kwargs={
+                "url": reverse('supervisr_puppet_api_v1:user', kwargs={
                     'user': release.module.owner.username,
                     'key': Setting.get('url_key')
                     }),
@@ -188,7 +188,7 @@ def _json_release_list(releases):
 def _json_module(module: PuppetModule):
     """Convert a single module"""
     return {
-        "uri": reverse('supervisr/puppet/api/v1:module', kwargs={
+        "uri": reverse('supervisr_puppet_api_v1:module', kwargs={
             'user': module.owner.username,
             'module': module.name,
             'key': Setting.get('url_key')
@@ -200,7 +200,7 @@ def _json_module(module: PuppetModule):
         "supported": True,
         "slug": "%s-%s" % (module.owner.username, module.name),
         "owner": {
-            "uri": reverse('supervisr/puppet/api/v1:user', kwargs={
+            "uri": reverse('supervisr_puppet_api_v1:user', kwargs={
                 'user': module.owner.username,
                 'key': Setting.get('url_key')
                 }),
