@@ -121,5 +121,8 @@ def test(ctx):
 def docs(ctx):
     """Build pdoc docs"""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'supervisr.core.settings')
-    ctx.run("python env\\Scripts\\pdoc supervisr --html --html-dir=\"docgen\""
-            " --html-no-source  --overwrite --docstring-style=google")
+    tool = 'pdoc'
+    if WINDOWS:
+        tool = 'python env\\Scripts\\pdoc'
+    ctx.run("%s supervisr --html --html-dir=\"docgen\""
+            " --html-no-source  --overwrite --docstring-style=google" % tool)
