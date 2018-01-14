@@ -73,7 +73,7 @@ class MailAccount(Product):
         Sets a new password with a new salt
         """
         self.password = sha512_crypt.hash(new_password, salt=salt)
-        LOGGER.info("Updated Password MailAccount %s", self.email)
+        LOGGER.debug("Updated Password MailAccount %s", self.email)
         Event.create(
             user=invoker,
             message=_("Changed Password for Mail Account %(account)s" % {'account':str(self)}),

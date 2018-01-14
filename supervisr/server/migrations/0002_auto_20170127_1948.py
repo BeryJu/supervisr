@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/server', '0001_initial'),
+        ('supervisr_server', '0001_initial'),
     ]
 
     operations = [

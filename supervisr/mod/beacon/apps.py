@@ -1,6 +1,4 @@
-"""
-Supervisr module beacon app config
-"""
+"""Supervisr module beacon app config"""
 from django.conf import settings
 
 from supervisr.core.apps import SupervisrAppConfig
@@ -8,13 +6,11 @@ from supervisr.core.thread.background import SCHEDULER
 
 
 class SupervisrModBeaconConfig(SupervisrAppConfig):
-    """
-    Supervisr module beacon app config
-    """
+    """Supervisr module beacon app config"""
 
     name = 'supervisr.mod.beacon'
-    label = 'supervisr/mod/beacon'
-    verbose_name = 'Supervisr mod/beacon'
+    label = 'supervisr_mod_beacon'
+    verbose_name = 'Supervisr mod_beacon'
     navbar_enabled = lambda self, request: True
 
     def ready(self):

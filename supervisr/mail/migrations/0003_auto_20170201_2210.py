@@ -6,8 +6,8 @@ from django.db import migrations, models
 
 
 def update_raw(apps, schema_editor):
-    MailDomain = apps.get_model('supervisr/mail', 'MailDomain')
-    MailAccount = apps.get_model('supervisr/mail', 'MailAccount')
+    MailDomain = apps.get_model('supervisr_mail', 'MailDomain')
+    MailAccount = apps.get_model('supervisr_mail', 'MailAccount')
 
     [x.save() for x in MailDomain.objects.all()]
     [x.save() for x in MailAccount.objects.all()]
@@ -15,7 +15,7 @@ def update_raw(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/mail', '0002_mailaccount_domain_mail'),
+        ('supervisr_mail', '0002_mailaccount_domain_mail'),
     ]
 
     operations = [

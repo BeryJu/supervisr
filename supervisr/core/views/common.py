@@ -13,22 +13,20 @@ from supervisr.core.models import (Event, ProviderInstance,
 
 
 @login_required
-def index(req):
-    """
-    Show index view with hosted_applications quicklaunch and recent events
-    """
-    user_products = UserProductRelationship.objects.filter(user=req.user)
+def index(request):
+    """Show index view with hosted_applications quicklaunch and recent events"""
+    user_products = UserProductRelationship.objects.filter(user=request.user)
     hosted_applications = UserProductRelationship \
-        .objects.filter(user=req.user, product__managed=True) \
+        .objects.filter(user=request.user, product__managed=True) \
         .exclude(product__management_url__isnull=True) \
         .exclude(product__management_url__exact='')
     events = Event.objects.filter(
-        user=req.user, hidden=False) \
+        user=request.user, hidden=False) \
         .order_by('-create_date')[:15]
     user_providers = ProviderInstance.objects.filter(
-        userproductrelationship__user__in=[req.user])
-    # domains = Domain.objects.filter(users__in=[req.user])
-    return render(req, 'common/index.html', {
+        userproductrelationship__user__in=[request.user])
+    # domains = Domain.objects.filter(users__in=[request.user])
+    return render(request, 'common/index.html', {
         'uprs': user_products,
         'hosted_applications': hosted_applications,
         'events': events,
@@ -36,34 +34,28 @@ def index(req):
         # 'domains': domains,
     })
 
-def uncaught_404(req):
-    """
-    Handle an uncaught 404
-    """
-    if 'api' in req.path:
+def uncaught_404(request):
+    """Handle an uncaught 404"""
+    if 'api' in request.path:
         # return a json/xml/yaml message if this was an api call
-        return api_response(req, {'message': 'not_found'})
-    return render(req, 'common/error.html', {'code': 404})
+        return api_response(request, {'message': 'not_found'})
+    return render(request, 'common/error.html', {'code': 404})
 
-def uncaught_500(req):
-    """
-    Handle an uncaught 500
-    """
+def uncaught_500(request):
+    """Handle an uncaught 500"""
     exc = sys.exc_info()
     message = None
     if exc:
         message = exc[1]
 
-    if 'api' in req.path:
+    if 'api' in request.path:
         # return a json/xml/yaml message if this was an api call
-        return api_response(req, {'message': 'unexpected_error'})
-    return render(req, 'common/error.html', {'code': 500, 'exc_message': message})
+        return api_response(request, {'message': 'unexpected_error'})
+    return render(request, 'common/error.html', {'code': 500, 'exc_message': message})
 
-def error_response(req, message):
-    """
-    Show an error view with message
-    """
-    if 'api' in req.path:
+def error_response(request, message):
+    """Show an error view with message"""
+    if 'api' in request.path:
         # return a json/xml/yaml message if this was an api call
-        return api_response(req, {'message': message})
-    return render(req, 'common/error.html', {'code': 500, 'message': message})
+        return api_response(request, {'message': message})
+    return render(request, 'common/error.html', {'code': 500, 'message': message})

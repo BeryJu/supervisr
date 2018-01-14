@@ -6,16 +6,20 @@ from supervisr.core.models import User
 def impersonate(get_response):
     """Middleware to impersonate users"""
 
-    def middleware(req):
+    def middleware(request):
         """Middleware to impersonate users"""
 
-        if req.user.is_superuser and "__impersonate" in req.GET:
-            req.session['impersonate_id'] = int(req.GET["__impersonate"])
-        elif "__unimpersonate" in req.GET and 'impersonate_id' in req.session:
-            del req.session['impersonate_id']
-        if req.user.is_superuser and 'impersonate_id' in req.session:
-            req.user = User.objects.get(id=req.session['impersonate_id'])
+        # User is superuser and has __impersonate ID set
+        if request.user.is_superuser and "__impersonate" in request.GET:
+            request.session['impersonate_id'] = int(request.GET["__impersonate"])
+        # user wants to stop impersonation
+        elif "__unimpersonate" in request.GET and 'impersonate_id' in request.session:
+            del request.session['impersonate_id']
 
-        response = get_response(req)
+        # Actually impersonate user
+        if request.user.is_superuser and 'impersonate_id' in request.session:
+            request.user = User.objects.get(id=request.session['impersonate_id'])
+
+        response = get_response(request)
         return response
     return middleware

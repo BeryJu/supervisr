@@ -19,7 +19,7 @@ class BaculaRouter(object):
         """
         Attempts to read auth models go to bacula.
         """
-        if model._meta.app_label == 'supervisr/mod/contrib/bacula':
+        if model._meta.app_label == 'supervisr_mod_contrib_bacula':
             return self._db
         return None
 
@@ -28,7 +28,7 @@ class BaculaRouter(object):
         """
         Attempts to write auth models go to bacula.
         """
-        if model._meta.app_label == 'supervisr/mod/contrib/bacula':
+        if model._meta.app_label == 'supervisr_mod_contrib_bacula':
             return self._db
         return None
 
@@ -37,8 +37,8 @@ class BaculaRouter(object):
         """
         Allow relations if a model in the auth app is involved.
         """
-        if obj1._meta.app_label == 'supervisr/mod/contrib/bacula' or \
-           obj2._meta.app_label == 'supervisr/mod/contrib/bacula':
+        if obj1._meta.app_label == 'supervisr_mod_contrib_bacula' or \
+           obj2._meta.app_label == 'supervisr_mod_contrib_bacula':
             return True
         return None
 
@@ -48,6 +48,6 @@ class BaculaRouter(object):
         Make sure the auth app only appears in the 'bacula'
         database.
         """
-        if app_label == 'supervisr/mod/contrib/bacula':
+        if app_label == 'supervisr_mod_contrib_bacula':
             return db == self._db
         return None

@@ -3,7 +3,6 @@ Supervisr Core ModList Templatetag
 """
 
 from django import template
-from django.apps import apps
 from django.core.cache import cache
 
 from supervisr.core.apps import SupervisrAppConfig
@@ -25,19 +24,11 @@ def supervisr_dyn_modlist(context):
             uniq = 'anon'
     key = 'supervisr_dyn_modlist_%s' % uniq
     if not cache.get(key):
-        mod_list = get_apps(mod_only=True)
+        mod_list = get_apps()
         view_list = []
         for mod in mod_list:
-            config = None
-            try:
-                mod_new = '/'.join(mod.split('.')[:-2])
-                config = apps.get_app_config(mod_new)
-                mod = mod_new
-            except LookupError:
-                mod = mod.split('.')[:-2][-1]
-                config = apps.get_app_config(mod)
-            title = config.title_modifier(config.label, context.request)
-            url = apps.get_app_config(mod).admin_url_name
+            title = mod.title_modifier(context.request)
+            url = mod.admin_url_name
             view_list.append({
                 'url': url,
                 'default': True if url == SupervisrAppConfig.admin_url_name else False,

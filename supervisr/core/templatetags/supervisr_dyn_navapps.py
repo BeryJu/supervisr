@@ -5,7 +5,6 @@ Supervisr Core NavApps Templatetag
 import logging
 
 from django import template
-from django.apps import apps
 from django.core.cache import cache
 from django.urls import reverse
 from django.urls.exceptions import NoReverseMatch
@@ -32,34 +31,25 @@ def supervisr_dyn_navapps(context):
     key = 'supervisr_dyn_navapps_%s' % uniq
     if not cache.get(key):
         app_list = []
-        sub_apps = get_apps(mod_only=False)
-        for mod in sub_apps:
-            LOGGER.debug("Considering %s for Navbar", mod)
-            config = None
-            # Try new labels first
-            try:
-                mod_new = '/'.join(mod.split('.')[:-2])
-                config = apps.get_app_config(mod_new)
-                mod = mod_new
-            except LookupError:
-                mod = mod.split('.')[:-2][-1]
-                config = apps.get_app_config(mod)
-            view_prefix = mod.split('/')[-1]
-            title = config.title_modifier(config.label, context.request)
-            if config.navbar_enabled(context.request):
-                mod = mod.replace('supervisr.', '')
-                index = '%s:%s-index' % (mod, view_prefix)
+        sub_apps = get_apps()
+        for app in sub_apps:
+            LOGGER.debug("Considering %s for Navbar", app.label)
+            title = app.title_modifier(context.request)
+            if app.navbar_enabled(context.request):
+                index = getattr(app, 'index', None)
+                if not index:
+                    index = '%s:index' % app.label
                 try:
                     reverse(index)
-                    LOGGER.debug("Mod %s made it with '%s'", mod, index)
+                    LOGGER.debug("Mod %s made it with '%s'", app.name, index)
                     app_list.append({
-                        'short': view_prefix,
+                        'label': app.label,
                         'title': title,
                         'index': index
                         })
                 except NoReverseMatch:
-                    LOGGER.debug("View '%s' not reversable, ignoring %s", index, mod)
-        sorted_list = sorted(app_list, key=lambda x: x['short'])
+                    LOGGER.debug("View '%s' not reversable, ignoring %s", index, app.name)
+        sorted_list = sorted(app_list, key=lambda x: x.get('label'))
         cache.set(key, sorted_list, 1000)
         return sorted_list
     return cache.get(key) # pragma: no cover

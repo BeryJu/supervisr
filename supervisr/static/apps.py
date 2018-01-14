@@ -1,6 +1,4 @@
-"""
-Supervisr Static Apps Config
-"""
+"""supervisr Static Apps Config"""
 import logging
 
 from django.db.utils import InternalError, OperationalError, ProgrammingError
@@ -10,14 +8,13 @@ from supervisr.core.apps import SupervisrAppConfig
 LOGGER = logging.getLogger(__name__)
 
 class SupervisrStaticConfig(SupervisrAppConfig):
-    """
-    Supervisr Static app config
-    """
+    """supervisr Static app config"""
 
     name = 'supervisr.static'
-    label = 'supervisr/static'
+    label = 'supervisr_static'
     verbose_name = 'Supervisr Static'
     navbar_enabled = lambda self, request: False
+    title_modifier = lambda self, request: 'Static'
 
     def ready(self):
         super(SupervisrStaticConfig, self).ready()
@@ -29,9 +26,7 @@ class SupervisrStaticConfig(SupervisrAppConfig):
 
     # pylint: disable=no-self-use
     def update_filepages(self):
-        """
-        Update all FilePages from File
-        """
+        """Update all FilePages from File"""
         from supervisr.static.models import FilePage
         count = 0
         for fpage in FilePage.objects.all():
@@ -42,9 +37,7 @@ class SupervisrStaticConfig(SupervisrAppConfig):
 
     # pylint: disable=no-self-use
     def ensure_product_pages(self):
-        """
-        Make sure every Product has a ProductPage
-        """
+        """Make sure every Product has a ProductPage"""
         from supervisr.core.models import User
         from supervisr.core.models import Product, get_system_user
         from supervisr.static.models import ProductPage

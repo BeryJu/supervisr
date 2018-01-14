@@ -15,19 +15,17 @@ from supervisr.core.models import Setting
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 # pylint: disable=unused-argument
-def settings(req, namespace):
-    """
-    Admin settings
-    """
+def settings(request: HttpRequest, namespace: str) -> HttpResponse:
+    """Admin settings"""
     all_settings = Setting.objects.filter(namespace=namespace).order_by('key')
     namespaces = Setting.objects.all() \
         .values_list('namespace', flat=True) \
         .distinct() \
         .order_by('namespace')
     # Update settings when posted
-    if req.method == 'POST':
+    if request.method == 'POST':
         update_counter = 0
-        for name_key, value in req.POST.items():
+        for name_key, value in request.POST.items():
             # Names are formatted <namespace>/<key>
             if '/' in name_key:
                 namespace, key = name_key.split('/')
@@ -40,8 +38,8 @@ def settings(req, namespace):
                     setting.value = value
                     setting.save()
         Setting.objects.update()
-        messages.success(req, _('Updated %d settings' % update_counter))
-    return render(req, '_admin/settings.html', {
+        messages.success(request, _('Updated %d settings' % update_counter))
+    return render(request, '_admin/settings.html', {
         'settings': all_settings,
         'namespaces': namespaces,
         'current_namespace': namespace
@@ -49,11 +47,9 @@ def settings(req, namespace):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def mod_default(req):
-    """
-    Default view for modules without admin view
-    """
-    return render(req, '_admin/mod_default.html', {'mod': req.GET.get('mod', '')})
+def mod_default(request: HttpRequest) -> HttpResponse:
+    """Default view for modules without admin view"""
+    return render(request, '_admin/mod_default.html', {'mod': request.GET.get('mod', '')})
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')

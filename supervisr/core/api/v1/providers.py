@@ -20,7 +20,7 @@ class ProviderAPI(ProductAPI):
         self.ALLOWED_VERBS['GET'].append('get_all')
 
     # pylint: disable=unused-argument, no-self-use
-    def get_all(self, req, data):
+    def get_all(self, request, data):
         """
         Return list of all possible providers
         """

@@ -78,7 +78,7 @@ class BindZoneImportWizard(BaseWizardView):
             messages.success(self.request, _('DNS domain successfully created and '
                                              '%(count)d records imported.' % {
                                                  'count': len(records)}))
-            return redirect(reverse('supervisr/dns:dns-record-list',
+            return redirect(reverse('supervisr_dns:dns-record-list',
                                     kwargs={'zone': m_dom.domain.domain}))
         messages.error(self.request, _('Created nothing'))
-        return redirect(reverse('supervisr/dns:dns-index'))
+        return redirect(reverse('supervisr_dns:index'))

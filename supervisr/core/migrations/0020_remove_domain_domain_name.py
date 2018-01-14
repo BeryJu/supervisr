@@ -8,7 +8,7 @@ from supervisr.core.models import get_system_user
 
 
 def update_system_user(apps, schema_editor):
-    User = apps.get_model('supervisr/core', 'User')
+    User = apps.get_model('supervisr_core', 'User')
     system_user = User.objects.get(pk=get_system_user())
     system_user.is_superuser = True
     system_user.save()
@@ -16,7 +16,7 @@ def update_system_user(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/core', '0019_auto_20170118_1703'),
+        ('supervisr_core', '0019_auto_20170118_1703'),
     ]
 
     operations = [

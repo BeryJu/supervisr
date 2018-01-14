@@ -142,6 +142,8 @@ CACHES = {
 }
 
 MIDDLEWARE = [
+    # Load DeployPage first so we can save unnecessary errores
+    'supervisr.core.middleware.DeployPageMiddleware.deploy_page',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -154,8 +156,7 @@ MIDDLEWARE = [
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
     'supervisr.core.middleware.EmailMissingMiddleware.check_email',
     'supervisr.core.middleware.ImpersonateMiddleware.impersonate',
-    'supervisr.core.middleware.MaintenanceMode.maintenance_mode',
-    'supervisr.core.middleware.PermanentMessage.permanent_message',
+    'supervisr.core.middleware.PermanentMessageMiddleware.permanent_message',
     'htmlmin.middleware.HtmlMinifyMiddleware',
     'htmlmin.middleware.MarkRequestMiddleware',
 ]
@@ -203,7 +204,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = 'supervisr/core.User'
+AUTH_USER_MODEL = 'supervisr_core.User'
 
 AUTHENTICATION_BACKENDS = [
     'supervisr.core.auth.EmailBackend',
@@ -245,24 +246,21 @@ SENTRY_DSN = ''
 
 sys.path.append('/etc/supervisr')
 
-def load_local_settings(mod):
-    """
-    Load module *mod* and apply contents to ourselves
-    """
+def load_local_settings(module_path):
+    """Load module *mod* and apply contents to ourselves"""
     try:
-        loaded_module = importlib.import_module(mod, package=None)
-        for key, val in loaded_module.__dict__.items():
+        loaded_module = importlib.import_module(module_path, package=None)
+        for key, value in loaded_module.__dict__.items():
             if not key.startswith('__') and not key.endswith('__'):
-                globals()[key] = val
-        LOGGER.warning("Loaded '%s' as local_settings", mod)
+                globals()[key] = value
+        LOGGER.warning("Loaded '%s' as local_settings", module_path)
         return True
     except ImportError as exception:
-        LOGGER.info('Not loaded %s because %s', mod, exception)
+        LOGGER.info('Not loaded %s because %s', module_path, exception)
         return False
 
-
-for modu in [os.environ.get('SUPERVISR_LOCAL_SETTINGS', 'supervisr.local_settings'), 'config']:
-    if load_local_settings(modu):
+for _module in [os.environ.get('SUPERVISR_LOCAL_SETTINGS', 'supervisr.local_settings'), 'config']:
+    if load_local_settings(_module):
         break
 
 SERVER_EMAIL = EMAIL_FROM
@@ -353,12 +351,12 @@ if DEBUG is True:
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
 
 # Load subapps's INSTALLED_APPS
-for app in INSTALLED_APPS:
-    if app.startswith('supervisr') and \
-        not app.startswith('supervisr.core.'):
-        app_package = '.'.join(app.split('.')[:-2])
+for _app in INSTALLED_APPS:
+    if _app.startswith('supervisr') and \
+        not _app.startswith('supervisr.core.'):
+        _app_package = '.'.join(_app.split('.')[:-2])
         try:
-            app_settings = importlib.import_module("%s.settings" % app_package)
+            app_settings = importlib.import_module("%s.settings" % _app_package)
             INSTALLED_APPS.extend(getattr(app_settings, 'INSTALLED_APPS', []))
             MIDDLEWARE.extend(getattr(app_settings, 'MIDDLEWARE', []))
             AUTHENTICATION_BACKENDS.extend(getattr(app_settings, 'AUTHENTICATION_BACKENDS', []))

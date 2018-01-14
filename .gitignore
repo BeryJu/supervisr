@@ -169,5 +169,8 @@ typings/
 
 supervisr/media/
 supervisr/cache/
-
+supervisr/core/templates/core/deploy.html
+docgen/supervisr/
 .sass-cache
+
+.vscode/settings.json

@@ -20,12 +20,12 @@ from supervisr.core.views.wizards import BaseWizardView
 
 
 @login_required
-def instance_index(req):
+def instance_index(request):
     """
     Show a n overview over all provider instances
     """
-    user_providers = ProviderInstance.objects.filter(users__in=[req.user])
-    return render(req, 'provider/instance-index.html', {'providers': user_providers})
+    user_providers = ProviderInstance.objects.filter(users__in=[request.user])
+    return render(request, 'provider/instance-index.html', {'providers': user_providers})
 
 
 PROVIDER_TEMPLATES = {
@@ -35,9 +35,7 @@ PROVIDER_TEMPLATES = {
 
 # pylint: disable=too-many-ancestors
 class ProviderNewView(BaseWizardView):
-    """
-    Wizard to create a Domain
-    """
+    """Wizard to create a Domain"""
 
     title = _("New Provider")
     providers = None
@@ -86,60 +84,56 @@ class ProviderNewView(BaseWizardView):
         return redirect(reverse('instance-index'))
 
 @login_required
-def instance_edit(req, uuid):
-    """
-    Edit Instance
-    """
-    inst = ProviderInstance.objects.filter(uuid=uuid, users__in=[req.user])
+def instance_edit(request, uuid):
+    """Edit Instance"""
+    inst = ProviderInstance.objects.filter(uuid=uuid, users__in=[request.user])
     if not inst.exists():
         raise Http404
     r_inst = inst.first()
 
     providers = get_providers()
-    creds = BaseCredential.objects.filter(owner=req.user)
+    creds = BaseCredential.objects.filter(owner=request.user)
     form_providers = [('%s.%s' % (s.__module__, s.__class__.__name__),
                        '%s (%s)' % (s.get_meta.ui_name, s.__class__.__name__)) for s in providers]
 
-    if req.method == 'POST':
-        form = ProviderForm(req.POST, instance=r_inst)
-        form.request = req
+    if request.method == 'POST':
+        form = ProviderForm(request.POST, instance=r_inst)
+        form.request = request
         form.fields['provider_path'].choices = form_providers
         form.fields['credentials'].queryset = creds
 
         if form.is_valid():
             form.save()
-            messages.success(req, _('Successfully edited Instance'))
+            messages.success(request, _('Successfully edited Instance'))
             return redirect(reverse('instance-index'))
-        messages.error(req, _('Invalid Instance'))
+        messages.error(request, _('Invalid Instance'))
     else:
         form = ProviderForm(instance=r_inst)
-        form.request = req
+        form.request = request
         form.fields['provider_path'].choices = form_providers
         form.fields['credentials'].queryset = creds
 
-    return render(req, 'core/generic_form_modal.html', {
+    return render(request, 'core/generic_form_modal.html', {
         'form': form,
         'title': 'Edit %s' % r_inst.name,
         })
 
 @login_required
-def instance_delete(req, uuid):
-    """
-    Delete Instance
-    """
+def instance_delete(request, uuid):
+    """Delete Instance"""
     inst = ProviderInstance.objects.filter(uuid=uuid,
-                                           userproductrelationship__user__in=[req.user])
+                                           userproductrelationship__user__in=[request.user])
     if not inst.exists():
         raise Http404
     r_inst = inst.first()
 
-    if req.method == 'POST' and 'confirmdelete' in req.POST:
+    if request.method == 'POST' and 'confirmdelete' in request.POST:
         # User confirmed deletion
         r_inst.delete()
-        messages.success(req, _('Instance successfully deleted'))
+        messages.success(request, _('Instance successfully deleted'))
         return redirect(reverse('instance-index'))
 
-    return render(req, 'core/generic_delete.html', {
+    return render(request, 'core/generic_delete.html', {
         'object': 'Instance %s' % r_inst.name,
         'title': 'Delete %s' % r_inst.name,
         'delete_url': reverse('instance-delete', kwargs={
@@ -148,12 +142,10 @@ def instance_delete(req, uuid):
         })
 
 @login_required
-def credential_index(req):
-    """
-    Return a list of all credentials this user has
-    """
-    creds = BaseCredential.objects.filter(owner=req.user)
-    return render(req, 'provider/credentials-index.html', {
+def credential_index(request):
+    """Return a list of all credentials this user has"""
+    creds = BaseCredential.objects.filter(owner=request.user)
+    return render(request, 'provider/credentials-index.html', {
         'creds': creds
         })
 
@@ -205,22 +197,20 @@ class CredentialNewView(BaseWizardView):
         return redirect(reverse('credential-index'))
 
 @login_required
-def credential_delete(req, name):
-    """
-    Delete Credential
-    """
-    creds = BaseCredential.objects.filter(name=name, owner=req.user)
+def credential_delete(request, name):
+    """Delete Credential"""
+    creds = BaseCredential.objects.filter(name=name, owner=request.user)
     if not creds.exists():
         raise Http404
     r_cred = creds.first()
 
-    if req.method == 'POST' and 'confirmdelete' in req.POST:
+    if request.method == 'POST' and 'confirmdelete' in request.POST:
         # User confirmed deletion
         r_cred.delete()
-        messages.success(req, _('Credential successfully deleted'))
+        messages.success(request, _('Credential successfully deleted'))
         return redirect(reverse('credential-index'))
 
-    return render(req, 'core/generic_delete.html', {
+    return render(request, 'core/generic_delete.html', {
         'object': 'Credential %s' % r_cred.name,
         'title': 'Delete %s' % r_cred.name,
         'delete_url': reverse('credential-delete', kwargs={

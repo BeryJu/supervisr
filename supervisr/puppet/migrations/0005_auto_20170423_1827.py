@@ -8,7 +8,7 @@ from supervisr.core.models import get_system_user
 
 
 def create_module(apps, schema_editor):
-    User = apps.get_model('supervisr/core', 'User')
+    User = apps.get_model('supervisr_core', 'User')
     Group = apps.get_model('auth', 'Group')
     system_user = User.objects.get(pk=get_system_user())
 
@@ -21,8 +21,8 @@ def create_module(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/core', '0013_auto_20170112_1925'),
-        ('supervisr/puppet', '0004_puppetmodule_source_path'),
+        ('supervisr_core', '0013_auto_20170112_1925'),
+        ('supervisr_puppet', '0004_puppetmodule_source_path'),
     ]
 
     operations = [

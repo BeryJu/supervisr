@@ -40,7 +40,7 @@
   </ul>
   <section id="accounts" role="tabpanel" aria-labelledby="tabAccounts" aria-hidden="true">
     <div class="btn-group btn-link btn-icon-link">
-      <a href="{% url 'supervisr/mail:mail-account-new' %}" class="btn">
+      <a href="{% url 'supervisr_mail:mail-account-new' %}" class="btn">
         <clr-icon shape="add"></clr-icon>
       </a>
       <a data-ctx-name="edit" class="btn">
@@ -70,7 +70,7 @@
       </thead>
       <tbody>
         {% for account in acc_accounts %}
-        <tr data-selectable data-ctx-edit="{% url 'supervisr/mail:mail-account-edit' account=account.address domain=account.domain.domain.domain %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr/mail:mail-account-delete' account=account.address domain=account.domain.domain.domain %}?back={{ request.get_full_path }}" data-ctx-setpassword="{% url 'supervisr/mail:mail-account-set-password' account=account.address domain=account.domain.domain.domain %}?back={{ request.get_full_path }}">
+        <tr data-selectable data-ctx-edit="{% url 'supervisr_mail:mail-account-edit' account=account.address domain=account.domain.domain.domain %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr_mail:mail-account-delete' account=account.address domain=account.domain.domain.domain %}?back={{ request.get_full_path }}" data-ctx-setpassword="{% url 'supervisr_mail:mail-account-set-password' account=account.address domain=account.domain.domain.domain %}?back={{ request.get_full_path }}">
           <td>{{ account.address }}@{{ account.domain.domain.domain }}</td>
           <td>{{ account.domain.domain.domain }}</td>
           <td>{{ account.users.all|join:"," }}</td>
@@ -99,7 +99,7 @@
   </section>
   <section id="aliases" role="tabpanel" aria-labelledby="tabAliases" aria-hidden="true">
     <div class="btn-group btn-link btn-icon-link">
-      <a href="{% url 'supervisr/mail:mail-alias-new' %}" class="btn">
+      <a href="{% url 'supervisr_mail:mail-alias-new' %}" class="btn">
         <clr-icon shape="add"></clr-icon>
       </a>
       <a data-ctx-name="edit" class="btn">
@@ -120,7 +120,7 @@
       </thead>
       <tbody>
         {% for fwd in acc_aliases %}
-        <tr data-selectable data-ctx-edit="{% url 'supervisr/mail:mail-alias-edit' domain=fwd.account.domain.domain.domain dest=fwd.destination %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr/mail:mail-alias-delete' domain=fwd.account.domain.domain.domain dest=fwd.destination %}?back={{ request.get_full_path }}">
+        <tr data-selectable data-ctx-edit="{% url 'supervisr_mail:mail-alias-edit' domain=fwd.account.domain.domain.domain dest=fwd.destination %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr_mail:mail-alias-delete' domain=fwd.account.domain.domain.domain dest=fwd.destination %}?back={{ request.get_full_path }}">
           <td>{{ fwd.account.address }}@{{ fwd.account.domain.domain.domain }}</td>
           <td>{{ fwd.destination }}</td>
           <td>{{ fwd.account.users.all|join:"," }}</td>

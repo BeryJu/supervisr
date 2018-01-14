@@ -61,7 +61,7 @@ class TestDecorators(TestCase):
         """
         Test ifapp decorator
         """
-        @ifapp('supervisr/core')
+        @ifapp('supervisr_core')
         def test_core():
             """
             Only run this function if app core is present
@@ -84,7 +84,7 @@ class TestDecorators(TestCase):
         """
         @logged_in_or_basicauth(realm='testrealm')
         # pylint: disable=unused-argument
-        def _view(req):
+        def _view(request):
             """
             user has gotten through so everything's fine
             """

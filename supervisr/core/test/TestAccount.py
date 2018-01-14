@@ -195,7 +195,7 @@ class TestAccount(TestCase):
         SIG_USER_RESEND_CONFIRM.send(
             sender=None,
             user=user,
-            req=None)
+            request=None)
 
     def test_reset_passowrd(self):
         """

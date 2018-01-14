@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/core', '0045_auto_20170706_1335'),
+        ('supervisr_core', '0045_auto_20170706_1335'),
     ]
 
     operations = [
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='BaseProviderInstance',
             name='credentials',
-            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='supervisr/core.BaseCredential'),
+            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='supervisr_core.BaseCredential'),
             preserve_default=False,
         ),
         migrations.AddField(

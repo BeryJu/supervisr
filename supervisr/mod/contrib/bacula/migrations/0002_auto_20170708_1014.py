@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/mod/contrib/bacula', '0001_initial'),
+        ('supervisr_mod_contrib_bacula', '0001_initial'),
     ]
 
     operations = [

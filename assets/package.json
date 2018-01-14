@@ -4,9 +4,10 @@
   "description": "Static files for supervisr",
   "main": "index.js",
   "dependencies": {
-    "@webcomponents/custom-elements": "^1.0.0",
     "@clr/icons": "latest",
     "@clr/ui": "latest",
+    "@webcomponents/custom-elements": "^1.0.0",
+    "bootstrap": "^4.0.0-alpha.5",
     "font-awesome": "^4.7.0",
     "grunt": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",

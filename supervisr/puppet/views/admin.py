@@ -7,7 +7,7 @@ import traceback
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Sum
-from django.http import Http404
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
@@ -18,10 +18,8 @@ from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def index(req):
-    """
-    Admin index
-    """
+def index(request: HttpRequest) -> HttpResponse:
+    """Admin index"""
     module_count = len(PuppetModule.objects.all())
     download_count = PuppetModuleRelease.objects.all().aggregate(Sum('downloads'))
     # Show latest version of internal modules
@@ -33,7 +31,7 @@ def index(req):
                             .order_by('-pk')
         if latest_releases.exists():
             versions[mod] = latest_releases.first()
-    return render(req, 'puppet/index.html', {
+    return render(request, 'puppet/index.html', {
         'module_count': module_count,
         'versions': versions,
         'download_count': download_count['downloads__sum'],
@@ -41,10 +39,8 @@ def index(req):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def debug_build(req, user, module):
-    """
-    Run Puppet Build
-    """
+def debug_build(request: HttpRequest, user: str, module: str) -> HttpResponse:
+    """Run Puppet Build"""
     p_users = User.objects.filter(username=user)
     if not p_users.exists():
         raise Http404
@@ -55,28 +51,26 @@ def debug_build(req, user, module):
     p_module = p_modules.first()
     rel_builder = ReleaseBuilder(p_module)
     rel_builder.build()
-    messages.success(req, 'Successfully built %s-%s' % (user, module))
-    return redirect(reverse('supervisr/puppet:puppet-index'))
+    messages.success(request, 'Successfully built %s-%s' % (user, module))
+    return redirect(reverse('supervisr_puppet:index'))
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def debug_render(req):
-    """
-    Test Render of a template file
-    """
+def debug_render(request: HttpRequest) -> HttpResponse:
+    """Test Render of a template file"""
     ctx = {}
-    if req.method == 'POST':
+    if request.method == 'POST':
 
         module = PuppetModule.objects.get(name='supervisr_core')
         builder = ReleaseBuilder(module)
         try:
-            rendered = builder.render_template(req.POST.get('templatepath'))
+            rendered = builder.render_template(request.POST.get('templatepath'))
         except Exception: # pylint: disable=broad-except
             trab = traceback.format_exc()
             rendered = str(trab)
         ctx = {
-            'path': req.POST.get('templatepath'),
+            'path': request.POST.get('templatepath'),
             'rendered': rendered
         }
 
-    return render(req, 'puppet/debug_render.html', ctx)
+    return render(request, 'puppet/debug_render.html', ctx)

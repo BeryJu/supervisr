@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/core', '0059_userpasswordservercredential'),
+        ('supervisr_core', '0059_userpasswordservercredential'),
     ]
 
     operations = [

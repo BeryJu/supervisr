@@ -101,7 +101,7 @@ class AccountAccess(models.Model):
         Get Neutral Keys
         """
         return (self.identifier, ) + self.provider.natural_key()
-    natural_key.dependencies = ['supervisr/mod/auth/oauth/client.provider']
+    natural_key.dependencies = ['supervisr_mod_auth_oauth_client.provider']
 
     @property
     def api_client(self):

@@ -11,10 +11,10 @@ def is_active_app(context, *args):
     """
     Return True if current link is from app
     """
-    req = context['request']
+    req = context.get('request')
     if not req.resolver_match:
         return ''
-    for app in args:
-        if app in req.resolver_match.app_names:
+    for app_name in args:
+        if req.resolver_match.app_name == app_name:
             return 'active'
     return ''

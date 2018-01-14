@@ -9,14 +9,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/core', '0051_auto_20170716_1842'),
-        ('supervisr/mail', '0012_auto_20170715_2246'),
+        ('supervisr_core', '0051_auto_20170716_1842'),
+        ('supervisr_mail', '0012_auto_20170715_2246'),
     ]
 
     operations = [
         migrations.AddField(
             model_name='maildomain',
             name='provider',
-            field=models.ForeignKey(default=None, null=True, blank=True, on_delete=django.db.models.deletion.CASCADE, to='supervisr/core.ProviderInstance'),
+            field=models.ForeignKey(default=None, null=True, blank=True, on_delete=django.db.models.deletion.CASCADE, to='supervisr_core.ProviderInstance'),
         ),
     ]

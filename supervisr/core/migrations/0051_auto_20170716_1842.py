@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     atomic = False
 
     dependencies = [
-        ('supervisr/core', '0050_auto_20170707_1121'),
+        ('supervisr_core', '0050_auto_20170707_1121'),
     ]
 
     operations = [

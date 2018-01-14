@@ -4,7 +4,7 @@ Supervisr Core Setting Templatetag
 
 from django import template
 
-from ..models import Setting
+from supervisr.core.models import Setting
 
 register = template.Library()
 

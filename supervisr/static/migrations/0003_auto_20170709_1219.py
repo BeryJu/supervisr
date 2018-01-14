@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/static', '0002_filepage'),
+        ('supervisr_static', '0002_filepage'),
     ]
 
     operations = [

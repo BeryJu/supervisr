@@ -6,8 +6,7 @@ from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
 from supervisr.core.models import User, get_system_user
-
-from ..views import server
+from supervisr.server.views import server
 
 
 class TestServerViews(TestCase):
@@ -22,7 +21,7 @@ class TestServerViews(TestCase):
         """
         Test module_list view
         """
-        req = self.factory.get(reverse('supervisr/server:server-index'))
-        req.user = User.objects.get(pk=get_system_user())
-        res = server.index(req)
-        self.assertEqual(res.status_code, 200)
+        request = self.factory.get(reverse('supervisr_server:index'))
+        request.user = User.objects.get(pk=get_system_user())
+        response = server.index(request)
+        self.assertEqual(response.status_code, 200)

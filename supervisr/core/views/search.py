@@ -13,14 +13,12 @@ from supervisr.core.utils import do_404, render_to_string
 
 
 @login_required
-def search(req):
-    """
-    Searching of models and subapps
-    """
-    if 'q' in req.GET:
-        query = req.GET.get('q')
+def search(request):
+    """Searching of models and subapps"""
+    if 'q' in request.GET:
+        query = request.GET.get('q')
     else:
-        return do_404(req, message='No query')
+        return do_404(request, message='No query')
 
     # def make_model_url(model):
     #     """
@@ -39,10 +37,8 @@ def search(req):
     #         verbose_name = model._meta.verbose_name.replace(' ', '-')
     #         url_choices = ()
 
-    def default_app_handler(app, query, req):
-        """
-        Search through every model in model_dict with query
-        """
+    def default_app_handler(app, query, request):
+        """Search through every model in model_dict with query"""
         results = {}
         for model in app.get_models():
             if getattr(model._meta, 'sv_search_fields', None) is not None:
@@ -57,7 +53,7 @@ def search(req):
         if results != {}:
             return mark_safe(render_to_string('search/search_section.html', {
                 'results': results,
-                'request': req,
+                'request': request,
                 }))
 
     ## Resulsts is a key:value dict of app.verbose_name to rendered html
@@ -66,12 +62,12 @@ def search(req):
         app_result = None
         try:
             # if getattr(app, 'custom_search', None):
-            #     app_result = app.custom_search(query, req)
+            #     app_result = app.custom_search(query, request)
             # else:
-            app_result = default_app_handler(app, query, req)
+            app_result = default_app_handler(app, query, request)
             if app_result is not None:
                 results[app.verbose_name] = app_result
         except ConnectionDoesNotExist:
             pass
 
-    return render(req, 'search/search.html', {'results': results})
+    return render(request, 'search/search.html', {'results': results})

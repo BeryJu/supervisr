@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/mod/auth/saml/idp', '0003_productextensionsaml2'),
+        ('supervisr_mod_auth_saml_idp', '0003_productextensionsaml2'),
     ]
 
     operations = [

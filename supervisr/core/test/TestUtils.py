@@ -27,10 +27,10 @@ class TestUtils(TestCase):
         """
         Test get_remote_ip
         """
-        req = self.factory.get('/', HTTP_X_FORWARDED_FOR='1.2.3.4')
-        self.assertEqual(get_remote_ip(req), '1.2.3.4')
-        req2 = self.factory.get('/', REMOTE_ADDR='2.3.4.5')
-        self.assertEqual(get_remote_ip(req2), '2.3.4.5')
+        request = self.factory.get('/', HTTP_X_FORWARDED_FOR='1.2.3.4')
+        self.assertEqual(get_remote_ip(request), '1.2.3.4')
+        request2 = self.factory.get('/', REMOTE_ADDR='2.3.4.5')
+        self.assertEqual(get_remote_ip(request2), '2.3.4.5')
 
     @skipUnless(sys.platform.startswith('win'), 'requires Windows')
     def test_reverse_dns_win(self): # pragma: no cover
@@ -64,8 +64,8 @@ class TestUtils(TestCase):
         """
         test 404 helper
         """
-        req = self.factory.get('/')
-        self.assertEqual(do_404(req).status_code, 404)
+        request = self.factory.get('/')
+        self.assertEqual(do_404(request).status_code, 404)
 
     def test_render_to_string(self):
         """

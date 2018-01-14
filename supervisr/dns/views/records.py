@@ -5,7 +5,7 @@ Supervisr DNS record views
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.http import Http404
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render, reverse
 from django.utils.translation import ugettext as _
 
@@ -16,21 +16,19 @@ from supervisr.dns.models import Record, Zone
 
 
 @login_required
-def list_records(req, zone):
-    """
-    Show list of records for zone
-    """
+def list_records(request: HttpRequest, zone: str) -> HttpResponse:
+    """Show list of records for zone"""
     # check if zone exists
-    zones = Zone.objects.filter(domain__domain=zone, users__in=[req.user])
+    zones = Zone.objects.filter(domain__domain=zone, users__in=[request.user])
     if not zones.exists():
         raise Http404
     r_zone = zones.first()
     # get all records for the zone
-    all_records = Record.objects.filter(domain=r_zone, users__in=[req.user]).order_by('name')
+    all_records = Record.objects.filter(domain=r_zone, users__in=[request.user]).order_by('name')
 
-    paginator = Paginator(all_records, req.user.rows_per_page)
+    paginator = Paginator(all_records, request.user.rows_per_page)
 
-    page = req.GET.get('page')
+    page = request.GET.get('page')
     try:
         records = paginator.page(page)
     except PageNotAnInteger:
@@ -38,16 +36,14 @@ def list_records(req, zone):
     except EmptyPage:
         records = paginator.page(paginator.num_pages)
 
-    return render(req, 'dns/records/index.html', {
+    return render(request, 'dns/records/index.html', {
         'records': records,
         'zone': r_zone,
         })
 
 # pylint: disable=too-many-ancestors
 class RecordNewView(BaseWizardView):
-    """
-    Wizard to create a blank Record
-    """
+    """Wizard to create a blank Record"""
 
     title = _('New Record')
     form_list = [RecordForm]
@@ -71,44 +67,42 @@ class RecordNewView(BaseWizardView):
             product=record,
             user=self.request.user)
         messages.success(self.request, _('DNS Record successfully created'))
-        return redirect(reverse('supervisr/dns:dns-record-list',
+        return redirect(reverse('supervisr_dns:dns-record-list',
                                 kwargs={'zone': self.kwargs['zone']}))
 
 @login_required
-def edit(req, zone, record, uuid):
-    """
-    Edit a record
-    """
+def edit(request: HttpRequest, zone: str, record: str, uuid):
+    """Edit a record"""
     # Check if zone exists before doing anything else
-    zones = Zone.objects.filter(domain__domain=zone, users__in=[req.user])
+    zones = Zone.objects.filter(domain__domain=zone, users__in=[request.user])
     if not zones.exists():
         raise Http404
     r_zone = zones.first()
     # Check if the record exists too
-    records = Record.objects.filter(domain=r_zone, users__in=[req.user], name=record, uuid=uuid)
+    records = Record.objects.filter(domain=r_zone, users__in=[request.user], name=record, uuid=uuid)
     if not records.exists():
         raise Http404
     assert len(records) == 1
     r_record = records.first()
 
     # Make a list of all zones so user can switch zones
-    user_zones = Zone.objects.filter(users__in=[req.user])
+    user_zones = Zone.objects.filter(users__in=[request.user])
     zone_pk = user_zones.filter(domain__domain=zone).first().pk
 
-    if req.method == 'POST':
-        form = RecordForm(req.POST, instance=r_record)
+    if request.method == 'POST':
+        form = RecordForm(request.POST, instance=r_record)
         form.fields['domain'].queryset = user_zones
         form.fields['domain'].initial = zone_pk
         if form.is_valid():
             r_record.save()
-            messages.success(req, _('Successfully edited Record'))
-            return redirect(reverse('supervisr/dns:dns-record-list', kwargs={'zone': zone}))
-        messages.error(req, _("Invalid Record"))
+            messages.success(request, _('Successfully edited Record'))
+            return redirect(reverse('supervisr_dns:dns-record-list', kwargs={'zone': zone}))
+        messages.error(request, _("Invalid Record"))
     else:
         form = RecordForm(instance=r_record)
         form.fields['domain'].queryset = user_zones
         form.fields['domain'].initial = zone_pk
-    return render(req, 'core/generic_form_modal.html', {
+    return render(request, 'core/generic_form_modal.html', {
         'form': form,
         'primary_action': 'Save',
         'title': 'Record Edit',
@@ -116,31 +110,29 @@ def edit(req, zone, record, uuid):
         })
 
 @login_required
-def delete(req, zone, record, uuid):
-    """
-    Delete a record
-    """
+def delete(request, zone, record, uuid):
+    """Delete a record"""
     # Check if zone exists before doing anything else
-    zones = Zone.objects.filter(domain__domain=zone, users__in=[req.user])
+    zones = Zone.objects.filter(domain__domain=zone, users__in=[request.user])
     if not zones.exists():
         raise Http404
     r_zone = zones.first()
 
-    records = Record.objects.filter(domain=r_zone, users__in=[req.user], name=record, uuid=uuid)
+    records = Record.objects.filter(domain=r_zone, users__in=[request.user], name=record, uuid=uuid)
     if not records.exists():
         raise Http404
     assert len(records) == 1
     r_record = records.first()
 
-    if req.method == 'POST' and 'confirmdelete' in req.POST:
+    if request.method == 'POST' and 'confirmdelete' in request.POST:
         # User confirmed deletion
         r_record.delete()
-        messages.success(req, _('Record successfully deleted'))
-        return redirect(reverse('supervisr/dns:dns-record-list', kwargs={'zone': zone}))
+        messages.success(request, _('Record successfully deleted'))
+        return redirect(reverse('supervisr_dns:dns-record-list', kwargs={'zone': zone}))
 
-    return render(req, 'core/generic_delete.html', {
+    return render(request, 'core/generic_delete.html', {
         'object': 'Record %s' % r_record.name,
-        'delete_url': reverse('supervisr/dns:dns-record-delete', kwargs={
+        'delete_url': reverse('supervisr_dns:dns-record-delete', kwargs={
             'zone': zone,
             'record': record,
             'uuid': r_record.uuid,

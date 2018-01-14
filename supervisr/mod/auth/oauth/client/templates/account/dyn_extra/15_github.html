@@ -2,5 +2,5 @@
 
 {% provider_exists 'github' as github_enabled %}
 {% if github_enabled %}
-<a href="{% url 'supervisr/mod/auth/oauth/client:oauth-client-login' provider='github' %}" class="btn" style="background-color:#444444;color:white;margin-top:10px;width:100%;"><i class="fa fa-github" aria-hidden="true"></i></a>
+<a href="{% url 'supervisr_mod_auth_oauth_client:oauth-client-login' provider='github' %}" class="btn" style="background-color:#444444;color:white;margin-top:10px;width:100%;"><i class="fa fa-github" aria-hidden="true"></i></a>
 {% endif %}

@@ -36,14 +36,14 @@ urlpatterns = [
     url(r'^$', common.index, name='common-index'),
     url(r'^search/$', search.search, name='search'),
     url(r'^accounts/login/$', accounts.LoginView.as_view(), name=django_settings.LOGIN_URL),
-    url(r'^accounts/login/reauth/$', accounts.reauth, name='account-reauth'),
+    url(r'^accounts/login/reauth/$', accounts.ReauthView.as_view(), name='account-reauth'),
     url(r'^accounts/signup/$', accounts.SignupView.as_view(), name='account-signup'),
     url(r'^accounts/logout/$', accounts.logout, name='account-logout'),
     url(r'^accounts/email_missing/$', accounts.EmailMissingView.as_view(),
         name='accounts-email-missing'),
     url(r'^accounts/confirm/(?P<uuid>%s)/$' % UUID_REGEX, accounts.confirm, name='account-confirm'),
     url(r'^accounts/confirm/resend/(?P<email>%s)/$' % EMAIL_REGEX,
-        accounts.confirmation_resend, name='account-confirmation_resend'),
+        accounts.ConfirmationResendView.as_view(), name='account-confirmation_resend'),
     url(r'^accounts/password/change/$', accounts.change_password, name='account-change_password'),
     url(r'^accounts/password/reset/$', accounts.reset_password_init,
         name='account-reset_password_init'),
@@ -120,20 +120,14 @@ def get_patterns(mount_path, module, namespace=None):
 
 # Load Urls for all sub apps
 for app in get_apps():
-    # Get Module base path
-    module_base = '.'.join(app.split('.')[:-2])
-    # Try new format first
-    # from supervisr.mod.auth.oauth.client
-    # to mod/auth/oauth/client
-    namespace = '/'.join(module_base.split('.'))
-    api_namespace = '/'.join(module_base.split('.')+['api'])
-    # remove `supervisr/` for mountpath
-    mount_path = namespace.replace('supervisr/', '')
+    # API namespace is always generated automatically
+    api_namespace = '_'.join(app.name.split('_')+['api'])
+    # remove `supervisr/` for mountpath and replace _ with /
+    mount_path = app.label.replace('supervisr_', '').replace('_', '/')
 
     # Only add if module could be loaded
-    urlpatterns += get_patterns(r"^app/%s/" % mount_path, "%s.urls" % module_base,
-                                namespace)
-    urlpatterns += get_patterns(r"^api/app/%s/" % mount_path, "%s.api.urls" % module_base)
+    urlpatterns += get_patterns(r"^app/%s/" % mount_path, "%s.urls" % app.name, app.label)
+    urlpatterns += get_patterns(r"^api/app/%s/" % mount_path, "%s.api.urls" % app.name)
 
 if django_settings.DEBUG or django_settings.TEST:
     import debug_toolbar
