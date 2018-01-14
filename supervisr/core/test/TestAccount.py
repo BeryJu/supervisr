@@ -70,8 +70,7 @@ class TestAccount(TestCase):
         """
         Test account.logout view
         """
-        res = test_request(accounts.logout,
-                           user=get_system_user())
+        res = test_request(accounts.LogoutView.as_view(), user=get_system_user())
         self.assertEqual(res.status_code, 302)
 
     def test_signup_view_auth(self):
@@ -145,14 +144,14 @@ class TestAccount(TestCase):
         form = ChangePasswordForm(self.change_data)
         self.assertTrue(form.is_valid())
 
-        res = test_request(accounts.change_password,
+        res = test_request(accounts.ChangePasswordView.as_view(),
                            user=user,
                            method='POST',
                            req_kwargs=form.cleaned_data)
         self.assertEqual(res.status_code, 302)
         self.assertEqual(res.url, reverse('common-index'))
 
-        res = test_request(accounts.change_password,
+        res = test_request(accounts.ChangePasswordView(),
                            user=user, )
         self.assertEqual(res.status_code, 200)
 
@@ -168,7 +167,7 @@ class TestAccount(TestCase):
                            req_kwargs=form.cleaned_data)
         self.assertEqual(res.status_code, 302)
 
-        res = test_request(accounts.reset_password_init)
+        res = test_request(accounts.PasswordResetInitView.as_view())
         self.assertEqual(res.status_code, 200)
 
     def test_resend_confirmation(self):
@@ -221,7 +220,7 @@ class TestAccount(TestCase):
         new_ac = AccountConfirmation.objects.create(user=user)
         self.assertFalse(new_ac.is_expired)
         uuid = AccountConfirmation.objects.filter(user=user).first().pk
-        reset_res = test_request(accounts.reset_password_confirm,
+        reset_res = test_request(accounts.PasswordResetFinishView.as_view(),
                                  method='POST',
                                  user=user,
                                  url_kwargs={
