@@ -35,7 +35,7 @@ def auto_discover():
         # This is just a sanity check to see if the module is importable
         importlib.import_module(module_path)
         version_name = module_path.split('.')[-2] # get the second last module name (version)
-        namespace = '/'.join(module_path.split('.')[:-1])
+        namespace = '_'.join(module_path.split('.')[:-1])
         urlpatterns.append(url('%s/' % version_name, include((module_path, namespace),
                                                              namespace=namespace)))
         # get numerical api version to determine default

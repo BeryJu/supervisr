@@ -34,14 +34,16 @@ def index(request):
         # 'domains': domains,
     })
 
-def uncaught_404(request):
+# pylint: disable=unused-argument
+def uncaught_404(request, **kwargs):
     """Handle an uncaught 404"""
     if 'api' in request.path:
         # return a json/xml/yaml message if this was an api call
         return api_response(request, {'message': 'not_found'})
     return render(request, 'common/error.html', {'code': 404})
 
-def uncaught_500(request):
+# pylint: disable=unused-argument
+def uncaught_500(request, **kwargs):
     """Handle an uncaught 500"""
     exc = sys.exc_info()
     message = None
