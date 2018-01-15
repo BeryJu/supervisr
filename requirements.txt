@@ -43,4 +43,4 @@ django-debug-toolbar
 recommonmark
 autopep8
 -e git+https://github.com/BeryJu/pdoc.git#egg=pdoc
-markdown<2.5
+markdown
