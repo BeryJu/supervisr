@@ -14,7 +14,6 @@ django-htmlmin
 mkdocs-material
 dnspython
 requests
-markdown
 requests
 django-two-factor-auth
 # In here you can specify pip modules that should be installed
@@ -44,3 +43,4 @@ django-debug-toolbar
 recommonmark
 autopep8
 -e git+https://github.com/BeryJu/pdoc.git#egg=pdoc
+markdown<2.5

@@ -18,6 +18,7 @@ class SupervisrModAuthSAMLProvider(SupervisrAppConfig):
         'processors.gitlab',
         'processors.generic',
         'processors.nextcloud',
+        'processors.wordpress_orange'
         'models',
         ]
 
