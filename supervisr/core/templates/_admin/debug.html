@@ -13,5 +13,6 @@
 <form action="" method="POST">
   {% csrf_token %}
   <input type="submit" name="raise_error" value="Raise RuntimeError" class="btn btn-primary">
+  <input type="submit" name="clear_cache" value="Clear Cache" class="btn btn-primary">
 </form>
 {% endblock %}
