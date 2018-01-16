@@ -16,7 +16,8 @@ from importlib import import_module
 
 import django.contrib.auth.models as django_auth_models
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Max, options
@@ -144,14 +145,30 @@ class SVAnonymousUser(django_auth_models.AnonymousUser):
 
 django_auth_models.AnonymousUser = SVAnonymousUser
 
-# class GroupProfile(CreatedUpdatedModel):
-#     """
-#     Save extended information about Groups
-#     """
-#     group = models.OneToOneField(Group, primary_key=True, on_delete=models.CASCADE)
-#     name = models.TextField()
-#     deletable = models.BooleanField(default=True, editable=False)
-#     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+# pylint: disable=too-few-public-methods
+class GlobalPermissionManager(models.Manager):
+    """GlobalPermissionManager"""
+
+    def get_queryset(self):
+        """Filter for us"""
+        return super(GlobalPermissionManager, self).\
+            get_queryset().filter(content_type__model='global_permission')
+
+class GlobalPermission(Permission):
+    """A global permission, not attached to a model"""
+
+    objects = GlobalPermissionManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = "global_permission"
+
+    def save(self, *args, **kwargs):
+        ctype, _created = ContentType.objects.get_or_create(
+            model=self._meta.verbose_name, app_label=self._meta.app_label,
+        )
+        self.content_type = ctype
+        super(GlobalPermission, self).save(*args, **kwargs)
 
 class Setting(CreatedUpdatedModel):
     """
