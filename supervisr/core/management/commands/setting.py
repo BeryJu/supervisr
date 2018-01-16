@@ -37,7 +37,9 @@ class Command(BaseCommand):
 
     def get(self, **kwargs):
         """Show single setting"""
-        namespace, key = kwargs.get('keypath', None).split('/')
+        if not kwargs.get('keypath'):
+            raise ValueError('keypath argument required for get.')
+        namespace, key = kwargs.get('keypath').split('/')
         setting = Setting.objects.get(namespace=namespace, key=key)
         if kwargs.get('value_only'):
             print(setting.value)
@@ -46,7 +48,9 @@ class Command(BaseCommand):
 
     def set(self, **kwargs):
         """Set a single setting"""
-        namespace, key = kwargs.get('keypath', None).split('/')
+        if not kwargs.get('keypath'):
+            raise ValueError('keypath argument required for get.')
+        namespace, key = kwargs.get('keypath').split('/')
         setting = Setting.objects.get(namespace=namespace, key=key)
         setting.set(kwargs.get('value'))
         self.get(**kwargs)
