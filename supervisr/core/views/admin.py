@@ -8,9 +8,12 @@ import sys
 
 from django import get_version as django_version
 from django.conf import settings as django_settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.cache import cache
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
+from django.utils.translation import ugettext as _
 
 from supervisr.core.models import Event, User, get_system_user
 from supervisr.core.signals import SIG_GET_MOD_INFO
@@ -102,4 +105,7 @@ def debug(request):
     if request.method == 'POST':
         if 'raise_error' in request.POST:
             raise RuntimeError('test error')
+        elif 'clear_cache' in request.POST:
+            cache.clear()
+            messages.success(request, _('Successfully cleared Cache'))
     return render(request, '_admin/debug.html')
