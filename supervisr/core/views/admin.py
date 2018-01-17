@@ -56,7 +56,7 @@ def info(request):
         'Version': {
             'Python Version': sys.version_info.__repr__(),
             'Django Version': django_version(),
-            'Supervisr Commit': django_settings.VERSION_HASH,
+            'Supervisr Commit': django_settings.VERSION,
         },
         'System': {
             'uname': platform.uname().__repr__(),

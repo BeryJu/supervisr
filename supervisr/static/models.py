@@ -1,10 +1,14 @@
 """supervisr Static Models"""
 
+import logging
+import os
+
 from django.conf import settings
 from django.db import models
 
 from supervisr.core.models import CastableModel, CreatedUpdatedModel, Product
 
+LOGGER = logging.getLogger(__name__)
 
 class StaticPage(CreatedUpdatedModel, CastableModel):
     """Store static page"""
@@ -32,13 +36,20 @@ class FilePage(StaticPage):
 
     def update_from_file(self):
         """Read data from file and write to DB"""
-        with open(self.path, 'r') as file:
-            new_content = file.read()
-            if new_content != self.content:
-                self.content = new_content
-                self.save()
-                return True
-            return False
+        if not os.path.isabs(self.path) and not os.path.exists(self.path):
+            # Path is not absolute and file doesnt exist.
+            # join with settings.BASE_DIR
+            self.path = os.path.join(settings.BASE_DIR, self.path)
+        try:
+            with open(self.path, 'r') as file:
+                new_content = file.read()
+                if new_content != self.content:
+                    self.content = new_content
+                    self.save()
+                    return True
+                return False
+        except IOError:
+            LOGGER.error("Failed to read file %s", self.path)
 
     def __str__(self):
         return "FilePage %s (slug=%s, path=%s)" % (self.title, self.slug, self.path)
