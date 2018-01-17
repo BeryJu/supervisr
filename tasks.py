@@ -4,10 +4,9 @@ Supervisr Invoke Tasks
 import os
 from importlib import import_module
 
-from invoke import Collection, Program
+from invoke import Collection
 
 import supervisr._tasks
-from supervisr import __version__
 
 try:
     import pymysql
@@ -18,7 +17,9 @@ except ImportError:
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
 os.environ.setdefault("SUPERVISR_LOCAL_SETTINGS", "supervisr.local_settings")
 
+# pylint: disable=invalid-name
 namespace = Collection()
+# pylint: disable=protected-access
 for submod in dir(supervisr._tasks):
     if not submod.startswith('_'):
         namespace.add_collection(

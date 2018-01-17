@@ -27,10 +27,10 @@ class RecordForm(forms.ModelForm):
     def clean_content(self):
         """Clean content based on selected type"""
         data = self.cleaned_data.get('content')
-        type = self.cleaned_data.get('type')
-        if type == 'A':
+        rec_type = self.cleaned_data.get('type')
+        if rec_type == 'A':
             validate_ipv4_address(data)
-        elif type == 'AAAA':
+        elif rec_type == 'AAAA':
             validate_ipv6_address(data)
         return data
 

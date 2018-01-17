@@ -1,3 +1,5 @@
+"""supervisr invoke tasks"""
+
 def _import_submodules(package_name):
     """ Import all submodules of a module, recursively
 
