@@ -2,10 +2,12 @@
 Supervisr Invoke Tasks
 """
 import os
-from invoke import Program, Collection
-from supervisr import __version__
 from importlib import import_module
+
+from invoke import Collection, Program
+
 import supervisr._tasks
+from supervisr import __version__
 
 try:
     import pymysql

@@ -1,9 +1,9 @@
 """supervisr dev tasks"""
-from invoke import task
+import logging
+import shutil
 
 from django.core.management import execute_from_command_line
-import shutil
-import logging
+from invoke import task
 
 LOGGER = logging.getLogger(__name__)
 
