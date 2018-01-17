@@ -5,12 +5,16 @@ from setuptools import find_packages, setup
 
 from supervisr import __version__
 
-os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
-
 def read_simple(path, mode='r'):
     """Simple wrapper for file reading"""
     with open(path, mode) as file:
-        return file.read()
+        lines = file.read().split('\n')
+        for line in lines:
+            if line.startswith('-e'):
+                lines.remove(line)
+        return lines
+
+print(read_simple('requirements-dev.txt'))
 
 setup(
     name='supervisr',
@@ -19,9 +23,9 @@ setup(
     author='BeryJu.org',
     author_email='supervisr@beryju.org',
     packages=find_packages(),
-    install_requires=read_simple('requirements.txt').split('\n'),
+    install_requires=read_simple('requirements.txt'),
     extras_require={
-        'dev': read_simple('requirements-dev.txt').split('\n'),
+        'dev': read_simple('requirements-dev.txt'),
     },
     scripts=['manage.py'],
     url="https://supervisr.beryju.org/docs/",
