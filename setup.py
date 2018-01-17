@@ -1,6 +1,7 @@
 """Supervisr setup.py"""
 import os
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
 
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
