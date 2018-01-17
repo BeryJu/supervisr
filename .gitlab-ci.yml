@@ -24,7 +24,7 @@ coverage:
   except:
     - prod
   script:
-    - "inv dev.coverage"
+    - "inv supervisr.coverage"
   stage: test
   cache:
     paths:
@@ -33,7 +33,7 @@ isort:
   except:
     - prod
   script:
-    - "inv dev.isort"
+    - "inv supervisr.isort"
   stage: test
   cache:
     paths:
@@ -42,7 +42,7 @@ migrations:
   except:
     - prod
   script:
-    - "inv supervisr.migrate"
+    - "inv utils.migrate"
   stage: test
   cache:
     paths:
@@ -51,7 +51,7 @@ prospector:
   except:
     - prod
   script:
-    - "inv dev.prospector"
+    - "inv supervisr.prospector"
   stage: test
   cache:
     paths:
@@ -60,7 +60,7 @@ pylint:
   except:
     - prod
   script:
-    - "inv dev.lint"
+    - "inv supervisr.lint"
   stage: test
   cache:
     paths:
@@ -69,7 +69,7 @@ unittest:
   except:
     - prod
   script:
-    - "inv dev.unittest"
+    - "inv supervisr.unittest"
   stage: test
   cache:
     paths:
