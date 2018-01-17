@@ -20,6 +20,9 @@ setup(
     author_email='supervisr@beryju.org',
     packages=find_packages(),
     install_requires=read_simple('requirements.txt').split('\n'),
+    extras_require={
+        'dev': read_simple('requirements-dev.txt').split('\n'),
+    },
     scripts=['manage.py'],
     url="https://supervisr.beryju.org/docs/",
 )
