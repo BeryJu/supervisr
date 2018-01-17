@@ -28,6 +28,6 @@ setup(
     extras_require={
         'dev': read_simple('requirements-dev.txt'),
     },
-    scripts=['manage.py'],
+    scripts=['scripts/supervisr-dev'],
     url="https://supervisr.beryju.org/docs/",
 )

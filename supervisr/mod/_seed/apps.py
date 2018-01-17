@@ -11,3 +11,4 @@ class SupervisrModSeedConfig(SupervisrAppConfig):
     """
 
     name = 'supervisr.mod._seed'
+    label = 'supervisr_mod__seed'

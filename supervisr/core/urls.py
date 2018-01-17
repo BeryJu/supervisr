@@ -58,8 +58,10 @@ urlpatterns = [
     # Domain views
     url(r'^domains/$', domains.index, name='domain-index'),
     url(r'^domains/new/$', domains.DomainNewView.as_view(), name='domain-new'),
-    url(r'^domains/(?P<domain>%s)/edit/$' % DOMAIN_REGEX, domains.edit, name='domain-edit'),
-    url(r'^domains/(?P<domain>%s)/delete/$' % DOMAIN_REGEX, domains.delete, name='domain-delete'),
+    url(r'^domains/(?P<domain>%s)/edit/$' % DOMAIN_REGEX,
+        domains.DomainEditView.as_view(), name='domain-edit'),
+    url(r'^domains/(?P<domain>%s)/delete/$' % DOMAIN_REGEX,
+        domains.DomainDeleteView.as_view(), name='domain-delete'),
     # Provider
     url(r'^providers/instances/$', providers.instance_index, name='instance-index'),
     url(r'^providers/instances/new/$', providers.ProviderNewView.as_view(),
