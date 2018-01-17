@@ -58,11 +58,12 @@ def compile_reqs(ctx):
     requirements.extend(glob("supervisr/**/**/requirements.txt"))
     requirements.extend(glob("supervisr/**/**/**/requirements.txt"))
     requirements.extend(glob("supervisr/**/**/**/**/requirements.txt"))
-    requirements.extend(glob("supervisr/**/requirements-dev.txt"))
-    requirements.extend(glob("supervisr/**/**/requirements-dev.txt"))
-    requirements.extend(glob("supervisr/**/**/**/requirements-dev.txt"))
-    requirements.extend(glob("supervisr/**/**/**/**/requirements-dev.txt"))
+    requirements_dev = glob("supervisr/**/requirements-dev.txt")
+    requirements_dev.extend(glob("supervisr/**/**/requirements-dev.txt"))
+    requirements_dev.extend(glob("supervisr/**/**/**/requirements-dev.txt"))
+    requirements_dev.extend(glob("supervisr/**/**/**/**/requirements-dev.txt"))
     ctx.run("cat %s > requirements.txt" % ' '.join(requirements))
+    ctx.run("cat %s > requirements-dev.txt" % ' '.join(requirements_dev))
 
 @task
 # pylint: disable=unused-argument

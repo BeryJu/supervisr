@@ -1,0 +1,11 @@
+astroid==1.5.3
+coverage
+isort
+pylint==1.7.5
+pylint-django
+prospector
+django-debug-toolbar
+recommonmark
+autopep8
+-e git+https://github.com/BeryJu/pdoc.git#egg=pdoc
+markdown
