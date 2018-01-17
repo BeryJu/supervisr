@@ -4,7 +4,7 @@ before_script:
   - "virtualenv env"
   - "source env/bin/activate"
   - "pip3 install invoke"
-  - "pip install -U -r requirements.txt"
+  - "pip install -U -r requirements.txt -r requirements-dev.txt"
 stages:
   - test
   - test-db
