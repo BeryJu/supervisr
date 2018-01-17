@@ -3,6 +3,8 @@ import os
 
 from setuptools import find_packages, setup
 
+from supervisr import __version__
+
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 def read_simple(path, mode='r'):
@@ -12,7 +14,7 @@ def read_simple(path, mode='r'):
 
 setup(
     name='supervisr',
-    version='0.1dev',
+    version=__version__,
     description='supervisr your IT.',
     author='BeryJu.org',
     author_email='supervisr@beryju.org',

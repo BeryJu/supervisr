@@ -16,7 +16,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="#313131">
     <link rel="stylesheet" href="{% with 'css/'|add:user.theme|add:'.theme.css' as path %}{% static path %}{% endwith %}">
     <script src="{% static 'js/raven.min.js' %}"></script>
-    <script>Raven.config('{% sentry_public_dsn %}', {environment: '{% setting "ENVIRONMENT" %}',release: '{% setting "VERSION_HASH" %}',}).install()</script>
+    <script>Raven.config('{% sentry_public_dsn %}', {environment: '{% setting "ENVIRONMENT" %}',release: '{% setting "VERSION" %}',}).install()</script>
     <script src="{% static 'js/custom-elements.min.js' %}"></script>
     <script src="{% static 'js/app.min.js' %}"></script>
     <link rel="shortcut icon" type="image/png" href="{% static 'img/icon.png' %}"/>

@@ -105,7 +105,6 @@ INSTALLED_APPS = [
     'raven.contrib.django.raven_compat',
 ]
 
-VERSION_HASH = raven.fetch_git_sha(os.path.dirname(os.pardir))
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))+"/static"
 MEDIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/media"
@@ -266,9 +265,16 @@ for _module in [os.environ.get('SUPERVISR_LOCAL_SETTINGS', 'supervisr.local_sett
 SERVER_EMAIL = EMAIL_FROM
 ENVIRONMENT = 'production' if DEBUG is False else 'development'
 
+# Try to get version from git, otherwise get from setup.py
+try:
+    VERSION = raven.fetch_git_sha(os.path.dirname(os.pardir))
+except raven.exceptions.InvalidGitRepository:
+    from supervisr import __version__
+    VERSION = __version__
+
 RAVEN_CONFIG = {
     'dsn': SENTRY_DSN,
-    'release': VERSION_HASH,
+    'release': VERSION,
     'environment': ENVIRONMENT,
     'tags': {'external_domain': ''}
 }
