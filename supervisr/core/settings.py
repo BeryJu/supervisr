@@ -279,6 +279,8 @@ RAVEN_CONFIG = {
     'tags': {'external_domain': ''}
 }
 
+LOG_HANDLERS = ['console', 'syslog', 'file', 'sentry']
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -316,30 +318,35 @@ LOGGING = {
     },
     'loggers': {
         'supervisr': {
-            'handlers': ['console', 'syslog', 'file', 'sentry'],
+            'handlers': LOG_HANDLERS,
             'level': 'DEBUG',
             'propagate': True,
         },
         'django': {
-            'handlers': ['console', 'syslog', 'file', 'sentry'],
+            'handlers': LOG_HANDLERS,
             'level': 'INFO',
             'propagate': True,
         },
         'tasks': {
-            'handlers': ['console'],
+            'handlers': LOG_HANDLERS,
             'level': 'DEBUG',
             'propagate': True,
         },
         'cherrypy': {
-            'handlers': ['console', 'syslog', 'file'],
+            'handlers': LOG_HANDLERS,
             'level': 'DEBUG',
             'propagate': True,
         },
         'oauthlib': {
-            'handlers': ['console'],
+            'handlers': LOG_HANDLERS,
             'level': 'DEBUG',
             'propagate': True,
-        }
+        },
+        'schedule': {
+            'handlers': LOG_HANDLERS,
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     }
 }
 
