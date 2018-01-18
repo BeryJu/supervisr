@@ -29,7 +29,7 @@ def admin_settings(request: HttpRequest) -> HttpResponse:
     return render(request, 'beacon/settings.html', {
         'form': form,
         'is_master': is_master,
-        'installs':  len(Pulse.objects.all()),
+        'installs':  Pulse.objects.all(),
         'modules': PulseModule.objects.all()
     })
 
