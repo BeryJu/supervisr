@@ -30,7 +30,8 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 
 from supervisr.core import fields
-from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_USER_POST_SIGN_UP,
+from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_SETTING_UPDATE,
+                                    SIG_USER_POST_SIGN_UP,
                                     SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
                                     SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
 from supervisr.core.utils import get_remote_ip, get_reverse_dns
@@ -193,6 +194,8 @@ class Setting(CreatedUpdatedModel):
         Returns:
             True if value converted to lowercase equals 'true'. Otherwise False.
         """
+        if not isinstance(self.value, str):
+            self.value = str(self.value)
         return self.value.lower() == 'true'
 
     @property
@@ -245,8 +248,6 @@ class Setting(CreatedUpdatedModel):
                 key=key,
                 namespace=namespace,
                 defaults={'value': default})[0]
-            if setting.value == 'True':
-                return True
             return setting.value
         except (OperationalError, ProgrammingError):
             return default
@@ -261,6 +262,8 @@ class Setting(CreatedUpdatedModel):
             True if the Setting's value in lowercase is equal to 'true'. Otherwise False.
         """
         value = Setting.get(*args, inspect_offset=2, **kwargs)
+        if not isinstance(value, str):
+            value = str(value)
         return str(value).lower() == 'true'
 
     @staticmethod
@@ -299,6 +302,11 @@ class Setting(CreatedUpdatedModel):
             return True
         except OperationalError:
             return False
+
+    def save(self, *args, **kwargs):
+        res = super(Setting, self).save(*args, **kwargs)
+        SIG_SETTING_UPDATE.send(sender=self, setting=self)
+        return res
 
     class Meta:
 
