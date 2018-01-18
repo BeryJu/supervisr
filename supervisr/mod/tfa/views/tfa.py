@@ -7,7 +7,7 @@ from binascii import unhexlify
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpRequest, HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
@@ -71,7 +71,7 @@ def verify(request: HttpRequest) -> HttpResponse:
 @login_required
 def user_settings(request: HttpRequest) -> HttpResponse:
     """View for user settings to control 2FA"""
-    static = StaticDevice.objects.filter(user=request.user, confirmed=True)
+    static = get_object_or_404(StaticDevice, user=request.user, confirmed=True)
     static_tokens = StaticToken.objects.filter(device=static).order_by('token')
     finished_totp_devices = TOTPDevice.objects.filter(user=request.user, confirmed=True)
     finished_static_devices = StaticDevice.objects.filter(user=request.user, confirmed=True)
@@ -87,7 +87,7 @@ def user_settings(request: HttpRequest) -> HttpResponse:
 def disable(request: HttpRequest) -> HttpResponse:
     """Disable 2FA for user"""
     # Delete all the devices for user
-    static = StaticDevice.objects.filter(user=request.user, confirmed=True)
+    static = get_object_or_404(StaticDevice, user=request.user, confirmed=True)
     static_tokens = StaticToken.objects.filter(device=static).order_by('token')
     totp = TOTPDevice.objects.filter(user=request.user, confirmed=True)
     static.delete()
