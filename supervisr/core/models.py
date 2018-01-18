@@ -30,7 +30,8 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 
 from supervisr.core import fields
-from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_USER_POST_SIGN_UP,
+from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_SETTING_UPDATE,
+                                    SIG_USER_POST_SIGN_UP,
                                     SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
                                     SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
 from supervisr.core.utils import get_remote_ip, get_reverse_dns
@@ -299,6 +300,11 @@ class Setting(CreatedUpdatedModel):
             return True
         except OperationalError:
             return False
+
+    def save(self, *args, **kwargs):
+        res = super(Setting, self).save(*args, **kwargs)
+        SIG_SETTING_UPDATE.send(sender=self, setting=self)
+        return res
 
     class Meta:
 

@@ -1,0 +1,71 @@
+{% extends "_admin/mod_default.html" %}
+
+{% load i18n %}
+{% load supervisr_title %}
+
+{% block title %}
+{% supervisr_title "Overview" %}
+{% endblock %}
+
+{% block module_content %}
+<h2><clr-icon shape="upload-cloud" size="32"></clr-icon>{% trans 'Beacon' %}</h2>
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h2><clr-icon shape="storage" size="32"></clr-icon>{% trans 'Connection Settings' %}</h2>
+      </div>
+      <form role="form" method="POST">
+        <div class="card-block">
+          <section class="form-block">
+            {% include 'blocks/block_form.html' with form=form %}
+          </section>
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-sm btn-primary">{% trans 'Update' %}</button>
+          <a href="{% url 'supervisr_mod_beacon:pulse' %}" type="submit" class="btn btn-sm">{% trans 'Pulse now' %}</a>
+        </div>
+      </form>
+    </div>
+    {% if is_master %}
+      <div class="card">
+        <div class="card-header">
+          <h2><clr-icon shape="bar-chart" size="32"></clr-icon>{% trans 'Statistics' %}</h2>
+        </div>
+        <div class="card-block">
+          <div class="card-text">
+            <h1>{% blocktrans with count=installs %}Installs: {{ count }}{% endblocktrans %}</h1>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+  {% if is_master %}
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h2><clr-icon shape="bar-chart" size="32"></clr-icon>{% trans 'Installed Modules' %}</h2>
+      </div>
+      <div class="card-block">
+        <table class="table">
+          <thead>
+            <th>{% trans 'Module Name' %}</th>
+            <th>{% trans 'Author' %}</th>
+            <th>{% trans 'Count' %}</th>
+          </thead>
+          <tbody>
+            {% for module in modules %}
+            <tr>
+              <td>{{ module.name }}</td>
+              <td>{{ module.author }}</td>
+              <td></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
