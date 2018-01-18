@@ -194,6 +194,8 @@ class Setting(CreatedUpdatedModel):
         Returns:
             True if value converted to lowercase equals 'true'. Otherwise False.
         """
+        if not isinstance(self.value, str):
+            self.value = str(self.value)
         return self.value.lower() == 'true'
 
     @property
@@ -246,8 +248,6 @@ class Setting(CreatedUpdatedModel):
                 key=key,
                 namespace=namespace,
                 defaults={'value': default})[0]
-            if setting.value == 'True':
-                return True
             return setting.value
         except (OperationalError, ProgrammingError):
             return default
@@ -262,6 +262,8 @@ class Setting(CreatedUpdatedModel):
             True if the Setting's value in lowercase is equal to 'true'. Otherwise False.
         """
         value = Setting.get(*args, inspect_offset=2, **kwargs)
+        if not isinstance(value, str):
+            value = str(value)
         return str(value).lower() == 'true'
 
     @staticmethod
