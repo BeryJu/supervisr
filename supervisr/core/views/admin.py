@@ -15,8 +15,8 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
 
-from supervisr.core.models import Event, User, get_system_user
-from supervisr.core.signals import SIG_GET_MOD_INFO
+from supervisr.core.models import Event, Setting, User, get_system_user
+from supervisr.core.signals import SIG_GET_MOD_INFO, SIG_SETTING_UPDATE
 from supervisr.core.utils import get_reverse_dns
 
 
@@ -108,4 +108,8 @@ def debug(request):
         elif 'clear_cache' in request.POST:
             cache.clear()
             messages.success(request, _('Successfully cleared Cache'))
+        elif 'update_settings' in request.POST:
+            setting = Setting.get('domain')
+            SIG_SETTING_UPDATE.send(sender=setting)
+            messages.success(request, _('Successfully updated settings.'))
     return render(request, '_admin/debug.html')

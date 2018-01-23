@@ -27,24 +27,43 @@
         </div>
       </form>
     </div>
-    {% if is_master %}
-      <div class="card">
-        <div class="card-header">
-          <h2><clr-icon shape="bar-chart" size="32"></clr-icon>{% trans 'Statistics' %}</h2>
-        </div>
-        <div class="card-block">
-          <div class="card-text">
-            <h1>{% blocktrans with count=installs %}Installs: {{ count }}{% endblocktrans %}</h1>
-          </div>
-        </div>
-      </div>
-    {% endif %}
   </div>
-  {% if is_master %}
-  <div class="col-md-6">
+</div>
+{% if is_master %}
+<div class="row">
+  <div class="col-md-12">
     <div class="card">
       <div class="card-header">
-        <h2><clr-icon shape="bar-chart" size="32"></clr-icon>{% trans 'Installed Modules' %}</h2>
+        <h2>
+          <clr-icon shape="bar-chart" size="32"></clr-icon>{% blocktrans with count=installs.count %}Installs: {{ count }}{% endblocktrans %}</h2>
+      </div>
+      <div class="card-block">
+        <table class="table">
+          <thead>
+            <th>{% trans 'Install ID' %}</th>
+            <th>{% trans 'Python Version' %}</th>
+            <th>{% trans 'OS' %}</th>
+            <th>{% trans 'User count' %}</th>
+          </thead>
+          <tbody>
+            {% for install in installs %}
+            <tr>
+              <td>{{ install.install_id }}</td>
+              <td>{{ install.python_version }}</td>
+              <td>{{ install.os_uname }}</td>
+              <td>{{ install.user_count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h2>
+          <clr-icon shape="bar-chart" size="32"></clr-icon>{% blocktrans with count=modules.count %}Installed Modules: {{ count }}{% endblocktrans %}</h2>
       </div>
       <div class="card-block">
         <table class="table">
@@ -58,7 +77,7 @@
             <tr>
               <td>{{ module.name }}</td>
               <td>{{ module.author }}</td>
-              <td></td>
+              <td>{{ module.pulse_set.count }}</td>
             </tr>
             {% endfor %}
           </tbody>
@@ -66,6 +85,6 @@
       </div>
     </div>
   </div>
-  {% endif %}
 </div>
+{% endif %}
 {% endblock %}
