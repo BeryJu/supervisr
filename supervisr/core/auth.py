@@ -12,6 +12,7 @@ class EmailBackend(ModelBackend):
     """Authenticate user by E-Mail"""
 
     def authenticate(self, email=None, password=None, **kwargs):
+        """Same as default authenticate, except user is searched by E-Mail"""
         user_model = get_user_model()
         try:
             user = user_model.objects.get(email=email)
@@ -27,6 +28,9 @@ class APIKeyBackend(ModelBackend):
 
     # pylint: disable=unused-argument
     def authenticate(self, request, **creds):
+        """Authenticate based on API Key in request"""
+        if not request:
+            return None
         user_model = get_user_model()
         try:
             key = SVAnonymousUser.api_key
