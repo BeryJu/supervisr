@@ -11,8 +11,8 @@ import supervisr.core.models
 
 
 def migrate_profile_data(apps, schema_editor):
-    UserProfile = apps.get_model('supervisr/core', 'UserProfile')
-    User = apps.get_model('supervisr/core', 'User')
+    UserProfile = apps.get_model('supervisr_core', 'UserProfile')
+    User = apps.get_model('supervisr_core', 'User')
     old_user_model = apps.get_model('auth', 'User')
 
     for old_user in old_user_model.objects.all():
@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('auth', '0008_alter_user_username_max_length'),
-        ('supervisr/core', '0060_auto_20171018_1858'),
+        ('supervisr_core', '0060_auto_20171018_1858'),
     ]
 
     operations = [

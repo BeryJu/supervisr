@@ -7,8 +7,6 @@ from django.shortcuts import render
 
 
 @login_required
-def index(req):
-    """
-    Show empty index page
-    """
-    return render(req, 'web/index.html')
+def index(request):
+    """Show empty index page"""
+    return render(request, 'web/index.html')

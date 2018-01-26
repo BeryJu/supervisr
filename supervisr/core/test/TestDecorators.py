@@ -10,7 +10,8 @@ from django.http import HttpResponse
 from django.test import TestCase
 
 from supervisr.core.decorators import (REAUTH_KEY, REAUTH_MARGIN, ifapp,
-                                       logged_in_or_basicauth, reauth_required)
+                                       logged_in_or_basicauth, reauth_required,
+                                       require_setting)
 from supervisr.core.models import Setting, User, get_system_user
 from supervisr.core.test.utils import test_request
 from supervisr.core.utils import b64encode
@@ -61,7 +62,7 @@ class TestDecorators(TestCase):
         """
         Test ifapp decorator
         """
-        @ifapp('supervisr/core')
+        @ifapp('supervisr_core')
         def test_core():
             """
             Only run this function if app core is present
@@ -84,7 +85,7 @@ class TestDecorators(TestCase):
         """
         @logged_in_or_basicauth(realm='testrealm')
         # pylint: disable=unused-argument
-        def _view(req):
+        def _view(request):
             """
             user has gotten through so everything's fine
             """
@@ -108,3 +109,19 @@ class TestDecorators(TestCase):
         self.assertEqual(res_401.status_code, 401)
         self.assertIn('www-authenticate', res_401)
         self.assertIn('testrealm', res_401['www-authenticate'])
+
+    def test_require_setting(self):
+        """Test require_setting decorator"""
+        @require_setting('supervisr.core/test', True)
+        # pylint: disable=unused-argument
+        def view(request):
+            """dummy view"""
+            return HttpResponse('success')
+
+        # test with setting enabled, should return 'success'
+        Setting.set('test', True, namespace='supervisr.core')
+        self.assertEqual(test_request(view).content.decode('utf-8'), 'success')
+
+        # test with setting disabled
+        Setting.set('test', False, namespace='supervisr.core')
+        self.assertNotEqual(test_request(view).content.decode('utf-8'), 'success')

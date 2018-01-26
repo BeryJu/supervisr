@@ -10,7 +10,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/core', '0027_auto_20170325_1103'),
+        ('supervisr_core', '0027_auto_20170325_1103'),
     ]
 
     operations = [
@@ -28,6 +28,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='product',
             name='extensions',
-            field=models.ManyToManyField(to='supervisr/core.ProductExtension'),
+            field=models.ManyToManyField(to='supervisr_core.ProductExtension'),
         ),
     ]

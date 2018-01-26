@@ -1,6 +1,4 @@
-"""
-Supervisr Stats Influx AppConfig
-"""
+"""Supervisr Stats Influx AppConfig"""
 
 import logging
 import os
@@ -13,15 +11,13 @@ from supervisr.core.thread.background import SCHEDULER, catch_exceptions
 LOGGER = logging.getLogger(__name__)
 
 class SupervisrModStatInfluxConfig(SupervisrAppConfig):
-    """
-    Supervisr Influx AppConfig
-    """
+    """Supervisr Influx AppConfig"""
 
     name = 'supervisr.mod.stats.influx'
-    admin_url_name = 'supervisr/mod/stats/influx:admin_settings'
-    label = 'supervisr/mod/stats/influx'
-    verbose_name = 'Supervisr mod/stats/influx'
-    title_modifier = lambda self, title, request: 'Stats/Influx'
+    admin_url_name = 'supervisr_mod_stats_influx:admin_settings'
+    label = 'supervisr_mod_stats_influx'
+    verbose_name = 'Supervisr mod_stats_influx'
+    title_modifier = lambda self, request: 'Stats/Influx'
 
     def ready(self):
         super(SupervisrModStatInfluxConfig, self).ready()

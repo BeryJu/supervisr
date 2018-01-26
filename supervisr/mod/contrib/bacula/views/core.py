@@ -7,6 +7,7 @@ from datetime import timedelta
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q, Sum
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
 
@@ -22,10 +23,8 @@ from supervisr.mod.contrib.bacula.utils import db_size, size_human
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 @check_bacula_db
-def index(req):
-    """
-    Show overview of all bacula
-    """
+def index(request: HttpRequest) -> HttpResponse:
+    """Show overview of all bacula"""
     clients = len(Client.objects.all())
     jobs = len(Job.objects.all())
     total_byes = Job.objects.aggregate(Sum('JobBytes'))['JobBytes__sum']
@@ -36,7 +35,7 @@ def index(req):
 
     yesterday = timezone.now() - timedelta(hours=24)
     last_week = timezone.now() - timedelta(days=7)
-    return render(req, 'mod/contrib/bacula/index.html', {
+    return render(request, 'mod/contrib/bacula/index.html', {
         'clients': clients,
         'jobs': jobs,
         'total_byes': size_human(total_byes),
@@ -52,11 +51,9 @@ def index(req):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 @check_bacula_db
-def jobs(req):
-    """
-    Return a list of all jobs, paginated
-    """
-    filter_form = JobFilterForm(req.GET)
+def jobs(request: HttpRequest) -> HttpResponse:
+    """Return a list of all jobs, paginated"""
+    filter_form = JobFilterForm(request.GET)
     query = Q()
 
     if filter_form.is_valid():
@@ -68,9 +65,9 @@ def jobs(req):
             query = query & Q(Pool=filter_form.cleaned_data.get('pool'))
 
     all_jobs = Job.objects.filter(query).order_by('-JobId')
-    paginator = Paginator(all_jobs, req.user.rows_per_page)
+    paginator = Paginator(all_jobs, request.user.rows_per_page)
 
-    page = req.GET.get('page')
+    page = request.GET.get('page')
     try:
         pages = paginator.page(page)
     except PageNotAnInteger:
@@ -80,7 +77,7 @@ def jobs(req):
         # If page is out of range (e.g. 9999), deliver last page of results.
         pages = paginator.page(paginator.num_pages)
 
-    return render(req, 'mod/contrib/bacula/jobs.html', {
+    return render(request, 'mod/contrib/bacula/jobs.html', {
         'pages': pages,
         'filter_form': filter_form,
         })
@@ -88,14 +85,12 @@ def jobs(req):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 @check_bacula_db
-def volumes(req):
-    """
-    Return a list of all volumes
-    """
+def volumes(request: HttpRequest) -> HttpResponse:
+    """Return a list of all volumes"""
     all_volumes = Media.objects.all().order_by('-MediaId')
-    paginator = Paginator(all_volumes, req.user.rows_per_page)
+    paginator = Paginator(all_volumes, request.user.rows_per_page)
 
-    page = req.GET.get('page')
+    page = request.GET.get('page')
     try:
         pages = paginator.page(page)
     except PageNotAnInteger:
@@ -105,19 +100,17 @@ def volumes(req):
         # If page is out of range (e.g. 9999), deliver last page of results.
         pages = paginator.page(paginator.num_pages)
 
-    return render(req, 'mod/contrib/bacula/volumes.html', {
+    return render(request, 'mod/contrib/bacula/volumes.html', {
         'pages': pages,
         })
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 @check_bacula_db
-def job_log(req, jobid):
-    """
-    Return logs for jobid
-    """
+def job_log(request: HttpRequest, jobid: int) -> HttpResponse:
+    """Return logs for jobid"""
     logs = Log.objects.filter(JobId=jobid)
-    return render(req, 'mod/contrib/bacula/job_log.html', {
+    return render(request, 'mod/contrib/bacula/job_log.html', {
         'title': '%s - Jobs' % jobid,
         'logs': logs,
         'job': Job.objects.get(JobId=jobid),
@@ -126,14 +119,12 @@ def job_log(req, jobid):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 @check_bacula_db
-def job_file(req, jobid):
-    """
-    Return files for jobid
-    """
+def job_file(request: HttpRequest, jobid: int) -> HttpResponse:
+    """Return files for jobid"""
     files = File.objects.filter(JobId=jobid).order_by('-PathId__Path')
-    paginator = Paginator(files, req.user.rows_per_page)
+    paginator = Paginator(files, request.user.rows_per_page)
 
-    page = req.GET.get('page')
+    page = request.GET.get('page')
     try:
         pages = paginator.page(page)
     except PageNotAnInteger:
@@ -143,7 +134,7 @@ def job_file(req, jobid):
         # If page is out of range (e.g. 9999), deliver last page of results.
         pages = paginator.page(paginator.num_pages)
 
-    return render(req, 'mod/contrib/bacula/job_file.html', {
+    return render(request, 'mod/contrib/bacula/job_file.html', {
         'title': '%s - Files' % jobid,
         'pages': pages,
         'job': Job.objects.get(JobId=jobid),

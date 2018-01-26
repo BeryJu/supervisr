@@ -13,21 +13,13 @@
       <ul class="nav-list">
         {% related_products 'supervisr.dns.models.Zone' as zones %}
         {% for z in zones %}
-        <li><a href="{% url 'supervisr/dns:dns-record-list' zone=z.domain %}" class="nav-link {% is_active_url 'supervisr/dns:dns-record-list' zone=z.domain %}">{{ z.domain }}</a></li>
+        <li><a href="{% url 'supervisr_dns:dns-record-list' zone=z.domain %}" class="nav-link {% is_active_url 'supervisr_dns:dns-record-list' zone=z.domain %}">{{ z.domain }}</a></li>
         {% endfor %}
       </ul>
     </section>
-    <section class="nav-group">
-      <a href="{% url 'supervisr/dns:rset-create' %}" class="nav-link {% is_active 'rset-create' %}">{% trans "Resource Sets" %}</a>
-      <ul class="nav-list">
-        {% related_products 'supervisr.dns.models.ResourceSet' as rsets %}
-        {% for r in rsets %}
-        <li>
-          <a href="{% url 'supervisr/dns:rset-read' rset_uuid=r.uuid %}" class="nav-link {% is_active_url 'supervisr/dns:rset-read' rset_uuid=r.uuid %}">{{ r.name }}</a>
-        </li>
-        {% endfor %}
-      </ul>
-    </section>
+    <a href="" class="nav-link">
+    {% trans "TSIG" %}
+    </a>
   </section>
 </nav>
 {% endblock %}

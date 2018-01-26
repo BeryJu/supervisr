@@ -8,68 +8,67 @@ import sys
 
 from django import get_version as django_version
 from django.conf import settings as django_settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.cache import cache
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
+from django.utils.translation import ugettext as _
 
-from supervisr.core.models import Event, User, get_system_user
-from supervisr.core.signals import SIG_GET_MOD_INFO
+from supervisr.core.models import Event, Setting, User, get_system_user
+from supervisr.core.signals import SIG_GET_MOD_INFO, SIG_SETTING_UPDATE
 from supervisr.core.utils import get_reverse_dns
 
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def index(req):
-    """
-    Admin index
-    """
+def index(request):
+    """Admin index"""
     # Subtract the system user
     user_count = User.objects.all().count() -1
-    return render(req, '_admin/index.html', {
+    return render(request, '_admin/index.html', {
         'user_count': user_count,
         })
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def users(req):
-    """
-    Show a list of all users
-    """
+def users(request):
+    """Show a list of all users"""
     users = User.objects.all().order_by('date_joined').exclude(pk=get_system_user())
-    paginator = Paginator(users, req.user.rows_per_page)
+    paginator = Paginator(users, request.user.rows_per_page)
 
-    page = req.GET.get('page')
+    page = request.GET.get('page')
     try:
         accounts = paginator.page(page)
     except PageNotAnInteger:
         accounts = paginator.page(1)
     except EmptyPage:
         accounts = paginator.page(paginator.num_pages)
-    return render(req, '_admin/users.html', {
+    return render(request, '_admin/users.html', {
         'users': accounts,
         })
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def info(req):
-    """
-    Show system information
-    """
+def info(request):
+    """Show system information"""
     info_data = {
         'Version': {
             'Python Version': sys.version_info.__repr__(),
             'Django Version': django_version(),
-            'Supervisr Commit': django_settings.VERSION_HASH,
+            'Supervisr Commit': django_settings.VERSION,
         },
         'System': {
             'uname': platform.uname().__repr__(),
         },
         'Request': {
-            'url_name': req.resolver_match.url_name if req.resolver_match is not None else '',
-            'REMOTE_ADDR': req.META.get('REMOTE_ADDR'),
-            'REMOTE_ADDR PTR': get_reverse_dns(req.META.get('REMOTE_ADDR')),
-            'X-Forwarded-for': req.META.get('HTTP_X_FORWARDED_FOR'),
-            'X-Forwarded-for PTR': get_reverse_dns(req.META.get('HTTP_X_FORWARDED_FOR')),
+            'url_name': (
+                request.resolver_match.url_name if request.resolver_match is not None
+                else ''),
+            'REMOTE_ADDR': request.META.get('REMOTE_ADDR'),
+            'REMOTE_ADDR PTR': get_reverse_dns(request.META.get('REMOTE_ADDR')),
+            'X-Forwarded-for': request.META.get('HTTP_X_FORWARDED_FOR'),
+            'X-Forwarded-for PTR': get_reverse_dns(request.META.get('HTTP_X_FORWARDED_FOR')),
         },
         'Settings': {
             'Debug Enabled': django_settings.DEBUG,
@@ -80,18 +79,16 @@ def info(req):
     for handler, mod_info in results:
         # Get the handler's root module
         info_data[handler.__module__.split('.')[0]] = mod_info
-    return render(req, '_admin/info.html', {'info': info_data})
+    return render(request, '_admin/info.html', {'info': info_data})
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def events(req):
-    """
-    Show paginated list of all events
-    """
+def events(request):
+    """Show paginated list of all events"""
     event_list = Event.objects.all().order_by('-create_date')
-    paginator = Paginator(event_list, req.user.rows_per_page)
+    paginator = Paginator(event_list, request.user.rows_per_page)
 
-    page = req.GET.get('page')
+    page = request.GET.get('page')
     try:
         event_page = paginator.page(page)
     except PageNotAnInteger:
@@ -99,15 +96,20 @@ def events(req):
     except EmptyPage:
         event_page = paginator.page(paginator.num_pages)
 
-    return render(req, '_admin/events.html', {'events': event_page})
+    return render(request, '_admin/events.html', {'events': event_page})
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def debug(req):
-    """
-    Show some misc debug buttons
-    """
-    if req.method == 'POST':
-        if 'raise_error' in req.POST:
+def debug(request):
+    """Show some misc debug buttons"""
+    if request.method == 'POST':
+        if 'raise_error' in request.POST:
             raise RuntimeError('test error')
-    return render(req, '_admin/debug.html')
+        elif 'clear_cache' in request.POST:
+            cache.clear()
+            messages.success(request, _('Successfully cleared Cache'))
+        elif 'update_settings' in request.POST:
+            setting = Setting.get('domain')
+            SIG_SETTING_UPDATE.send(sender=setting)
+            messages.success(request, _('Successfully updated settings.'))
+    return render(request, '_admin/debug.html')

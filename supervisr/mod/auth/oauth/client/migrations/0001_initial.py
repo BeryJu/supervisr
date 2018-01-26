@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='accountaccess',
             name='provider',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/mod/auth/oauth/client.Provider'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_mod_auth_oauth_client.Provider'),
         ),
         migrations.AddField(
             model_name='accountaccess',

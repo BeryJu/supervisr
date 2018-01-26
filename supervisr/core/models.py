@@ -16,7 +16,8 @@ from importlib import import_module
 
 import django.contrib.auth.models as django_auth_models
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Max, options
@@ -29,7 +30,8 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 
 from supervisr.core import fields
-from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_USER_POST_SIGN_UP,
+from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_SETTING_UPDATE,
+                                    SIG_USER_POST_SIGN_UP,
                                     SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
                                     SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
 from supervisr.core.utils import get_remote_ip, get_reverse_dns
@@ -144,14 +146,30 @@ class SVAnonymousUser(django_auth_models.AnonymousUser):
 
 django_auth_models.AnonymousUser = SVAnonymousUser
 
-# class GroupProfile(CreatedUpdatedModel):
-#     """
-#     Save extended information about Groups
-#     """
-#     group = models.OneToOneField(Group, primary_key=True, on_delete=models.CASCADE)
-#     name = models.TextField()
-#     deletable = models.BooleanField(default=True, editable=False)
-#     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+# pylint: disable=too-few-public-methods
+class GlobalPermissionManager(models.Manager):
+    """GlobalPermissionManager"""
+
+    def get_queryset(self):
+        """Filter for us"""
+        return super(GlobalPermissionManager, self).\
+            get_queryset().filter(content_type__model='global_permission')
+
+class GlobalPermission(Permission):
+    """A global permission, not attached to a model"""
+
+    objects = GlobalPermissionManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = "global_permission"
+
+    def save(self, *args, **kwargs):
+        ctype, _created = ContentType.objects.get_or_create(
+            model=self._meta.verbose_name, app_label=self._meta.app_label,
+        )
+        self.content_type = ctype
+        super(GlobalPermission, self).save(*args, **kwargs)
 
 class Setting(CreatedUpdatedModel):
     """
@@ -167,8 +185,7 @@ class Setting(CreatedUpdatedModel):
     @staticmethod
     def _init_allowed():
         from supervisr.core.utils import get_apps
-        Setting._ALLOWED_NAMESPACES = ['.'.join(x.split('.')[:-2]) for x in get_apps()]
-        Setting._ALLOWED_NAMESPACES.append('supervisr.core')
+        Setting._ALLOWED_NAMESPACES = [x.name for x in get_apps(exclude=[])]
 
     @property
     def value_bool(self) -> bool:
@@ -177,6 +194,8 @@ class Setting(CreatedUpdatedModel):
         Returns:
             True if value converted to lowercase equals 'true'. Otherwise False.
         """
+        if not isinstance(self.value, str):
+            self.value = str(self.value)
         return self.value.lower() == 'true'
 
     @property
@@ -229,8 +248,6 @@ class Setting(CreatedUpdatedModel):
                 key=key,
                 namespace=namespace,
                 defaults={'value': default})[0]
-            if setting.value == 'True':
-                return True
             return setting.value
         except (OperationalError, ProgrammingError):
             return default
@@ -245,6 +262,8 @@ class Setting(CreatedUpdatedModel):
             True if the Setting's value in lowercase is equal to 'true'. Otherwise False.
         """
         value = Setting.get(*args, inspect_offset=2, **kwargs)
+        if not isinstance(value, str):
+            value = str(value)
         return str(value).lower() == 'true'
 
     @staticmethod
@@ -283,6 +302,11 @@ class Setting(CreatedUpdatedModel):
             return True
         except OperationalError:
             return False
+
+    def save(self, *args, **kwargs):
+        res = super(Setting, self).save(*args, **kwargs)
+        SIG_SETTING_UPDATE.send(sender=self, setting=self)
+        return res
 
     class Meta:
 
@@ -537,11 +561,11 @@ class Event(CreatedUpdatedModel):
         """
         Create an event and set reverse DNS and remote IP
         """
-        if 'req' in kwargs or 'request' in kwargs:
-            req = kwargs['req' if 'req' in kwargs else 'request']
-            kwargs['remote_ip'] = get_remote_ip(req)
-            kwargs['remote_ip_rdns'] = get_reverse_dns(kwargs['remote_ip'])
-            del kwargs['req' if 'req' in kwargs else 'request']
+        if 'request' in kwargs:
+            request = kwargs.get('request')
+            kwargs['remote_ip'] = get_remote_ip(request)
+            kwargs['remote_ip_rdns'] = get_reverse_dns(kwargs.get('remote_ip'))
+            del kwargs['request']
         return Event.objects.create(**kwargs)
 
     def __str__(self):

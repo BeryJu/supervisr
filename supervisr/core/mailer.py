@@ -64,7 +64,7 @@ def send_message(recipients, subject, **kwargs):
 
 @receiver(SIG_USER_POST_SIGN_UP)
 # pylint: disable=unused-argument
-def mail_handle_user_signed_up(sender, signal, user, req, **kwargs):
+def mail_handle_user_signed_up(sender, signal, user, request, **kwargs):
     """
     Send the user a confirmation email
     """
@@ -89,11 +89,11 @@ def mail_handle_user_signed_up(sender, signal, user, req, **kwargs):
 
 @receiver(SIG_USER_RESEND_CONFIRM)
 # pylint: disable=unused-argument
-def mail_handle_user_resend_confirm(sender, signal, user, req, **kwargs):
+def mail_handle_user_resend_confirm(sender, signal, user, request, **kwargs):
     """
     Resend the user a confirmation email
     """
-    return mail_handle_user_signed_up(sender, signal, user, req, **kwargs)
+    return mail_handle_user_signed_up(sender, signal, user, request, **kwargs)
 
 @receiver(SIG_USER_PASS_RESET_INIT)
 # pylint: disable=unused-argument

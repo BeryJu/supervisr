@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/core', '0030_userprofile__purgeable'),
+        ('supervisr_core', '0030_userprofile__purgeable'),
     ]
 
     operations = [

@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('supervisr/core', '0010_domain'),
+        ('supervisr_core', '0010_domain'),
     ]
 
     operations = [
@@ -25,12 +25,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Server',
             fields=[
-                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr/core.Product')),
+                ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='supervisr_core.Product')),
                 ('ram', models.IntegerField()),
                 ('is_virtual', models.BooleanField(default=True)),
                 ('is_managed', models.BooleanField(default=True)),
             ],
-            bases=('supervisr/core.product',),
+            bases=('supervisr_core.product',),
         ),
         migrations.CreateModel(
             name='ServerCPU',
@@ -58,22 +58,22 @@ class Migration(migrations.Migration):
             fields=[
                 ('nic_id', models.AutoField(primary_key=True, serialize=False)),
                 ('speed', models.IntegerField()),
-                ('ips', models.ManyToManyField(blank=True, to='supervisr/server.IPAddress')),
+                ('ips', models.ManyToManyField(blank=True, to='supervisr_server.IPAddress')),
             ],
         ),
         migrations.AddField(
             model_name='server',
             name='cpus',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/server.ServerCPU'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_server.ServerCPU'),
         ),
         migrations.AddField(
             model_name='server',
             name='drives',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr/server.ServerDrive'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_server.ServerDrive'),
         ),
         migrations.AddField(
             model_name='server',
             name='nics',
-            field=models.ManyToManyField(to='supervisr/server.ServerNIC'),
+            field=models.ManyToManyField(to='supervisr_server.ServerNIC'),
         ),
     ]

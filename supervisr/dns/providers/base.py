@@ -1,6 +1,4 @@
-"""
-Supervisr DNS Provider
-"""
+"""Supervisr DNS Provider"""
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -8,38 +6,34 @@ from supervisr.core.providers.base import BaseProvider, ProviderMetadata
 
 
 class BaseDNSProvider(BaseProvider):
-    """
-    Base Class for all DNS Providers
-    """
+    """Base Class for all DNS Providers"""
 
     name = 'BaseDNSProvider'
     selectable = False
 
-    def create_account(self, address=None, **kwargs):
-        raise NotImplementedError()
+    def check_credentials(self, credentials=None):
+        """
+        Check if Credentials is the correct class and try authentication.
+        credentials might be none, in which case credentials from the constructor should be used.
+        Should return False if check fails, otherwise True
+        """
+        raise NotImplementedError(
+            "This Method should be overwritten by subclasses")
 
-    def get_account(self, address=None, **kwargs):
-        raise NotImplementedError()
+    def check_status(self):
+        """
+        This is used to check if the provider is reachable
+        Expected Return values:
+         - True: Everything is ok
+         - False: Error (show generic warning)
+         - String: Error (show string)
+        """
+        raise NotImplementedError(
+            "This Method should be overwritten by subclasses")
 
-    def update_account(self, address=None, **kwargs):
-        raise NotImplementedError()
-
-    def delete_account(self, address=None, **kwargs):
-        raise NotImplementedError()
-
-    def create_zone(self, zone=None, **kwargs):
-        raise NotImplementedError()
-
-    def get_zone(self, zone=None, **kwargs):
-        raise NotImplementedError()
-
-    def update_zone(self, zone=None, **kwargs):
-        raise NotImplementedError()
-
-    def delete_zone(self, zone=None, **kwargs):
-        raise NotImplementedError()
-
+    # pylint: disable=too-few-public-methods
     class Meta(ProviderMetadata):
+        """Provider Meta"""
 
         def __init__(self, provider):
             super(BaseDNSProvider.Meta, self).__init__(provider)

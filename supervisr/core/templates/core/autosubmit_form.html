@@ -1,6 +1,7 @@
 {% extends "core/skel.html" %}
 
 {% load supervisr_title %}
+{% load supervisr_setting %}
 {% load i18n %}
 
 {% block title %}
@@ -8,12 +9,23 @@
 {% endblock %}
 
 {% block body %}
-<form action="{{ url }}" method="POST">
-  {% for key, value in attrs.items %}
-    <input type="hidden" name="{{ key }}" value="{{ value }}">
-  {% endfor %}
-  <button type="submit">{% trans "Click here if your browser doesn't redirect you automatically" %}</button>
-</form>
+<div class="login-wrapper">
+  <form action="{{ url }}" class="login" method="POST">
+    <label class="title">
+      <clr-icon shape="supervisr" class="is-info" size="48"></clr-icon>
+      {% supervisr_setting 'branding' %}
+    </label>
+    <label class="subtitle">
+      {% trans title %}
+    </label>
+    <div class="login-group">
+      {% for key, value in attrs.items %}
+        <input type="hidden" name="{{ key }}" value="{{ value }}">
+      {% endfor %}
+      <button type="submit" class="btn btn-primary">{% trans "Click here if your browser doesn't redirect you automatically" %}</button>
+    </div>
+  </form>
+</div>
 {% endblock %}
 
 {% block scripts %}

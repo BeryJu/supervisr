@@ -75,7 +75,8 @@ class GenericUpdateView(GenericModelView):
     def __init__(self, *args, **kwargs):
         super(GenericUpdateView, self).__init__(*args, **kwargs)
         assert self.form is not None, "`form` Property has to be overwritten"
-        assert issubclass(self.form, ModelForm), "`form` Property should be a ModelForm"
+        assert issubclass(
+            self.form, ModelForm), "`form` Property should be a ModelForm"
 
     def render(self, form) -> HttpResponse:
         """Render the template and return a HttpResponse"""
@@ -83,7 +84,7 @@ class GenericUpdateView(GenericModelView):
             'form': form,
             'primary_action': 'Save',
             'title': 'Edit %s' % self.model_verbose_name,
-            })
+        })
 
     def update_form(self, form) -> ModelForm:
         """Edit form instance after it has been instantiated"""
@@ -127,7 +128,7 @@ class GenericDeleteView(GenericModelView):
         return render(self.request, self.template, {
             'verbose_name': self.model_verbose_name,
             'instance_name': instance.name if getattr(instance, 'name', None) else str(instance)
-            })
+        })
 
     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle Get request"""

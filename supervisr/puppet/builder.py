@@ -24,9 +24,7 @@ LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=too-many-instance-attributes
 class ReleaseBuilder(object):
-    """
-    Class to build PuppetModuleRelease's in Memory from files and templates
-    """
+    """Class to build PuppetModuleRelease's in Memory from files and templates"""
 
     module = None
     base_dir = None
@@ -61,7 +59,7 @@ class ReleaseBuilder(object):
         self._spooled_tgz_file = io.BytesIO()
         self._tgz_file = tarfile.TarFile(mode='w', fileobj=self._spooled_tgz_file)
         self._root_dir = '%s-%s-%s' % (module.owner.username.lower(), module.name, self.version)
-        LOGGER.info('Building %s', self._root_dir)
+        LOGGER.debug('Building %s', self._root_dir)
 
     def make_context(self, context):
         """
@@ -114,7 +112,7 @@ class ReleaseBuilder(object):
         importer = ForgeImporter()
         for module in dependencies:
             importer.import_module(module['name'])
-        LOGGER.info('Imported dependencies for %s', self._root_dir)
+        LOGGER.debug('Imported dependencies for %s', self._root_dir)
 
     def render_template(self, path, context=None, check_json=True):
         """
@@ -128,7 +126,7 @@ class ReleaseBuilder(object):
         # If it's a json file now, check if it's valid
         if path.endswith('.json') and check_json:
             self.validate_json(rendered)
-            LOGGER.info('Successfully validated %s', path)
+            LOGGER.debug('Successfully validated %s', path)
         return rendered
 
     @time(statistic_key='puppet.builder.build')
@@ -147,7 +145,7 @@ class ReleaseBuilder(object):
                 self._tgz_file.add(file, arcname=arc_path, recursive=False)
             else:
                 self.to_tarinfo(file, _context, arc_path)
-            LOGGER.info('Added %s', arc_path)
+            LOGGER.debug('Added %s', arc_path)
 
         # Flush to file buffer
         self._tgz_file.close()
@@ -163,7 +161,7 @@ class ReleaseBuilder(object):
             with NamedTemporaryFile(dir=module_dir, suffix='.tgz', prefix=prefix) as temp_file:
                 temp_file.write(gzipped)
                 temp_file.seek(0, io.SEEK_SET)
-                LOGGER.info("Target filename: %s", temp_file.name)
+                LOGGER.debug("Target filename: %s", temp_file.name)
                 # Create the module in the db and write it to disk
                 self._release = PuppetModuleRelease.objects.create(
                     module=self.module,
@@ -172,4 +170,4 @@ class ReleaseBuilder(object):
         elif force_rebuild is True:
             with open(prefix+'.tgz', mode='w+b') as file:
                 file.write(gzipped)
-                LOGGER.info("Wrote module to %s", prefix+'.tgz')
+                LOGGER.debug("Wrote module to %s", prefix+'.tgz')

@@ -57,8 +57,8 @@
           <td>{{ job.JobFiles }}</td>
           <td>{% human_size job.Speed %}/s</td>
           <td>{{ job.Pool.Name|default:'n/a' }}</td>
-          <td><a href="{% url 'supervisr/mod/contrib/bacula:bacula-job-log' jobid=job.JobId %}"><clr-icon shape="search" class="is-highlight"></clr-icon></a></td>
-          <td><a href="{% url 'supervisr/mod/contrib/bacula:bacula-job-file' jobid=job.JobId %}"><clr-icon shape="folder" class="is-highlight"></clr-icon></a></td>
+          <td><a href="{% url 'supervisr_mod_contrib_bacula:job-log' jobid=job.JobId %}"><clr-icon shape="search" class="is-highlight"></clr-icon></a></td>
+          <td><a href="{% url 'supervisr_mod_contrib_bacula:job-file' jobid=job.JobId %}"><clr-icon shape="folder" class="is-highlight"></clr-icon></a></td>
         </tr>
       {% endfor %}
     </table>

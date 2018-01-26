@@ -27,7 +27,7 @@ IGNORE_SMTP_LINE_LENGTH_LIMIT = yes
 message_size_limit           = 100M
 tls_on_connect_ports         = 465
 daemon_smtp_ports            = 25 : 587
-smtp_banner                  = $smtp_active_hostname ESMTP Exim $version_number supervisr {{ settings.VERSION_HASH }} {% if debug %}DEBUG{% endif %} $tod_full
+smtp_banner                  = $smtp_active_hostname ESMTP Exim $version_number supervisr {{ settings.VERSION }} {% if debug %}DEBUG{% endif %} $tod_full
 
 {% if debug %}
 MAIN_LOG_SELECTOR = +address_rewrite +all_parents +arguments +connection_reject +delay_delivery +delivery_size +dnslist_defer +incoming_interface +incoming_port +lost_incoming_connection +queue_run +received_sender +received_recipients +retry_defer +sender_on_delivery +size_reject +skip_delivery +smtp_confirmation +smtp_connection +smtp_protocol_error +smtp_syntax_error +subject +tls_cipher +tls_peerdn

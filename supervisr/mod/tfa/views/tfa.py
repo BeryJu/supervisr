@@ -6,8 +6,8 @@ from binascii import unhexlify
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import Http404, HttpResponse
-from django.shortcuts import redirect, render
+from django.http import Http404, HttpRequest, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
@@ -22,48 +22,44 @@ from qrcode.image.svg import SvgPathImage
 from supervisr.core.decorators import reauth_required
 from supervisr.core.models import Event
 from supervisr.core.views.wizards import BaseWizardView
-
-from ..forms.tfa import TFASetupInitForm, TFASetupStaticForm, TFAVerifyForm
-from ..utils import otpauth_url
+from supervisr.mod.tfa.forms.tfa import (TFASetupInitForm, TFASetupStaticForm,
+                                         TFAVerifyForm)
+from supervisr.mod.tfa.utils import otpauth_url
 
 TFA_SESSION_KEY = 'supervisr_mod_2fa_key'
 
 # @otp_required
 @login_required
 @reauth_required
-def index(req):
-    """
-    Show empty index page
-    """
-    return render(req, 'core/generic.html', {
+def index(request: HttpRequest) -> HttpResponse:
+    """Show empty index page"""
+    return render(request, 'core/generic.html', {
         'text': 'Test 2FA passed'
         })
 
 @login_required
-def verify(req):
-    """
-    Verify 2FA Token
-    """
-    if not user_has_device(req.user):
-        messages.error(req, _("You don't have 2-Factor Authentication set up."))
-    if req.method == 'POST':
-        form = TFAVerifyForm(req.POST)
+def verify(request: HttpRequest) -> HttpResponse:
+    """Verify 2FA Token"""
+    if not user_has_device(request.user):
+        messages.error(request, _("You don't have 2-Factor Authentication set up."))
+    if request.method == 'POST':
+        form = TFAVerifyForm(request.POST)
         if form.is_valid():
-            device = match_token(req.user, form.cleaned_data.get('code'))
+            device = match_token(request.user, form.cleaned_data.get('code'))
             if device:
-                login(req, device)
-                messages.success(req, _('Successfully validated 2FA Token.'))
+                login(request, device)
+                messages.success(request, _('Successfully validated 2FA Token.'))
                 # Check if there is a next GET parameter and redirect to that
-                if 'next' in req.GET:
-                    return redirect(req.GET.get('next'))
+                if 'next' in request.GET:
+                    return redirect(request.GET.get('next'))
                 # Otherwise just index
                 return redirect(reverse('common-index'))
             else:
-                messages.error(req, _('Invalid 2-Factor Token.'))
+                messages.error(request, _('Invalid 2-Factor Token.'))
     else:
         form = TFAVerifyForm()
 
-    return render(req, 'core/generic_form_login.html', {
+    return render(request, 'core/generic_form_login.html', {
         'form': form,
         'title': _("SSO - Two-factor verification"),
         'primary_action': _("Verify"),
@@ -73,16 +69,14 @@ def verify(req):
         })
 
 @login_required
-def user_settings(req):
-    """
-    View for user settings to control 2FA
-    """
-    static = StaticDevice.objects.filter(user=req.user, confirmed=True)
+def user_settings(request: HttpRequest) -> HttpResponse:
+    """View for user settings to control 2FA"""
+    static = get_object_or_404(StaticDevice, user=request.user, confirmed=True)
     static_tokens = StaticToken.objects.filter(device=static).order_by('token')
-    finished_totp_devices = TOTPDevice.objects.filter(user=req.user, confirmed=True)
-    finished_static_devices = StaticDevice.objects.filter(user=req.user, confirmed=True)
+    finished_totp_devices = TOTPDevice.objects.filter(user=request.user, confirmed=True)
+    finished_static_devices = StaticDevice.objects.filter(user=request.user, confirmed=True)
     state = finished_totp_devices.exists() and finished_static_devices.exists()
-    return render(req, 'tfa/user_settings.html', {
+    return render(request, 'tfa/user_settings.html', {
         'static_tokens': static_tokens,
         'state': state,
         })
@@ -90,34 +84,30 @@ def user_settings(req):
 @login_required
 @reauth_required
 @otp_required
-def disable(req):
-    """
-    Disable 2FA for user
-    """
+def disable(request: HttpRequest) -> HttpResponse:
+    """Disable 2FA for user"""
     # Delete all the devices for user
-    static = StaticDevice.objects.filter(user=req.user, confirmed=True)
+    static = get_object_or_404(StaticDevice, user=request.user, confirmed=True)
     static_tokens = StaticToken.objects.filter(device=static).order_by('token')
-    totp = TOTPDevice.objects.filter(user=req.user, confirmed=True)
+    totp = TOTPDevice.objects.filter(user=request.user, confirmed=True)
     static.delete()
     totp.delete()
     for token in static_tokens:
         token.delete()
-    messages.success(req, 'Successfully disabled 2FA')
+    messages.success(request, 'Successfully disabled 2FA')
     # Create event with email notification
     Event.create(
-        user=req.user,
+        user=request.user,
         message=_('You disabled 2FA.'),
         current=True,
-        request=req,
+        request=request,
         send_notification=True)
     return redirect(reverse('common-index'))
 
 # pylint: disable=too-many-ancestors
 @method_decorator([login_required, reauth_required], name="dispatch")
 class TFASetupView(BaseWizardView):
-    """
-    Wizard to create a Mail Account
-    """
+    """Wizard to create a Mail Account"""
 
     title = _('Set up 2FA')
     form_list = [TFASetupInitForm, TFASetupStaticForm]
@@ -131,27 +121,27 @@ class TFASetupView(BaseWizardView):
             return 'tfa/wizard_setup_static.html'
         return self.template_name
 
-    def handle_request(self, req):
+    def handle_request(self, request: HttpRequest):
         # Check if user has 2FA setup already
-        finished_totp_devices = TOTPDevice.objects.filter(user=req.user, confirmed=True)
-        finished_static_devices = StaticDevice.objects.filter(user=req.user, confirmed=True)
+        finished_totp_devices = TOTPDevice.objects.filter(user=request.user, confirmed=True)
+        finished_static_devices = StaticDevice.objects.filter(user=request.user, confirmed=True)
         if finished_totp_devices.exists() or finished_static_devices.exists():
-            messages.error(req, _('You already have 2FA enabled!'))
+            messages.error(request, _('You already have 2FA enabled!'))
             return redirect(reverse('common-index'))
         # Check if there's an unconfirmed device left to set up
-        totp_devices = TOTPDevice.objects.filter(user=req.user, confirmed=False)
+        totp_devices = TOTPDevice.objects.filter(user=request.user, confirmed=False)
         if not totp_devices.exists():
             # Create new TOTPDevice and save it, but not confirm it
-            self.totp_device = TOTPDevice(user=req.user, confirmed=False)
+            self.totp_device = TOTPDevice(user=request.user, confirmed=False)
             self.totp_device.save()
         else:
             self.totp_device = totp_devices.first()
 
         # Check if we have a static device already
-        static_devices = StaticDevice.objects.filter(user=req.user, confirmed=False)
+        static_devices = StaticDevice.objects.filter(user=request.user, confirmed=False)
         if not static_devices.exists():
             # Create new static device and some codes
-            self.static_device = StaticDevice(user=req.user, confirmed=False)
+            self.static_device = StaticDevice(user=request.user, confirmed=False)
             self.static_device.save()
             # Create 9 tokens and save them
             # pylint: disable=unused-variable
@@ -163,7 +153,7 @@ class TFASetupView(BaseWizardView):
 
         # Somehow convert the generated key to base32 for the QR code
         rawkey = unhexlify(self.totp_device.key.encode('ascii'))
-        req.session[TFA_SESSION_KEY] = b32encode(rawkey).decode("utf-8")
+        request.session[TFA_SESSION_KEY] = b32encode(rawkey).decode("utf-8")
 
     def get_form(self, step=None, data=None, files=None):
         form = super(TFASetupView, self).get_form(step, data, files)
@@ -172,7 +162,7 @@ class TFASetupView(BaseWizardView):
         if step == '0':
             form.confirmed = self.confirmed
             form.device = self.totp_device
-            form.fields['qr_code'].initial = reverse('supervisr/mod/tfa:tfa-qr')
+            form.fields['qr_code'].initial = reverse('supervisr_mod_tfa:tfa-qr')
         elif step == '1':
             # This is a bit of a hack, but the 2fa token from step 1 has been checked here
             # And we need to save it, otherwise it's going to fail in render_done
@@ -197,21 +187,19 @@ class TFASetupView(BaseWizardView):
             current=True,
             request=self.request,
             send_notification=True)
-        return redirect(reverse('supervisr/mod/tfa:tfa-index'))
+        return redirect(reverse('supervisr_mod_tfa:tfa-index'))
 
 @never_cache
 @login_required
-def qr_code(req):
-    """
-    View returns an SVG image with the OTP token information
-    """
+def qr_code(request: HttpRequest) -> HttpResponse:
+    """View returns an SVG image with the OTP token information"""
     # Get the data from the session
     try:
-        key = req.session[TFA_SESSION_KEY]
+        key = request.session[TFA_SESSION_KEY]
     except KeyError:
         raise Http404()
 
-    url = otpauth_url(accountname=req.user.username, secret=key)
+    url = otpauth_url(accountname=request.user.username, secret=key)
     # Make and return QR code
     img = qr_make(url, image_factory=SvgPathImage)
     resp = HttpResponse(content_type='image/svg+xml; charset=utf-8')

@@ -7,7 +7,7 @@ from django.db import migrations, models
 
 
 def update_domains(apps, schema_editor):
-    Domain = apps.get_model('supervisr/core', 'Domain')
+    Domain = apps.get_model('supervisr_core', 'Domain')
     for domain in Domain.objects.all():
         domain.domain = domain.name
         domain.name = 'Domain %s' % domain.domain
@@ -16,7 +16,7 @@ def update_domains(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/core', '0037_auto_20170610_1149'),
+        ('supervisr_core', '0037_auto_20170610_1149'),
     ]
 
     operations = [
@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='domain',
             name='product_ptr',
-            field=models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, related_name='domains', serialize=False, to='supervisr/core.Product'),
+            field=models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, related_name='domains', serialize=False, to='supervisr_core.Product'),
         ),
         migrations.RunPython(update_domains),
         migrations.AlterField(

@@ -4,7 +4,8 @@ Supervisr Core Domain Views
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import Http404
+from django.db.models import QuerySet
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
@@ -13,29 +14,26 @@ from supervisr.core.forms.domains import DomainForm
 from supervisr.core.models import (Domain, ProviderInstance,
                                    UserProductRelationship)
 from supervisr.core.providers.base import get_providers
+from supervisr.core.views.generic import GenericDeleteView, GenericUpdateView
 from supervisr.core.views.wizards import BaseWizardView
 
 
 @login_required
-def index(req):
-    """
-    Show a n overview over all domains
-    """
+def index(request):
+    """Show a n overview over all domains"""
     user_domains = Domain.objects.filter(
-        users__in=[req.user])
-    return render(req, 'domain/index.html', {'domains': user_domains})
+        users__in=[request.user])
+    return render(request, 'domain/index.html', {'domains': user_domains})
 
 # pylint: disable=too-many-ancestors
 class DomainNewView(BaseWizardView):
-    """
-    Wizard to create a Domain
-    """
+    """Wizard to create a Domain"""
 
     title = _("New Domain")
     form_list = [DomainForm]
     registrars = None
 
-    def get_form(self, step=None, data=None, files=None):
+    def get_form(self, step=None, data=None, files=None) -> DomainForm:
         form = super(DomainNewView, self).get_form(step, data, files)
         if step is None:
             step = self.steps.current
@@ -49,7 +47,7 @@ class DomainNewView(BaseWizardView):
         return form
 
     # pylint: disable=unused-argument
-    def done(self, final_forms, form_dict, **kwargs):
+    def done(self, final_forms, form_dict, **kwargs) -> HttpResponse:
         domain = form_dict['0'].save(commit=False)
         domain.name = domain.domain
         domain.save()
@@ -59,61 +57,38 @@ class DomainNewView(BaseWizardView):
         messages.success(self.request, _('Domain successfully created'))
         return redirect(reverse('domain-index'))
 
-@login_required
-# pylint: disable=unused-argument
-def edit(req, domain):
-    """
-    Show view to edit account
-    """
-    domains = Domain.objects.filter(domain=domain)
-    if not domains.exists():
-        raise Http404
-    r_domain = domains.first()
+class DomainEditView(GenericUpdateView):
+    """Update Domain"""
 
-    # Create list of all possible provider instances
-    providers = get_providers(filter_sub=['domain_provider'], path=True)
-    provider_instance = ProviderInstance.objects.filter(
-        provider_path__in=providers,
-        userproductrelationship__user__in=[req.user])
+    model = Domain
+    form = DomainForm
 
-    if req.method == 'POST':
-        form = DomainForm(req.POST, instance=r_domain)
-        form.fields['provider'].queryset = provider_instance
-        form.request = req
-        if form.is_valid():
-            r_domain.save()
-            messages.success(req, _('Successfully edited Domain'))
-            return redirect(reverse('domain-index'))
-    else:
-        form = DomainForm(instance=r_domain)
-        form.fields['provider'].queryset = provider_instance
-        form.request = req
-    return render(req, 'core/generic_form_modal.html', {
-        'title': "Edit Domain '%s'" % domain,
-        'primary_action': 'Save',
-        'form': form
-        })
-
-@login_required
-# pylint: disable=unused-argument
-def delete(req, domain):
-    """
-    Show view to delete account
-    """
-    domains = Domain.objects.filter(domain=domain)
-    if not domains.exists():
-        raise Http404
-    r_domain = domains.first()
-
-    if req.method == 'POST' and 'confirmdelete' in req.POST:
-        # User confirmed deletion
-        r_domain.delete()
-        messages.success(req, _('Domain successfully deleted'))
+    def redirect(self, instance: Domain) -> HttpResponse:
         return redirect(reverse('domain-index'))
 
-    return render(req, 'core/generic_delete.html', {
-        'object': r_domain.name,
-        'delete_url': reverse('domain-delete', kwargs={
-            'domain': r_domain.domain,
-            })
-        })
+    def get_instance(self) -> QuerySet:
+        """Get domain from name"""
+        return self.model.filter(domain=self.kwargs.get('domain'), users__in=[self.request.user])
+
+    def update_form(self, form: DomainForm) -> DomainForm:
+        """Add providers to domainForm"""
+        # Create list of all possible provider instances
+        providers = get_providers(filter_sub=['domain_provider'], path=True)
+        provider_instance = ProviderInstance.objects.filter(
+            provider_path__in=providers,
+            userproductrelationship__user__in=[self.request.user])
+        form.fields['provider'].queryset = provider_instance
+        form.request = self.request
+        return form
+
+class DomainDeleteView(GenericDeleteView):
+    """Delete domain"""
+
+    model = Domain
+
+    def redirect(self, instance: Domain) -> HttpResponse:
+        return redirect(reverse('domain-index'))
+
+    def get_instance(self) -> QuerySet:
+        """Get domain from name"""
+        return self.model.filter(domain=self.kwargs.get('domain'), users__in=[self.request.user])

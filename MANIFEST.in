@@ -1,0 +1,9 @@
+include requirements.txt
+include requirements-dev.txt
+include README.md
+include ATTRIBUTIONS.md
+include CHANGELOG.md
+include .gitignore
+include .gitlab-ci.yml
+include .prospector.yaml
+include .pylintrc

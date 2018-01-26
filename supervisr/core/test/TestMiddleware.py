@@ -7,12 +7,14 @@ import os
 from django.contrib import messages
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.core.management import call_command
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
+from supervisr.core.middleware.DeployPageMiddleware import deploy_page
 from supervisr.core.middleware.ImpersonateMiddleware import impersonate
-from supervisr.core.middleware.MaintenanceMode import maintenance_mode
-from supervisr.core.middleware.PermanentMessage import permanent_message
+from supervisr.core.middleware.PermanentMessageMiddleware import \
+    permanent_message
 from supervisr.core.models import Setting, User, get_system_user
 from supervisr.core.views import accounts, common
 
@@ -27,44 +29,40 @@ class TestMiddleware(TestCase):
         self.factory = RequestFactory()
         self.sys_user = User.objects.get(pk=get_system_user())
 
-    def test_maintenance_mode_off(self):
-        """
-        Test Enabled Maintenance Mode
-        """
-        Setting.set('maintenancemode', True)
-        req = self.factory.get(reverse('account-login'))
-        req.user = AnonymousUser()
-        res = maintenance_mode(accounts.LoginView.as_view())(req)
-        self.assertEqual(res.status_code, 200)
+    def test_deploy_page_off(self):
+        """Test Enabled Deploy Page"""
+        call_command('deploy_page', 'up')
+        request = self.factory.get(reverse('account-login'))
+        request.user = AnonymousUser()
+        response = deploy_page(accounts.LoginView.as_view())(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Deploy in progress', response.content.decode('utf-8'))
 
-    def test_maintenance_mode_on(self):
-        """
-        Test Disabled Maintenance Mode
-        """
-        Setting.set('maintenancemode', False)
-        req = self.factory.get(reverse('account-login'))
-        req.user = AnonymousUser()
-        res = maintenance_mode(accounts.LoginView.as_view())(req)
-        self.assertEqual(res.status_code, 200)
+    def test_deploy_page_on(self):
+        """Test Disabled Deploy Page"""
+        call_command('deploy_page', 'down')
+        request = self.factory.get(reverse('account-login'))
+        request.user = AnonymousUser()
+        response = deploy_page(accounts.LoginView.as_view())(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('Deploy in progress', response.content.decode('utf-8'))
 
     def test_permanent_message(self):
-        """
-        Test Permanent Message Middleware
-        """
+        """Test Permanent Message Middleware"""
         test_message = 'Test Message'
         Setting.set('banner:enabled', namespace='supervisr.core', value=True)
         Setting.set('banner:message', namespace='supervisr.core', value=test_message)
         Setting.set('banner:level', namespace='supervisr.core', value='info')
-        req = self.factory.get(reverse('common-index'))
+        request = self.factory.get(reverse('common-index'))
         # Fix django.contrib.messages.api.MessageFailure
         # because this request doesn't have a session or anything
-        setattr(req, 'session', 'session')
-        setattr(req, '_messages', FallbackStorage(req))
-        req.user = self.sys_user
-        res = permanent_message(common.index)(req)
-        self.assertEqual(res.status_code, 200)
-        self.assertTrue(test_message in res.content.decode('utf-8'))
-        self.assertEqual(res.content.decode('utf-8').count(test_message), 1)
+        setattr(request, 'session', 'session')
+        setattr(request, '_messages', FallbackStorage(request))
+        request.user = self.sys_user
+        response = permanent_message(common.index)(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(test_message in response.content.decode('utf-8'))
+        self.assertEqual(response.content.decode('utf-8').count(test_message), 1)
 
     def test_permanent_message_dupe(self):
         """Test Permanent Message Middleware (message exists already)"""
@@ -73,17 +71,17 @@ class TestMiddleware(TestCase):
         Setting.set('banner:enabled', namespace='supervisr.core', value=True)
         Setting.set('banner:message', namespace='supervisr.core', value=test_message)
         Setting.set('banner:level', namespace='supervisr.core', value=test_level)
-        req = self.factory.get(reverse('common-index'))
+        request = self.factory.get(reverse('common-index'))
         # Fix django.contrib.messages.api.MessageFailure
         # because this request doesn't have a session or anything
-        setattr(req, 'session', 'session')
-        setattr(req, '_messages', FallbackStorage(req))
-        messages.add_message(req, getattr(messages, test_level.upper()), test_message)
-        req.user = self.sys_user
-        res = permanent_message(common.index)(req)
-        self.assertEqual(res.status_code, 200)
-        self.assertTrue(test_message in res.content.decode('utf-8'))
-        self.assertEqual(res.content.decode('utf-8').count(test_message), 1)
+        setattr(request, 'session', 'session')
+        setattr(request, '_messages', FallbackStorage(request))
+        messages.add_message(request, getattr(messages, test_level.upper()), test_message)
+        request.user = self.sys_user
+        response = permanent_message(common.index)(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(test_message in response.content.decode('utf-8'))
+        self.assertEqual(response.content.decode('utf-8').count(test_message), 1)
 
     def test_impersonate(self):
         """Test Impersonate Middleware"""

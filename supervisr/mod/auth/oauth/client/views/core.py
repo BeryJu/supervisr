@@ -12,7 +12,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth.decorators import login_required
-from django.http import Http404
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.encoding import force_text, smart_bytes
@@ -56,7 +56,7 @@ class OAuthRedirect(OAuthClientMixin, RedirectView):
     # pylint: disable=no-self-use
     def get_callback_url(self, provider):
         "Return the callback url for this provider."
-        return reverse('supervisr/mod/auth/oauth/client:oauth-client-callback',
+        return reverse('supervisr_mod_auth_oauth_client:oauth-client-callback',
                        kwargs={'provider': provider.name})
 
     def get_redirect_url(self, **kwargs):
@@ -117,7 +117,7 @@ class OAuthCallback(OAuthClientMixin, View):
             if not created:
                 access.access_token = raw_token
                 AccountAccess.objects.filter(pk=access.pk).update(**defaults)
-            user = authenticate(provider=self.provider, identifier=identifier)
+            user = authenticate(provider=self.provider, identifier=identifier, request=request)
             if user is None:
                 try:
                     return self.handle_new_user(self.provider, access, info)
@@ -209,12 +209,13 @@ class OAuthCallback(OAuthClientMixin, View):
             messages.success(self.request, _("Successfully linked %(provider)s!" % {
                 'provider': self.provider.ui_name
                 }))
-            return redirect(reverse('supervisr/mod/auth/oauth/client:user_settings'))
+            return redirect(reverse('supervisr_mod_auth_oauth_client:user_settings'))
         else:
             user = self.get_or_create_user(provider, access, info)
             access.user = user
             AccountAccess.objects.filter(pk=access.pk).update(user=user)
-            user = authenticate(provider=access.provider, identifier=access.identifier)
+            user = authenticate(provider=access.provider,
+                                identifier=access.identifier, request=self.request)
             login(self.request, user)
             Event.create(
                 user=user,
@@ -228,29 +229,27 @@ class OAuthCallback(OAuthClientMixin, View):
             return redirect(self.get_login_redirect(provider, user, access, True))
 
 @login_required
-def disconnect(req, provider):
-    """
-    Delete connection with provider
-    """
+def disconnect(request: HttpRequest, provider: str) -> HttpResponse:
+    """Delete connection with provider"""
     provider = Provider.objects.filter(name=provider)
     if not provider.exists():
         raise Http404
     r_provider = provider.first()
 
-    aas = AccountAccess.objects.filter(provider=r_provider, user=req.user)
+    aas = AccountAccess.objects.filter(provider=r_provider, user=request.user)
     if not aas.exists():
         raise Http404
     r_aas = aas.first()
 
-    if req.method == 'POST' and 'confirmdelete' in req.POST:
+    if request.method == 'POST' and 'confirmdelete' in request.POST:
         # User confirmed deletion
         r_aas.delete()
-        messages.success(req, _('Connection successfully deleted'))
-        return redirect(reverse('supervisr/mod/auth/oauth/client:user_settings'))
+        messages.success(request, _('Connection successfully deleted'))
+        return redirect(reverse('supervisr_mod_auth_oauth_client:user_settings'))
 
-    return render(req, 'core/generic_delete.html', {
+    return render(request, 'core/generic_delete.html', {
         'object': 'OAuth Connection with %s' % r_provider.ui_name,
-        'delete_url': reverse('supervisr/mod/auth/oauth/client:oauth-client-disconnect', kwargs={
+        'delete_url': reverse('supervisr_mod_auth_oauth_client:oauth-client-disconnect', kwargs={
             'provider': r_provider.name,
             })
         })

@@ -7,14 +7,14 @@ from datetime import date, datetime, timezone
 from django.http import HttpResponse, JsonResponse
 
 
-def api_response(req, data):
+def api_response(request, data):
     """Prase data in correct format extracted from request"""
     selected_format = 'json'
     # Check if format is set as a GET Param
     format_keys = ['type', 'format']
     for key in format_keys:
-        if key in req.GET:
-            selected_format = req.GET.get(key)
+        if key in request.GET:
+            selected_format = request.GET.get(key)
 
     _globals = globals()
     handler_name = 'api_response_%s' % selected_format

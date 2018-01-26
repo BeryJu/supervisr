@@ -4,7 +4,7 @@ Supervisr Server ServerModel Test
 
 from django.test import TestCase
 
-from ..models import ServerCPU, ServerDrive
+from supervisr.server.models import ServerCPU, ServerDrive
 
 
 class TestServerModel(TestCase):

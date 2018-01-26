@@ -6,7 +6,7 @@ import logging
 from wsgiref.util import FileWrapper
 
 from django.db.models import Q
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.urls import reverse
 
 from supervisr.core.models import Setting, User
@@ -15,13 +15,11 @@ from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 LOGGER = logging.getLogger(__name__)
 
 def check_key(view_function):
-    """
-    Decorator to check puppet key in url
-    """
+    """Decorator to check puppet key in url"""
+
     def wrap(*args, **kwargs):
-        """
-        Check if key is the same as in DB
-        """
+        """Check if key is the same as in DB"""
+
         if 'key' in kwargs:
             set_key = Setting.get('url_key')
             if not set_key == kwargs['key']:
@@ -35,18 +33,14 @@ def check_key(view_function):
 
 @check_key
 # pylint: disable=unused-argument
-def module_list(req):
-    """
-    Return a list of modules
-    """
+def module_list(request: HttpRequest) -> HttpResponse:
+    """Return a list of modules"""
     return HttpResponse('Not Implemented yet!', status=501)
 
 @check_key
 # pylint: disable=unused-argument
-def module(req, user, module):
-    """
-    Return information about module <module>
-    """
+def module(request: HttpRequest, user: str, module: str) -> HttpResponse:
+    """Return information about module <module>"""
     users = User.objects.filter(username=user)
     if not users.exists():
         raise Http404
@@ -61,32 +55,26 @@ def module(req, user, module):
 
 @check_key
 # pylint: disable=unused-argument
-def user_list(req):
-    """
-    Return user list
-    """
+def user_list(request: HttpRequest) -> HttpResponse:
+    """Return user list"""
     return HttpResponse('Not Implemented yet!', status=501)
 
 @check_key
 # pylint: disable=unused-argument
-def user(req, user):
-    """
-    Return user information
-    """
+def user(request: HttpRequest, user: str) -> HttpResponse:
+    """Return user information"""
     return HttpResponse('Not Implemented yet!', status=501)
 
 @check_key
-def release_list(req):
-    """
-    Return a list of releases
-    """
+def release_list(request: HttpRequest) -> HttpResponse:
+    """Return a list of releases"""
     query = Q()
-    if 'module' in req.GET:
+    if 'module' in request.GET:
         # Filter differently if it's name-module or just module
-        if '-' in req.GET.get('module'):
-            query = query & Q(module__name__icontains=req.GET.get('module').split('-')[1])
+        if '-' in request.GET.get('module'):
+            query = query & Q(module__name__icontains=request.GET.get('module').split('-')[1])
         else:
-            query = query & Q(module__name__icontains=req.GET.get('module'))
+            query = query & Q(module__name__icontains=request.GET.get('module'))
 
     releases = PuppetModuleRelease.objects.filter(query)
     return JsonResponse({
@@ -104,10 +92,8 @@ def release_list(req):
 
 @check_key
 # pylint: disable=unused-argument
-def release(req, user, module, version):
-    """
-    Return list of releases for module
-    """
+def release(request: HttpRequest, user: str, module: str, version: str) -> HttpResponse:
+    """Return list of releases for module"""
     users = User.objects.filter(username=user)
     if not users.exists():
         raise Http404
@@ -127,10 +113,8 @@ def release(req, user, module, version):
 
 @check_key
 # pylint: disable=unused-argument
-def file(req, user, module, version):
-    """
-    Return file for release
-    """
+def file(request: HttpRequest, user: str, module: str, version: str) -> HttpResponse:
+    """Return file for release"""
     p_user = User.objects.get(username=user)
     p_module = PuppetModule.objects.get(name=module, owner=p_user)
     p_release = PuppetModuleRelease.objects.get(module=p_module, version=version)
@@ -151,10 +135,10 @@ def file(req, user, module, version):
 # These methods convert PuppetModules or PuppetModuleReleases into Objects
 # which have the same structure as https://forgeapi.puppetlabs.com/
 
-def _json_release(release):
+def _json_release(release: PuppetModuleRelease):
     """Convert a single release"""
     return {
-        "uri": reverse('supervisr/puppet/api/v1:release', kwargs={
+        "uri": reverse('supervisr_puppet_api_v1:release', kwargs={
             'user': release.module.owner.username,
             'module': release.module.name,
             'version': release.version,
@@ -163,7 +147,7 @@ def _json_release(release):
         "slug": "%s-%s-%s" % (release.module.owner.username, release.module.name, release.version),
         "version": release.version,
         "module": {
-            "uri": reverse('supervisr/puppet/api/v1:module', kwargs={
+            "uri": reverse('supervisr_puppet_api_v1:module', kwargs={
                 'user': release.module.owner.username,
                 'module': release.module.name,
                 'key': Setting.get('url_key')
@@ -171,7 +155,7 @@ def _json_release(release):
             "slug": "%s-%s" % (release.module.owner.username, release.module.name),
             "name": release.module.name,
             "owner": {
-                "url": reverse('supervisr/puppet/api/v1:user', kwargs={
+                "url": reverse('supervisr_puppet_api_v1:user', kwargs={
                     'user': release.module.owner.username,
                     'key': Setting.get('url_key')
                     }),
@@ -201,10 +185,10 @@ def _json_release_list(releases):
         arr.append(_json_release(rel))
     return arr
 
-def _json_module(module):
+def _json_module(module: PuppetModule):
     """Convert a single module"""
     return {
-        "uri": reverse('supervisr/puppet/api/v1:module', kwargs={
+        "uri": reverse('supervisr_puppet_api_v1:module', kwargs={
             'user': module.owner.username,
             'module': module.name,
             'key': Setting.get('url_key')
@@ -216,7 +200,7 @@ def _json_module(module):
         "supported": True,
         "slug": "%s-%s" % (module.owner.username, module.name),
         "owner": {
-            "uri": reverse('supervisr/puppet/api/v1:user', kwargs={
+            "uri": reverse('supervisr_puppet_api_v1:user', kwargs={
                 'user': module.owner.username,
                 'key': Setting.get('url_key')
                 }),

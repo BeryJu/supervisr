@@ -6,7 +6,7 @@ from django.db import migrations
 
 
 def create_setting(apps, schema_editor):
-    Setting = apps.get_model('supervisr/core', 'Setting')
+    Setting = apps.get_model('supervisr_core', 'Setting')
     Setting.objects.get_or_create(
         key='puppet:allowed_user_agent',
         defaults={'value': ''})
@@ -14,7 +14,7 @@ def create_setting(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr/puppet', '0006_auto_20170503_1821'),
+        ('supervisr_puppet', '0006_auto_20170503_1821'),
     ]
 
     operations = [

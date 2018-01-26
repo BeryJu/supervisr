@@ -17,9 +17,8 @@ from supervisr.core.signals import SIG_CHECK_USER_EXISTS
 LOGGER = logging.getLogger(__name__)
 
 class LoginForm(forms.Form):
-    """
-    Form to handle logins
-    """
+    """Form to handle logins"""
+
     email = forms.EmailField(label=_('Mail'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     remember = forms.BooleanField(required=False, label=_('Remember'))
@@ -29,9 +28,8 @@ class LoginForm(forms.Form):
         public_key=Setting.get('recaptcha:public'))
 
 class SignupForm(forms.Form):
-    """
-    Form to handle signups
-    """
+    """Form to handle signups"""
+
     name = forms.CharField(label=_('Name'))
     username = forms.CharField(label=_('Username'))
     email = forms.EmailField(label=_('E-Mail'))
@@ -44,9 +42,7 @@ class SignupForm(forms.Form):
     tos_accept = forms.BooleanField(required=True, label=_('I accept the Terms of service'))
 
     def clean_username(self):
-        """
-        Check if username is used already
-        """
+        """Check if username is used already"""
         username = self.cleaned_data.get('username')
         if User.objects.filter(username=username).exists():
             LOGGER.warning("Username %s already exists", username)
@@ -54,9 +50,7 @@ class SignupForm(forms.Form):
         return username
 
     def clean_email(self):
-        """
-        Check if email is already used in django or other auth sources
-        """
+        """Check if email is already used in django or other auth sources"""
         email = self.cleaned_data.get('email')
         # Check if user exists already, error early
         if User.objects.filter(email=email).exists():
@@ -72,28 +66,21 @@ class SignupForm(forms.Form):
         return email
 
     def clean_password_rep(self):
-        """
-        Check if Password adheres to filter and if passwords matche
-        """
+        """Check if Password adheres to filter and if passwords matche"""
         return check_password(self)
 
 class ChangePasswordForm(forms.Form):
-    """
-    Form to handle password changes
-    """
+    """Form to handle password changes"""
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
 
     def clean_password_rep(self):
-        """
-        Check if Password adheres to filter and if passwords matche
-        """
+        """Check if Password adheres to filter and if passwords matche"""
         return check_password(self)
 
 class PasswordResetInitForm(forms.Form):
-    """
-    Form to initiate password resets
-    """
+    """Form to initiate password resets"""
+
     email = forms.EmailField(label=_('Mail'))
     captcha = ReCaptchaField(
         required=(not settings.DEBUG),
@@ -101,28 +88,22 @@ class PasswordResetInitForm(forms.Form):
         public_key=Setting.get('recaptcha:public'))
 
 class PasswordResetFinishForm(forms.Form):
-    """
-    Form to finish password resets
-    """
+    """Form to finish password resets"""
+
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
 
     def clean_password_rep(self):
-        """
-        Check if Password adheres to filter and if passwords matche
-        """
+        """Check if Password adheres to filter and if passwords matche"""
         return check_password(self)
 
 class ReauthForm(forms.Form):
-    """
-    Form to reauthenticate users
-    """
+    """Form to reauthenticate users"""
+
     email = forms.EmailField(disabled=True, label=_('E-Mail'), required=False)
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
 
 class EmailMissingForm(forms.Form):
-    """
-    Form to ask user for email address if theirs is not set
-    """
+    """Form to ask user for email address if theirs is not set"""
 
     email = forms.EmailField(label=_('E-Mail'), required=True)

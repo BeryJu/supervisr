@@ -47,7 +47,7 @@ def test_request(view,
         return
 
     # pylint: disable=not-callable
-    req = factory_handler(view, req_kwargs, **headers)
+    request = factory_handler(view, req_kwargs, **headers)
 
     session = SessionStore()
     if session_data:
@@ -55,20 +55,20 @@ def test_request(view,
             session[key] = value
     # Fix django.contrib.messages.api.MessageFailure
     # because this request doesn't have a session or anything
-    setattr(req, 'session', session)
-    setattr(req, '_messages', FallbackStorage(req))
+    setattr(request, 'session', session)
+    setattr(request, '_messages', FallbackStorage(request))
 
     if user is AnonymousUser:
         user = AnonymousUser()
     elif isinstance(user, int):
         user = User.objects.get(pk=user)
-    req.user = user
+    request.user = user
 
     if just_request:
-        return req
+        return request
 
     try:
-        return view(req, **url_kwargs)
+        return view(request, **url_kwargs)
     except Http404:
         return HttpResponseNotFound('not found')
 

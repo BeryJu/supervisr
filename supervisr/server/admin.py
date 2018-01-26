@@ -1,6 +1,4 @@
-"""
-Supervisr Server Admin
-"""
+"""Supervisr Server Admin"""
 from supervisr.core.admin import admin_autoregister
 
-admin_autoregister('supervisr/server')
+admin_autoregister('supervisr_server')

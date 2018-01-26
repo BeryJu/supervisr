@@ -1,20 +1,16 @@
-"""
-Supervisr mod saml_idp app config
-"""
+"""Supervisr mod saml_idp app config"""
 
 from supervisr.core.apps import SupervisrAppConfig
 
 
 class SupervisrModAuthSAMLProvider(SupervisrAppConfig):
-    """
-    Supervisr mod saml_idp app config
-    """
+    """Supervisr mod saml_idp app config"""
 
     name = 'supervisr.mod.auth.saml.idp'
-    label = 'supervisr/mod/auth/saml/idp'
-    verbose_name = 'Supervisr mod/auth/saml/idp'
-    title_modifier = lambda self, title, request: 'SAML2/IDP'
-    admin_url_name = 'supervisr/mod/auth/saml/idp:admin_settings'
+    label = 'supervisr_mod_auth_saml_idp'
+    verbose_name = 'Supervisr mod_auth_saml_idp'
+    title_modifier = lambda self, request: 'SAML2/IDP'
+    admin_url_name = 'supervisr_mod_auth_saml_idp:admin_settings'
     init_modules = [
         'processors.demo',
         'processors.shib',
@@ -22,6 +18,7 @@ class SupervisrModAuthSAMLProvider(SupervisrAppConfig):
         'processors.gitlab',
         'processors.generic',
         'processors.nextcloud',
+        'processors.wordpress_orange',
         'models',
         ]
 

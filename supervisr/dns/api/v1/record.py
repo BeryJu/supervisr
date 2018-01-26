@@ -1,7 +1,7 @@
 """
 Supervisr DNS r1 Record API
 """
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 
 from supervisr.core.api.models import ProductAPI
 from supervisr.core.decorators import logged_in_or_basicauth
@@ -11,18 +11,16 @@ from supervisr.dns.models import Record, Zone
 
 
 class RecordAPI(ProductAPI):
-    """
-    Record API
-    """
+    """Record API"""
     model = Record
     form = RecordForm
 
 @logged_in_or_basicauth('Supervisr DNS Update')
-def dyndns_update(req, zone, record):
+def dyndns_update(request: HttpRequest, zone: str, record: str) -> HttpResponse:
     """
     Update DNS entry, but with basic auth
     """
-    zones = Zone.objects.filter(domain__domain=zone, users__in=[req.user])
+    zones = Zone.objects.filter(domain__domain=zone, users__in=[request.user])
     if not zones.exists():
         return HttpResponse('bad auth')
     r_zone = zones.first()
@@ -32,7 +30,7 @@ def dyndns_update(req, zone, record):
         return HttpResponse('nohost')
     r_record = records.first()
 
-    remote = get_remote_ip(req)
+    remote = get_remote_ip(request)
     if r_record.content == remote:
         return HttpResponse("nochg %s" % remote)
 

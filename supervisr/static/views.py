@@ -1,51 +1,41 @@
-"""
-Supervisr Static views
-"""
+"""supervisr Static views"""
 
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
-from django.http import Http404
-from django.shortcuts import render
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import get_object_or_404, render
 
 from supervisr.static.models import StaticPage
 
 
-def view(req, slug, lang='en'):
-    """
-    Render and show static page
-    """
-    if req.user.is_superuser:
+def view(request: HttpRequest, slug: str, lang: str = 'en') -> HttpResponse:
+    """Render and show static page"""
+    if request.user.is_superuser:
         query = Q(slug=slug)
     else:
         query = Q(slug=slug) & Q(published=True)
-    page = StaticPage.objects.filter(query & Q(language=lang))
-    if not page.exists():
-        raise Http404
-    r_page = page.first()
-    r_page.views += 1
-    r_page.save()
+    page = get_object_or_404(StaticPage, query & Q(language=lang))
+    page.views += 1
+    page.save()
     related_langs = StaticPage.objects \
         .filter(query) \
-        .exclude(pk=r_page.pk) \
+        .exclude(pk=page.pk) \
         .values_list('language', flat=True)
-    return render(req, r_page.template, {
-        'page': r_page,
+    return render(request, page.template, {
+        'page': page,
         'related_langs': related_langs
         })
 
-def feed(req):
-    """
-    Show a feed with all pages
-    """
-    if req.user.is_superuser:
+def feed(request: HttpRequest) -> HttpResponse:
+    """Show a feed with all pages"""
+    if request.user.is_superuser:
         query = Q()
     else:
         query = Q(published=True) & Q(listed=True)
-    all_pages = StaticPage.objects.filter(query)
-    all_pages = all_pages.order_by('-created')
-    paginator = Paginator(all_pages, req.user.rows_per_page)
+    all_pages = StaticPage.objects.filter(query).order_by('-created')
+    paginator = Paginator(all_pages, request.user.rows_per_page)
 
-    page = req.GET.get('page')
+    page = request.GET.get('page')
     try:
         pages = paginator.page(page)
     except PageNotAnInteger:
@@ -55,6 +45,6 @@ def feed(req):
         # If page is out of range (e.g. 9999), deliver last page of results.
         pages = paginator.page(paginator.num_pages)
 
-    return render(req, 'static/feed.html', {
+    return render(request, 'static/feed.html', {
         'pages': pages
         })

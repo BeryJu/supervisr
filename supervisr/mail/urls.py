@@ -8,7 +8,7 @@ from supervisr.core.regex import DOMAIN_REGEX, EMAIL_ADDRESS_REGEX, EMAIL_REGEX
 from supervisr.mail.views import account, alias, core, domain
 
 urlpatterns = [
-    url(r'^$', core.index, name='mail-index'),
+    url(r'^$', core.index, name='index'),
     url(r'^accounts/$', account.index, name='mail-account-index'),
     url(r'^accounts/new/$', account.AccountNewView.as_view(), name='mail-account-new'),
 

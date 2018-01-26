@@ -1,6 +1,4 @@
-"""
-Supervisr Core CommonView Test
-"""
+"""Supervisr Core CommonView Test"""
 
 
 import os
@@ -14,9 +12,7 @@ from supervisr.core.views import common
 
 
 class TestCommonViews(TestCase):
-    """
-    Supervisr Core CommonView Test
-    """
+    """Supervisr Core CommonView Test"""
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
@@ -24,19 +20,15 @@ class TestCommonViews(TestCase):
         self.factory = RequestFactory()
 
     def test_index_view(self):
-        """
-        Test Index View (Anonymous)
-        """
-        req = self.factory.get(reverse('common-index'))
-        req.user = AnonymousUser()
-        res = common.index(req)
-        self.assertEqual(res.status_code, 302)
+        """Test Index View (Anonymous)"""
+        request = self.factory.get(reverse('common-index'))
+        request.user = AnonymousUser()
+        response = common.index(request)
+        self.assertEqual(response.status_code, 302)
 
     def test_index_view_auth(self):
-        """
-        Test Index View (Authenticated)
-        """
-        req = self.factory.get(reverse('common-index'))
-        req.user = User.objects.get(pk=get_system_user())
-        res = common.index(req)
-        self.assertEqual(res.status_code, 200)
+        """Test Index View (Authenticated)"""
+        request = self.factory.get(reverse('common-index'))
+        request.user = User.objects.get(pk=get_system_user())
+        response = common.index(request)
+        self.assertEqual(response.status_code, 200)

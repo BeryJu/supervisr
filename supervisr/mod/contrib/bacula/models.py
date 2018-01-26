@@ -52,7 +52,7 @@ class Client(models.Model):
     class Meta:
         managed = False
         db_table = 'Client'
-        sv_search_fields = ['Name', 'Uname']
+        # sv_search_fields = ['Name', 'Uname']
 
 class Counters(models.Model):
     """
@@ -255,7 +255,7 @@ class Job(models.Model):
     class Meta:
         managed = False
         db_table = 'Job'
-        sv_search_fields = ['Job',]
+        # sv_search_fields = ['Job',]
 
 
 class Jobhisto(models.Model):
