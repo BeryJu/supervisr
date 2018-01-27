@@ -1,25 +1,27 @@
-{% extends "core/base.html" %}
-
-{% load i18n %}
-{% load related_products %}
-{% load is_active %}
-{% load is_active_url %}
-
+{% extends "core/base.html" %} {% load i18n %} {% load related_products %} {% load is_active %} {% load is_active_url %}
 {% block sidenav %}
 <nav class="sidenav clr-nav-level-2">
   <section class="sidenav-content">
     <section class="nav-group">
-      <a href="{% url 'supervisr/dns:dns-index' %}" class="nav-link {% is_active 'dns-index' %}">{% trans "Zones" %}</a>
+      <a href="{% url 'supervisr_dns:index' %}" class="nav-link {% is_active 'index' %}">{% trans "Zones" %}</a>
       <ul class="nav-list">
-        {% related_products 'supervisr.dns.models.Zone' as zones %}
-        {% for z in zones %}
-        <li><a href="{% url 'supervisr_dns:dns-record-list' zone=z.domain %}" class="nav-link {% is_active_url 'supervisr_dns:dns-record-list' zone=z.domain %}">{{ z.domain }}</a></li>
+        {% related_products 'supervisr.dns.models.Zone' as zones %} {% for z in zones %}
+        <li>
+          <a href="{% url 'supervisr_dns:dns-record-list' zone=z.domain %}" class="nav-link {% is_active_url 'supervisr_dns:dns-record-list' zone=z.domain %}">{{ z.domain }}</a>
+        </li>
         {% endfor %}
       </ul>
     </section>
-    <a href="" class="nav-link">
-    {% trans "TSIG" %}
-    </a>
+    <section class="nav-group">
+      <a href="{% url 'supervisr_dns:rset-create' %}" class="nav-link {% is_active 'rset-create' %}">{% trans "Resource Sets" %}</a>
+      <ul class="nav-list">
+        {% related_products 'supervisr.dns.models.ResourceSet' as rsets %} {% for r in rsets %}
+        <li>
+          <a href="{% url 'supervisr_dns:rset-read' rset_uuid=r.uuid %}" class="nav-link {% is_active_url 'supervisr_dns:rset-read' rset_uuid=r.uuid %}">{{ r.name }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
   </section>
 </nav>
 {% endblock %}

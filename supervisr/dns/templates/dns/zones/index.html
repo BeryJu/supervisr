@@ -1,16 +1,9 @@
-{% extends "dns/base.html" %}
-
-{% load supervisr_title %}
-{% load i18n %}
-
-{% block title %}
-{% supervisr_title 'Zones' %}
-{% endblock %}
-
-{% block content %}
-<h1><clr-icon shape="router" size="48"></clr-icon>{% trans 'DNS Zones' %}</h1>
+{% extends "dns/base.html" %} {% load supervisr_title %} {% load i18n %} {% block title %} {% supervisr_title 'Zones' %}
+{% endblock %} {% block content %}
+<h1>
+  <clr-icon shape="router" size="48"></clr-icon>{% trans 'DNS Zones' %}</h1>
 <div class="btn-group btn-link btn-icon-link">
-  <a href="{% url 'supervisr_dns:dns-zone-new' %}" class="btn">
+  <a href="{% url 'supervisr_dns:zone-create' %}" class="btn">
     <clr-icon shape="add"></clr-icon>
   </a>
   <a data-ctx-name="edit" class="btn">
@@ -39,7 +32,8 @@
   </thead>
   <tbody>
     {% for dom in zones %}
-    <tr data-selectable data-ctx-edit="{% url 'supervisr_dns:dns-zone-edit' zone=dom.domain %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr_dns:dns-zone-delete' zone=dom.domain %}?back={{ request.get_full_path }}">
+    <tr data-selectable data-ctx-edit="{% url 'supervisr_dns:zone-update' zone=dom.domain %}?back={{ request.get_full_path }}"
+      data-ctx-trash="{% url 'supervisr_dns:zone-delete' zone=dom.domain %}?back={{ request.get_full_path }}">
       <td>{{ dom.domain }}</td>
       <td>{{ dom.users.all|join:"," }}</td>
       <td>{{ dom.record_set.all|length }}</td>
@@ -48,11 +42,7 @@
     {% endfor %}
   </tbody>
 </table>
-{% include 'blocks/block_pagination.html' with pages=zones %}
-{% endblock %}
-
-{% block scripts %}
+{% include 'blocks/block_pagination.html' with pages=zones %} {% endblock %} {% block scripts %}
 <script>
-clrTableSelect('.container');
-</script>
-{% endblock %}
+  clrTableSelect('.container');
+</script> {% endblock %}

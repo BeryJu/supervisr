@@ -11,15 +11,15 @@
 <h1>
   <clr-icon shape="file-group" size="48"></clr-icon>
   {% blocktrans with name=instance.name %}Resource Set '{{ name }}'{% endblocktrans %}
-  <a href="{% url 'supervisr/dns:rset-update' rset_uuid=instance.uuid %}?back={{ request.get_full_path }}">
+  <a href="{% url 'supervisr_dns:rset-update' rset_uuid=instance.uuid %}?back={{ request.get_full_path }}">
     <clr-icon shape="edit"></clr-icon>
   </a>
-  <a href="{% url 'supervisr/dns:rset-delete' rset_uuid=instance.uuid %}?back={{ request.get_full_path }}">
+  <a href="{% url 'supervisr_dns:rset-delete' rset_uuid=instance.uuid %}?back={{ request.get_full_path }}">
     <clr-icon shape="trash"></clr-icon>
   </a>
 </h1>
 <div class="btn-group btn-link btn-icon-link">
-  <a href="{% url 'supervisr_dns:dns-zone-new' %}" class="btn">
+  <a href="{% url 'supervisr_dns:rres-create' %}" class="btn">
     <clr-icon shape="add"></clr-icon>
   </a>
   <a data-ctx-name="edit" class="btn">
@@ -28,14 +28,6 @@
   <a data-ctx-name="trash" class="btn">
     <clr-icon shape="trash"></clr-icon>
   </a>
-  <div class="btn-group-overflow dropdown">
-    <button class="btn dropdown-toggle" clrDropdown>
-      <clr-icon shape="ellipsis-horizontal"></clr-icon>
-    </button>
-    <div class="dropdown-menu">
-      <a href="{% url 'supervisr_dns:migrate-import-bind' %}" class="dropdown-item">{% trans 'Import from Bind Zone' %}</a>
-    </div>
-  </div>
 </div>
 <table class="table">
   <thead>
@@ -49,8 +41,8 @@
   </thead>
   <tbody>
     {% for rec in records %}
-    <tr data-selectable data-ctx-edit="{% url 'supervisr/dns:rres-update' zone=dom.domain %}?back={{ request.get_full_path }}" data-ctx-trash="{%
-    url 'supervisr/dns:rres-delete' zone=dom.domain %}?back={{ request.get_full_path }}">
+    <tr data-selectable data-ctx-edit="{% url 'supervisr_dns:rres-update' zone=dom.domain %}?back={{ request.get_full_path }}" data-ctx-trash="{%
+    url 'supervisr_dns:rres-delete' zone=dom.domain %}?back={{ request.get_full_path }}">
       <td>{{ rec.name }}</td>
       <td>{{ rec.type }}</td>
       <td>{{ rec.ttl }}</td>

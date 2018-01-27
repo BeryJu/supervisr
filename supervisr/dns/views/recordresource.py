@@ -30,7 +30,7 @@ class RecordResourceCreateView(BaseWizardView):
             product=rres,
             user=self.request.user)
         messages.success(self.request, _('Record Resource successfully created'))
-        return redirect(reverse('supervisr/dns:rset-read', kwargs={'rset_uuid': rset.uuid}))
+        return redirect(reverse('supervisr_dns:rset-read', kwargs={'rset_uuid': rset.uuid}))
 
 class RecordResourceUpdateView(GenericUpdateView):
     """Update Record Resource"""
@@ -40,7 +40,7 @@ class RecordResourceUpdateView(GenericUpdateView):
     form = RecordResourceForm
 
     def redirect(self, instance):
-        return redirect(reverse('supervisr/dns:rset-read', kwargs={'rset_uuid': instance.uuid}))
+        return redirect(reverse('supervisr_dns:rset-read', kwargs={'rset_uuid': instance.uuid}))
 
     def get_instance(self):
         return RecordResource.objects.filter(uuid=self.kwargs.get('rset_uuid'),
@@ -52,7 +52,7 @@ class RecordResourceDeleteView(GenericDeleteView):
     model = RecordResource
 
     def redirect(self, instance):
-        return redirect(reverse('supervisr/dns:rset-read', kwargs={'rset_uuid': instance.uuid}))
+        return redirect(reverse('supervisr_dns:rset-read', kwargs={'rset_uuid': instance.uuid}))
 
     def get_instance(self):
         return RecordResource.objects.filter(uuid=self.kwargs.get('rset_uuid'),

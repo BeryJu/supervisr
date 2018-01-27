@@ -58,9 +58,11 @@ class Comment(CreatedUpdatedModel):
     zone_id = models.ForeignKey('Zone', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=10)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
     account = models.CharField(max_length=40)
     comment = models.TextField()
+
 
 class CryptoKey(models.Model):
     """
@@ -71,6 +73,7 @@ class CryptoKey(models.Model):
     active = models.BooleanField()
     content = models.TextField()
 
+
 class DomainMetadata(models.Model):
     """
     DNS Additional Domain Metadata
@@ -79,12 +82,14 @@ class DomainMetadata(models.Model):
     kind = models.CharField(max_length=32)
     content = models.TextField()
 
+
 class Zone(Product):
     """
     DNS Zone
     """
     domain = models.OneToOneField(Domain, on_delete=models.CASCADE)
-    provider = models.ForeignKey(ProviderInstance, default=None, on_delete=models.CASCADE)
+    provider = models.ForeignKey(
+        ProviderInstance, default=None, on_delete=models.CASCADE)
     master = models.CharField(max_length=128)
     last_check = models.IntegerField(default=0)
     type = models.CharField(max_length=6)
@@ -107,18 +112,14 @@ class Zone(Product):
     def __str__(self):
         return "Zone %s" % self.domain.domain
 
+
 class Record(Product):
-    """
-    DNS Record
-    """
+    """DNS Record"""
     domain = models.ForeignKey(Zone, on_delete=models.CASCADE)
-    type = models.CharField(max_length=10, choices=RECORD_TYPES)
-    content = models.TextField()
-    ttl = models.IntegerField(default=3600)
-    prio = models.IntegerField(default=0)
     enabled = models.BooleanField(default=True)
     ordername = models.CharField(max_length=255, null=True, default=None)
     auth = models.IntegerField(default=1)
+    resource_set = models.ForeignKey('ResourceSet', on_delete=models.CASCADE)
 
     @property
     def to_bind(self):
@@ -128,10 +129,29 @@ class Record(Product):
     def __str__(self):
         return "Record %s" % self.name
 
+
+class RecordResource(Product):
+    """Record Resource"""
+    type = models.CharField(max_length=10, choices=RECORD_TYPES)
+    content = models.TextField()
+    ttl = models.IntegerField(default=3600)
+    prio = models.IntegerField(default=0)
+    enabled = models.BooleanField(default=True)
+
+    def __str__(self):
+        return "RecordData %s %s" % (self.type, self.content)
+
+
+class ResourceSet(Product):
+    """Connect Record to RecordResource"""
+    resource = models.ManyToManyField(RecordResource, blank=True)
+
+    def __str__(self):
+        return "ResourceSet %s" % self.name
+
+
 class SuperMaster(models.Model):
-    """
-    DNS SuperMaster
-    """
+    """DNS SuperMaster"""
     # pylint: disable=invalid-name
     ip = models.CharField(max_length=64)
     nameserver = models.CharField(max_length=255)
@@ -140,10 +160,9 @@ class SuperMaster(models.Model):
     class Meta:
         unique_together = (('ip', 'nameserver'),)
 
+
 class TSIGKey(models.Model):
-    """
-    DNS TSIGKeys
-    """
+    """DNS TSIGKeys"""
     name = models.CharField(max_length=255)
     algorithm = models.CharField(max_length=50)
     secret = models.CharField(max_length=255)

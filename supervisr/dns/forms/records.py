@@ -23,25 +23,10 @@ class RecordForm(forms.ModelForm):
             raise ValidationError(_('Name may not end with dot.'), code='invalid')
         return name
 
-    def clean_content(self):
-        """Clean content based on selected type"""
-        data = self.cleaned_data.get('content')
-        rec_type = self.cleaned_data.get('type')
-        if rec_type == 'A':
-            validate_ipv4_address(data)
-        elif rec_type == 'AAAA':
-            validate_ipv6_address(data)
-        return data
-
     class Meta:
 
         model = Record
-        fields = ['domain', 'name', 'type', 'content', 'ttl', 'prio', 'enabled']
-        labels = {
-            'prio': _('Priority'),
-            'ttl': 'TTL',
-        }
+        fields = ['domain', 'name', 'resource_set']
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': "Set to '@' for root-level records."}),
-            'content': forms.TextInput(attrs={'placeholder': 'e.g. 1.2.3.4'}),
         }
