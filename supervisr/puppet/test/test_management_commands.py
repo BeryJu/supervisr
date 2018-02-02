@@ -31,7 +31,7 @@ class TestManagementCommands(TestCase):
                                           '--module', 'wrong_name'),
                          'Module supervisr-wrong_name doesn\'t exist!\n')
 
-    # pylint: disable=invalid-name, no-self-use
+    # pylint: disable=invalid-name
     def test_sv_puppet_debug_build_inv_json(self):
         """
         Test puppet module build with invalid metadata json
@@ -48,7 +48,7 @@ class TestManagementCommands(TestCase):
     #                      'Done!\n')
 
     @expectedFailure
-    # pylint: disable=invalid-name, no-self-use
+    # pylint: disable=invalid-name
     def test_sv_puppet_import_invalid_user(self):
         """
         Test Invalid PuppetForge Import (wrong username)
@@ -56,7 +56,7 @@ class TestManagementCommands(TestCase):
         call_command_ret('sv_puppet_import', '--module', 'wrong_name-wrong_name')
 
     @expectedFailure
-    # pylint: disable=invalid-name, no-self-use
+    # pylint: disable=invalid-name
     def test_sv_puppet_import_invalid_mod(self):
         """
         Test Invalid PuppetForge Import (wrong module)

@@ -88,6 +88,5 @@ class InfluxClient(object):
             pass
         return self
 
-    # pylint: disable=unused-argument
     def __exit__(self, _type, value, _tb):
         self.close()

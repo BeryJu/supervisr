@@ -132,7 +132,6 @@ class SuperMaster(models.Model):
     """
     DNS SuperMaster
     """
-    # pylint: disable=invalid-name
     ip = models.CharField(max_length=64)
     nameserver = models.CharField(max_length=255)
     account = models.CharField(max_length=40)

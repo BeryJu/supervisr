@@ -1,6 +1,6 @@
 [MASTER]
 
-disable=redefined-outer-name,arguments-differ,no-self-use,cyclic-import,fixme
+disable=redefined-outer-name,arguments-differ,no-self-use,cyclic-import,fixme,locally-disabled
 load-plugins=pylint_django,pylint.extensions.bad_builtin
 #,pylint.extensions.docparams
 extension-pkg-whitelist=lxml

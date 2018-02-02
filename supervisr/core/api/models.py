@@ -25,7 +25,6 @@ class ModelAPI(CRUDAPI):
     viewable_fields = ['name']
     editable_fields = ['name']
 
-    # pylint: disable=unused-argument
     def pre_handler(self, handler, request):
         """
         Check if form is set and read fields from it
@@ -36,7 +35,6 @@ class ModelAPI(CRUDAPI):
                 self.form = [self.form]
             new_fields = []
             for frm in self.form:
-                # pylint: disable=not-callable
                 frm_inst = frm()
                 if isinstance(frm_inst, forms.ModelForm):
                     if getattr(frm_inst.Meta, 'fields', None):
@@ -133,7 +131,6 @@ class ModelAPI(CRUDAPI):
                 data[field.name] = rev_match.first()
         return data
 
-    # pylint: disable=unused-argument
     def create(self, request, data):
         """
         Create instance based on request data

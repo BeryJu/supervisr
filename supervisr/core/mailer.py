@@ -88,7 +88,6 @@ def mail_handle_user_signed_up(sender, signal, user, request, **kwargs):
         template_context={'url': url})
 
 @receiver(SIG_USER_RESEND_CONFIRM)
-# pylint: disable=unused-argument
 def mail_handle_user_resend_confirm(sender, signal, user, request, **kwargs):
     """
     Resend the user a confirmation email

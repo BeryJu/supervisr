@@ -53,7 +53,6 @@ class OAuthRedirect(OAuthClientMixin, RedirectView):
         "Return additional redirect parameters for this provider."
         return self.params or {}
 
-    # pylint: disable=no-self-use
     def get_callback_url(self, provider):
         "Return the callback url for this provider."
         return reverse('supervisr_mod_auth_oauth_client:oauth-client-callback',
@@ -135,22 +134,22 @@ class OAuthCallback(OAuthClientMixin, View):
                         })
             return self.handle_existing_user(self.provider, user, access, info)
 
-    # pylint: disable=unused-argument, no-self-use
+    # pylint: disable=unused-argument
     def get_callback_url(self, provider):
         "Return callback url if different than the current url."
         return None
 
-    # pylint: disable=unused-argument, no-self-use
+    # pylint: disable=unused-argument
     def get_error_redirect(self, provider, reason):
         "Return url to redirect on login failure."
         return settings.LOGIN_URL
 
-    # pylint: disable=unused-argument, no-self-use
+    # pylint: disable=unused-argument
     def get_login_redirect(self, provider, user, access, new=False):
         "Return url to redirect authenticated users."
         return 'common-index'
 
-    # pylint: disable=unused-argument, no-self-use
+    # pylint: disable=unused-argument
     def get_or_create_user(self, provider, access, info):
         "Create a shell auth.User."
         digest = hashlib.sha1(smart_bytes(access)).digest()

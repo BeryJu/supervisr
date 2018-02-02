@@ -22,7 +22,6 @@ class TestAccount(TestCase):
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
-        # pylint: disable=duplicate-code
         self.signup_data = {
             'name': 'Test user',
             'username': 'beryjuorg',

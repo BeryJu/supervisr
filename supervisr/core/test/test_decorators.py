@@ -77,7 +77,7 @@ class TestDecorators(TestCase):
             pass # pragma: no cover
 
         self.assertTrue(test_core())
-        self.assertEqual(test_invalid(), None)
+        self.assertEqual(test_invalid(), False)
 
     def test_basic_auth(self):
         """

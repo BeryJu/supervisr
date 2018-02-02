@@ -39,10 +39,8 @@ def sign_with_signxml(private_key, data, cert, reference_uri=None):
     key = serialization.load_pem_private_key(
         str.encode('\n'.join([x.strip() for x in private_key.split('\n')])),
         password=None, backend=default_backend())
-    # pylint: disable=no-member
     root = etree.fromstring(data)
     signer = XMLSigner(c14n_algorithm='http://www.w3.org/2001/10/xml-exc-c14n#')
-    # pylint: disable=no-member
     return etree.tostring(signer.sign(root, key=key, cert=cert, reference_uri=reference_uri))
 
 def get_signature_xml():
