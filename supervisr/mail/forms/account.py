@@ -41,8 +41,9 @@ class MailAccountGeneralForm(forms.Form):
     def clean_is_catchall(self):
         """Check if domain already has a catch-all set"""
         domain = self.cleaned_data.get('domain')
+        is_catchall = self.cleaned_data.get('is_catchall')
         catch_alls = MailAccount.objects.filter(domain=domain, is_catchall=True)
-        if catch_alls.exists():
+        if catch_alls.exists() and is_catchall:
             raise forms.ValidationError("Domain '%s' already has a catch-all account." % domain)
 
         return self.cleaned_data.get('is_catchall')
