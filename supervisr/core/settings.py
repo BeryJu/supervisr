@@ -88,7 +88,6 @@ INSTALLED_APPS = [
     'supervisr.mail.apps.SupervisrMailConfig',
     'supervisr.static.apps.SupervisrStaticConfig',
     'supervisr.mod.beacon.apps.SupervisrModBeaconConfig',
-    'supervisr.mod.contrib.bacula.apps.SupervisrModContribBaculaConfig',
     'supervisr.mod.auth.ldap.apps.SupervisrModAuthLDAPConfig',
     'supervisr.mod.auth.saml.idp.apps.SupervisrModAuthSAMLProvider',
     'supervisr.mod.auth.oauth.provider.apps.SupervisrModAuthOAuthProviderConfig',
@@ -142,7 +141,7 @@ CACHES = {
 
 MIDDLEWARE = [
     # Load DeployPage first so we can save unnecessary errores
-    'supervisr.core.middleware.DeployPageMiddleware.deploy_page',
+    'supervisr.core.middleware.deploy_page_middleware.deploy_page',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -153,9 +152,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-    'supervisr.core.middleware.EmailMissingMiddleware.check_email',
-    'supervisr.core.middleware.ImpersonateMiddleware.impersonate',
-    'supervisr.core.middleware.PermanentMessageMiddleware.permanent_message',
+    'supervisr.core.middleware.email_missing_middleware.check_email',
+    'supervisr.core.middleware.impersonate_middleware.impersonate',
+    'supervisr.core.middleware.permanent_message_middleware.permanent_message',
     'htmlmin.middleware.HtmlMinifyMiddleware',
     'htmlmin.middleware.MarkRequestMiddleware',
 ]
@@ -269,7 +268,7 @@ ENVIRONMENT = 'production' if DEBUG is False else 'development'
 try:
     VERSION = raven.fetch_git_sha(os.path.dirname(os.pardir))
 except raven.exceptions.InvalidGitRepository:
-    from supervisr import __version__
+    from supervisr import __version__  # pylint: disable=no-name-in-module, useless-suppression
     VERSION = __version__
 
 RAVEN_CONFIG = {

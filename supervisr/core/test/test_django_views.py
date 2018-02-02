@@ -11,7 +11,6 @@ class TestDjangoAdmin(TestCase):
     def setUp(self):
         pass
 
-    # pylint: disable=no-self-use
     def test_autoregister(self):
         """Test Admin autoregister"""
         admin_autoregister('supervisr_core')

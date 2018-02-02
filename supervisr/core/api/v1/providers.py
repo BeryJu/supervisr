@@ -19,7 +19,7 @@ class ProviderAPI(ProductAPI):
         super(ProviderAPI, self).__init__(*args, **kwargs)
         self.ALLOWED_VERBS['GET'].append('get_all')
 
-    # pylint: disable=unused-argument, no-self-use
+    # pylint: disable=unused-argument
     def get_all(self, request, data):
         """
         Return list of all possible providers

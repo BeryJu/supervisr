@@ -55,6 +55,7 @@ def search(request):
                 'results': results,
                 'request': request,
                 }))
+        return None
 
     ## Resulsts is a key:value dict of app.verbose_name to rendered html
     results = {}

@@ -141,7 +141,6 @@ def account_set_password(request: HttpRequest, domain: str, account: str) -> Htt
         })
 
 @login_required
-# pylint: disable=unused-argument
 def account_edit(request: HttpRequest, domain: str, account: str) -> HttpResponse:
     """Show view to edit account"""
     domains = MailDomain.objects.filter(domain__domain=domain, users__in=[request.user])
@@ -182,7 +181,6 @@ def account_edit(request: HttpRequest, domain: str, account: str) -> HttpRespons
         })
 
 @login_required
-# pylint: disable=unused-argument
 def account_delete(request: HttpRequest, domain: str, account: str) -> HttpResponse:
     """Show view to delete account"""
     domains = MailDomain.objects.filter(domain__domain=domain, users__in=[request.user])

@@ -5,8 +5,8 @@ import json
 import logging
 
 from django.conf import settings
-from django.contrib.auth import login as django_login
 from django.contrib.auth import authenticate
+from django.contrib.auth import login as django_login
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpRequest, QueryDict
 from django.utils.decorators import method_decorator
@@ -62,8 +62,9 @@ class API(View):
             return api_response(request, {'data': {'error': exc.args[0]}, 'code': 404})
         except Http404:
             return api_response(request, {'data': {'error': 'not found'}, 'code': 404})
+        else:
+            return api_response(request, {'data': {'error': 'unknown error'}, 'code': 500})
 
-    # pylint: disable=unused-argument
     def pre_handler(self, handler, request):
         """Optional Handler, which is run before the chosen handler is run"""
         pass

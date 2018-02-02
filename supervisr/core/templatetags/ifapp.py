@@ -21,3 +21,4 @@ def ifapp(*args):
     for app_label in args:
         if app_label in app_cache:
             return True
+    return False

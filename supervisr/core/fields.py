@@ -2,34 +2,23 @@
 Supervisr Core Fields
 """
 
-from __future__ import unicode_literals
-
 import binascii
 import hmac
 import json
-import sys
 
+import Crypto.Cipher.AES
 from django.conf import settings
 from django.db import models
 from django.utils.crypto import constant_time_compare
 from django.utils.encoding import force_bytes, force_text
 
-try:
-    # Check if Crypto can be import
-    import Crypto.Cipher.AES
-except ImportError:
-    # otherwise wrap crypto
-    import crypto
-    sys.modules['Crypto'] = crypto
-    # pylint: disable=ungrouped-imports
-    import Crypto.Cipher.AES
 
 class JSONField(models.TextField):
     """
     Field to save json in DB, works on non-postgres
     """
 
-    # pylint: disable=no-self-use, unused-argument
+    # pylint: disable=unused-argument
     def from_db_value(self, value, experssion, connection, context):
         """
         Convert JSON String to object
@@ -39,7 +28,6 @@ class JSONField(models.TextField):
 
         return json.loads(value)
 
-    # pylint: disable=unused-argument
     def to_python(self, value):
         """
         Convert JSON String to object
@@ -49,7 +37,6 @@ class JSONField(models.TextField):
 
         return json.loads(value)
 
-    # pylint: disable=unused-argument
     def get_prep_value(self, value):
         """
         Convert back to text
@@ -77,7 +64,6 @@ class SignedAESEncryption(object):
         self.cipher = self.cipher_class.new(self.get_key())
         super(SignedAESEncryption, self).__init__(*args, **kwargs)
 
-    # pylint: disable=no-self-use
     def get_key(self):
         """
         Get key
@@ -108,7 +94,6 @@ class SignedAESEncryption(object):
             return clear_text + b'\x00' + b'*' * (padding - 1)
         return clear_text
 
-    # pylint: disable=no-self-use
     def split_value(self, value):
         """
         split value from database into _, prefix, mac, cypher_text
@@ -184,7 +169,6 @@ class EncryptedField(models.TextField):
             return force_text(self.cipher.decrypt(value))
         return force_text(value)
 
-    # pylint: disable=unused-argument
     def get_db_prep_value(self, value, connection=None, prepared=False):
         """
         Prepare value for database

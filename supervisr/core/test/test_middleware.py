@@ -11,9 +11,9 @@ from django.core.management import call_command
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
-from supervisr.core.middleware.DeployPageMiddleware import deploy_page
-from supervisr.core.middleware.ImpersonateMiddleware import impersonate
-from supervisr.core.middleware.PermanentMessageMiddleware import \
+from supervisr.core.middleware.deploy_page_middleware import deploy_page
+from supervisr.core.middleware.impersonate_middleware import impersonate
+from supervisr.core.middleware.permanent_message_middleware import \
     permanent_message
 from supervisr.core.models import Setting, User, get_system_user
 from supervisr.core.views import accounts, common

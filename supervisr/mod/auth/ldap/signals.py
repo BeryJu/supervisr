@@ -32,6 +32,8 @@ def ldap_handle_user_sign_up(sender, signal, user, password, **kwargs):
             user.delete()
             return False
         LDAP.disable_user(mail=user.email)
+        return True
+    return None
 
 @receiver(SIG_USER_CHANGE_PASS)
 # pylint: disable=unused-argument

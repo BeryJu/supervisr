@@ -28,7 +28,7 @@ from supervisr.mod.auth.oauth.client.models import AccountAccess, Provider
 LOGGER = logging.getLogger(__name__)
 
 
-# pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods, too-many-locals
 class OAuthClientMixin(object):
     "Mixin for getting OAuth client for a provider."
 
@@ -53,7 +53,6 @@ class OAuthRedirect(OAuthClientMixin, RedirectView):
         "Return additional redirect parameters for this provider."
         return self.params or {}
 
-    # pylint: disable=no-self-use
     def get_callback_url(self, provider):
         "Return the callback url for this provider."
         return reverse('supervisr_mod_auth_oauth_client:oauth-client-callback',
@@ -117,7 +116,7 @@ class OAuthCallback(OAuthClientMixin, View):
             if not created:
                 access.access_token = raw_token
                 AccountAccess.objects.filter(pk=access.pk).update(**defaults)
-            user = authenticate(provider=self.provider, identifier=identifier)
+            user = authenticate(provider=self.provider, identifier=identifier, request=request)
             if user is None:
                 try:
                     return self.handle_new_user(self.provider, access, info)
@@ -135,22 +134,22 @@ class OAuthCallback(OAuthClientMixin, View):
                         })
             return self.handle_existing_user(self.provider, user, access, info)
 
-    # pylint: disable=unused-argument, no-self-use
+    # pylint: disable=unused-argument
     def get_callback_url(self, provider):
         "Return callback url if different than the current url."
         return None
 
-    # pylint: disable=unused-argument, no-self-use
+    # pylint: disable=unused-argument
     def get_error_redirect(self, provider, reason):
         "Return url to redirect on login failure."
         return settings.LOGIN_URL
 
-    # pylint: disable=unused-argument, no-self-use
+    # pylint: disable=unused-argument
     def get_login_redirect(self, provider, user, access, new=False):
         "Return url to redirect authenticated users."
         return 'common-index'
 
-    # pylint: disable=unused-argument, no-self-use
+    # pylint: disable=unused-argument
     def get_or_create_user(self, provider, access, info):
         "Create a shell auth.User."
         digest = hashlib.sha1(smart_bytes(access)).digest()
@@ -214,7 +213,8 @@ class OAuthCallback(OAuthClientMixin, View):
             user = self.get_or_create_user(provider, access, info)
             access.user = user
             AccountAccess.objects.filter(pk=access.pk).update(user=user)
-            user = authenticate(provider=access.provider, identifier=access.identifier)
+            user = authenticate(provider=access.provider,
+                                identifier=access.identifier, request=self.request)
             login(self.request, user)
             Event.create(
                 user=user,

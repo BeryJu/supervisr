@@ -68,6 +68,9 @@ def reauth_required(view_function):
             # Timestamp in session and valid
             return view_function(*args, **kwargs)
 
+        # This should never be reached, just return False
+        return False
+
     wrap.__doc__ = view_function.__doc__
     wrap.__name__ = view_function.__name__
     return wrap
@@ -132,7 +135,7 @@ def ifapp(app_name):
             """Only executes ifapp_func if app_name is installed"""
             if app_name in app_cache or app_name == 'supervisr_core':
                 return ifapp_func(*args, **kwargs)
-            return
+            return False
         wrap.__doc__ = ifapp_func.__doc__
         wrap.__name__ = ifapp_func.__name__
 
@@ -140,7 +143,8 @@ def ifapp(app_name):
 
     return outer_wrap
 
-def view_or_basicauth(view, request, test_func, realm="", *args, **kwargs):
+
+def view_or_basicauth(view, request, test_func, realm, *args, **kwargs):
     """
     This is a helper function used by both 'logged_in_or_basicauth' and
     'has_perm_or_basicauth' that does the nitty of determining if they
@@ -161,7 +165,7 @@ def view_or_basicauth(view, request, test_func, realm="", *args, **kwargs):
             #
             if auth[0].lower() == "basic":
                 email, passwd = base64.b64decode(auth[1]).decode('utf-8').split(':')
-                user = authenticate(email=email, password=passwd)
+                user = authenticate(email=email, password=passwd, request=request)
                 if user is not None:
                     if user.is_active:
                         login(request, user)

@@ -38,13 +38,11 @@ class SupervisrAppConfig(AppConfig):
         self.run_ensure_settings()
         super(SupervisrAppConfig, self).ready()
 
-    # pylint: disable=no-self-use
     def clear_cache(self):
         """Clear cache on startup"""
         cache.clear()
         LOGGER.debug("Successfully cleared Cache")
 
-    # pylint: disable=no-self-use
     def run_ensure_settings(self):
         """Make sure settings defined in `ensure_settings` are theere"""
         try:
@@ -96,6 +94,7 @@ class SupervisrAppConfig(AppConfig):
             install_reqs = parse_requirements(path, session='hack')
 
             pkg_resources.require([str(x.requirement) for x in install_reqs])
+            return True
 
         _check_file(self, 'requirements.txt')
         if settings.DEBUG:

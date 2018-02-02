@@ -96,7 +96,6 @@ def get_providers(filter_sub=None, path=False):
         """
         Recursively walk subclasses of <root>
         """
-        # pylint: disable=no-member
         sub = root.__subclasses__()
         result = []
         if sub != []:

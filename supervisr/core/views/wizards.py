@@ -3,7 +3,7 @@ Supervisr Core Base Wizard Views
 """
 
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.utils.decorators import method_decorator
 from formtools.wizard.views import SessionWizardView
 
@@ -21,7 +21,7 @@ class BaseWizardView(SessionWizardView):
     def dispatch(self, *args, **kwargs):
         return super(BaseWizardView, self).dispatch(*args, **kwargs)
 
-    def handle_request(self, request):
+    def handle_request(self, request: HttpRequest):
         """
         Do things with data from request and save to self
         """
