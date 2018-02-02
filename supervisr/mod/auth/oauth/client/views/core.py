@@ -28,7 +28,7 @@ from supervisr.mod.auth.oauth.client.models import AccountAccess, Provider
 LOGGER = logging.getLogger(__name__)
 
 
-# pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods, too-many-locals
 class OAuthClientMixin(object):
     "Mixin for getting OAuth client for a provider."
 

@@ -74,7 +74,7 @@ def mail_handle_user_signed_up(sender, signal, user, request, **kwargs):
     if acc_confs.first() is not None:
         acc_conf = acc_confs.first()
     else:
-        return
+        return False
     # Make URL for confirmation email
     domain = Setting.get('domain')
     branding = Setting.get('branding')
@@ -107,7 +107,7 @@ def mail_handle_pass_reset_init(sender, signal, user, **kwargs):
     if acc_confs.first() is not None:
         acc_conf = acc_confs.first()
     else:
-        return
+        return False
     # Make URL for confirmation email
     domain = Setting.get('domain')
     branding = Setting.get('branding')

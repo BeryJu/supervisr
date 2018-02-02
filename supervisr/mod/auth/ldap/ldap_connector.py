@@ -265,7 +265,7 @@ class LDAPConnector(object):
         # AD doesn't like sAMAccountName's with . at the end
         username_trunk = username_trunk[:-1] if username_trunk[-1] == '.' else username_trunk
         user_dn = 'cn='+username+','+self.base_dn
-        LOGGER.debug('New DN: '+user_dn)
+        LOGGER.debug('New DN: %s', user_dn)
         attrs = {
             'distinguishedName' : str(user_dn),
             'cn'                : str(username),

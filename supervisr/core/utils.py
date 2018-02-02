@@ -43,7 +43,8 @@ def get_reverse_dns(dev_ip):
         if rev:
             return rev[0]
     except (socket.herror, TypeError, IndexError):
-        return ''
+        pass
+    return ''
 
 def do_404(request, message=None):
     """Boilerplate to return a 404 message"""
@@ -197,3 +198,4 @@ def messages_add_once(request, level, text, **kwargs):
     storage.used = False
     if not exists:
         return messages.add_message(request, level, mark_safe(text), **kwargs)
+    return False

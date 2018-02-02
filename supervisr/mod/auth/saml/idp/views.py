@@ -15,8 +15,9 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.html import escape
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
+from OpenSSL.crypto import FILETYPE_PEM
 from OpenSSL.crypto import Error as CryptoError
-from OpenSSL.crypto import FILETYPE_PEM, load_certificate
+from OpenSSL.crypto import load_certificate
 
 from supervisr.core.models import Event, Setting, UserProductRelationship
 from supervisr.core.utils import render_to_string

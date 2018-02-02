@@ -10,7 +10,7 @@ from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.backends.cached_db import SessionStore
 from django.core.management import call_command
 from django.http import Http404
-from django.http.response import HttpResponseNotFound
+from django.http.response import HttpResponseNotFound, HttpResponseServerError
 from django.test import RequestFactory
 from django.utils import timezone
 from oauth2_provider.models import AccessToken, Application
@@ -44,7 +44,7 @@ def test_request(view,
     factory_handler = getattr(factory, method.lower(), None)
 
     if not factory_handler:
-        return
+        return HttpResponseServerError()
 
     # pylint: disable=not-callable
     request = factory_handler(view, req_kwargs, **headers)
@@ -71,6 +71,8 @@ def test_request(view,
         return view(request, **url_kwargs)
     except Http404:
         return HttpResponseNotFound('not found')
+    else:
+        return HttpResponseServerError()
 
 def internal_provider(user):
     """

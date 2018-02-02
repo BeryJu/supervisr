@@ -96,6 +96,7 @@ class SupervisrAppConfig(AppConfig):
             install_reqs = parse_requirements(path, session='hack')
 
             pkg_resources.require([str(x.requirement) for x in install_reqs])
+            return True
 
         _check_file(self, 'requirements.txt')
         if settings.DEBUG:
