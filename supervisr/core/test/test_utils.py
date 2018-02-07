@@ -6,6 +6,7 @@ import socket
 import sys
 from unittest import skipUnless
 
+from django.http import HttpResponseServerError
 from django.test import RequestFactory, TestCase
 
 from supervisr.core.test.utils import test_request
@@ -52,7 +53,7 @@ class TestUtils(TestCase):
         """
         test test_request with a wrong method
         """
-        self.assertEqual(test_request(lambda x: x, method='invalid'), None)
+        self.assertIsInstance(test_request(lambda x: x, method='invalid'), HttpResponseServerError)
 
     def test_uuid(self):
         """
@@ -80,7 +81,7 @@ class TestUtils(TestCase):
 
     def test_class_path(self):
         """Test class_to_path and path_to_class"""
-        self.assertEqual(class_to_path(TestUtils), 'supervisr.core.test.TestUtils.TestUtils')
+        self.assertEqual(class_to_path(TestUtils), 'supervisr.core.test.test_utils.TestUtils')
         self.assertEqual(path_to_class(''), None)
 
     def test_b64(self):

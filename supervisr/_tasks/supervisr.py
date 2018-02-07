@@ -39,7 +39,6 @@ def build_static(ctx):
     execute_from_command_line(['manage.py', 'collectstatic', '--noinput'])
 
 @task
-# pylint: disable=unused-argument
 def clean(ctx):
     """Clean Python cached files"""
     ctx.run(r'find . -name *.pyc -exec rm -rf {} \;', warn=True)

@@ -65,7 +65,6 @@ class API(View):
         else:
             return api_response(request, {'data': {'error': 'unknown error'}, 'code': 500})
 
-    # pylint: disable=unused-argument
     def pre_handler(self, handler, request):
         """Optional Handler, which is run before the chosen handler is run"""
         pass

@@ -21,7 +21,6 @@ LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=invalid-name
 handler404 = 'supervisr.core.views.common.uncaught_404'
-# pylint: disable=invalid-name
 handler500 = 'supervisr.core.views.common.uncaught_500'
 
 admin_django.site.index_title = _('Supervisr Admin')

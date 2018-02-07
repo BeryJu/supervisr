@@ -24,7 +24,6 @@ class SupervisrStaticConfig(SupervisrAppConfig):
         except (OperationalError, ProgrammingError, InternalError):
             pass
 
-    # pylint: disable=no-self-use
     def update_filepages(self):
         """Update all FilePages from File"""
         from supervisr.static.models import FilePage
@@ -35,7 +34,6 @@ class SupervisrStaticConfig(SupervisrAppConfig):
                 count += 1
         LOGGER.debug("Successfully updated %d FilePages", count)
 
-    # pylint: disable=no-self-use
     def ensure_product_pages(self):
         """Make sure every Product has a ProductPage"""
         from supervisr.core.models import User

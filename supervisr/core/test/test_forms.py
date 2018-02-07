@@ -21,7 +21,6 @@ class TestForms(TestCase):
     Supervisr Core Form Test
     """
 
-    # pylint: disable=duplicate-code
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
         self.signup_data = {

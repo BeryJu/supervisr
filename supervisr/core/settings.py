@@ -268,7 +268,7 @@ ENVIRONMENT = 'production' if DEBUG is False else 'development'
 try:
     VERSION = raven.fetch_git_sha(os.path.dirname(os.pardir))
 except raven.exceptions.InvalidGitRepository:
-    from supervisr import __version__
+    from supervisr import __version__  # pylint: disable=no-name-in-module, useless-suppression
     VERSION = __version__
 
 RAVEN_CONFIG = {

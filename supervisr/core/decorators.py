@@ -144,7 +144,7 @@ def ifapp(app_name):
     return outer_wrap
 
 
-def view_or_basicauth(view, request, test_func, *args, realm="", **kwargs):
+def view_or_basicauth(view, request, test_func, realm, *args, **kwargs):
     """
     This is a helper function used by both 'logged_in_or_basicauth' and
     'has_perm_or_basicauth' that does the nitty of determining if they
