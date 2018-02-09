@@ -100,14 +100,14 @@ def coverage(ctx, module='supervisr', post_action='report'):
     """Run Unittests and get coverage"""
     if WINDOWS:
         ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
-    ctx.run("coverage run --source=%s manage.py test --pattern=Test*.py" % module)
+    ctx.run("coverage run --source=%s manage.py test" % module)
     ctx.run("coverage %s" % post_action)
 
 @task
 @shell
 def unittest(ctx):
     """Run Unittests"""
-    ctx.run("%s manage.py test --pattern=Test*.py" % PYTHON_EXEC)
+    ctx.run("%s manage.py test" % PYTHON_EXEC)
 
 # Some tasks to make full testing easier
 @task(pre=[coverage, isort, lint, prospector, unittest])

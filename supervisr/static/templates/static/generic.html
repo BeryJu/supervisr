@@ -15,11 +15,8 @@
 <style>
   .home-hero .bg-img {
       {% if page.cast.product and page.cast.product.icon %}
-      {% cache 600 hero_icon page.pk %}
       mask-image: url({% media page.cast.product %});
       -webkit-mask-image: url({% media page.cast.product %});
-      {% endwith %}
-      {% endcache %}
       {% else %}
       mask-image: url({% static 'img/icon.svg' %});
       -webkit-mask-image: url({% static 'img/icon.svg' %});
