@@ -5,6 +5,7 @@ from glob import glob
 from os import path
 
 from django import forms
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -22,7 +23,7 @@ class EditUserForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(EditUserForm, self).__init__(*args, **kwargs)
-        css_files = glob("supervisr/core/static/css/*.theme.css")
+        css_files = glob(path.join(settings.STATIC_ROOT, "css/*.theme.css"))
         choices = []
         for theme in css_files:
             filename = path.basename(theme)

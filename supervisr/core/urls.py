@@ -6,6 +6,7 @@ import logging
 
 from django.conf import settings as django_settings
 from django.conf.urls import include, url
+from django.conf.urls.static import static
 from django.contrib import admin as admin_django
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
@@ -137,3 +138,4 @@ if django_settings.DEBUG or django_settings.TEST:
     urlpatterns += [
         url(r'^__debug__/', include(debug_toolbar.urls)),
     ]
+    urlpatterns += static(django_settings.MEDIA_URL, document_root=django_settings.MEDIA_ROOT)
