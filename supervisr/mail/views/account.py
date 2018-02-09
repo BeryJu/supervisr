@@ -81,6 +81,7 @@ class AccountNewView(BaseWizardView):
             is_catchall=form_dict['0'].cleaned_data.get('is_catchall'),
             )
         m_acc.set_password(self.request.user, form_dict['1'].cleaned_data.get('password'))
+        domain.copy_upr(m_acc)
         UserProductRelationship.objects.create(
             product=m_acc,
             user=self.request.user
@@ -91,6 +92,7 @@ class AccountNewView(BaseWizardView):
                     account=m_acc,
                     destination=alias_dest
                     )
+                domain.copy_upr(m_acc)
         messages.success(self.request, _('Mail Account successfully created'))
         return redirect(reverse('supervisr_mail:mail-domain-view', kwargs=
                                 {'domain': form_dict['0'].cleaned_data.get('domain').domain}))

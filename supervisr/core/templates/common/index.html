@@ -1,5 +1,6 @@
 {% extends "common/base.html" %}
 
+{% load media %}
 {% load cache %}
 {% load supervisr_title %}
 {% load i18n %}
@@ -120,7 +121,7 @@
                     <a href="{{ app.product.management_url }}">
                       {% if app.product.icon %}
                       {% cache 600 app app.product.uuid %}
-                      <img src="{{ app.product.icon_b64 }}" alt="{{ app.name }} Icon">
+                      <img src="{% media app.product.icon %}" alt="{{ app.name }} Icon">
                       {% endcache %}
                       {% else %}
                       <clr-icon shape="application" size="64"></clr-icon>
