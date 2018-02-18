@@ -425,10 +425,11 @@ class Product(CreatedUpdatedModel, CastableModel):
 
     def copy_upr(self, target: 'Product'):
         """Copy UPRs associated with `self` and copy them to `to`"""
-        for upr in self.userproductrelationship_set.all():
-            upr.pk = None
-            upr.product = target
-            upr.save()
+        for user_id in self.userproductrelationship_set.values_list('user', flat=True).distinct():
+            UserProductRelationship.objects.create(
+                product=self,
+                user=user_id
+            )
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # Auto generate slug
