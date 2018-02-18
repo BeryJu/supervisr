@@ -497,7 +497,7 @@ class ReauthView(View):
         form = ReauthForm(initial={'email': request.user.email})
         return self.render(request, form)
 
-@method_decorator(anonymous_required, name='dispatch')
+@method_decorator(login_required, name='dispatch')
 class EmailMissingView(View):
     """View to ask user for missing email"""
 
