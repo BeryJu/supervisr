@@ -3,6 +3,7 @@ import importlib
 import logging
 import platform
 import sys
+from json.decoder import JSONDecodeError
 from random import uniform
 
 import requests
@@ -85,11 +86,14 @@ class Sender(object):
             reverse('supervisr_mod_beacon_api_v1:pulse',
                     kwargs={'verb': 'send'})
         req = requests.post(endpoint, json=data)
-        result = req.json()
-        if result['code'] == 200 and result['data']['status'] == 'ok':
-            LOGGER.debug("Successfully pulsed beacon")
-        else:
-            LOGGER.debug("Failed to pulse: %r", result)
+        try:
+            result = req.json()
+            if result['code'] == 200 and result['data']['status'] == 'ok':
+                LOGGER.debug("Successfully pulsed beacon")
+            else:
+                LOGGER.debug("Failed to pulse: %r", result)
+        except JSONDecodeError:
+            pass
 
     # pylint: disable=unused-argument
     def on_setting_update(self, sender: Setting, **kwargs):

@@ -68,7 +68,8 @@ class DomainEditView(GenericUpdateView):
 
     def get_instance(self) -> QuerySet:
         """Get domain from name"""
-        return self.model.filter(domain=self.kwargs.get('domain'), users__in=[self.request.user])
+        return self.model.objects.filter(domain=self.kwargs.get('domain'),
+                                         users__in=[self.request.user])
 
     def update_form(self, form: DomainForm) -> DomainForm:
         """Add providers to domainForm"""
@@ -91,4 +92,5 @@ class DomainDeleteView(GenericDeleteView):
 
     def get_instance(self) -> QuerySet:
         """Get domain from name"""
-        return self.model.filter(domain=self.kwargs.get('domain'), users__in=[self.request.user])
+        return self.model.objects.filter(domain=self.kwargs.get('domain'),
+                                         users__in=[self.request.user])

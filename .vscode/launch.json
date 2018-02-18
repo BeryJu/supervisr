@@ -5,18 +5,18 @@
       "name": "Django",
       "type": "python",
       "request": "launch",
-      "stopOnEntry": false,
-      "pythonPath": "${config:python.pythonPath}",
-      "program": "${workspaceRoot}/manage.py",
+      "stopOnEntry": true,
+      "pythonPath": "${workspaceFolder}/env/bin/python",
+      "program": "${workspaceFolder}/manage.py",
+      "cwd": "${workspaceFolder}",
       "args": [
-          "runserver",
-          "--noreload"
+        "runserver",
+        "--noreload",
+        "--nothreading"
       ],
       "debugOptions": [
-          "WaitOnAbnormalExit",
-          "WaitOnNormalExit",
-          "RedirectOutput",
-          "DjangoDebugging"
+        "RedirectOutput",
+        "DjangoDebugging"
       ]
     }
   ]

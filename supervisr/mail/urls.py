@@ -19,9 +19,9 @@ urlpatterns = [
 
     url(r'^(?P<domain>%s)/$' % DOMAIN_REGEX, domain.view, name='mail-domain-view'),
     url(r'^(?P<domain>%s)/alias/(?P<dest>%s)/edit/$' % (DOMAIN_REGEX, EMAIL_REGEX),
-        alias.alias_edit, name='mail-alias-edit'),
+        alias.MailAliasUpdateView.as_view(), name='mail-alias-edit'),
     url(r'^(?P<domain>%s)/alias/(?P<dest>%s)/delete/$' % (DOMAIN_REGEX, EMAIL_REGEX),
-        alias.alias_delete, name='mail-alias-delete'),
+        alias.MailAliasDeleteView.as_view(), name='mail-alias-delete'),
 
     url(r'^(?P<domain>%s)/account/(?P<account>%s)/edit/$' % (DOMAIN_REGEX, EMAIL_ADDRESS_REGEX),
         account.account_edit, name='mail-account-edit'),

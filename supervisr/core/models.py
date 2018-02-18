@@ -421,14 +421,15 @@ class Product(CreatedUpdatedModel, CastableModel):
     icon = models.ImageField(blank=True, default='')
 
     def __str__(self):
-        return "%s %s (%s)" % (self.cast().__class__.__name__, self.name, self.description)
+        return "%s '%s'" % (self.cast().__class__.__name__, self.name)
 
-    def copy_upr(self, target: 'Product'):
+    def copy_upr_to(self, target: 'Product'):
         """Copy UPRs associated with `self` and copy them to `to`"""
-        for upr in self.userproductrelationship_set.all():
-            upr.pk = None
-            upr.product = target
-            upr.save()
+        for user_id in self.userproductrelationship_set.values_list('user', flat=True).distinct():
+            UserProductRelationship.objects.create(
+                product=target,
+                user=User.objects.get(pk=user_id)
+            )
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # Auto generate slug

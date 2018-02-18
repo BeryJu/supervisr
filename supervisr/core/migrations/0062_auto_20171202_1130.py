@@ -12,14 +12,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='user',
-            name='rows_per_page',
-            field=models.IntegerField(default=50),
-        ),
-        migrations.AddField(
-            model_name='user',
-            name='theme',
-            field=models.CharField(default='light', max_length=200),
-        ),
     ]
