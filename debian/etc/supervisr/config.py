@@ -26,8 +26,8 @@ CHERRYPY_SERVER = {
 # If you change this key, you also have to clear your database otherwise things break.
 SECRET_KEY = read_simple(path.join(LOCAL_BASE, 'secret_key'))
 
-LOG_LEVEL_CONSOLE = 'WARNING'
-LOG_LEVEL_FILE = 'INFO'
+LOG_LEVEL_CONSOLE = 'INFO'
+LOG_LEVEL_FILE = 'DEBUG'
 LOG_FILE = '/var/log/supervisr/supervisr.log'
 
 # This can be used to log messages to a remote syslog serve

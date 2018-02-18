@@ -19,6 +19,13 @@ def migrate(ctx):
     from django.core.management import execute_from_command_line
     execute_from_command_line(['manage.py', 'migrate'])
 
+@task
+# pylint: disable=unused-argument
+def create_superuser(ctx):
+    """Create superuser"""
+    from django.core.management import execute_from_command_line
+    execute_from_command_line(['manage.py', 'createsuperuser'])
+
 @task()
 # pylint: disable=unused-argument
 def list_users(ctx):

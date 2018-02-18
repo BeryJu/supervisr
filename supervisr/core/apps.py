@@ -176,6 +176,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
                                r'[A-Za-z\d$@$!%*?&]{8,}',
             'password:filter:description': 'Minimum 8 characters at least 1 Uppercase Alphabet, 1'
                                            'Lowercase Alphabet, 1 Number and 1 Special Character',
+            'recaptcha:enabled': False,
             'recaptcha:private': '',
             'recaptcha:public': '',
             'install_id': uuid.uuid4(),

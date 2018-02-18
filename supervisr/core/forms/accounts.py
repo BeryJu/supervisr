@@ -27,6 +27,11 @@ class LoginForm(forms.Form):
         private_key=Setting.get('recaptcha:private'),
         public_key=Setting.get('recaptcha:public'))
 
+    def __init__(self, *args, **kwargs):
+        super(LoginForm, self).__init__(*args, **kwargs)
+        if not Setting.get_bool('recaptcha:enabled'):
+            self.fields.pop('captcha')
+
 class SignupForm(forms.Form):
     """Form to handle signups"""
 
@@ -40,6 +45,11 @@ class SignupForm(forms.Form):
         private_key=Setting.get('recaptcha:private'),
         public_key=Setting.get('recaptcha:public'))
     tos_accept = forms.BooleanField(required=True, label=_('I accept the Terms of service'))
+
+    def __init__(self, *args, **kwargs):
+        super(SignupForm, self).__init__(*args, **kwargs)
+        if not Setting.get_bool('recaptcha:enabled'):
+            self.fields.pop('captcha')
 
     def clean_username(self):
         """Check if username is used already"""
