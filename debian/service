@@ -8,7 +8,7 @@ User=supervisr
 Group=supervisr
 WorkingDirectory=/usr/share/supervisr
 Type=simple
-ExecStart=/usr/bin/supervisr-ctl supervisr.run
+ExecStart=/usr/bin/supervisr-ctl utils.run
 Environment=SUPERVISR_LOCAL_SETTINGS=config
 
 [Install]
