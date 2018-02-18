@@ -1,5 +1,7 @@
-supervisr (0.2) unstable; urgency=medium
+supervisr (0.1.2) UNRELEASED; urgency=medium
 
+  * [debian] adjust supervisr-ctl commands
+  * [debian] fix wrong path to supervisr-ctl
   * ! [*] rename labels, adjust all migrations
   * [core] [ldap] [saml] Start to update urls
   * Add license
