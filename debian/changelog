@@ -1,3 +1,260 @@
+supervisr (0.2) unstable; urgency=medium
+
+  * ! [*] rename labels, adjust all migrations
+  * [core] [ldap] [saml] Start to update urls
+  * Add license
+  * [core] fix imports
+  * [core] rework tasks
+  * [core] fix supervisr-ctl not being able to run as symlink
+  * [core] fix install command
+  * [core] fix task names in debian files
+  * [core] also install docs and CHANGELOG
+  * [core] add build_static command, add static
+  * [dns] fix edit/delete of records with same name
+  * [core] fix type
+  * [core] supress supervisr-ctl output when readlink fails
+  * replace logger.error with logger.warning to not send email reports
+  * fix dbconfig not being used, interpret dbconfig settings, write SECRET_KEY to seperate file
+  * [ctl] run as supervisr if packaged
+  * [ci] fix before_script for prod, add dpkg-build task
+  * allow cherrypy settings from config file, dynamically load config from conf.d
+  * fix lint/syntax errors
+  * fix supervisr-ctl
+  * [core] [puppet] [static] add more unittests
+  * [core] fix provider edit, add gitlab error reporter
+  * [tasks] fix tasks not working
+  * [tasks] fix leftover import
+  * [core] fix imports
+  * [core] add unittests v2
+  * [core][dns][mail] refactor (singular nouns to plural)
+  * [dns] [bacula] check if bacula db connection is working on page
+  * [bacula] fix 'NoneType' object has no attribute 'JobId'
+  * [auth/oauth/client] show better error message when provider doesnt provide email
+  * [mod/auth/oauth/client] fix import order
+  * [*] refactor all, remove crispy_forms
+  * [core] rewrote login view to CBV, update tests, make oauth login_with better
+  * [core] [dns] [web] more refactoring, add related_products
+  * [vmware] add vmware provider
+  * [core] fix template tag cache for anonymous user, fix admin login
+  * [core] rework API, move signup into CBV
+  * [mod/contrib/bacula] fix imports for prospector
+  * [mail] rewrite Mail UI, add edit for alias, account
+  * [mod/stats/influx] add influx stats client
+  * [mod/stats/influx] add user as tag
+  * [mod/stats/influx] simplify code
+  * [mod/stats/influx] remove space W E W L A D
+  * [assets] fix background repeating on >1080p screens
+  * [docs] add OAuth2 for grafana and chronograf
+  * [core] fix signup form's name and username fields
+  * [mod/auth/oauth/client] rework login with templates to look better and take less space
+  * [mod/auth/oauth/client] remove debug code
+  * [mod/stats/influx] set timeout, handle connection error
+  * [mod/stats/influx] rename ConnectionError because prospector >.>
+  * [mod/stats/influx] fix influx stats sender not registering correctly
+  * [core] add oauthlib to logger to easily debug OAuth issues
+  * [mod/stats/influx] also handle IOerror when sending stats
+  * [mail] add destination field to maildomain, to relay
+  * [*] make app lables unique
+  * [server] [puppet] fix titles
+  * [core] force key and namespace on setting
+  * [core] add @catch_exceptions for background thread
+  * [mod/auth/ldap] [mod/stats/graphite] [mod/contrib/bacula] switch to get_bool
+  * [mod/auth/oauth/provider] lock oauthlib to 2.0.3, fix title for apps with :
+  * [mod/auth/oauth/*] fix duplicate requirements
+  * [mod/tfa] fix url namespace
+  * [core] fix typo (closes #693)
+  * [core] add ability do en/disable signup and password reset
+  * [core] add partial wizard to create products
+  * [puppet] more unittests, fix debug_build
+  * [core] add setting for gitlab server, truncate subject to 400 chars
+  * [puppet] add compatibility with r10k, fix small file URL issues
+  * [puppet] fix unittests
+  * [puppet] fix style issues
+  * [puppet] rework forge_api to not use JSON templates
+  * [puppet] switch to key in URL as opposed to User-Agent check
+  * [puppet] fix unittests and cleanup
+  * [puppet] adjust urls
+  * [puppet] fix urls ffs
+  * [core] add sentry integration, remove gitlabb handler
+  * [core] fix setting imports
+  * [core] improve statics, add maps for js, fix admin view
+  * [core] fix 'my actions' list not being a list
+  * [*] switch to ugettext_lazy where appropriate
+  * [core] improve admin css
+  * [dns] auto-increase SOA Serial when a record is added/updated
+  * [core] improve model loader, dont create groups for systemusers
+  * [core] fix get_random_string sometimes being shorter than expected
+  * [core] [dns] fix metadata for puppet modules
+  * [core] change way system users are craeted
+  * [*] fix verbose_name of apps
+  * [puppet] show latest module version on index, add puppetlabs icon
+  * [mod/auth/saml/idp] add support for gitlab + docs
+  * [dns] improve importing, disallow trailing dots
+  * [core] add spinner to generic_delete
+  * [core] fix ugettext_lazy -> ugettext, fix mail alias creation
+  * [mod/auth/oauth/provider] fix response if no oauth could be found
+  * [mail] add config files for dovecot
+  * [other] add vscode settings
+  * [mod/beacon] add initial beacon model
+  * [*] fix title_moddifier -> title_modifier
+  * [core] [mod/beacon] fix isort/lint
+  * update dependencies
+  * [*] set metadata in __init__ of root module
+  * [core] cleanup middleware, add method to only add message once
+  * [core] [puppet] fix linting issues
+  * [*] BREAKING: Change way API is mounted, move all API to supervisr.x.api
+  * [core] [mod/contrib/bacula] [puppet] fix reverses
+  * [core] fix API core path
+  * [mod/beacon] accept beacons via JSON API
+  * [mod/beacon] delete previous Pulses, only keeping the latest one
+  * [mod/beacon] fix interval to 15 minutes
+  * [core] show install ID in admin interface
+  * [core] fix radio in forms, add form to edit settings (wip)
+  * [core] make SettingsForm work
+  * [core] fix login sometimes showing that account is unconfirmed
+  * [core] fix imports on settingsform
+  * [core] fix prospector ...
+  * [core] show impersonation as red username, dont show permanent message anymore
+  * [mod/beacon] cleanup beacon sender output
+  * [mod/beacon] fix IntegrityError, cleanup
+  * [core] model api cleanup
+  * [mod/beacon] fix beacon crashing django-admin site
+  * [mod/contrib/bacula] set strict mode if DB is mysql
+  * [core] fix SettingsForm bug of duplicating settings
+  * [mod/auth] add current state
+  * [mod/auth/ldap] implement basic LDAP auth
+  * [core] catch error when importing initials to not break startup
+  * [mod/auth/ldap] fix prospector error
+  * [*] [BREAKING] migrate to custom user model
+  * [core] only show maintenancemode page if user is not superuser
+  * [core] [puppet] [web] cleanup post-migration mess
+  * [core] disable migration code
+  * [mod/auth/ldap] add group mappings
+  * [core] send request with authentication
+  * [mod/auth/oauth/client] add discord oauth2 sign-in
+  * [mod/auth/oauth/client] add google login too
+  * [core] fix template_wildcard's sorting
+  * [core] rewrite email templates
+  * [core] [mod/auth/ldap] fix unittests
+  * [mod/auth/oauth/client] log authentications and linking of OAuth
+  * [assets] make sidenav background white
+  * [core] send install_id with sentry reports
+  * [core] cleanup, improve unittests, improve API, fully remove dependency of oauth2_provider
+  * [core] update default INSTALLED_APPS list
+  * [mod/beacon] better handle IntegrityError on saving pulses
+  * [mod/auth/oauth/client] accept user without email, since Django user doesnt need email
+  * [core] allow editing of email address (only took a year)
+  * [static] fix static/generic.html's alerts and mask-size
+  * [static] fix css for mask
+  * [core] fix reauth not authenticating with email
+  * [assets] rebuild with sentry customizations
+  * [mod/tfa] fix url reverses preventing login
+  * [core] add middleware to check if user has email set, ask if not
+  * [dns] fix DNS Record form not working
+  * [mail] only allow one catch-all account per domain
+  * [core] rework module settings
+  * [core] fix import order
+  * [docs] add docs to wiki repo
+  * [docs] prepare for mkdocs
+  * [mod/auth/oauth/client] fix error when user with same username registers twice
+  * [core] rework some management commands, more unittets
+  * [core] improve API status codes, return 403 when not authenticated
+  * [core] fix unittest for API
+  * [assets] rework CSS building (css -> less), add theme support
+  * [core] add theme and rows_per_page to user
+  * [*] switch to user.rows_per_page
+  * [core] fix initial migrations, fix anonymoususer
+  * [mod/provider/onlinenet] fix SSLError handling
+  * [assets] minor CSS fixes
+  * [assets] more minor CSS fixes
+  * [*] upgrade to django 2.0
+  * [core] lock to django < 2 for now
+  * [dns] add DB config file for postgresql
+  * [core] fix system info api giving a 403
+  * [mod/contrib/bacula] Fix KeyError
+  * [mod/contrib/bacula] ffs
+  * [core] auto clean settings with invalid namespace or key
+  * [core] API improvements, read format from get parameter
+  * [core] fix API response for invalid format
+  * [core] add api_key to user, add ability to authenticate via API Key param in get or post or meta
+  * [core] lock astroid to 1.5.3 as 1.6.0 causes "Unused variable '__class__' (unused-variable)"
+  * [core] lock pylint to 1.7.5 to work with pylint_django
+  * [core] add API to check if user has access to product
+  * [*] cleanup log levels
+  * [core] fix linting errors
+  * [mod/auth/ldap] disable LDAPConnector if bind password is wrong
+  * [mod/provider/foreman] add foreman basic provider
+  * [assets] fix color issues with dark theme
+  * [core] fix minor API issues, fix migrations depending on OAuth2
+  * [core] fully clean migrations
+  * [core] fix prospector error
+  * [dns] initial implementation of ResourceSet
+  * [assets] rebuild with latest clarity, fix several issues with dark theme
+  * [assets] fix multiselect width in form-group
+  * [core] add generic edit/deletion views
+  * [mod/contrib/bacula] add docs to set sensible defaults
+  * [root] remove vscode settings
+  * Revert "Merge branch 'master' into 728-dns-resourceset"
+  * Revert "[core] add generic edit/deletion views"
+  * [assets] add back accidentally lost changes
+  * [dns] remove dns migration from un-merged feature
+  * [static] revisit static app, cleanup code
+  * [*] req -> request
+  * [*] [BREAKING] migrate from invlid app_labels to proper ones
+  * [dns] [mail] update server config for new table name
+  * [core] migrate MaintenanceMode to DeployPage, DB independent
+  * [core] fix line-too-long for embedded HTML
+  * [core] upgrade to django 2.0
+  * [*] fully switch to request over req
+  * [core] add auto generated api docs from pdoc
+  * [ci] fix gitlab ci to not use dev.install
+  * [docs] make dev.docs cross platform
+  * [core] fix URL namespace generation for api
+  * [core] switch account views to CBV
+  * [statc] remove markdown dependency since it's required by core
+  * [core] [puppet] fix unittests
+  * [mod/auth/saml/idp] add processor for wordpress
+  * [core] mix markdown requirement issues, fix initial migration
+  * [core] add global permission model
+  * [core] switch autosubmit_form template to login_form
+  * [core] improve errors on manage.py setting command
+  * [core] slightly improve coverage
+  * [core] add button to clear cache
+  * [core] fix template for autosubmit_form
+  * [core] seperate requirements, add setup.py file
+  * [core] fix import order
+  * [core] save version in different file
+  * [core] add dev target to setup.py
+  * [setup] ignore git requirements in setup file
+  * [static] dont break if FilePage file can't be read
+  * [setup] add more scripts
+  * [core] update gitlab-ci
+  * [ci] test pip instll in CI
+  * [dns] [mail] cleanup
+  * [ci] add pip prefix git+
+  * [mod/beacon] add admin interface to show stats
+  * [core] convert setting value incase it's not string
+  * [mod/tfa] fix tfa user settings
+  * [mod/beacon] improve beacon dashboard
+  * [core] add button to trigger setting update
+  * [core] update log settings
+  * [assets] rebuild with latest clarity
+  * [core] [mod/auth/oauth/client] always send request to authenticationbackend
+  * [mod/auth/ldap] update mock data
+  * [mod/contrib/bacula] remove bacula module from core repo
+  * [*] cleanup, adjust to new pylint
+  * [*] fix style and all unittests
+  * [core] rebuild assets, fix toggle switch glitches
+  * [core] fix warning in settings
+  * [mail] fix mail account erroring out
+  * [core] fix loading of theme css files in user form
+  * [core] remove icon_b64 and enable media paths
+  * [core] fix imports
+  * [core] fix test pattern and unittests
+  * [mail] cleanup mail dashboard, show list of domains
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Sun, 18 Feb 2018 09:50:43 +0000
+
 supervisr (0.1) unstable; urgency=medium
 
   * Initial release. (Closes #206)
