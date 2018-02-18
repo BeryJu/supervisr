@@ -1,5 +1,6 @@
 supervisr (0.1.2) unstable; urgency=medium
 
+  * [core] add ability to disable captcha
   * [tasks] add argument to change listen address and port
   * [core] cleanup migrations for first-install
   * [debian] adjust supervisr-ctl commands
