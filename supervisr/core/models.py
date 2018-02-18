@@ -421,13 +421,13 @@ class Product(CreatedUpdatedModel, CastableModel):
     icon = models.ImageField(blank=True, default='')
 
     def __str__(self):
-        return "%s %s (%s)" % (self.cast().__class__.__name__, self.name, self.description)
+        return "%s '%s'" % (self.cast().__class__.__name__, self.name)
 
     def copy_upr(self, target: 'Product'):
         """Copy UPRs associated with `self` and copy them to `to`"""
         for user_id in self.userproductrelationship_set.values_list('user', flat=True).distinct():
             UserProductRelationship.objects.create(
-                product=self,
+                product=target,
                 user=user_id
             )
 
