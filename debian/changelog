@@ -1,5 +1,6 @@
-supervisr (0.1.2) UNRELEASED; urgency=medium
+supervisr (0.1.2) unstable; urgency=medium
 
+  * [core] cleanup migrations for first-install
   * [debian] adjust supervisr-ctl commands
   * [debian] fix wrong path to supervisr-ctl
   * ! [*] rename labels, adjust all migrations
