@@ -15,8 +15,8 @@
 <style>
   .home-hero .bg-img {
       {% if page.cast.product and page.cast.product.icon %}
-      mask-image: url({% media page.cast.product %});
-      -webkit-mask-image: url({% media page.cast.product %});
+      mask-image: url({% media page.cast.product.icon %});
+      -webkit-mask-image: url({% media page.cast.product.icon %});
       {% else %}
       mask-image: url({% static 'img/icon.svg' %});
       -webkit-mask-image: url({% static 'img/icon.svg' %});
