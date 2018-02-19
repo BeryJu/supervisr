@@ -240,7 +240,7 @@ LOG_FILE = '/dev/null'
 LOG_SYSLOG_HOST = '127.0.0.1'
 LOG_SYSLOG_PORT = 514
 
-SENTRY_DSN = ''
+SENTRY_DSN = 'https://c5f3fa4e642d4dbfaa5db684bd0f6a13:7d639a81f45e44e39713fd4d2c680e19@sentry.services.beryju.org/6'
 
 sys.path.append('/etc/supervisr')
 
