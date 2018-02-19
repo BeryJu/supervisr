@@ -52,7 +52,7 @@
   </label>
   <div class="toggle-switch">
     {{ field }}
-    <label for="id_0-{{ field.name }}"></label>
+    <label for="{{ field.auto_id }}"></label>
   </div>
   {% else %}
   <label for="{{ field.name }}-{{ forloop.counter0 }}">

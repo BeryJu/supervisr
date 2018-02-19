@@ -57,7 +57,7 @@ class SettingsForm(forms.Form):
                 self.fields[ns_key].initial = setting_obj.value
             # Set label if not overridden
             if not self.fields[ns_key].label:
-                self.fields[ns_key].label = _(key.title())
+                self.fields[ns_key].label = _(key.replace('_', ' ').replace(':', ' ').title())
 
     def _apply_attrs_map(self):
         """Apply attributes from self.attrs_map to widgets"""
