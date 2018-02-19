@@ -1,3 +1,18 @@
+supervisr (0.1.2.1) unstable; urgency=medium
+
+  * [core] fix copy_upr creating duplicate UPRs
+  * [core] set EmailMissingView to login_required
+  * [core] fix copy_upr using the wrong product
+  * [assets] rebuild static files
+  * [mail] rewrite MailAlias views, view creation form
+  * [docs] rewrite docs, cleanup
+  * [static] fix minor CSS issues with supervisr.static
+  * [core] fix form id generation to work with wizards and normal forms
+  * [static] fix display of icon of products
+  * [core] only show product page if user has UPR
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Mon, 19 Feb 2018 11:59:43 +0000
+
 supervisr (0.1.2) unstable; urgency=medium
 
   * [core] add ability to disable captcha
