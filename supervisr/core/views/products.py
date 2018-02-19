@@ -31,15 +31,15 @@ def view(request, slug):
         """if static app is installed, use static's productpage"""
         from supervisr.static.views import view
         return view(request, slug)
-    static = redirect_to_static(request, slug)
-    if static:
-        return static
     product = get_object_or_404(Product, slug=slug)
     # If the product is not invite_only
     # and the user is not associated with the product
     if product.invite_only is False or \
         UserProductRelationship.objects.filter(user=request.user,
                                                product=product).exists():
+        static = redirect_to_static(request, slug)
+        if static:
+            return static
         return render(request, 'product/view.html', {
             'product': product
         })
