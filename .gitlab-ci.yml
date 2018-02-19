@@ -125,6 +125,8 @@ unittest_pgsql:
 
 # Release test
 bundle_release:
+  before_script:
+    - ''
   image: debian:stable
   script:
     - apt install -y libncurses5-dev libglib2.0-dev libgeoip-dev libtokyocabinet-dev zlib1g-dev libncursesw5-dev build-essential libbz2-dev dh-autoreconf dh-python dh-systemd dh-virtualenv dpkg-dev debhelper dh-exec
