@@ -69,7 +69,7 @@ def reauth_required(view_function):
             return view_function(*args, **kwargs)
 
         # This should never be reached, just return False
-        return False
+        return False  # pragma: no cover
 
     wrap.__doc__ = view_function.__doc__
     wrap.__name__ = view_function.__name__
