@@ -14,7 +14,7 @@ from django.contrib import messages
 from django.core.cache import cache
 from django.http import HttpRequest
 from django.shortcuts import render
-from django.template import loader
+from django.template import Context, Template, loader
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
@@ -53,7 +53,12 @@ def do_404(request, message=None):
         'message': _(message) if message is not None else None
     }, status=404)
 
-def render_to_string(tmpl, ctx):
+def render_from_string(tmpl: str, ctx: Context) -> str:
+    """Render template from string to string"""
+    template = Template(tmpl)
+    return template.render(ctx)
+
+def render_to_string(tmpl: str, ctx: Context) -> str:
     """Render a template to string"""
     template = loader.get_template(tmpl)
     return template.render(ctx)

@@ -3,11 +3,11 @@
 
 import os
 
-from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
-from supervisr.core.models import Setting, User, get_system_user
+from supervisr.core.models import (Setting, SVAnonymousUser, User,
+                                   get_system_user)
 from supervisr.core.views import common
 
 
@@ -22,7 +22,8 @@ class TestCommonViews(TestCase):
     def test_index_view(self):
         """Test Index View (Anonymous)"""
         request = self.factory.get(reverse('common-index'))
-        request.user = AnonymousUser()
+        request.user = SVAnonymousUser()
+        print(request.user.is_authenticated)
         response = common.index(request)
         self.assertEqual(response.status_code, 302)
 
