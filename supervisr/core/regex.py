@@ -13,4 +13,4 @@ EMAIL_REGEX = r'%s@%s' % (EMAIL_ADDRESS_REGEX, DOMAIN_REGEX)
 UUID_REGEX = r'[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
 
 # Regex used to match modules for admin/modules
-MOD_REGEX = r'[a-zA-Z0-9/.]+'
+MOD_REGEX = r'[a-zA-Z0-9/._]+'
