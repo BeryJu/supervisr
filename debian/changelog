@@ -1,3 +1,16 @@
+supervisr (0.1.2.2) unstable; urgency=medium
+
+  * [ci] fix build for tags
+  * [core] add a few more unit tests
+  * [core] make autosobumit_form layout less overflowing
+  * [docs] create docgen dir when needed
+  * [docs] temporarily remove docs to solve case-confusion
+  * [docs] readd docs
+  * [core] fix loading of API URLs of external modules
+  * [tasks] add task to install module
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Thu, 22 Feb 2018 21:34:52 +0000
+
 supervisr (0.1.2.1) unstable; urgency=medium
 
   * [core] fix copy_upr creating duplicate UPRs

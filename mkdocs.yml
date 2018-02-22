@@ -21,6 +21,9 @@ pages:
       - 'Index size': 'faq/mysql/index_size.md'
     - "error'str' object has no attribute 'tzinfo'": 'faq/error_str_object_has_no_attribute_tzinfo.md'
   - 'Installation': 'installation/supervisr.md'
+  - 'Modules':
+    - 'Bacula':
+      - 'Installation': 'Modules/Bacula/installation.md'
   - 'SSO':
     - 'External source': 'SSO/external_sources.md'
     - 'LDAP':
