@@ -21,7 +21,8 @@ def supervisr_dyn_modlist(context):
         if user.is_authenticated:
             uniq = context.get('request').user.email
         else:
-            uniq = 'anon'
+            # This should never be reached as modlist requires admin rights
+            uniq = 'anon'  # pragma: no cover
     key = 'supervisr_dyn_modlist_%s' % uniq
     if not cache.get(key):
         mod_list = get_apps()

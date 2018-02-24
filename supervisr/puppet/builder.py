@@ -113,6 +113,7 @@ class ReleaseBuilder(object):
         for module in dependencies:
             importer.import_module(module['name'])
         LOGGER.debug('Imported dependencies for %s', self._root_dir)
+        return True
 
     def render_template(self, path, context=None, check_json=True):
         """

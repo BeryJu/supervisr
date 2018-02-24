@@ -22,7 +22,7 @@ class LDAPModification(CreatedUpdatedModel):
     )
 
     ldap_moddification_id = models.AutoField(primary_key=True)
-    dn = models.CharField(max_length=255) # pylint: disable=invalid-name
+    dn = models.CharField(max_length=255)
     action = models.CharField(max_length=17, choices=ACTIONS, default=ACTION_MODIFY)
     data = JSONField()
 

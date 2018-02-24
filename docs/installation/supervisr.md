@@ -1,31 +1,26 @@
-# Installation of Supervisr 
+# Installation of Supervisr
 
-### Install all packages
+## Closed beta installation
 
-```
-apt install git python3 python3-pip libmysqlclient-dev
-pip3 install virtualenv invoke
-```
+!!! warning
+    These steps only apply to the closed beta. To check if you have access to the beta, check [here](https://my.beryju.org/products/supervisr-closed-beta/). To request access, fill out [this](https://docs.google.com/forms/d/e/1FAIpQLSfwh9xcnl_a8banbWazusnLVUA3YSb-TC_4aWizec3TEmkgOg/viewform?usp=sf_link) form.
 
-### Option A: Download a packaged release
+#### Add the repo Key
 
 ```
-wget https://dl.supervi.sr/latest.tgz
-tar xvzf latest.tgz
+wget -O - -q https://apt.beryju.org/public.key | apt-key add -
 ```
 
-### Option B: Checkout the source
+#### Add the repo with your API Key
 
 ```
-git clone https://git.beryju.org/BeryJu.org/supervisr.git
+deb https://<api key>@supervisr.beryju.org/apt.php?p= beta supervisr
 ```
 
-### Clone Repo, create virtualenv and install the rest
+#### Install package
 
 ```
-cd supervisr/
-virtualenv env/
-source env/bin/activate
-pip install invoke
-inv install
+apt update
+apt install supervisr
 ```
+

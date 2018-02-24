@@ -8,9 +8,9 @@ from typing import Dict
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
-from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
@@ -497,7 +497,7 @@ class ReauthView(View):
         form = ReauthForm(initial={'email': request.user.email})
         return self.render(request, form)
 
-@method_decorator(anonymous_required, name='dispatch')
+@method_decorator(login_required, name='dispatch')
 class EmailMissingView(View):
     """View to ask user for missing email"""
 

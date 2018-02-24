@@ -8,6 +8,34 @@ repo_url: 'https://git.beryju.org/BeryJu.org/supervisr'
 
 copyright: 'Copyright &copy; 2017-2018 BeryJu.org'
 
+pages:
+  - Home: 'index.md'
+  - 'API':
+    - 'OAuth 2': 'API/OAuth 2.md'
+  - 'Extending Supervisr':
+    - 'Creating a module': 'extending_supervisr/creating_a_module.md'
+    - 'Overwriting settings': 'extending_supervisr/overwriting_settings.md'
+    - 'UI integration': 'extending_supervisr/ui_integration.md'
+  - 'FAQ':
+    - 'MySQL':
+      - 'Index size': 'faq/mysql/index_size.md'
+    - "error'str' object has no attribute 'tzinfo'": 'faq/error_str_object_has_no_attribute_tzinfo.md'
+  - 'Installation': 'installation/supervisr.md'
+  - 'Modules':
+    - 'Bacula':
+      - 'Installation': 'Modules/Bacula/installation.md'
+  - 'SSO':
+    - 'External source': 'SSO/external_sources.md'
+    - 'LDAP':
+      - 'Authenticating aginst Active Directory': 'SSO/ldap/authenticating_against_ad.md'
+    - 'OAuth':
+      - 'Sentry': 'SSO/oauth/sentry.md'
+      - 'Grafana': 'SSO/oauth/grafana.md'
+      - 'Chronograf': 'SSO/oauth/chronograf.md'
+    - 'SAML':
+      - 'GitLab': 'SSO/saml/gitlab/gitlab.md'
+      - 'Nextcloud': 'SSO/saml/nextcloud/nextcloud.md'
+
 extra:
   social:
     - type: 'github'

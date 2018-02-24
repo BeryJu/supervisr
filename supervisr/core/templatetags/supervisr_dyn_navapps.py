@@ -20,7 +20,6 @@ def supervisr_dyn_navapps(context):
     """
     Get a list of subapps for the navbar
     """
-    # pylint: disable=global-statement
     uniq = ''
     if 'request' in context:
         user = context.get('request').user

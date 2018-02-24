@@ -8,7 +8,6 @@ from supervisr.core.providers.domain import DomainProvider
 
 LOGGER = logging.getLogger(__name__)
 
-# pylint: disable=too-few-public-methods
 class OnlineNetDomainProvider(DomainProvider):
     """
     OnlineNet provider

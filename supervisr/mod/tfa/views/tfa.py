@@ -154,6 +154,7 @@ class TFASetupView(BaseWizardView):
         # Somehow convert the generated key to base32 for the QR code
         rawkey = unhexlify(self.totp_device.key.encode('ascii'))
         request.session[TFA_SESSION_KEY] = b32encode(rawkey).decode("utf-8")
+        return True
 
     def get_form(self, step=None, data=None, files=None):
         form = super(TFASetupView, self).get_form(step, data, files)

@@ -19,6 +19,13 @@ def migrate(ctx):
     from django.core.management import execute_from_command_line
     execute_from_command_line(['manage.py', 'migrate'])
 
+@task
+# pylint: disable=unused-argument
+def create_superuser(ctx):
+    """Create superuser"""
+    from django.core.management import execute_from_command_line
+    execute_from_command_line(['manage.py', 'createsuperuser'])
+
 @task()
 # pylint: disable=unused-argument
 def list_users(ctx):
@@ -32,7 +39,7 @@ def list_users(ctx):
 
 @task
 # pylint: disable=unused-argument
-def run(ctx, pidfile=''):
+def run(ctx, pidfile='', listen='0.0.0.0', port=8000):
     """Run CherryPY-based application server"""
     from django.conf import settings
     from supervisr.core.wsgi import application
@@ -61,8 +68,8 @@ def run(ctx, pidfile=''):
     # pylint: disable=protected-access
     server = cherrypy._cpserver.Server()
 
-    server.socket_host = "0.0.0.0"
-    server.socket_port = 8000
+    server.socket_host = listen
+    server.socket_port = port
     server.thread_pool = 30
     for key, value in settings.CHERRYPY_SERVER.items():
         setattr(server, key, value)

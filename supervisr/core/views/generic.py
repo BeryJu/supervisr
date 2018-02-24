@@ -113,7 +113,7 @@ class GenericUpdateView(GenericModelView):
         if form.is_valid():
             form.save()
             messages.success(self.request, _('Successfully edited %(verbose_name)s'
-                                             % self.model_verbose_name))
+                                             % {'verbose_name': self.model_verbose_name }))
             return self.redirect(instance)
         return self.render(form)
 
@@ -146,7 +146,6 @@ class GenericDeleteView(GenericModelView):
             raise Http404
         assert len(instances) == 1, "More than 1 Result found."
         instance = instances.first()
-        # pylint: disable=not-callable
         if 'confirmdelete' in request.POST:
             instance.delete()
             messages.success(self.request, _('Successfully deleted %(verbose_name)s'

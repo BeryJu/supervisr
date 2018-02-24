@@ -39,7 +39,6 @@ def build_static(ctx):
     execute_from_command_line(['manage.py', 'collectstatic', '--noinput'])
 
 @task
-# pylint: disable=unused-argument
 def clean(ctx):
     """Clean Python cached files"""
     ctx.run(r'find . -name *.pyc -exec rm -rf {} \;', warn=True)
@@ -101,14 +100,14 @@ def coverage(ctx, module='supervisr', post_action='report'):
     """Run Unittests and get coverage"""
     if WINDOWS:
         ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
-    ctx.run("coverage run --source=%s manage.py test --pattern=Test*.py" % module)
+    ctx.run("coverage run --source=%s manage.py test" % module)
     ctx.run("coverage %s" % post_action)
 
 @task
 @shell
 def unittest(ctx):
     """Run Unittests"""
-    ctx.run("%s manage.py test --pattern=Test*.py" % PYTHON_EXEC)
+    ctx.run("%s manage.py test" % PYTHON_EXEC)
 
 # Some tasks to make full testing easier
 @task(pre=[coverage, isort, lint, prospector, unittest])
@@ -125,5 +124,6 @@ def docs(ctx):
     tool = 'pdoc'
     if WINDOWS:
         tool = 'python env\\Scripts\\pdoc'
+    os.makedirs('docgen')
     ctx.run("%s supervisr --html --html-dir=\"docgen\""
             " --html-no-source  --overwrite --docstring-style=google" % tool)

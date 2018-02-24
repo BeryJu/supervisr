@@ -22,7 +22,8 @@
       {% for key, value in attrs.items %}
         <input type="hidden" name="{{ key }}" value="{{ value }}">
       {% endfor %}
-      <button type="submit" class="btn btn-primary">{% trans "Click here if your browser doesn't redirect you automatically" %}</button>
+      <p>{% trans "Redirecting..." %}</p>
+      <button type="submit" class="btn btn-primary">{% trans "Continue" %}</button>
     </div>
   </form>
 </div>

@@ -81,6 +81,7 @@ class AccountNewView(BaseWizardView):
             is_catchall=form_dict['0'].cleaned_data.get('is_catchall'),
             )
         m_acc.set_password(self.request.user, form_dict['1'].cleaned_data.get('password'))
+        domain.copy_upr_to(m_acc)
         UserProductRelationship.objects.create(
             product=m_acc,
             user=self.request.user
@@ -91,6 +92,7 @@ class AccountNewView(BaseWizardView):
                     account=m_acc,
                     destination=alias_dest
                     )
+                domain.copy_upr_to(m_acc)
         messages.success(self.request, _('Mail Account successfully created'))
         return redirect(reverse('supervisr_mail:mail-domain-view', kwargs=
                                 {'domain': form_dict['0'].cleaned_data.get('domain').domain}))
@@ -141,7 +143,6 @@ def account_set_password(request: HttpRequest, domain: str, account: str) -> Htt
         })
 
 @login_required
-# pylint: disable=unused-argument
 def account_edit(request: HttpRequest, domain: str, account: str) -> HttpResponse:
     """Show view to edit account"""
     domains = MailDomain.objects.filter(domain__domain=domain, users__in=[request.user])
@@ -182,7 +183,6 @@ def account_edit(request: HttpRequest, domain: str, account: str) -> HttpRespons
         })
 
 @login_required
-# pylint: disable=unused-argument
 def account_delete(request: HttpRequest, domain: str, account: str) -> HttpResponse:
     """Show view to delete account"""
     domains = MailDomain.objects.filter(domain__domain=domain, users__in=[request.user])

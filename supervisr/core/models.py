@@ -421,17 +421,15 @@ class Product(CreatedUpdatedModel, CastableModel):
     icon = models.ImageField(blank=True, default='')
 
     def __str__(self):
-        return "%s %s (%s)" % (self.cast().__class__.__name__, self.name, self.description)
+        return "%s '%s'" % (self.cast().__class__.__name__, self.name)
 
-    @property
-    def icon_b64(self):
-        """
-        Return base64 version of icon
-        """
-        try:
-            return 'data:image/png;base64,%s' % base64.b64encode(self.icon.read()).decode('utf-8')
-        except ValueError:
-            return ''
+    def copy_upr_to(self, target: 'Product'):
+        """Copy UPRs associated with `self` and copy them to `to`"""
+        for user_id in self.userproductrelationship_set.values_list('user', flat=True).distinct():
+            UserProductRelationship.objects.create(
+                product=target,
+                user=User.objects.get(pk=user_id)
+            )
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # Auto generate slug

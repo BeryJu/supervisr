@@ -14,7 +14,6 @@ from supervisr.core.models import Setting
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-# pylint: disable=unused-argument
 def settings(request: HttpRequest, namespace: str) -> HttpResponse:
     """Admin settings"""
     all_settings = Setting.objects.filter(namespace=namespace).order_by('key')

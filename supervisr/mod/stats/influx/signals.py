@@ -19,7 +19,7 @@ from supervisr.mod.stats.influx.influx_client import InfluxClient
 
 
 @receiver(SIG_GET_MOD_HEALTH)
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 def stats_influx_handle_health(sender, **kwargs):
     """
     Create initial settings needed
@@ -31,7 +31,7 @@ def stats_influx_handle_health(sender, **kwargs):
         return True
 
 @receiver(SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 def stats_influx_handle_upr_created(sender, upr, **kwargs):
     """
     Handle stats for SIG_USER_PRODUCT_RELATIONSHIP_CREATED
@@ -47,7 +47,7 @@ def stats_influx_handle_upr_created(sender, upr, **kwargs):
                          count=1)
 
 @receiver(SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 def stats_influx_handle_upr_deleted(sender, upr, **kwargs):
     """
     Handle stats for SIG_USER_PRODUCT_RELATIONSHIP_DELETED
@@ -127,7 +127,7 @@ def stats_influx_handle_user_confirm(sender, user, **kwargs):
                          count=1)
 
 @receiver(user_logged_in)
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 def stats_influx_handle_user_login(sender, user, **kwargs):
     """
     Handle stats for user_logged_in
@@ -143,7 +143,7 @@ def stats_influx_handle_user_login(sender, user, **kwargs):
                          count=1)
 
 @receiver(user_logged_out)
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 def stats_influx_handle_user_logout(sender, user, **kwargs):
     """
     Handle stats for user_logged_out
@@ -190,7 +190,7 @@ def stats_influx_handle_domain_create(sender, **kwargs):
                          count=1)
 
 @receiver(SIG_SET_STAT)
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 def stats_influx_handle_set_stat(sender, key, value, **kwargs):
     """
     Handle stats for SET_STAT

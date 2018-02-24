@@ -1,0 +1,11 @@
+{
+  "python.pythonPath": "${workspaceFolder}/env/bin/python",
+  "editor.rulers": [
+    100
+  ],
+  "editor.tabSize": 4,
+  "files.eol": "\n",
+  "[javascript]": {
+    "editor.tabSize": 2,
+  },
+}

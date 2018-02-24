@@ -58,7 +58,6 @@ class BaseOAuthClient(object):
         "Parse token and secret from raw token response."
         raise NotImplementedError('Defined in a sub-class')  # pragma: no cover
 
-    # pylint: disable=no-self-use
     def request(self, method, url, **kwargs):
         "Build remote url request."
         return request(method, url, **kwargs)
@@ -197,7 +196,7 @@ class OAuth2Client(BaseOAuthClient):
         else:
             return response.text
 
-    # pylint: disable=no-self-use, unused-argument
+    # pylint: disable=unused-argument
     def get_application_state(self, request, callback):
         "Generate state optional parameter."
         return get_random_string(32)

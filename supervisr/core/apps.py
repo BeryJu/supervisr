@@ -38,13 +38,11 @@ class SupervisrAppConfig(AppConfig):
         self.run_ensure_settings()
         super(SupervisrAppConfig, self).ready()
 
-    # pylint: disable=no-self-use
     def clear_cache(self):
         """Clear cache on startup"""
         cache.clear()
         LOGGER.debug("Successfully cleared Cache")
 
-    # pylint: disable=no-self-use
     def run_ensure_settings(self):
         """Make sure settings defined in `ensure_settings` are theere"""
         try:
@@ -96,6 +94,7 @@ class SupervisrAppConfig(AppConfig):
             install_reqs = parse_requirements(path, session='hack')
 
             pkg_resources.require([str(x.requirement) for x in install_reqs])
+            return True
 
         _check_file(self, 'requirements.txt')
         if settings.DEBUG:
@@ -177,6 +176,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
                                r'[A-Za-z\d$@$!%*?&]{8,}',
             'password:filter:description': 'Minimum 8 characters at least 1 Uppercase Alphabet, 1'
                                            'Lowercase Alphabet, 1 Number and 1 Special Character',
+            'recaptcha:enabled': False,
             'recaptcha:private': '',
             'recaptcha:public': '',
             'install_id': uuid.uuid4(),

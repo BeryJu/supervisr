@@ -1,5 +1,6 @@
 {% extends "core/base.html" %}
 
+{% load media %}
 {% load cache %}
 {% load i18n %}
 {% load markdown %}
@@ -14,12 +15,8 @@
 <style>
   .home-hero .bg-img {
       {% if page.cast.product and page.cast.product.icon %}
-      {% cache 600 hero_icon page.pk %}
-      {% with b64=page.cast.product.icon_b64 %}
-      mask-image: url({{ b64 }});
-      -webkit-mask-image: url({{ b64 }});
-      {% endwith %}
-      {% endcache %}
+      mask-image: url({% media page.cast.product.icon %});
+      -webkit-mask-image: url({% media page.cast.product.icon %});
       {% else %}
       mask-image: url({% static 'img/icon.svg' %});
       -webkit-mask-image: url({% static 'img/icon.svg' %});

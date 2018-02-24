@@ -1,5 +1,5 @@
 supervisr		/usr/share/supervisr/
-supervisr-ctl		/usr/share/supervisr/
+scripts/supervisr-ctl	/usr/share/supervisr/
 tasks.py		/usr/share/supervisr/
 static			/usr/share/supervisr/
 CHANGELOG.md		/usr/share/supervisr/
