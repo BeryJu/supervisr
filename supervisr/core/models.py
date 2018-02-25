@@ -21,7 +21,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Max, options
-from django.db.models.signals import pre_delete
+from django.db.models.signals import post_save, pre_delete
 from django.db.utils import InternalError, OperationalError, ProgrammingError
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
@@ -372,20 +372,20 @@ class UserProductRelationship(CreatedUpdatedModel):
             # Trigger event that we were saved
             SIG_USER_PRODUCT_RELATIONSHIP_CREATED.send(
                 sender=UserProductRelationship,
-                upr=self)
+                uar=self)
         super(UserProductRelationship, self).save(force_insert, force_update, using, update_fields)
 
 @receiver(pre_delete)
 # pylint: disable=unused-argument
-def upr_pre_delete(sender, instance, **kwargs):
+def uar_pre_delete(sender, instance, **kwargs):
     """
-    Send signal when UPR is deleted
+    Send signal when uar is deleted
     """
     if sender == UserProductRelationship:
         # Send signal to we are going to be deleted
         SIG_USER_PRODUCT_RELATIONSHIP_DELETED.send(
             sender=UserProductRelationship,
-            upr=instance)
+            uar=instance)
 
 class ProductExtension(CreatedUpdatedModel, CastableModel):
     """
@@ -398,7 +398,62 @@ class ProductExtension(CreatedUpdatedModel, CastableModel):
     def __str__(self):
         return "ProductExtension %s" % self.extension_name
 
-class Product(CreatedUpdatedModel, CastableModel):
+class UserAcquirable(CastableModel):
+    """Base Class for Models that should have an N-M relationship with Users"""
+
+    user_acquirable_id = models.AutoField(primary_key=True)
+    users = models.ManyToManyField('User', through='UserAcquirableRelationship')
+
+    def copy_user_relationships_to(self, target: 'UserAcquirable'):
+        """Copy UserAcquirableRelationship associated with `self` and copy them to `to`"""
+        for user_id in self.useracquirablerelationship_set \
+          .values_list('user', flat=True).distinct():
+            UserAcquirableRelationship.objects.create(
+                model=target,
+                user=User.objects.get(pk=user_id)
+            )
+
+class UserAcquirableRelationship(models.Model):
+    """Relationship between User and any Class subclassing UserAcquirable"""
+
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    model = models.ForeignKey('UserAcquirable', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "User '%s' <=> UserAcquirable '%s'" % (self.user, self.model.cast())
+
+    class Meta:
+
+        unique_together = (('user', 'model'),)
+
+class ProviderAcquirable(CastableModel):
+    """Base Class for Models that should have an N-M relationship with ProviderInstance"""
+
+    provider_acquirable_id = models.AutoField(primary_key=True)
+    providers = models.ManyToManyField('ProviderInstance',
+                                       through='ProviderAcquirableRelationship', blank=True)
+
+class ProviderAcquirableSingle(CastableModel):
+    """Base Class for Models that should have an N-1 relationship with ProviderInstance"""
+
+    provider_acquirable_Single_id = models.AutoField(primary_key=True)
+    provider_instance = models.ForeignKey('ProviderInstance', on_delete=models.CASCADE)
+
+class ProviderAcquirableRelationship(models.Model):
+    """Relationship between ProviderInstance and any Class subclassing ProviderAcquirable"""
+
+    provider_instance = models.ForeignKey('ProviderInstance', on_delete=models.CASCADE)
+    model = models.ForeignKey('ProviderAcquirable', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "ProviderAcquirable '%s' <=> ProviderInstance '%s'" \
+            % (self.model.cast(), self.provider_instance)
+
+    class Meta:
+
+        unique_together = (('provider_instance', 'model'),)
+
+class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
     """
     Information about the Main Product itself. This instances of this classes
     are assumed to be managed services.
@@ -412,8 +467,6 @@ class Product(CreatedUpdatedModel, CastableModel):
     invite_only = models.BooleanField(default=True)
     auto_add = models.BooleanField(default=False)
     auto_all_add = models.BooleanField(default=False)
-    auto_generated = models.BooleanField(default=True)
-    users = models.ManyToManyField(User, through='UserProductRelationship')
     revision = models.IntegerField(default=1)
     managed = models.BooleanField(default=True)
     management_url = models.URLField(max_length=1000, blank=True, null=True)
@@ -423,14 +476,6 @@ class Product(CreatedUpdatedModel, CastableModel):
     def __str__(self):
         return "%s '%s'" % (self.cast().__class__.__name__, self.name)
 
-    def copy_upr_to(self, target: 'Product'):
-        """Copy UPRs associated with `self` and copy them to `to`"""
-        for user_id in self.userproductrelationship_set.values_list('user', flat=True).distinct():
-            UserProductRelationship.objects.create(
-                product=target,
-                user=User.objects.get(pk=user_id)
-            )
-
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # Auto generate slug
         self.slug = slugify(self.name)
@@ -439,42 +484,32 @@ class Product(CreatedUpdatedModel, CastableModel):
         if self.auto_all_add is True:
             # Since there is no better way to do the query other way roundd
             # We have to do it like this
-            rels = list(UserProductRelationship.objects.filter(product=self))
+            rels = list(UserAcquirableRelationship.objects.filter(product=self))
             rels_userlist = []
             users = list(User.objects.all())
             for rel in rels:
                 rels_userlist.append(rel.user)
             missing_users = set(rels_userlist).symmetric_difference(set(users))
             for missing_user in missing_users:
-                UserProductRelationship.objects.create(
+                UserAcquirableRelationship.objects.create(
                     user=missing_user,
                     product=self)
 
-class Domain(Product):
+class Domain(UserAcquirable, ProviderAcquirableSingle, CreatedUpdatedModel):
     """
     Information about a Domain, which is used for other sub-apps.
     This is also used for sub domains, hence the is_sub.
     """
-    domain = models.CharField(max_length=253, unique=True)
-    provider = models.ForeignKey('ProviderInstance', on_delete=models.CASCADE)
+    domain_name = models.CharField(max_length=253, unique=True)
     is_sub = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.domain
-
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        _first = self.pk is None
-        super(Domain, self).save(force_insert, force_update, using, update_fields)
-        if _first:
-            # Trigger event that we were saved
-            SIG_DOMAIN_CREATED.send(
-                sender=Domain,
-                domain=self)
+        return self.domain_name
 
     class Meta:
 
         default_related_name = 'domains'
-        sv_search_fields = ['domain', 'provider__name']
+        sv_search_fields = ['domain_name', 'provider__name']
 
 class Event(CreatedUpdatedModel):
     """
@@ -642,19 +677,18 @@ class UserPasswordServerCredential(BaseCredential):
         """
         return _("Username, Password and Server")
 
-class ProviderInstance(Product):
-    """
-    Basic Provider Instance
-    """
 
+class ProviderInstance(CreatedUpdatedModel, UserAcquirable):
+    """Basic Provider Instance"""
+
+    name = models.TextField()
+    uuid = models.UUIDField(default=uuid.uuid4)
     provider_path = models.TextField()
     credentials = models.ForeignKey('BaseCredential', on_delete=models.CASCADE)
 
     @property
     def provider(self):
-        """
-        Return instance of provider saved
-        """
+        """Return instance of provider saved"""
         path_parts = self.provider_path.split('.')
         module = import_module('.'.join(path_parts[:-1]))
         _class = getattr(module, path_parts[-1])
@@ -662,15 +696,6 @@ class ProviderInstance(Product):
 
     def __str__(self):
         return self.name
-
-# class Service(CreatedUpdatedModel):
-#     """
-#     Base class for managed services.
-#     This saves Connection details and host information
-#     """
-#     service_id = models.AutoField(primary_key=True)
-#     hostname = models.TextField()
-#     fqdn = models.TextField()
 
 @receiver(SIG_USER_POST_SIGN_UP)
 # pylint: disable=unused-argument
@@ -684,3 +709,12 @@ def product_handle_post_signup(sender, signal, user, **kwargs):
         UserProductRelationship.objects.create(
             user=user,
             product=product)
+
+@receiver(post_save, sender=Domain)
+# pylint: disable=unused-argument
+def send_domain_create(sender, signal, instance, created, **kwargs):
+    """Send Domain creation signal"""
+    if created:
+        SIG_DOMAIN_CREATED.send(
+            sender=Domain,
+            domain=instance)

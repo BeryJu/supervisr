@@ -30,7 +30,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for instance in providers %}
+    {% for instance in instances %}
     <tr data-selectable data-ctx-edit="{% url 'instance-edit' uuid=instance.uuid %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'instance-delete' uuid=instance.uuid %}?back={{ request.get_full_path }}">
       <td><span>{{ instance.name }}</span></td>
       <td><span>{{ instance.provider.get_meta.ui_name }}</span></td>

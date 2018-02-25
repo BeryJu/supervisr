@@ -3,6 +3,8 @@
 from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.providers.base import BaseProvider, ProviderMetadata
+from supervisr.core.providers.objects import ProviderObjectMarshall
+from supervisr.dns.models import Record, Resource, Zone
 
 
 class BaseDNSProvider(BaseProvider):
@@ -10,6 +12,9 @@ class BaseDNSProvider(BaseProvider):
 
     name = 'BaseDNSProvider'
     selectable = False
+    zone_marshall = ProviderObjectMarshall[Zone]
+    record_marshall = ProviderObjectMarshall[Record]
+    resource_marshall = ProviderObjectMarshall[Resource]
 
     def check_credentials(self, credentials=None):
         """

@@ -7,7 +7,7 @@ from django.shortcuts import redirect, reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.models import (Domain, ProviderInstance,
-                                   UserProductRelationship)
+                                   UserAcquirableRelationship)
 from supervisr.core.providers.base import get_providers
 from supervisr.core.views.wizards import BaseWizardView
 from supervisr.dns.forms.migrate import ZoneImportForm, ZoneImportPreviewForm
@@ -44,10 +44,10 @@ class BindZoneImportWizard(BaseWizardView):
             providers = get_providers(filter_sub=['dns_provider'], path=True)
             provider_instance = ProviderInstance.objects.filter(
                 provider_path__in=providers,
-                userproductrelationship__user__in=[self.request.user])
+                useracquirablerelationship__user__in=[self.request.user])
 
             form.fields['domain'].queryset = unused_domains
-            form.fields['provider'].queryset = provider_instance
+            form.fields['providers'].queryset = provider_instance
         elif step == '2':
             if '1-zone_data' in self.request.POST:
                 form.records = zone_to_rec(self.request.POST['1-zone_data'])
@@ -66,14 +66,14 @@ class BindZoneImportWizard(BaseWizardView):
                 domain=form_dict['0'].cleaned_data.get('domain'),
                 provider=form_dict['0'].cleaned_data.get('provider'),
                 enabled=form_dict['0'].cleaned_data.get('enabled'))
-            UserProductRelationship.objects.create(
-                product=m_dom,
+            UserAcquirableRelationship.objects.create(
+                model=m_dom,
                 user=self.request.user)
             for rec in records:
                 rec.domain = m_dom
                 rec.save()
-                UserProductRelationship.objects.create(
-                    product=rec,
+                UserAcquirableRelationship.objects.create(
+                    model=rec,
                     user=self.request.user)
             messages.success(self.request, _('DNS domain successfully created and '
                                              '%(count)d records imported.' % {

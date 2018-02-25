@@ -16,26 +16,24 @@
 </style>
 {% endblock %}
 
-{% block content_area %}
-<div class="container">
-  <h1><clr-icon shape="view-list" size="48"></clr-icon>{% blocktrans with z=zone.domain.domain %}Records for {{ z }}{% endblocktrans %}</h1>
-  <div class="btn-group btn-link btn-icon-link">
-    <a href="{% url 'supervisr_dns:dns-record-new' zone=zone.domain.domain %}" class="btn">
-      <clr-icon shape="add"></clr-icon>
-    </a>
-    <a data-ctx-name="edit" class="btn">
-      <clr-icon shape="edit"></clr-icon>
-    </a>
-    <a data-ctx-name="trash" class="btn">
-      <clr-icon shape="trash"></clr-icon>
-    </a>
-    <div class="btn-group-overflow dropdown">
-      <button class="btn dropdown-toggle" clrDropdown>
-        <clr-icon shape="ellipsis-horizontal"></clr-icon>
-      </button>
-      <div class="dropdown-menu">
-        <a href="{% url 'supervisr_dns:migrate-import-bind' %}" class="dropdown-item">{% trans 'Import from Bind Zone' %}</a>
-      </div>
+{% block content %}
+<h1><clr-icon shape="view-list" size="48"></clr-icon>{% blocktrans with z=zone.domain.domain_name %}Records for {{ z }}{% endblocktrans %}</h1>
+<div class="btn-group btn-link btn-icon-link">
+  <a href="{% url 'supervisr_dns:record-create' zone=zone.domain.domain_name %}" class="btn">
+    <clr-icon shape="add"></clr-icon>
+  </a>
+  <a data-ctx-name="edit" class="btn">
+    <clr-icon shape="edit"></clr-icon>
+  </a>
+  <a data-ctx-name="trash" class="btn">
+    <clr-icon shape="trash"></clr-icon>
+  </a>
+  <div class="btn-group-overflow dropdown">
+    <button class="btn dropdown-toggle" clrDropdown>
+      <clr-icon shape="ellipsis-horizontal"></clr-icon>
+    </button>
+    <div class="dropdown-menu">
+      <a href="{% url 'supervisr_dns:migrate-import-bind' %}" class="dropdown-item">{% trans 'Import from Bind Zone' %}</a>
     </div>
   </div>
 </div>
@@ -43,27 +41,21 @@
   <thead>
     <tr>
       <th>{% trans 'Name' %}</th>
-      <th>{% trans 'Type' %}</th>
-      <th>{% trans 'Priority' %}</th>
-      <th>{% trans 'TTL' %}</th>
+      <th>{% trans 'Resource Set' %}</th>
       <th>{% trans 'Enabled' %}</th>
-      <th>{% trans 'Content' %}</th>
     </tr>
   </thead>
   <tbody>
-    {% for rec in records %}
-    <tr data-selectable data-ctx-edit="{% url 'supervisr_dns:dns-record-edit' zone=zone.domain.domain record=rec.name uuid=rec.uuid %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr_dns:dns-record-delete' zone=zone.domain.domain record=rec.name uuid=rec.uuid %}?back={{ request.get_full_path }}">
+    {% for rec in instances %}
+    <tr data-selectable data-ctx-edit="{% url 'supervisr_dns:record-update' zone=zone.domain.domain_name record=rec.name uuid=rec.uuid %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr_dns:record-delete' zone=zone.domain.domain_name record=rec.name uuid=rec.uuid %}?back={{ request.get_full_path }}">
       <td>{{ rec.name|default:'@' }}</td>
-      <td>{{ rec.type }}</td>
-      <td>{{ rec.prio }}</td>
-      <td>{{ rec.ttl }}</td>
+      <td><a href="{% url 'supervisr_dns:rset-read' rset_uuid=rec.resource_set.uuid %}">{{ rec.resource_set.name }}</a></td>
       <td>{{ rec.enabled }}</td>
-      <td><input type="text" readonly value="{{ rec.content }}"></td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
-{% include 'blocks/block_pagination.html' with pages=records %}
+{% include 'blocks/block_pagination.html' with pages=instances %}
 {% endblock %}
 
 {% block scripts %}

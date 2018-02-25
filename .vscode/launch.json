@@ -6,7 +6,7 @@
       "type": "python",
       "request": "launch",
       "stopOnEntry": true,
-      "pythonPath": "${workspaceFolder}/env/bin/python",
+      "pythonPath": "${workspaceFolder}/env/scripts/python",
       "program": "${workspaceFolder}/manage.py",
       "cwd": "${workspaceFolder}",
       "args": [

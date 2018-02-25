@@ -24,7 +24,7 @@ def index(request):
         user=request.user, hidden=False) \
         .order_by('-create_date')[:15]
     user_providers = ProviderInstance.objects.filter(
-        userproductrelationship__user__in=[request.user])
+        useracquirablerelationship__user__in=[request.user])
     # domains = Domain.objects.filter(users__in=[request.user])
     return render(request, 'common/index.html', {
         'uprs': user_products,

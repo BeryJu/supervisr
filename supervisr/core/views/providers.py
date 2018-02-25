@@ -7,26 +7,29 @@ import importlib
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.http import Http404
+from django.db.models import QuerySet
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.forms.providers import CredentialForm, ProviderForm
 from supervisr.core.models import (BaseCredential, ProviderInstance,
-                                   UserProductRelationship)
+                                   UserAcquirableRelationship)
 from supervisr.core.providers.base import get_providers
+from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
+                                          GenericUpdateView)
 from supervisr.core.views.wizards import BaseWizardView
 
 
-@login_required
-def instance_index(request):
-    """
-    Show a n overview over all provider instances
-    """
-    user_providers = ProviderInstance.objects.filter(users__in=[request.user])
-    return render(request, 'provider/instance-index.html', {'providers': user_providers})
+class ProviderIndexView(GenericIndexView):
+    """Show an overview over all provider instances"""
 
+    model = ProviderInstance
+    template = 'provider/instance-index.html'
+
+    def get_instance(self) -> QuerySet:
+        return self.model.objects.filter(users__in=[self.request.user]).order_by('name')
 
 PROVIDER_TEMPLATES = {
     '0': 'provider/instance-wizard.html',
@@ -77,8 +80,8 @@ class ProviderNewView(BaseWizardView):
             credentials=r_creds,
             provider_path=form_dict['0'].cleaned_data.get('provider_path'))
 
-        UserProductRelationship.objects.create(
-            product=prov_inst,
+        UserAcquirableRelationship.objects.create(
+            model=prov_inst,
             user=self.request.user)
         messages.success(self.request, _('Provider Instance successfully created'))
         return redirect(reverse('instance-index'))
@@ -122,7 +125,7 @@ def instance_edit(request, uuid):
 def instance_delete(request, uuid):
     """Delete Instance"""
     inst = ProviderInstance.objects.filter(uuid=uuid,
-                                           userproductrelationship__user__in=[request.user])
+                                           useracquirablerelationship__user__in=[request.user])
     if not inst.exists():
         raise Http404
     r_inst = inst.first()
@@ -141,13 +144,15 @@ def instance_delete(request, uuid):
             })
         })
 
-@login_required
-def credential_index(request):
-    """Return a list of all credentials this user has"""
-    creds = BaseCredential.objects.filter(owner=request.user)
-    return render(request, 'provider/credentials-index.html', {
-        'creds': creds
-        })
+
+class CredentialIndexView(GenericIndexView):
+    """View to index all Credentials"""
+
+    model = BaseCredential
+    template = 'provider/credentials-index.html'
+
+    def get_instance(self) -> HttpResponse:
+        return self.model.objects.filter(owner=self.request.user)
 
 # pylint: disable=too-many-ancestors
 class CredentialNewView(BaseWizardView):
@@ -196,24 +201,15 @@ class CredentialNewView(BaseWizardView):
         messages.success(self.request, _('Credentials successfully created'))
         return redirect(reverse('credential-index'))
 
-@login_required
-def credential_delete(request, name):
-    """Delete Credential"""
-    creds = BaseCredential.objects.filter(name=name, owner=request.user)
-    if not creds.exists():
-        raise Http404
-    r_cred = creds.first()
+class CredentialDeleteView(GenericDeleteView):
+    """View to delete Credential"""
 
-    if request.method == 'POST' and 'confirmdelete' in request.POST:
-        # User confirmed deletion
-        r_cred.delete()
-        messages.success(request, _('Credential successfully deleted'))
+    model = BaseCredential
+
+    def redirect(self, instance: BaseCredential) -> HttpResponse:
         return redirect(reverse('credential-index'))
 
-    return render(request, 'core/generic_delete.html', {
-        'object': 'Credential %s' % r_cred.name,
-        'title': 'Delete %s' % r_cred.name,
-        'delete_url': reverse('credential-delete', kwargs={
-            'name': r_cred.name,
-            })
-        })
+    def get_instance(self) -> QuerySet:
+        """Get domain from name"""
+        return self.model.objects.filter(name=self.kwargs.get('name'),
+                                         owner=self.request.user)

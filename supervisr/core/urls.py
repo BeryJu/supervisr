@@ -56,14 +56,14 @@ urlpatterns = [
     url(r'^products/new/$', products.ProductNewWizard.as_view(), name='products-new'),
     url(r'^products/(?P<slug>[a-zA-Z0-9\-]+)/$', products.view, name='product-view'),
     # Domain views
-    url(r'^domains/$', domains.index, name='domain-index'),
+    url(r'^domains/$', domains.DomainIndexView.as_view(), name='domain-index'),
     url(r'^domains/new/$', domains.DomainNewView.as_view(), name='domain-new'),
     url(r'^domains/(?P<domain>%s)/edit/$' % DOMAIN_REGEX,
         domains.DomainEditView.as_view(), name='domain-edit'),
     url(r'^domains/(?P<domain>%s)/delete/$' % DOMAIN_REGEX,
         domains.DomainDeleteView.as_view(), name='domain-delete'),
     # Provider
-    url(r'^providers/instances/$', providers.instance_index, name='instance-index'),
+    url(r'^providers/instances/$', providers.ProviderIndexView.as_view(), name='instance-index'),
     url(r'^providers/instances/new/$', providers.ProviderNewView.as_view(),
         name='instance-new'),
     url(r'^providers/instances/(?P<uuid>%s)/edit/$' % UUID_REGEX, providers.instance_edit,
@@ -71,11 +71,12 @@ urlpatterns = [
     url(r'^providers/instances/(?P<uuid>%s)/delete/$' % UUID_REGEX, providers.instance_delete,
         name='instance-delete'),
     # Credentials
-    url(r'^providers/credentials/$', providers.credential_index, name='credential-index'),
+    url(r'^providers/credentials/$',
+        providers.CredentialIndexView.as_view(), name='credential-index'),
     url(r'^providers/credentials/new/$', providers.CredentialNewView.as_view(),
         name='credential-new'),
     url(r'^providers/credentials/(?P<name>[a-zA-Z0-9\-\.\_\s]+)/delete/$',
-        providers.credential_delete, name='credential-delete'),
+        providers.CredentialDeleteView.as_view(), name='credential-delete'),
     # User views
     url(r'^user/$', users.index, name='user-index'),
     url(r'^user/events/$', users.events, name='user-events'),

@@ -73,7 +73,8 @@ class SupervisrAppConfig(AppConfig):
                     importlib.import_module("%s.%s" % (self.name, module))
                 except Exception as exc:  # pylint: disable=broad-except
                     # Log the error but continue starting
-                    LOGGER.error(exc)
+                    raise exc
+                    # LOGGER.error(exc)
 
     def check_requirements(self):
         """Check requirements(-dev) and see if everything is installed"""

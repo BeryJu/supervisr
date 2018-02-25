@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.shortcuts import redirect, reverse
 from django.utils.translation import ugettext_lazy as _
 
-from supervisr.core.models import UserProductRelationship
+from supervisr.core.models import UserAcquirableRelationship
 from supervisr.core.views.generic import (GenericDeleteView, GenericReadView,
                                           GenericUpdateView)
 from supervisr.core.views.wizards import BaseWizardView
@@ -22,8 +22,8 @@ class ResourceSetReadView(GenericReadView):
     template = 'dns/resourcesets/view.html'
 
     def get_instance(self):
-        return ResourceSet.objects.filter(uuid=self.kwargs.get('rset_uuid'),
-                                          users__in=[self.request.user])
+        return self.model.objects.filter(uuid=self.kwargs.get('rset_uuid'),
+                                         users__in=[self.request.user])
 
     def update_kwargs(self, kwargs):
         kwargs['records'] = kwargs.get('instance').resource.filter(
@@ -39,10 +39,9 @@ class ResourceSetCreateView(BaseWizardView):
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
-        rset = form_dict['0'].save(commit=False)
-        rset.save()
-        UserProductRelationship.objects.create(
-            product=rset,
+        rset = form_dict['0'].save()
+        UserAcquirableRelationship.objects.create(
+            model=rset,
             user=self.request.user)
         messages.success(self.request, _('Resource Set successfully created'))
         return redirect(reverse('supervisr_dns:rset-view', kwargs={'rset_uuid': rset.uuid}))

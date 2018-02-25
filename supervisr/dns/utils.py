@@ -2,6 +2,8 @@
 Supervisr DNS Utils
 """
 
+from datetime import date
+
 import dns.name
 import dns.query
 import dns.rdata
@@ -14,6 +16,10 @@ from dns.rdtypes.ANY.SOA import SOA
 
 from supervisr.dns.models import Record
 
+
+def date_to_soa(_date: date = date.today()) -> int:
+    """Convert date to SOA serial number"""
+    return int("%04d%02d%02d" % (_date.year, _date.month, _date.day))
 
 def zone_to_rec(data, root_zone=''):
     """

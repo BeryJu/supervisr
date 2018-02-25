@@ -12,18 +12,21 @@ from django.utils.translation import ugettext as _
 
 from supervisr.core.forms.domains import DomainForm
 from supervisr.core.models import (Domain, ProviderInstance,
-                                   UserProductRelationship)
+                                   UserAcquirableRelationship)
 from supervisr.core.providers.base import get_providers
-from supervisr.core.views.generic import GenericDeleteView, GenericUpdateView
+from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
+                                          GenericUpdateView)
 from supervisr.core.views.wizards import BaseWizardView
 
 
-@login_required
-def index(request):
-    """Show a n overview over all domains"""
-    user_domains = Domain.objects.filter(
-        users__in=[request.user])
-    return render(request, 'domain/index.html', {'domains': user_domains})
+class DomainIndexView(GenericIndexView):
+    """Show an overview over all domains"""
+
+    model = Domain
+    template = 'domain/index.html'
+
+    def get_instance(self) -> HttpResponse:
+        return self.model.objects.filter(users__in=[self.request.user]).order_by('domain_name')
 
 # pylint: disable=too-many-ancestors
 class DomainNewView(BaseWizardView):
@@ -41,18 +44,16 @@ class DomainNewView(BaseWizardView):
             providers = get_providers(filter_sub=['domain_provider'], path=True)
             provider_instance = ProviderInstance.objects.filter(
                 provider_path__in=providers,
-                userproductrelationship__user__in=[self.request.user])
-            form.fields['provider'].queryset = provider_instance
+                useracquirablerelationship__user__in=[self.request.user])
+            form.fields['provider_instance'].queryset = provider_instance
             form.request = self.request
         return form
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs) -> HttpResponse:
-        domain = form_dict['0'].save(commit=False)
-        domain.name = domain.domain
-        domain.save()
-        UserProductRelationship.objects.create(
-            product=domain,
+        domain = form_dict['0'].save()
+        UserAcquirableRelationship.objects.create(
+            model=domain,
             user=self.request.user)
         messages.success(self.request, _('Domain successfully created'))
         return redirect(reverse('domain-index'))
@@ -77,7 +78,7 @@ class DomainEditView(GenericUpdateView):
         providers = get_providers(filter_sub=['domain_provider'], path=True)
         provider_instance = ProviderInstance.objects.filter(
             provider_path__in=providers,
-            userproductrelationship__user__in=[self.request.user])
+            useracquirablerelationship__user__in=[self.request.user])
         form.fields['provider'].queryset = provider_instance
         form.request = self.request
         return form

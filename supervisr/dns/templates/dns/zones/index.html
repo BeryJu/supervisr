@@ -27,22 +27,24 @@
       <th>{% trans 'Domain' %}</th>
       <th>{% trans 'Owner' %}</th>
       <th>{% trans 'Records' %}</th>
+      <th>{% trans 'Providers' %}</th>
       <th>{% trans 'Enabled' %}</th>
     </tr>
   </thead>
   <tbody>
-    {% for dom in zones %}
-    <tr data-selectable data-ctx-edit="{% url 'supervisr_dns:zone-update' zone=dom.domain %}?back={{ request.get_full_path }}"
-      data-ctx-trash="{% url 'supervisr_dns:zone-delete' zone=dom.domain %}?back={{ request.get_full_path }}">
-      <td>{{ dom.domain }}</td>
-      <td>{{ dom.users.all|join:"," }}</td>
-      <td>{{ dom.record_set.all|length }}</td>
-      <td>{{ dom.enabled }}</td>
+    {% for zone in instances %}
+    <tr data-selectable data-ctx-edit="{% url 'supervisr_dns:zone-update' zone=zone.domain %}?back={{ request.get_full_path }}"
+      data-ctx-trash="{% url 'supervisr_dns:zone-delete' zone=zone.domain %}?back={{ request.get_full_path }}">
+      <td>{{ zone.domain }}</td>
+      <td>{{ zone.users.all|join:"," }}</td>
+      <td>{{ zone.record_set.all|length }}</td>
+      <td>{{ zone.providers.all|join:"," }}</td>
+      <td>{{ zone.enabled }}</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
-{% include 'blocks/block_pagination.html' with pages=zones %} {% endblock %} {% block scripts %}
+{% include 'blocks/block_pagination.html' with pages=instances %} {% endblock %} {% block scripts %}
 <script>
   clrTableSelect('.container');
 </script> {% endblock %}

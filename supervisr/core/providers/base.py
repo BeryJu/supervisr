@@ -2,7 +2,12 @@
 Supervisr Core Generic Provider
 """
 
+from typing import List
+
 from django.utils.translation import ugettext_lazy as _
+
+from supervisr.core.providers.commit import ProviderCommitChange
+from supervisr.core.providers.objects import ProviderObjectMarshall
 
 
 # pylint: disable=too-few-public-methods
@@ -34,12 +39,11 @@ class ProviderMetadata(object):
 
 # pylint: disable=too-few-public-methods
 class BaseProvider(object):
-    """
-    Generic Interface as base for GenericManagedProvider and GenericUserProvider
-    """
+    """Generic Interface as base for GenericManagedProvider and GenericUserProvider"""
 
     credentials = None
     _meta = None
+    marshalls = {}
 
     def __init__(self, credentials=None):
         self._meta = self.Meta(self)
@@ -77,6 +81,23 @@ class BaseProvider(object):
          - String: Error (show string)
         """
         raise NotImplementedError("This Method should be overwritten by subclasses")
+
+    def _get_marshalls(self) -> List[ProviderObjectMarshall]:
+        """Get a list of all marshall classes for this provider"""
+        marshalls = []
+        for _prop in dir(self):
+            if _prop.endswith('_marshall') and issubclass(getattr(self, _prop), ProviderObjectMarshall):
+                marshalls.append(getattr(self, _prop))
+        return marshalls
+
+    def save(self, commit=False) -> List[ProviderCommitChange]:
+        """Save changes. If commit is set to false, just return changes"""
+        changes = []
+        print(self._get_marshalls())
+        for marshall in self._get_marshalls():
+            marshall_instance = marshall(self)
+            changes += marshall_instance.save(commit=commit)
+        return changes
 
     class Meta(ProviderMetadata):
         """

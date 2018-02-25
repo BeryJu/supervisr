@@ -33,7 +33,7 @@ def dns_rec_update(sender, instance, created, **kwargs):
     """
     from supervisr.dns.models import Record
     if isinstance(instance, Record):
-        SIG_DNS_REC_UPDATE.send(sender, record=instance, zone=instance.domain)
+        SIG_DNS_REC_UPDATE.send(sender, record=instance, zone=instance.record_zone)
 
 @receiver([SIG_DNS_REC_UPDATE, SIG_DNS_ZONE_UPDATE])
 # pylint: disable=unused-argument
