@@ -54,7 +54,17 @@ class BaseWizardView(SessionWizardView):
             return self._handle_request_res
         return super(BaseWizardView, self).render(form, **kwargs)
 
+    def finish(self, form_list):
+        """Wrapper for done with an actual list as param"""
+        pass
+
     def done(self, form_list, **kwargs):
         # Cleanup session
         if '%s_referer' % self.__class__.__name__ in self._request.session:
             del self._request.session['%s_referer' % self.__class__.__name__]
+        # convert ordered dict to normal dict,
+        # convert int in string to just int
+        _form_list = []
+        for form in form_list:
+            _form_list.append(form)
+        return self.finish(_form_list)

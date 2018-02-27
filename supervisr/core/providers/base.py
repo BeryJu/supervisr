@@ -93,7 +93,7 @@ class BaseProvider(object):
     def save(self, commit=False) -> List[ProviderCommitChange]:
         """Save changes. If commit is set to false, just return changes"""
         changes = []
-        print(self._get_marshalls())
+        # detect changes here and save
         for marshall in self._get_marshalls():
             marshall_instance = marshall(self)
             changes += marshall_instance.save(commit=commit)

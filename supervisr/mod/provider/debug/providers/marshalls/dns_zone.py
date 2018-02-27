@@ -1,21 +1,18 @@
-"""supervisr mod provider powerdns Zone Marshall"""
+"""supervisr mod provider Debug Zone Marshall"""
 from typing import List
 
 from supervisr.core.models import Domain
 from supervisr.core.providers.commit import ProviderCommitChange
 from supervisr.core.providers.objects import ProviderObjectMarshall
 from supervisr.dns.models import Zone
-from supervisr.mod.provider.powerdns.models import Domain
 
 
-class PowerDNSZoneMarshall(ProviderObjectMarshall[Zone]):
-    """PowerDNS Zone Marshall"""
+class DebugZoneMarshall(ProviderObjectMarshall[Zone]):
+    """Debug Zone Marshall"""
 
     def create(self, instance: Zone) -> bool:
         """Create instance of Object with **kwargs"""
-        Domain.objects.create(
-            name=instance.domain.domain_name
-        )
+        pass
 
     def has(self, **filters) -> bool:
         """Check if Object matching from key-value filters from **filters exists"""
@@ -23,16 +20,7 @@ class PowerDNSZoneMarshall(ProviderObjectMarshall[Zone]):
 
     def read(self, **filters) -> List[Zone]:
         """Return List of Object matching key-value filters from **filters"""
-        pdns_domains = Domain.objects.filter(**filters)
-        converted = []
-        for domain in pdns_domains:
-            core_domains = Domain.objects.filter(domain_name=domain.name)
-            core_domain = None
-            if core_domains.exists():
-                core_domain = core_domains.first()
-            else:
-                core_domain = Domain(domain_name=domain.name)
-            converted.append(Zone(domain=core_domain))
+        pass
 
     def update(self, instance: Zone) -> bool:
         """Write updated instance"""
@@ -42,4 +30,4 @@ class PowerDNSZoneMarshall(ProviderObjectMarshall[Zone]):
 
     def delete(self, instance: Zone) -> bool:
         """Delete instance"""
-        return Domain.objects.filter(name=instance.domain.domain_name).delete()
+        pass
