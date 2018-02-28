@@ -134,6 +134,12 @@ class User(AbstractUser):
     rows_per_page = models.IntegerField(default=50)
     api_key = models.UUIDField(default=uuid.uuid4)
 
+    @property
+    def short_name(self):
+        if self.first_name:
+            return self.first_name
+        return self.username
+
 # pylint: disable=abstract-method
 class SVAnonymousUser(django_auth_models.AnonymousUser):
     """Custom Anonymous User with extra attributes"""

@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 class EditUserForm(forms.Form):
     """Form to edit a User"""
 
-    name = forms.CharField(label=_('Name'))
+    name = forms.CharField(label=_('Name'), required=False)
     email = forms.CharField(label=_('Email'))
     username = forms.CharField(label=_('Username'))
     unix_username = forms.CharField(label=_('Unix Username'), disabled=True, required=False)
