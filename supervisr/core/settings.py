@@ -82,12 +82,12 @@ INSTALLED_APPS = [
     'captcha',
     'supervisr.core.apps.SupervisrCoreConfig',
     # 'supervisr.puppet.apps.SupervisrPuppetConfig',
-    'supervisr.dns.apps.SupervisrDNSConfig',
-    'supervisr.mod.provider.powerdns.apps.SupervisrModProviderPowerDNSConfig',
-    'supervisr.mod.provider.debug.apps.SupervisrModProviderDebugConfig',
+    # 'supervisr.dns.apps.SupervisrDNSConfig',
+    # 'supervisr.mod.provider.powerdns.apps.SupervisrModProviderPowerDNSConfig',
+    # 'supervisr.mod.provider.debug.apps.SupervisrModProviderDebugConfig',
     # 'supervisr.server.apps.SupervisrServerConfig',
     # 'supervisr.web.apps.SupervisrWebConfig',
-    'supervisr.mail.apps.SupervisrMailConfig',
+    # 'supervisr.mail.apps.SupervisrMailConfig',
     # 'supervisr.static.apps.SupervisrStaticConfig',
     # 'supervisr.mod.beacon.apps.SupervisrModBeaconConfig',
     # 'supervisr.mod.auth.ldap.apps.SupervisrModAuthLDAPConfig',
@@ -236,7 +236,7 @@ STATICFILES_FINDERS = (
 EMAIL_FROM = 'Supervisr <supervisr@localhost>'
 
 LOG_LEVEL_FILE = 'DEBUG'
-LOG_LEVEL_CONSOLE = 'INFO'
+LOG_LEVEL_CONSOLE = 'DEBUG' if DEBUG else 'INFO'
 LOG_FILE = '/dev/null'
 
 LOG_SYSLOG_HOST = '127.0.0.1'

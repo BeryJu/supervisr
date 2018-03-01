@@ -10,6 +10,7 @@ from supervisr.core.models import BaseCredential
 from supervisr.core.providers.base import BaseProvider, ProviderMetadata
 from supervisr.mod.provider.debug.providers.dns import DebugDNSProvider
 from supervisr.mod.provider.debug.providers.mail import DebugMailProvider
+from supervisr.mod.provider.debug.providers.domain import DebugDomainProvider
 
 
 # pylint: disable=too-few-public-methods
@@ -20,6 +21,7 @@ class DebugProvider(BaseProvider):
     api = None
     dns_provider = DebugDNSProvider
     mail_provider = DebugMailProvider
+    domain_provider = DebugDomainProvider
 
     def check_credentials(self, credentials=None):
         """

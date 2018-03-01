@@ -8,18 +8,16 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from supervisr.core.api.utils import api_response
-from supervisr.core.models import (Event, ProviderInstance,
-                                   UserProductRelationship)
+from supervisr.core.models import (Event, Product, ProviderInstance,
+                                   UserAcquirableRelationship)
 
 
 @login_required
 def index(request):
     """Show index view with hosted_applications quicklaunch and recent events"""
-    user_products = UserProductRelationship.objects.filter(user=request.user)
-    hosted_applications = UserProductRelationship \
-        .objects.filter(user=request.user, product__managed=True) \
-        .exclude(product__management_url__isnull=True) \
-        .exclude(product__management_url__exact='')
+    hosted_applications = Product.objects.filter(users__in=[request.user], managed=True) \
+        .exclude(management_url__isnull=True) \
+        .exclude(management_url__exact='')
     events = Event.objects.filter(
         user=request.user, hidden=False) \
         .order_by('-create_date')[:15]
@@ -27,7 +25,6 @@ def index(request):
         useracquirablerelationship__user__in=[request.user])
     # domains = Domain.objects.filter(users__in=[request.user])
     return render(request, 'common/index.html', {
-        'uprs': user_products,
         'hosted_applications': hosted_applications,
         'events': events,
         'user_providers': user_providers,

@@ -118,10 +118,10 @@
                <ul>
                   {% for app in hosted_applications %}
                   <li>
-                    <a href="{{ app.product.management_url }}">
-                      {% if app.product.icon %}
-                      {% cache 600 app app.product.uuid %}
-                      <img src="{% media app.product.icon %}" alt="{{ app.name }} Icon">
+                    <a href="{{ app.management_url }}">
+                      {% if app.icon %}
+                      {% cache 600 app app.uuid %}
+                      <img src="{% media app.icon %}" alt="{{ app.name }} Icon">
                       {% endcache %}
                       {% else %}
                       <clr-icon shape="application" size="64"></clr-icon>

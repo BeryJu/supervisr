@@ -7,7 +7,7 @@ from django.test import TestCase
 from supervisr.core.api.v1.accounts import AccountAPI
 from supervisr.core.api.v1.credentials import CredentialAPI
 from supervisr.core.models import User, get_system_user
-from supervisr.core.test.utils import oauth2_get_token, test_request
+from supervisr.core.test.utils import test_request
 
 
 class TestAPIs(TestCase):
@@ -20,7 +20,6 @@ class TestAPIs(TestCase):
         Create user and token to use
         """
         self.user = User.objects.get(pk=get_system_user())
-        self.token = oauth2_get_token(self.user)
 
     def test_credentials(self):
         """Test Credentials API"""

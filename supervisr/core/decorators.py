@@ -3,7 +3,7 @@ supervisr view decorators
 """
 
 import base64
-import time
+from time import time as timestamp
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login
@@ -14,7 +14,7 @@ from django.urls import reverse
 from django.utils.http import urlencode
 from django.utils.translation import ugettext_lazy as _
 
-from supervisr.core.models import Setting
+from supervisr.core.statistics import stat_set
 from supervisr.core.utils import get_apps
 
 REAUTH_KEY = getattr(settings, 'REAUTH_KEY', 'supervisr_require_reauth_done')
@@ -50,7 +50,7 @@ def reauth_required(view_function):
         if not req or not req.user or not req.user.is_authenticated:
             return redirect(reverse('account-login'))
 
-        now = time.time()
+        now = timestamp()
 
         if REAUTH_KEY in req.session and \
             req.session[REAUTH_KEY] < (now - REAUTH_MARGIN):
@@ -75,6 +75,26 @@ def reauth_required(view_function):
     wrap.__name__ = view_function.__name__
     return wrap
 
+
+def time(statistic_key):
+    """Decorator to time a method call"""
+
+    def outer_wrapper(method):
+        """Decorator to time a method call"""
+
+        def timed(*args, **kw):
+            """Decorator to time a method call"""
+            time_start = timestamp()
+            result = method(*args, **kw)
+            time_end = timestamp()
+
+            stat_set(statistic_key, (time_end - time_start) * 1000)
+            return result
+
+        return timed
+
+    return outer_wrapper
+
 def require_setting(path, value, message=_('This function has been administratively disabled.')):
     """Check if setting under *key* has value of *value*
 
@@ -91,6 +111,8 @@ def require_setting(path, value, message=_('This function has been administrativ
         """Check if setting under *key* has value of *value*"""
         def wrap(request, *args, **kwargs):
             """Check if setting under *key* has value of *value*"""
+            from supervisr.core.models import Setting
+
             namespace, key = path.split('/')
             setting = Setting.objects.filter(namespace=namespace, key=key)
 

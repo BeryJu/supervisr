@@ -41,8 +41,8 @@ class TestSearchView(TestCase):
         Test search with 2 domains as result
         """
         prov, _creds = internal_provider(self.user)
-        Domain.objects.create(provider=prov, domain='dom1.supervisr.beryju.org')
-        Domain.objects.create(provider=prov, domain='dom2.supervisr.beryju.org')
+        Domain.objects.create(provider_instance=prov, domain_name='dom1.supervisr.beryju.org')
+        Domain.objects.create(provider_instance=prov, domain_name='dom2.supervisr.beryju.org')
         res = test_request(search.search, user=self.user, req_kwargs={'q': 'supervisr.beryju.org'})
         self.assertEqual(res.status_code, 200)
         self.assertIn('dom1.supervisr.beryju.org', str(res.content))

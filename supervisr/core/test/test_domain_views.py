@@ -13,8 +13,9 @@ class TestDomainViews(TestCase):
 
     def test_index_view(self):
         """Test Index View (Anonymous)"""
-        self.assertEqual(test_request(domains.index).status_code, 302)
+        self.assertEqual(test_request(domains.DomainIndexView.as_view()).status_code, 302)
 
     def test_index_view_auth(self):
         """Test Index View (Authenticated)"""
-        self.assertEqual(test_request(domains.index, user=get_system_user()).status_code, 200)
+        self.assertEqual(test_request(
+            domains.DomainIndexView.as_view(), user=get_system_user()).status_code, 200)

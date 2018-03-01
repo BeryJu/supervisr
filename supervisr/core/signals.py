@@ -4,7 +4,7 @@ Supervisr Core Signal definitions
 
 import logging
 
-from django.db.models.signals import post_migrate
+from django.db.models.signals import post_migrate, post_save, pre_delete
 from django.dispatch import Signal, receiver
 from passlib.hash import sha512_crypt
 
@@ -28,8 +28,8 @@ class RobustSignal(Signal):
         return results
 
 
-SIG_USER_PRODUCT_RELATIONSHIP_CREATED = RobustSignal(providing_args=['upr'])
-SIG_USER_PRODUCT_RELATIONSHIP_DELETED = RobustSignal(providing_args=['upr'])
+SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED = RobustSignal(providing_args=['relationship'])
+SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED = RobustSignal(providing_args=['relationship'])
 
 SIG_USER_SIGN_UP = RobustSignal(providing_args=['user', 'request', 'password'])
 SIG_USER_CHANGE_PASS = RobustSignal(providing_args=['user', 'request', 'password'])
@@ -66,9 +66,7 @@ SIG_SET_STAT = RobustSignal(providing_args=['key', 'value'])
 @receiver(post_migrate)
 # pylint: disable=unused-argument
 def core_handle_post_migrate(sender, *args, **kwargs):
-    """
-    Trigger SIG_DO_SETUP
-    """
+    """Trigger SIG_DO_SETUP"""
     if isinstance(sender, SupervisrAppConfig):
         LOGGER.debug("Running Post-Migrate for '%s'...", sender.name)
         sender.run_ensure_settings()
@@ -77,9 +75,7 @@ def core_handle_post_migrate(sender, *args, **kwargs):
 @receiver(SIG_USER_CHANGE_PASS)
 # pylint: disable=unused-argument
 def crypt6_handle_user_change_pass(signal, user, password, **kwargs):
-    """
-    Update crypt6_password
-    """
+    """Update crypt6_password"""
     # Also update user's crypt6_pass
     user.crypt6_password = sha512_crypt.hash(password)
     user.save()
@@ -87,7 +83,31 @@ def crypt6_handle_user_change_pass(signal, user, password, **kwargs):
 @receiver(SIG_SET_STAT)
 # pylint: disable=unused-argument
 def stat_output_verbose(signal, key, value, **kwargs):
-    """
-    Output stats to LOGGER
-    """
+    """Output stats to LOGGER"""
     LOGGER.debug("Stats: '%s': '%s'", key, value)
+
+@receiver(post_save)
+# pylint: disable=unused-argument
+def proxy_on_save(sender, instance, created, **kwargs):
+    """Forward signal to ProviderProxy"""
+    from supervisr.core.providers.proxy import ProviderProxy
+    from supervisr.core.models import ProviderAcquirable, ProviderAcquirableSingle
+
+    proxy = ProviderProxy()
+    if isinstance(instance, ProviderAcquirable):
+        proxy.on_model_saved(instance, instance.providers, created)
+    elif isinstance(instance, ProviderAcquirableSingle):
+        proxy.on_model_saved(instance, [instance.provider_instance, ], created)
+
+@receiver(pre_delete)
+# pylint: disable=unused-argument
+def proxy_on_delete(sender, instance, *args, **kwargs):
+    """Forward signal to ProviderProxy"""
+    from supervisr.core.providers.proxy import ProviderProxy
+    from supervisr.core.models import ProviderAcquirable, ProviderAcquirableSingle
+
+    proxy = ProviderProxy()
+    if isinstance(instance, ProviderAcquirable):
+        proxy.on_model_deleted(instance, instance.providers)
+    elif isinstance(instance, ProviderAcquirableSingle):
+        proxy.on_model_deleted(instance, [instance.provider_instance, ])

@@ -10,8 +10,8 @@ from ldap3.core.exceptions import LDAPCommunicationError, LDAPException
 from supervisr.core.signals import (SIG_CHECK_USER_EXISTS, SIG_GET_MOD_HEALTH,
                                     SIG_GET_MOD_INFO, SIG_USER_CHANGE_PASS,
                                     SIG_USER_CONFIRM,
-                                    SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
-                                    SIG_USER_PRODUCT_RELATIONSHIP_DELETED,
+                                    SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED,
+                                    SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED,
                                     SIG_USER_SIGN_UP)
 from supervisr.mod.auth.ldap.ldap_connector import LDAPConnector
 
@@ -53,31 +53,31 @@ def ldap_handle_user_confirm(sender, signal, user, **kwargs):
     if LDAP and LDAP.create_users_enabled:
         LDAP.enable_user(mail=user.email)
 
-@receiver(SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
+@receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED)
 # pylint: disable=unused-argument
-def ldap_handle_upr_created(sender, signal, upr, **kwargs):
+def ldap_handle_relationship_created(sender, signal, relationship, **kwargs):
     """
     Handle creation of user_product_relationship, add to ldap group if needed
     """
     if LDAP and LDAP.create_users_enabled:
-        exts = upr.product.extensions.filter(productextensionldap__isnull=False)
+        exts = relationship.model.extensions.filter(productextensionldap__isnull=False)
         if exts.exists():
             LDAP.add_to_group(
                 group_dn=exts.first().ldap_group,
-                mail=upr.user.email)
+                mail=relationship.user.email)
 
-@receiver(SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
+@receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED)
 # pylint: disable=unused-argument
-def ldap_handle_upr_deleted(sender, signal, upr, **kwargs):
+def ldap_handle_relationship_deleted(sender, signal, relationship, **kwargs):
     """
     Handle deletion of user_product_relationship, remove from group if needed
     """
     if LDAP and LDAP.create_users_enabled:
-        exts = upr.product.extensions.filter(productextensionldap__isnull=False)
+        exts = relationship.model.extensions.filter(productextensionldap__isnull=False)
         if exts.exists():
             LDAP.remove_from_group(
                 group_dn=exts.first().ldap_group,
-                mail=upr.user.email)
+                mail=relationship.user.email)
 
 @receiver(SIG_CHECK_USER_EXISTS)
 # pylint: disable=unused-argument

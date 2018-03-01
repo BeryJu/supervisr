@@ -11,7 +11,7 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def related_models(context, model_path):
     """
-    Return list of models which have a UPR to current user
+    Return list of models which have a Relationship to current user
     """
     request = context.get('request', None)
     if not request:

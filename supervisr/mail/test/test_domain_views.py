@@ -7,7 +7,7 @@ import os
 from django.test import TestCase
 
 from supervisr.core.models import (BaseCredential, Domain, ProviderInstance,
-                                   User, UserProductRelationship,
+                                   User, UserAcquirableRelationship,
                                    get_system_user)
 from supervisr.core.test.utils import test_request
 from supervisr.mail.models import MailDomain
@@ -29,9 +29,9 @@ class TestDomainViews(TestCase):
             provider_path='supervisr.core.providers.base.BaseProvider',
             credentials=self.provider_credentials)
         self.ddomain = Domain.objects.create(domain=_domain, is_sub=True, provider=self.provider)
-        UserProductRelationship.objects.create(user=self.user, product=self.ddomain)
+        UserAcquirableRelationship.objects.create(user=self.user, model=self.ddomain)
         self.domain = MailDomain.objects.create(domain=self.ddomain, provider=self.provider)
-        UserProductRelationship.objects.create(user=self.user, product=self.domain)
+        UserAcquirableRelationship.objects.create(user=self.user, model=self.domain)
 
     def test_domain_view(self):
         """

@@ -9,10 +9,10 @@ from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.mailer import send_message
 from supervisr.core.models import Event
-from supervisr.core.signals import (SIG_USER_POST_CHANGE_PASS,
-                                    SIG_USER_POST_SIGN_UP,
-                                    SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
-                                    SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
+from supervisr.core.signals import (SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED,
+                                    SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED,
+                                    SIG_USER_POST_CHANGE_PASS,
+                                    SIG_USER_POST_SIGN_UP)
 
 
 @receiver(SIG_USER_POST_SIGN_UP)
@@ -30,9 +30,7 @@ def event_handle_user_signed_up(sender, signal, user, request, **kwargs):
 @receiver(SIG_USER_POST_CHANGE_PASS)
 # pylint: disable=unused-argument
 def event_handle_user_changed_pass(signal, user, request, was_reset, **kwargs):
-    """
-    Create an Event when a user changes their password
-    """
+    """Create an Event when a user changes their password"""
     Event.create(
         user=user,
         message=_("You changed your Password (%(kind)s)" % {
@@ -41,39 +39,33 @@ def event_handle_user_changed_pass(signal, user, request, was_reset, **kwargs):
         current=True,
         request=request)
 
-@receiver(SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
+@receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED)
 # pylint: disable=unused-argument
-def event_handle_upr_created(sender, signal, upr, **kwargs):
-    """
-    Create an Event when a UserProductRelationship was created
-    """
+def event_handle_relationship_created(sender, signal, relationship, **kwargs):
+    """Create an Event when a User was created"""
     Event.create(
-        user=upr.user,
+        user=relationship.user,
         message=_("You gained access to %(class)s %(name)s" % {
-            'name': upr.name,
-            'class': upr.product.cast().__class__.__name__,
+            'name': relationship.model.name if getattr(relationship.model, 'name', False) else str(relationship.model),
+            'class': relationship.model.cast().__class__.__name__,
             }),
         current=True)
 
-@receiver(SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
+@receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED)
 # pylint: disable=unused-argument
-def event_handle_upr_deleted(sender, signal, upr, **kwargs):
-    """
-    Create an Event to let users know that they lost access to a Product
-    """
+def event_handle_relationship_deleted(sender, signal, relationship, **kwargs):
+    """Create an Event to let users know that they lost access to a Model"""
     Event.create(
-        user=upr.user,
+        user=relationship.user,
         message=_("You lost access to %(name)s" % {
-            'name': upr.name,
+            'name': relationship.model.name if getattr(relationship.model, 'name', False) else str(relationship.model),
             }),
         current=True)
 
 @receiver(user_logged_in)
 # pylint: disable=unused-argument
 def event_handler_user_login(sender, signal, user, request, **kwargs):
-    """
-    Create a hidden event when a user logs in
-    """
+    """Create a hidden event when a user logs in"""
     Event.create(
         user=user,
         message=_("You logged in with backend %s" % user.backend),
@@ -84,9 +76,7 @@ def event_handler_user_login(sender, signal, user, request, **kwargs):
 @receiver(user_logged_out)
 # pylint: disable=unused-argument
 def event_handler_user_logout(sender, signal, user, request, **kwargs):
-    """
-    Create a hidden event when a user logs out
-    """
+    """Create a hidden event when a user logs out"""
     Event.create(
         user=user,
         message=_("You logged out"),
@@ -97,9 +87,7 @@ def event_handler_user_logout(sender, signal, user, request, **kwargs):
 @receiver(post_save, sender=Event)
 # pylint: disable=unused-argument
 def event_handler_send_mail(sender, signal, instance, **kwargs):
-    """
-    Send an email if an event with send_notification is created
-    """
+    """Send an email if an event with send_notification is created"""
     if instance.send_notification is True:
         send_message(
             recipients=[instance.user.email],

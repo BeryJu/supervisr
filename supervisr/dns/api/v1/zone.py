@@ -2,12 +2,12 @@
 Supervisr DNS r1 Zone API
 """
 
-from supervisr.core.api.models import ProductAPI
+from supervisr.core.api.models import UserAcquirableModelAPI
 from supervisr.dns.forms.zones import ZoneForm
 from supervisr.dns.models import Zone
 
 
-class ZoneAPI(ProductAPI):
+class ZoneAPI(UserAcquirableModelAPI):
     """
     Zone API
     """

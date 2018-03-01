@@ -152,7 +152,7 @@ class CredentialIndexView(GenericIndexView):
     template = 'provider/credentials-index.html'
 
     def get_instance(self) -> HttpResponse:
-        return self.model.objects.filter(owner=self.request.user)
+        return self.model.objects.filter(owner=self.request.user).order_by('name')
 
 # pylint: disable=too-many-ancestors
 class CredentialNewView(BaseWizardView):

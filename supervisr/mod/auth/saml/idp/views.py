@@ -19,7 +19,7 @@ from OpenSSL.crypto import FILETYPE_PEM
 from OpenSSL.crypto import Error as CryptoError
 from OpenSSL.crypto import load_certificate
 
-from supervisr.core.models import Event, Setting, UserProductRelationship
+from supervisr.core.models import Event, Setting, UserAcquirableRelationship
 from supervisr.core.utils import render_to_string
 from supervisr.core.views.common import error_response
 from supervisr.core.views.settings import GenericSettingView
@@ -104,9 +104,9 @@ def login_process(request):
         remote.productextensionsaml2_set.first().product_set.exists():
         # Only check if there is a connection from OAuth2 Application to product
         product = remote.productextensionsaml2_set.first().product_set.first()
-        upr = UserProductRelationship.objects.filter(user=request.user, product=product)
+        relationship = UserAcquirableRelationship.objects.filter(user=request.user, model=product)
         # Product is invite_only = True and no relation with user exists
-        if product.invite_only and not upr.exists():
+        if product.invite_only and not relationship.exists():
             access = False
     # Check if we should just autosubmit
     if remote.skip_authorization and access:

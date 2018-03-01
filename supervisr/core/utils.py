@@ -19,7 +19,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.apps import SupervisrAppConfig, SupervisrCoreConfig
-from supervisr.core.statistics import stat_set
 
 LOGGER = logging.getLogger(__name__)
 
@@ -89,25 +88,6 @@ def get_app_labels():
         cache.set(cache_key, app_cache, 1000)
         return app_cache
     return cache.get(cache_key) # pragma: no cover
-
-def time(statistic_key):
-    """Decorator to time a method call"""
-
-    def outer_wrapper(method):
-        """Decorator to time a method call"""
-
-        def timed(*args, **kw):
-            """Decorator to time a method call"""
-            time_start = timestamp()
-            result = method(*args, **kw)
-            time_end = timestamp()
-
-            stat_set(statistic_key, (time_end - time_start) * 1000)
-            return result
-
-        return timed
-
-    return outer_wrapper
 
 def class_to_path(cls):
     """Turn Class (Class or instance) into module path"""

@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 
 from supervisr.core.decorators import ifapp
 from supervisr.core.forms.product import ProductForm
-from supervisr.core.models import Product, UserProductRelationship
+from supervisr.core.models import Product, UserAcquirableRelationship
 from supervisr.core.views.wizards import BaseWizardView
 
 
@@ -35,8 +35,8 @@ def view(request, slug):
     # If the product is not invite_only
     # and the user is not associated with the product
     if product.invite_only is False or \
-        UserProductRelationship.objects.filter(user=request.user,
-                                               product=product).exists():
+        UserAcquirableRelationship.objects.filter(user=request.user,
+                                                  model=product).exists():
         static = redirect_to_static(request, slug)
         if static:
             return static
@@ -72,7 +72,7 @@ class ProductNewWizard(BaseWizardView):
     #         providers = get_providers(filter_sub=['domain_provider'], path=True)
     #         provider_instance = ProviderInstance.objects.filter(
     #             provider_path__in=providers,
-    #             userproductrelationship__user__in=[self.request.user])
+    #             useracquirablerelationship__user__in=[self.request.user])
     #         form.fields['provider'].queryset = provider_instance
     #         form.request = self.request
     #     return form
@@ -82,8 +82,8 @@ class ProductNewWizard(BaseWizardView):
         domain = form_dict['0'].save(commit=False)
         domain.name = domain.domain
         domain.save()
-        UserProductRelationship.objects.create(
-            product=domain,
+        UserAcquirableRelationship.objects.create(
+            model=domain,
             user=self.request.user)
         messages.success(self.request, _('Product successfully created'))
         return redirect(reverse('domain-index'))

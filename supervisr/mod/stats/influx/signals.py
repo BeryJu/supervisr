@@ -12,7 +12,7 @@ from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_GET_MOD_HEALTH,
                                     SIG_USER_PASS_RESET_FIN,
                                     SIG_USER_POST_CHANGE_PASS,
                                     SIG_USER_POST_SIGN_UP,
-                                    SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
+                                    SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED,
                                     SIG_USER_PRODUCT_RELATIONSHIP_DELETED,
                                     SIG_USER_RESEND_CONFIRM)
 from supervisr.mod.stats.influx.influx_client import InfluxClient
@@ -21,53 +21,45 @@ from supervisr.mod.stats.influx.influx_client import InfluxClient
 @receiver(SIG_GET_MOD_HEALTH)
 # pylint: disable=unused-argument
 def stats_influx_handle_health(sender, **kwargs):
-    """
-    Create initial settings needed
-    """
+    """Create initial settings needed"""
     if Setting.get_bool('enabled'):
         with InfluxClient():
             return True
     else:
         return True
 
-@receiver(SIG_USER_PRODUCT_RELATIONSHIP_CREATED)
+@receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED)
 # pylint: disable=unused-argument
-def stats_influx_handle_upr_created(sender, upr, **kwargs):
-    """
-    Handle stats for SIG_USER_PRODUCT_RELATIONSHIP_CREATED
-    """
+def stats_influx_handle_releationship_created(sender, relationship, **kwargs):
+    """Handle stats for SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED"""
     if Setting.get_bool('enabled'):
         with InfluxClient() as client:
             client.write('signal',
                          tags={
-                             'kind': 'upr',
+                             'kind': 'relationship',
                              'action': 'created',
-                             'user': 'Anonymous' if upr.user.username == '' else upr.user.username,
+                             'user': 'Anonymous' if relationship.user.username == '' else relationship.user.username,
                          },
                          count=1)
 
 @receiver(SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
 # pylint: disable=unused-argument
-def stats_influx_handle_upr_deleted(sender, upr, **kwargs):
-    """
-    Handle stats for SIG_USER_PRODUCT_RELATIONSHIP_DELETED
-    """
+def stats_influx_handle_releationship_deleted(sender, relationship, **kwargs):
+    """Handle stats for SIG_USER_PRODUCT_RELATIONSHIP_DELETED"""
     if Setting.get_bool('enabled'):
         with InfluxClient() as client:
             client.write('signal',
                          tags={
-                             'kind': 'upr',
+                             'kind': 'relationship',
                              'action': 'deleted',
-                             'user': 'Anonymous' if upr.user.username == '' else upr.user.username,
+                             'user': 'Anonymous' if relationship.user.username == '' else relationship.user.username,
                          },
                          count=1)
 
 @receiver(SIG_USER_POST_SIGN_UP)
 # pylint: disable=unused-argument,invalid-name
 def stats_influx_handle_user_post_sign_up(sender, user, **kwargs):
-    """
-    Handle stats for SIG_USER_POST_SIGN_UP
-    """
+    """Handle stats for SIG_USER_POST_SIGN_UP"""
     if Setting.get_bool('enabled'):
         with InfluxClient() as client:
             client.write('signal',
@@ -81,9 +73,7 @@ def stats_influx_handle_user_post_sign_up(sender, user, **kwargs):
 @receiver(SIG_USER_POST_CHANGE_PASS)
 # pylint: disable=unused-argument,invalid-name
 def stats_influx_handle_user_post_change_pass(sender, user, **kwargs):
-    """
-    Handle stats for SIG_USER_POST_CHANGE_PASS
-    """
+    """Handle stats for SIG_USER_POST_CHANGE_PASS"""
     if Setting.get_bool('enabled'):
         with InfluxClient() as client:
             client.write('signal',
@@ -97,9 +87,7 @@ def stats_influx_handle_user_post_change_pass(sender, user, **kwargs):
 @receiver(SIG_USER_PASS_RESET_FIN)
 # pylint: disable=unused-argument,invalid-name
 def stats_influx_handle_user_pass_reset_fin(sender, user, **kwargs):
-    """
-    Handle stats for SIG_USER_PASS_RESET_FIN
-    """
+    """Handle stats for SIG_USER_PASS_RESET_FIN"""
     if Setting.get_bool('enabled'):
         with InfluxClient() as client:
             client.write('signal',
@@ -113,9 +101,7 @@ def stats_influx_handle_user_pass_reset_fin(sender, user, **kwargs):
 @receiver(SIG_USER_CONFIRM)
 # pylint: disable=unused-argument,invalid-name
 def stats_influx_handle_user_confirm(sender, user, **kwargs):
-    """
-    Handle stats for SIG_USER_CONFIRM
-    """
+    """Handle stats for SIG_USER_CONFIRM"""
     if Setting.get_bool('enabled'):
         with InfluxClient() as client:
             client.write('signal',
@@ -129,9 +115,7 @@ def stats_influx_handle_user_confirm(sender, user, **kwargs):
 @receiver(user_logged_in)
 # pylint: disable=unused-argument
 def stats_influx_handle_user_login(sender, user, **kwargs):
-    """
-    Handle stats for user_logged_in
-    """
+    """Handle stats for user_logged_in"""
     if Setting.get_bool('enabled'):
         with InfluxClient() as client:
             client.write('signal',
@@ -145,9 +129,7 @@ def stats_influx_handle_user_login(sender, user, **kwargs):
 @receiver(user_logged_out)
 # pylint: disable=unused-argument
 def stats_influx_handle_user_logout(sender, user, **kwargs):
-    """
-    Handle stats for user_logged_out
-    """
+    """Handle stats for user_logged_out"""
     if Setting.get_bool('enabled'):
         with InfluxClient() as client:
             client.write('signal',
@@ -161,9 +143,7 @@ def stats_influx_handle_user_logout(sender, user, **kwargs):
 @receiver(SIG_USER_RESEND_CONFIRM)
 # pylint: disable=unused-argument,invalid-name
 def stats_influx_handle_user_resend_confirm(sender, user, **kwargs):
-    """
-    Handle stats for SIG_USER_RESEND_CONFIRM
-    """
+    """Handle stats for SIG_USER_RESEND_CONFIRM"""
     if Setting.get_bool('enabled'):
         with InfluxClient() as client:
             client.write('signal',
@@ -177,9 +157,7 @@ def stats_influx_handle_user_resend_confirm(sender, user, **kwargs):
 @receiver(SIG_DOMAIN_CREATED)
 # pylint: disable=unused-argument,invalid-name
 def stats_influx_handle_domain_create(sender, **kwargs):
-    """
-    Handle stats for SIG_DOMAIN_CREATE
-    """
+    """Handle stats for SIG_DOMAIN_CREATE"""
     if Setting.get_bool('enabled'):
         with InfluxClient() as client:
             client.write('signal',
@@ -192,9 +170,7 @@ def stats_influx_handle_domain_create(sender, **kwargs):
 @receiver(SIG_SET_STAT)
 # pylint: disable=unused-argument
 def stats_influx_handle_set_stat(sender, key, value, **kwargs):
-    """
-    Handle stats for SET_STAT
-    """
+    """Handle stats for SET_STAT"""
     if Setting.get_bool('enabled'):
         with InfluxClient() as client:
             client.write('stat', **{key: value})

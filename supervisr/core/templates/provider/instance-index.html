@@ -26,6 +26,7 @@
       <th>{% trans 'Name' %}</th>
       <th>{% trans 'Provider' %}</th>
       <th>{% trans 'Credentials' %}</th>
+      <th>{% trans 'Capabilities' %}</th>
       <th>{% trans 'Authentication Status' %}</th>
     </tr>
   </thead>
@@ -35,6 +36,7 @@
       <td><span>{{ instance.name }}</span></td>
       <td><span>{{ instance.provider.get_meta.ui_name }}</span></td>
       <td><span>{{ instance.credentials.name }}</span></td>
+      <td><span>{{ instance.provider.get_meta.get_capabilities|join:', ' }}</span></td>
       <td>
         {% with status=instance.provider.check_status %}
           {% if status == True %}

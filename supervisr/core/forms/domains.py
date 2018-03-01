@@ -25,24 +25,12 @@ class DomainForm(forms.ModelForm):
         if not re.match(r'^%s$' % DOMAIN_REGEX, self.cleaned_data.get('domain_name')):
             LOGGER.debug("Domain didn't match regex")
             raise forms.ValidationError(_('Domain name is not valid'))
-        # Import provider based on form
-        # also check in form if class exists and is subclass of BaseProvider
-        provider = ProviderInstance.objects.filter(
-            pk=self.cleaned_data.get('provider_instance'),
-            useracquirablerelationship__user__in=[self.request.user])
-        if not provider.exists():
-            LOGGER.debug("Invalid Provider Instance")
-            raise ValidationError("Invalid Provider Instance")
-        r_prov_inst = provider.first().provider
-        r_prov_dom_inst = r_prov_inst.domain_provider(provider.first().credentials)
-        LOGGER.debug("About to provider.check_available")
-        r_prov_dom_inst.check_available(self.cleaned_data.get('domain_name'))
         return self.cleaned_data.get('domain_name')
 
     class Meta:
 
         model = Domain
-        fields = ['provider_instance', 'domain_name']
+        fields = ['provider_instance', 'domain_name', 'is_sub']
         labels = {
             'provider_instance': _('Provider (Registrar)'),
         }

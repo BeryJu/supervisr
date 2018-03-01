@@ -10,7 +10,7 @@ from django.utils.translation import ugettext as _
 from oauth2_provider.models import get_application_model
 from oauth2_provider.views.base import AuthorizationView
 
-from supervisr.core.models import Event, UserProductRelationship
+from supervisr.core.models import Event, UserAcquirableRelationship
 
 LOGGER = logging.getLogger(__name__)
 
@@ -34,9 +34,10 @@ class SupervisrAuthorizationView(AuthorizationView):
                 app.productextensionoauth2_set.first().product_set.exists():
                 # Only check if there is a connection from OAuth2 Application to product
                 product = app.productextensionoauth2_set.first().product_set.first()
-                upr = UserProductRelationship.objects.filter(user=request.user, product=product)
+                relationship = UserAcquirableRelationship.objects.filter(user=request.user,
+                                                                         model=product)
                 # Product is invite_only = True and no relation with user exists
-                if product.invite_only and not upr.exists():
+                if product.invite_only and not relationship.exists():
                     LOGGER.warning("User '%s' has no invitation to '%s'", request.user, product)
                     messages.error(request, "You have no access to '%s'" % product.name)
                     raise Http404

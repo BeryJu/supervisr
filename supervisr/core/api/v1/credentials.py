@@ -2,7 +2,7 @@
 Supervisr Core Credential APIv1
 """
 
-from supervisr.core.api.models import ProductAPI
+from supervisr.core.api.models import UserAcquirableModelAPI
 from supervisr.core.forms.providers import (InternalCredentialForm,
                                             NewCredentialAPIForm,
                                             NewCredentialUserPasswordForm,
@@ -10,7 +10,7 @@ from supervisr.core.forms.providers import (InternalCredentialForm,
 from supervisr.core.models import BaseCredential
 
 
-class CredentialAPI(ProductAPI):
+class CredentialAPI(UserAcquirableModelAPI):
     """
     Credential API
     """

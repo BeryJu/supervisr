@@ -10,7 +10,7 @@ from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
                                            PasswordResetFinishForm, SignupForm)
 from supervisr.core.forms.domains import DomainForm
 from supervisr.core.models import (ProviderInstance, Setting, User,
-                                   UserProductRelationship, get_system_user)
+                                   UserAcquirableRelationship, get_system_user)
 from supervisr.core.providers.internal import InternalCredential
 from supervisr.core.test.utils import test_request
 from supervisr.core.views.common import index
@@ -130,30 +130,30 @@ class TestForms(TestCase):
         prov_inst = ProviderInstance.objects.create(
             credentials=creds,
             provider_path='supervisr.core.providers.internal.InternalBaseProvider')
-        UserProductRelationship.objects.create(
-            product=prov_inst,
+        UserAcquirableRelationship.objects.create(
+            model=prov_inst,
             user=user)
 
         # Test valid form
         form_a = DomainForm(data={
-            'domain': 'test.org',
-            'provider': prov_inst.pk
+            'domain_name': 'test.org',
+            'provider_instance': prov_inst.pk
         })
         form_a.request = test_request(index, user=user, just_request=True)
         self.assertTrue(form_a.is_valid())
 
         # Test invalid domain
         form_b = DomainForm(data={
-            'domain': '1test.',
-            'provider': prov_inst.pk
+            'domain_name': '1test.',
+            'provider_instance': prov_inst.pk
         })
         form_b.request = test_request(index, user=user, just_request=True)
         self.assertFalse(form_b.is_valid())
 
         # Test invalid provider
         form_c = DomainForm(data={
-            'domain': 'test.org',
-            'provider': -1
+            'domain_name': 'test.org',
+            'provider_instance': -1
         })
         form_c.request = test_request(index, user=user, just_request=True)
         self.assertFalse(form_c.is_valid())

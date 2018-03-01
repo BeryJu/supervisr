@@ -6,7 +6,8 @@ import os
 
 from django.test import TestCase
 
-from supervisr.core.models import Event, Product, User, UserProductRelationship
+from supervisr.core.models import (Event, Product, User,
+                                   UserAcquirableRelationship)
 from supervisr.core.signals import SIG_USER_POST_SIGN_UP
 
 
@@ -37,8 +38,8 @@ class TestProduct(TestCase):
             sender=None,
             user=self.user,
             request=None)
-        rel = UserProductRelationship.objects.filter(
-            product=self.product_a,
+        rel = UserAcquirableRelationship.objects.filter(
+            model=self.product_a,
             user=self.user)
         self.assertTrue(rel.exists())
 
@@ -53,26 +54,10 @@ class TestProduct(TestCase):
             price=0.000,
             auto_all_add=True)
         # self.assertEqual(product_b.pk, 2)
-        rel = UserProductRelationship.objects.filter(
-            product=product_b,
+        rel = UserAcquirableRelationship.objects.filter(
+            model=product_b,
             user=self.user)
         self.assertTrue(rel.exists())
-
-    def test_instance_name(self):
-        """
-        Test UserProductRelationship's instance_name
-        """
-        product = Product.objects.create(
-            name="Test Product B",
-            slug="test-product-b",
-            description="Test Product B with auto_all_add=True",
-            price=0.000,
-            auto_all_add=True)
-        rel = UserProductRelationship(
-            product=product,
-            user=self.user,
-            instance_name='test')
-        self.assertEqual(rel.name, 'test')
 
     def test_product_delete(self):
         """
@@ -84,9 +69,8 @@ class TestProduct(TestCase):
             description="Test Product B with auto_all_add=True",
             price=0.000,
             auto_all_add=True)
-        UserProductRelationship(
-            product=product,
-            user=self.user,
-            instance_name='test')
+        UserAcquirableRelationship(
+            model=product,
+            user=self.user)
         product.delete()
         self.assertTrue(Event.objects.filter(user=self.user).exists())

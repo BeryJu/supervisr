@@ -30,10 +30,11 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 
 from supervisr.core import fields
+from supervisr.core.decorators import time as time_method
 from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_SETTING_UPDATE,
-                                    SIG_USER_POST_SIGN_UP,
-                                    SIG_USER_PRODUCT_RELATIONSHIP_CREATED,
-                                    SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
+                                    SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED,
+                                    SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED,
+                                    SIG_USER_POST_SIGN_UP)
 from supervisr.core.utils import get_remote_ip, get_reverse_dns
 
 options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('sv_search_url', 'sv_search_fields',)
@@ -96,6 +97,7 @@ class CastableModel(models.Model):
     Base Model for Models using Inheritance to cast them
     """
 
+    @time_method('CastableModel.cast')
     def cast(self):
         """
         This method converts "self" into its correct child class.
@@ -347,51 +349,49 @@ class AccountConfirmation(CreatedUpdatedModel):
         return "AccountConfirmation %s, expired: %r" % \
             (self.user.email, self.is_expired)
 
-class UserProductRelationship(CreatedUpdatedModel):
-    """
-    Keeps track of a relationship between a User and a Product, with optional instance informations
-    """
-    user_product_relationship_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey('Product', on_delete=models.CASCADE)
-    instance_name = models.TextField(blank=True, null=True)
-    expiry_delta = models.BigIntegerField(default=0)
-    discount_percent = models.IntegerField(default=0)
+# class UserProductRelationship(CreatedUpdatedModel):
+#     """
+#     Keeps track of a relationship between a User and a Product, with optional instance informations
+#     """
+#     user_product_relationship_id = models.AutoField(primary_key=True)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     product = models.ForeignKey('Product', on_delete=models.CASCADE)
+#     instance_name = models.TextField(blank=True, null=True)
+#     expiry_delta = models.BigIntegerField(default=0)
+#     discount_percent = models.IntegerField(default=0)
 
-    @property
-    def name(self):
-        """
-        Returns the instance_name if set, otherwise the product name
-        """
-        if self.instance_name:
-            return self.instance_name
-        return self.product.name
+#     @property
+#     def name(self):
+#         """
+#         Returns the instance_name if set, otherwise the product name
+#         """
+#         if self.instance_name:
+#             return self.instance_name
+#         return self.product.name
 
-    def __str__(self):
-        return _("UserProductRelationship %(product)s %(user)s" % {
-            'user': self.user,
-            'product': self.product,
-            })
+#     def __str__(self):
+#         return _("UserProductRelationship %(product)s %(user)s" % {
+#             'user': self.user,
+#             'product': self.product,
+#             })
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if self.pk is None:
-            # Trigger event that we were saved
-            SIG_USER_PRODUCT_RELATIONSHIP_CREATED.send(
-                sender=UserProductRelationship,
-                uar=self)
-        super(UserProductRelationship, self).save(force_insert, force_update, using, update_fields)
+#     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+#         if self.pk is None:
+#             # Trigger event that we were saved
+#             SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED.send(
+#                 sender=UserProductRelationship,
+#                 relationship=self)
+#         super(UserProductRelationship, self).save(force_insert, force_update, using, update_fields)
 
 @receiver(pre_delete)
 # pylint: disable=unused-argument
-def uar_pre_delete(sender, instance, **kwargs):
-    """
-    Send signal when uar is deleted
-    """
-    if sender == UserProductRelationship:
+def relationship_pre_delete(sender, instance, **kwargs):
+    """Send signal when relationship is deleted"""
+    if sender == UserAcquirableRelationship:
         # Send signal to we are going to be deleted
-        SIG_USER_PRODUCT_RELATIONSHIP_DELETED.send(
-            sender=UserProductRelationship,
-            uar=instance)
+        SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED.send(
+            sender=UserAcquirableRelationship,
+            relationship=instance)
 
 class ProductExtension(CreatedUpdatedModel, CastableModel):
     """
@@ -403,6 +403,27 @@ class ProductExtension(CreatedUpdatedModel, CastableModel):
 
     def __str__(self):
         return "ProductExtension %s" % self.extension_name
+
+class StagedProviderChange(CreatedUpdatedModel):
+    """Store information about a staged Provider change"""
+
+    ACTION_CREATE = 'create'
+    ACTION_UPDATE = 'update'
+    ACTION_DELETE = 'delete'
+
+    ACTIONS = (
+        (ACTION_CREATE, _('Create')),
+        (ACTION_UPDATE, _('Update')),
+        (ACTION_DELETE, _('Delete'))
+    )
+
+    provider_instance = models.ForeignKey('ProviderInstance', on_delete=models.CASCADE)
+    model_path = models.TextField(help_text=_('Django-style path, <app_label>.<model_name>'))
+    action = models.CharField(max_length=20, choices=ACTIONS)
+    body = models.TextField(help_text=_('This data is directly passed to the marshall as arg.'))
+
+    def __str__(self):
+        return "StagedProviderChange %s %s" % (self.action, self.model_path)
 
 class UserAcquirable(CastableModel):
     """Base Class for Models that should have an N-M relationship with Users"""
@@ -424,6 +445,14 @@ class UserAcquirableRelationship(models.Model):
 
     user = models.ForeignKey('User', on_delete=models.CASCADE)
     model = models.ForeignKey('UserAcquirable', on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            # Trigger event that we were saved
+            SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED.send(
+                sender=UserAcquirableRelationship,
+                relationship=self)
+        super(UserAcquirableRelationship, self).save(*args, **kwargs)
 
     def __str__(self):
         return "User '%s' <=> UserAcquirable '%s'" % (self.user, self.model.cast())
@@ -490,7 +519,7 @@ class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
         if self.auto_all_add is True:
             # Since there is no better way to do the query other way roundd
             # We have to do it like this
-            rels = list(UserAcquirableRelationship.objects.filter(product=self))
+            rels = list(UserAcquirableRelationship.objects.filter(model=self))
             rels_userlist = []
             users = list(User.objects.all())
             for rel in rels:
@@ -499,7 +528,7 @@ class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
             for missing_user in missing_users:
                 UserAcquirableRelationship.objects.create(
                     user=missing_user,
-                    product=self)
+                    model=self)
 
 class Domain(UserAcquirable, ProviderAcquirableSingle, CreatedUpdatedModel):
     """
@@ -515,7 +544,7 @@ class Domain(UserAcquirable, ProviderAcquirableSingle, CreatedUpdatedModel):
     class Meta:
 
         default_related_name = 'domains'
-        sv_search_fields = ['domain_name', 'provider__name']
+        sv_search_fields = ['domain_name', 'provider_instance__name']
 
 class Event(CreatedUpdatedModel):
     """
@@ -712,9 +741,9 @@ def product_handle_post_signup(sender, signal, user, **kwargs):
     """
     to_add = Product.objects.filter(auto_add=True)
     for product in to_add:
-        UserProductRelationship.objects.create(
+        UserAcquirableRelationship.objects.create(
             user=user,
-            product=product)
+            model=product)
 
 @receiver(post_save, sender=Domain)
 # pylint: disable=unused-argument

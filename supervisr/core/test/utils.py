@@ -13,10 +13,12 @@ from django.http import Http404
 from django.http.response import HttpResponseNotFound, HttpResponseServerError
 from django.test import RequestFactory
 from django.utils import timezone
-from oauth2_provider.models import AccessToken, Application
 
 from supervisr.core.models import ProviderInstance, User
 from supervisr.core.providers.internal import InternalCredential
+
+# from oauth2_provider.models import AccessToken, Application
+
 
 
 # pylint: disable=too-many-arguments
@@ -93,22 +95,22 @@ def call_command_ret(*args, **kwargs):
         call_command(*args, stdout=output, stderr=output, **kwargs)
         return output.getvalue()
 
-def oauth2_get_token(user):
-    """
-    Generate an OAuth2 Token for unittests
-    """
-    app = Application.objects.create(
-        client_type=Application.CLIENT_CONFIDENTIAL,
-        authorization_grant_type=Application.GRANT_AUTHORIZATION_CODE,
-        redirect_uris='https://supervisr-unittest.beryju.org/oauth2/callback',
-        name='dummy',
-        user=user
-    )
-    access_token = AccessToken.objects.create(
-        user=user,
-        scope='read write',
-        expires=timezone.now() + timedelta(seconds=300),
-        token='secret-access-token-key',
-        application=app
-    )
-    return "Bearer {0}".format(access_token)
+# def oauth2_get_token(user):
+#     """
+#     Generate an OAuth2 Token for unittests
+#     """
+#     app = Application.objects.create(
+#         client_type=Application.CLIENT_CONFIDENTIAL,
+#         authorization_grant_type=Application.GRANT_AUTHORIZATION_CODE,
+#         redirect_uris='https://supervisr-unittest.beryju.org/oauth2/callback',
+#         name='dummy',
+#         user=user
+#     )
+#     access_token = AccessToken.objects.create(
+#         user=user,
+#         scope='read write',
+#         expires=timezone.now() + timedelta(seconds=300),
+#         token='secret-access-token-key',
+#         application=app
+#     )
+#     return "Bearer {0}".format(access_token)

@@ -8,7 +8,7 @@ from django.http import HttpResponse, JsonResponse
 
 
 def api_response(request, data):
-    """Prase data in correct format extracted from request"""
+    """Parse data in correct format extracted from request"""
     selected_format = 'json'
     # Check if format is set as a GET Param
     format_keys = ['type', 'format']
