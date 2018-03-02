@@ -27,7 +27,7 @@ def api_response(request, data):
     return JsonResponse({'error': "type '%s' not found" % selected_format, 'code': 400}, status=400)
 
 def api_response_openid(code, data):
-    """This method only renames some keys for OpenID, then uses JSON"""
+    """Serialize data to JSON then apply OpenID field names."""
     remap_table = {
         'id': 'sub',
         'pk': 'sub',
@@ -42,7 +42,7 @@ def api_response_openid(code, data):
     return api_response_json(code, new_data)
 
 def api_response_json(code, data):
-    """Pass dict to django and let it handle the encoding etc"""
+    """Serialize data to JSON"""
     import json
     def date_helper(obj):
         """JSON serializer for objects not serializable by default json code"""
@@ -58,7 +58,8 @@ def api_response_json(code, data):
     return HttpResponse(data, content_type='application/json', status=code)
 
 def api_response_yaml(code, data):
-    """Return data as yaml dict"""
+    """Serialize data to YAML"""
     import yaml
     return HttpResponse(yaml.dump(data, default_flow_style=False),
                         content_type='text/x-yaml', status=code)
+
