@@ -3,10 +3,9 @@ Supervisr Core Domain Views
 """
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.db.models import QuerySet
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
@@ -69,7 +68,7 @@ class DomainEditView(GenericUpdateView):
 
     def get_instance(self) -> QuerySet:
         """Get domain from name"""
-        return self.model.objects.filter(domain=self.kwargs.get('domain'),
+        return self.model.objects.filter(domain_name=self.kwargs.get('domain'),
                                          users__in=[self.request.user])
 
     def update_form(self, form: DomainForm) -> DomainForm:
@@ -93,5 +92,5 @@ class DomainDeleteView(GenericDeleteView):
 
     def get_instance(self) -> QuerySet:
         """Get domain from name"""
-        return self.model.objects.filter(domain=self.kwargs.get('domain'),
+        return self.model.objects.filter(domain_name=self.kwargs.get('domain'),
                                          users__in=[self.request.user])

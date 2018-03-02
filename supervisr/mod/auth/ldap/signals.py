@@ -8,10 +8,10 @@ from ldap3 import version as ldap3_version
 from ldap3.core.exceptions import LDAPCommunicationError, LDAPException
 
 from supervisr.core.signals import (SIG_CHECK_USER_EXISTS, SIG_GET_MOD_HEALTH,
-                                    SIG_GET_MOD_INFO, SIG_USER_CHANGE_PASS,
-                                    SIG_USER_CONFIRM,
+                                    SIG_GET_MOD_INFO,
                                     SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED,
                                     SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED,
+                                    SIG_USER_CHANGE_PASS, SIG_USER_CONFIRM,
                                     SIG_USER_SIGN_UP)
 from supervisr.mod.auth.ldap.ldap_connector import LDAPConnector
 
@@ -54,7 +54,7 @@ def ldap_handle_user_confirm(sender, signal, user, **kwargs):
         LDAP.enable_user(mail=user.email)
 
 @receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED)
-# pylint: disable=unused-argument
+# pylint: disable=unused-argument,invalid-name
 def ldap_handle_relationship_created(sender, signal, relationship, **kwargs):
     """
     Handle creation of user_product_relationship, add to ldap group if needed
@@ -67,7 +67,7 @@ def ldap_handle_relationship_created(sender, signal, relationship, **kwargs):
                 mail=relationship.user.email)
 
 @receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED)
-# pylint: disable=unused-argument
+# pylint: disable=unused-argument,invalid-name
 def ldap_handle_relationship_deleted(sender, signal, relationship, **kwargs):
     """
     Handle deletion of user_product_relationship, remove from group if needed

@@ -8,12 +8,12 @@ from django.dispatch import receiver
 
 from supervisr.core.models import Setting
 from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_GET_MOD_HEALTH,
-                                    SIG_SET_STAT, SIG_USER_CONFIRM,
-                                    SIG_USER_PASS_RESET_FIN,
+                                    SIG_SET_STAT,
+                                    SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED,
+                                    SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED,
+                                    SIG_USER_CONFIRM, SIG_USER_PASS_RESET_FIN,
                                     SIG_USER_POST_CHANGE_PASS,
                                     SIG_USER_POST_SIGN_UP,
-                                    SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED,
-                                    SIG_USER_PRODUCT_RELATIONSHIP_DELETED,
                                     SIG_USER_RESEND_CONFIRM)
 from supervisr.mod.stats.influx.influx_client import InfluxClient
 
@@ -29,7 +29,7 @@ def stats_influx_handle_health(sender, **kwargs):
         return True
 
 @receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED)
-# pylint: disable=unused-argument
+# pylint: disable=unused-argument,invalid-name
 def stats_influx_handle_releationship_created(sender, relationship, **kwargs):
     """Handle stats for SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED"""
     if Setting.get_bool('enabled'):
@@ -38,21 +38,23 @@ def stats_influx_handle_releationship_created(sender, relationship, **kwargs):
                          tags={
                              'kind': 'relationship',
                              'action': 'created',
-                             'user': 'Anonymous' if relationship.user.username == '' else relationship.user.username,
+                             'user': 'Anonymous' if relationship.user.username == ''
+                                     else relationship.user.username,
                          },
                          count=1)
 
-@receiver(SIG_USER_PRODUCT_RELATIONSHIP_DELETED)
-# pylint: disable=unused-argument
+@receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED)
+# pylint: disable=unused-argument,invalid-name
 def stats_influx_handle_releationship_deleted(sender, relationship, **kwargs):
-    """Handle stats for SIG_USER_PRODUCT_RELATIONSHIP_DELETED"""
+    """Handle stats for SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED"""
     if Setting.get_bool('enabled'):
         with InfluxClient() as client:
             client.write('signal',
                          tags={
                              'kind': 'relationship',
                              'action': 'deleted',
-                             'user': 'Anonymous' if relationship.user.username == '' else relationship.user.username,
+                             'user': 'Anonymous' if relationship.user.username == ''
+                                     else relationship.user.username,
                          },
                          count=1)
 

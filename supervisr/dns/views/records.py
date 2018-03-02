@@ -3,10 +3,9 @@ Supervisr DNS record views
 """
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.db.models import QuerySet
-from django.http import Http404, HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.models import UserAcquirableRelationship
@@ -22,6 +21,7 @@ class RecordIndexView(GenericIndexView):
 
     model = Record
     template = 'dns/records/index.html'
+    zone = None
 
     def get_instance(self) -> QuerySet:
         self.zone = get_object_or_404(Zone, domain__domain_name=self.kwargs.get('zone'),
@@ -70,6 +70,7 @@ class RecordUpdateView(GenericUpdateView):
 
     model = Record
     form = RecordForm
+    zone = None
 
     def get_instance(self) -> QuerySet:
         self.zone = get_object_or_404(Zone, domain__domain_name=self.kwargs.get('zone'),
@@ -94,6 +95,7 @@ class RecordDeleteView(GenericDeleteView):
     """Delete a record"""
 
     model = Record
+    zone = None
 
     def get_instance(self) -> QuerySet:
         self.zone = get_object_or_404(Zone, domain__domain_name=self.kwargs.get('zone'),

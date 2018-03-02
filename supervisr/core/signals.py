@@ -84,30 +84,34 @@ def crypt6_handle_user_change_pass(signal, user, password, **kwargs):
 # pylint: disable=unused-argument
 def stat_output_verbose(signal, key, value, **kwargs):
     """Output stats to LOGGER"""
-    LOGGER.debug("Stats: '%s': '%s'", key, value)
+    LOGGER.debug("Stats: '%s': %r", key, value)
 
 @receiver(post_save)
 # pylint: disable=unused-argument
-def proxy_on_save(sender, instance, created, **kwargs):
-    """Forward signal to ProviderProxy"""
-    from supervisr.core.providers.proxy import ProviderProxy
+def change_on_save(sender, instance, created, **kwargs):
+    """Forward signal to ChangeBuilder"""
+    from supervisr.core.providers.change import ChangeBuilder
     from supervisr.core.models import ProviderAcquirable, ProviderAcquirableSingle
 
-    proxy = ProviderProxy()
-    if isinstance(instance, ProviderAcquirable):
-        proxy.on_model_saved(instance, instance.providers, created)
-    elif isinstance(instance, ProviderAcquirableSingle):
-        proxy.on_model_saved(instance, [instance.provider_instance, ], created)
+    change = ChangeBuilder()
+    if issubclass(instance.__class__, ProviderAcquirable) and \
+        instance.__class__ is not ProviderAcquirable:
+        change.on_model_saved(instance, instance.providers, created)
+    elif issubclass(instance.__class__, ProviderAcquirableSingle) and \
+        instance.__class__ is not ProviderAcquirableSingle:
+        change.on_model_saved(instance, [instance.provider_instance, ], created)
 
 @receiver(pre_delete)
 # pylint: disable=unused-argument
-def proxy_on_delete(sender, instance, *args, **kwargs):
-    """Forward signal to ProviderProxy"""
-    from supervisr.core.providers.proxy import ProviderProxy
+def change_on_delete(sender, instance, *args, **kwargs):
+    """Forward signal to ChangeBuilder"""
+    from supervisr.core.providers.change import ChangeBuilder
     from supervisr.core.models import ProviderAcquirable, ProviderAcquirableSingle
 
-    proxy = ProviderProxy()
-    if isinstance(instance, ProviderAcquirable):
-        proxy.on_model_deleted(instance, instance.providers)
-    elif isinstance(instance, ProviderAcquirableSingle):
-        proxy.on_model_deleted(instance, [instance.provider_instance, ])
+    change = ChangeBuilder()
+    if issubclass(instance.__class__, ProviderAcquirable) and \
+        instance.__class__ is not ProviderAcquirable:
+        change.on_model_deleted(instance, instance.providers)
+    elif issubclass(instance.__class__, ProviderAcquirableSingle) and \
+        instance.__class__ is not ProviderAcquirableSingle:
+        change.on_model_deleted(instance, [instance.provider_instance, ])

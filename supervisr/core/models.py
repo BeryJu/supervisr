@@ -138,6 +138,7 @@ class User(AbstractUser):
 
     @property
     def short_name(self):
+        """Get first_name if set, else username"""
         if self.first_name:
             return self.first_name
         return self.username
@@ -348,40 +349,6 @@ class AccountConfirmation(CreatedUpdatedModel):
     def __str__(self):
         return "AccountConfirmation %s, expired: %r" % \
             (self.user.email, self.is_expired)
-
-# class UserProductRelationship(CreatedUpdatedModel):
-#     """
-#     Keeps track of a relationship between a User and a Product, with optional instance informations
-#     """
-#     user_product_relationship_id = models.AutoField(primary_key=True)
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     product = models.ForeignKey('Product', on_delete=models.CASCADE)
-#     instance_name = models.TextField(blank=True, null=True)
-#     expiry_delta = models.BigIntegerField(default=0)
-#     discount_percent = models.IntegerField(default=0)
-
-#     @property
-#     def name(self):
-#         """
-#         Returns the instance_name if set, otherwise the product name
-#         """
-#         if self.instance_name:
-#             return self.instance_name
-#         return self.product.name
-
-#     def __str__(self):
-#         return _("UserProductRelationship %(product)s %(user)s" % {
-#             'user': self.user,
-#             'product': self.product,
-#             })
-
-#     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-#         if self.pk is None:
-#             # Trigger event that we were saved
-#             SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED.send(
-#                 sender=UserProductRelationship,
-#                 relationship=self)
-#         super(UserProductRelationship, self).save(force_insert, force_update, using, update_fields)
 
 @receiver(pre_delete)
 # pylint: disable=unused-argument

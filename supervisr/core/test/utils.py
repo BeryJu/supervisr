@@ -2,7 +2,6 @@
 Supervisr Core test utils
 """
 
-from datetime import timedelta
 from io import StringIO
 
 from django.contrib.auth.models import AnonymousUser
@@ -12,13 +11,9 @@ from django.core.management import call_command
 from django.http import Http404
 from django.http.response import HttpResponseNotFound, HttpResponseServerError
 from django.test import RequestFactory
-from django.utils import timezone
 
 from supervisr.core.models import ProviderInstance, User
 from supervisr.core.providers.internal import InternalCredential
-
-# from oauth2_provider.models import AccessToken, Application
-
 
 
 # pylint: disable=too-many-arguments

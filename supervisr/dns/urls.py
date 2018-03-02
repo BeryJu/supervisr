@@ -3,8 +3,7 @@
 from django.conf.urls import url
 
 from supervisr.core.regex import DOMAIN_REGEX, UUID_REGEX
-from supervisr.dns.views import (migrate, providers, records, resource,
-                                 resourcesets, zones)
+from supervisr.dns.views import migrate, records, resource, resourcesets, zones
 
 urlpatterns = [
     url(r'^zones/$', zones.ZoneIndexView.as_view(), name='index'),
@@ -40,6 +39,4 @@ urlpatterns = [
         resource.ResourceUpdateView.as_view(), name='resource-update'),
     url(r'^resource/(?P<resource_uuid>%s)/delete/$' % UUID_REGEX,
         resource.ResourceDeleteView.as_view(), name='resource-delete'),
-    # Providers
-    url(r'^providers/render/$', providers.ProviderRenderView.as_view(), name='provider-render'),
 ]

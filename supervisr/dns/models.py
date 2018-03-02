@@ -4,11 +4,9 @@ Supervisr DNS Models
 
 from uuid import uuid4
 
-from django.conf import settings
 from django.db import models
 
-from supervisr.core.models import (CreatedUpdatedModel, Domain,
-                                   ProviderAcquirable, UserAcquirable)
+from supervisr.core.models import Domain, ProviderAcquirable, UserAcquirable
 
 # imported from powerdns
 RECORD_TYPES = (

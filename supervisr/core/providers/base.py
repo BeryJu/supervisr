@@ -6,7 +6,6 @@ from typing import List
 
 from django.utils.translation import ugettext_lazy as _
 
-from supervisr.core.providers.commit import ProviderCommitChange
 from supervisr.core.providers.objects import ProviderObjectMarshall
 
 
@@ -86,11 +85,12 @@ class BaseProvider(object):
         """Get a list of all marshall classes for this provider"""
         marshalls = []
         for _prop in dir(self):
-            if _prop.endswith('_marshall') and issubclass(getattr(self, _prop), ProviderObjectMarshall):
+            if _prop.endswith('_marshall') and \
+                issubclass(getattr(self, _prop), ProviderObjectMarshall):
                 marshalls.append(getattr(self, _prop))
         return marshalls
 
-    def save(self, commit=False) -> List[ProviderCommitChange]:
+    def save(self, commit=False):
         """Save changes. If commit is set to false, just return changes"""
         changes = []
         # detect changes here and save

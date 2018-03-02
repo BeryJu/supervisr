@@ -1,51 +1,36 @@
-"""
-Supervisr Internal Provider
-"""
+"""Supervisr Internal Provider"""
 
 from django.utils.translation import ugettext_lazy as _
 
-from supervisr.core.decorators import ifapp
 from supervisr.core.models import BaseCredential
 from supervisr.core.providers.base import BaseProvider, ProviderMetadata
 from supervisr.core.providers.domain import DomainProvider
 
 
 class InternalCredential(BaseCredential):
-    """
-    Internally used Credential
-    """
+    """Internally used Credential"""
 
     form = 'supervisr.core.forms.providers.InternalCredentialForm'
 
     @staticmethod
     def type():
-        """
-        Return type
-        """
+        """Return type"""
         return _('Internal Credential')
 
 class InternalDomainProvider(DomainProvider):
-    """
-    Internal Domain Provider which serves to test
-    """
+    """Internal Domain Provider which serves to test"""
 
     def check_credentials(self, credentials=None):
-        """
-        Check if credentials are instance of APIKeyCredential
-        """
+        """Check if credentials are instance of APIKeyCredential"""
         return True
 
     def check_status(self):
-        """
-        Check connection status
-        """
+        """Check connection status"""
         return True
 
     # pylint: disable=too-few-public-methods
     class Meta(ProviderMetadata):
-        """
-        Internal Domain Provider Meta
-        """
+        """Internal Domain Provider Meta"""
 
         selectable = False
 
@@ -54,29 +39,21 @@ class InternalDomainProvider(DomainProvider):
             self.ui_name = _('Internal Domain Provider')
 
 class InternalBaseProvider(BaseProvider):
-    """
-    Internal Provider which serves to test
-    """
+    """Internal Provider which serves to test"""
 
     domain_provider = InternalDomainProvider
 
     def check_credentials(self, credentials=None):
-        """
-        Check if credentials are instance of APIKeyCredential
-        """
+        """Check if credentials are instance of APIKeyCredential"""
         return True
 
     def check_status(self):
-        """
-        Check connection status
-        """
+        """Check connection status"""
         return True
 
     # pylint: disable=too-few-public-methods
     class Meta(ProviderMetadata):
-        """
-        Internal Base Provider meta
-        """
+        """Internal Base Provider meta"""
 
         selectable = True
 

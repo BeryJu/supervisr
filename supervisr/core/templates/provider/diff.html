@@ -1,0 +1,13 @@
+{% extends "common/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+
+{% block title %}
+{% supervisr_title "Providers" %}
+{% endblock %}
+
+{% block content %}
+<h1><clr-icon shape="layers" size="48"></clr-icon>{% blocktrans with provider_name=provider.name %}Staged change for {{provider_name}}{% endblocktrans %}</h1>
+{{ diff }}
+{% endblock %}

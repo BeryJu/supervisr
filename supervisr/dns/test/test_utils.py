@@ -1,6 +1,4 @@
-"""
-Supervisr DNS Util Test
-"""
+"""Supervisr DNS Util Test"""
 from django.test import TestCase
 
 from supervisr.dns.utils import zone_to_rec
@@ -35,12 +33,8 @@ www         A        163.172.31.151
 
 
 class TestUtils(TestCase):
-    """
-    Supervisr DNS Util Test
-    """
+    """Supervisr DNS Util Test"""
 
-    # def test_util_zone_to_rec(self):
-    #     """
-    #     Test Util's domain setter and getter
-    #     """
-    #     zone_to_rec(BIND_ZONE)
+    def test_util_zone_to_rec(self):
+        """Test bind zone importer"""
+        zone_to_rec(BIND_ZONE)

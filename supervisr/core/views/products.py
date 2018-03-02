@@ -29,8 +29,8 @@ def view(request, slug):
     @ifapp('supervisr_static')
     def redirect_to_static(request, slug):
         """if static app is installed, use static's productpage"""
-        from supervisr.static.views import view
-        return view(request, slug)
+        from supervisr.static.views import PageView
+        return PageView.as_view()(request, slug)
     product = get_object_or_404(Product, slug=slug)
     # If the product is not invite_only
     # and the user is not associated with the product
@@ -49,7 +49,7 @@ def view(request, slug):
 @user_passes_test(lambda u: u.is_superuser)
 def admin_index(request):
     """Show product overview for admins"""
-    products = Product.objects.filter(auto_generated=False)
+    products = Product.objects.all()
     return render(request, 'product/admin_index.html', {
         'products': products
         })

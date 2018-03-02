@@ -3,11 +3,10 @@ Supervisr OnlineNet Provider
 """
 
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
-from supervisr.core.models import BaseCredential
 from supervisr.core.providers.base import BaseProvider, ProviderMetadata
+from supervisr.core.providers.internal import InternalCredential
 from supervisr.core.utils import check_db_connection
 from supervisr.mod.provider.powerdns.providers.dns import PowerDNSDBDNSProvider
 
@@ -20,7 +19,7 @@ class PowerDNSDBProvider(BaseProvider):
     api = None
     dns_provider = PowerDNSDBDNSProvider
 
-    def check_credentials(self, credentials=None):
+    def check_credentials(self, credentials: InternalCredential = None):
         """
         Check if credentials are instance of BaseCredential
         """
@@ -33,6 +32,7 @@ class PowerDNSDBProvider(BaseProvider):
         for name in ['powerdns', 'pdns', 'dns', 'default']:
             if name in settings.DATABASES:
                 return check_db_connection(name)
+        return False
 
     class Meta(ProviderMetadata):
         """

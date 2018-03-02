@@ -172,7 +172,6 @@ class SupervisrCoreConfig(SupervisrAppConfig):
             'branding': 'supervisr',
             'branding:icon': '',
             'domain': 'http://localhost/',
-            'maintenancemode': False,
             'password:filter': r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])'
                                r'[A-Za-z\d$@$!%*?&]{8,}',
             'password:filter:description': 'Minimum 8 characters at least 1 Uppercase Alphabet, 1'

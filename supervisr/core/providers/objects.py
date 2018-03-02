@@ -1,8 +1,6 @@
 """supervisr core provider ObjectMarshall"""
 from typing import Generic, List, TypeVar
 
-from supervisr.core.providers.commit import ProviderCommitChange
-
 T = TypeVar('T')
 
 class ProviderObjectMarshall(Generic[T]):
@@ -34,6 +32,6 @@ class ProviderObjectMarshall(Generic[T]):
         """Delete instance"""
         raise NotImplementedError()
 
-    def save(self, commit=False) -> List[ProviderCommitChange]:
+    def save(self, commit=False):
         """Save changes if commit=True"""
         raise NotImplementedError()

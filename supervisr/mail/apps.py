@@ -11,8 +11,3 @@ class SupervisrMailConfig(SupervisrAppConfig):
     verbose_name = 'Supervisr Mail'
     navbar_enabled = lambda self, request: True
     title_modifier = lambda self, request: 'Mail'
-
-    def ensure_settings(self):
-        return {
-            'debug': False,
-        }

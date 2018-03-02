@@ -3,20 +3,22 @@ Supervisr Core Provider Views
 """
 
 import importlib
+from pprint import pprint
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
-from django.http import Http404, HttpResponse
-from django.shortcuts import redirect, render
+from django.http import Http404, HttpRequest, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
+from django.views import View
 
 from supervisr.core.forms.providers import CredentialForm, ProviderForm
 from supervisr.core.models import (BaseCredential, ProviderInstance,
                                    UserAcquirableRelationship)
 from supervisr.core.providers.base import get_providers
+from supervisr.core.providers.change import ChangeBuilder
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
                                           GenericUpdateView)
 from supervisr.core.views.wizards import BaseWizardView
@@ -37,7 +39,7 @@ PROVIDER_TEMPLATES = {
 }
 
 # pylint: disable=too-many-ancestors
-class ProviderNewView(BaseWizardView):
+class ProviderCreateView(BaseWizardView):
     """Wizard to create a Domain"""
 
     title = _("New Provider")
@@ -45,7 +47,7 @@ class ProviderNewView(BaseWizardView):
     form_list = [ProviderForm]
 
     def get_form(self, step=None, data=None, files=None):
-        form = super(ProviderNewView, self).get_form(step, data, files)
+        form = super(ProviderCreateView, self).get_form(step, data, files)
         if step is None:
             step = self.steps.current
         if step == '0':
@@ -59,7 +61,7 @@ class ProviderNewView(BaseWizardView):
         return form
 
     def get_context_data(self, form, **kwargs):
-        context = super(ProviderNewView, self).get_context_data(form=form, **kwargs)
+        context = super(ProviderCreateView, self).get_context_data(form=form, **kwargs)
         if self.steps.current == '0':
             context.update({'providers': self.providers})
         return context
@@ -69,15 +71,15 @@ class ProviderNewView(BaseWizardView):
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs):
-        creds = form_dict['0'].cleaned_data.get('credentials')
-        if not creds.owner == self.request.user:
+        credentials = form_dict['0'].cleaned_data.get('credentials')
+        if not credentials.owner == self.request.user:
             raise Http404
 
-        r_creds = creds.cast()
+        r_credentials = credentials.cast()
 
         prov_inst = ProviderInstance.objects.create(
             name=form_dict['0'].cleaned_data.get('name'),
-            credentials=r_creds,
+            credentials=r_credentials,
             provider_path=form_dict['0'].cleaned_data.get('provider_path'))
 
         UserAcquirableRelationship.objects.create(
@@ -86,63 +88,57 @@ class ProviderNewView(BaseWizardView):
         messages.success(self.request, _('Provider Instance successfully created'))
         return redirect(reverse('instance-index'))
 
-@login_required
-def instance_edit(request, uuid):
-    """Edit Instance"""
-    inst = ProviderInstance.objects.filter(uuid=uuid, users__in=[request.user])
-    if not inst.exists():
-        raise Http404
-    r_inst = inst.first()
+class ProviderUpdateView(GenericUpdateView):
+    """Update instance"""
 
-    providers = get_providers()
-    creds = BaseCredential.objects.filter(owner=request.user)
-    form_providers = [('%s.%s' % (s.__module__, s.__class__.__name__),
-                       '%s (%s)' % (s.get_meta.ui_name, s.__class__.__name__)) for s in providers]
+    model = ProviderInstance
+    form = ProviderForm
 
-    if request.method == 'POST':
-        form = ProviderForm(request.POST, instance=r_inst)
-        form.request = request
+    def get_instance(self) -> QuerySet:
+        return self.model.objects.filter(uuid=self.kwargs.get('uuid'),
+                                         users__in=[self.request.user])
+
+    def update_form(self, form: ProviderForm) -> ProviderForm:
+        providers = get_providers()
+        credentials = BaseCredential.objects.filter(owner=self.request.user)
+        form_providers = [('%s.%s' % (s.__module__, s.__class__.__name__),
+                           '%s (%s)' % (s.get_meta.ui_name, s.__class__.__name__))
+                          for s in providers]
+
+        form.request = self.request
         form.fields['provider_path'].choices = form_providers
-        form.fields['credentials'].queryset = creds
+        form.fields['credentials'].queryset = credentials
+        return form
 
-        if form.is_valid():
-            form.save()
-            messages.success(request, _('Successfully edited Instance'))
-            return redirect(reverse('instance-index'))
-        messages.error(request, _('Invalid Instance'))
-    else:
-        form = ProviderForm(instance=r_inst)
-        form.request = request
-        form.fields['provider_path'].choices = form_providers
-        form.fields['credentials'].queryset = creds
-
-    return render(request, 'core/generic_form_modal.html', {
-        'form': form,
-        'title': 'Edit %s' % r_inst.name,
-        })
-
-@login_required
-def instance_delete(request, uuid):
-    """Delete Instance"""
-    inst = ProviderInstance.objects.filter(uuid=uuid,
-                                           useracquirablerelationship__user__in=[request.user])
-    if not inst.exists():
-        raise Http404
-    r_inst = inst.first()
-
-    if request.method == 'POST' and 'confirmdelete' in request.POST:
-        # User confirmed deletion
-        r_inst.delete()
-        messages.success(request, _('Instance successfully deleted'))
+    def redirect(self, instance: ProviderInstance) -> HttpResponse:
         return redirect(reverse('instance-index'))
 
-    return render(request, 'core/generic_delete.html', {
-        'object': 'Instance %s' % r_inst.name,
-        'title': 'Delete %s' % r_inst.name,
-        'delete_url': reverse('instance-delete', kwargs={
-            'uuid': r_inst.uuid,
-            })
+class ProviderDiffView(View):
+    """Show changes for a single provider"""
+
+    def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
+        """Show all changes"""
+        provider = get_object_or_404(ProviderInstance, uuid=self.kwargs.get('uuid'),
+                                     useracquirablerelationship__user__in=[request.user])
+        change_builder = ChangeBuilder()
+        changes = change_builder.build_diff(provider)
+        pprint(changes)
+        return render(request, 'provider/diff.html', {
+            'diff': changes,
+            'provider': provider
         })
+
+class ProviderDeleteView(GenericDeleteView):
+    """Delete instance"""
+
+    model = ProviderInstance
+
+    def get_instance(self) ->  QuerySet:
+        return self.model.objects.filter(uuid=self.kwargs.get('uuid'),
+                                         useracquirablerelationship__user__in=[self.request.user])
+
+    def redirect(self, instance: ProviderInstance) -> HttpResponse:
+        return redirect(reverse('instance-index'))
 
 
 class CredentialIndexView(GenericIndexView):

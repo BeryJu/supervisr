@@ -31,6 +31,7 @@ class ResourceSetReadView(GenericReadView):
         return kwargs
 
 
+# pylint: disable=too-many-ancestors
 class ResourceSetCreateView(BaseWizardView):
     """Wizard to create a new ResourceSet"""
 

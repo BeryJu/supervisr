@@ -1,6 +1,4 @@
-"""
-Supervisr Puppet Models
-"""
+"""Supervisr Puppet Models"""
 import hashlib
 import json
 import logging

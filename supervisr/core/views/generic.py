@@ -42,7 +42,7 @@ class GenericModelView(View):
         raise NotImplementedError()
 
     def redirect(self, instance) -> HttpResponse:
-        """Redirect after a successful edit"""
+        """Redirect after a successful write operation"""
         raise NotImplementedError()
 
 class GenericIndexView(GenericModelView):
@@ -87,6 +87,10 @@ class GenericReadView(GenericModelView):
     def update_kwargs(self, kwargs) -> dict:
         """Add additional data to render kwargs"""
         return kwargs
+
+    def redirect(self, instance) -> HttpResponse:
+        """Since this a read-only view we don't need this method"""
+        pass
 
     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle get request"""

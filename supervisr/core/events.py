@@ -40,25 +40,31 @@ def event_handle_user_changed_pass(signal, user, request, was_reset, **kwargs):
         request=request)
 
 @receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED)
-# pylint: disable=unused-argument
+# pylint: disable=unused-argument, invalid-name
 def event_handle_relationship_created(sender, signal, relationship, **kwargs):
     """Create an Event when a User was created"""
+    name = str(relationship.model)
+    if getattr(relationship.model, 'name', False):
+        name = relationship.model.name
     Event.create(
         user=relationship.user,
         message=_("You gained access to %(class)s %(name)s" % {
-            'name': relationship.model.name if getattr(relationship.model, 'name', False) else str(relationship.model),
+            'name': name,
             'class': relationship.model.cast().__class__.__name__,
             }),
         current=True)
 
 @receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED)
-# pylint: disable=unused-argument
+# pylint: disable=unused-argument, invalid-name
 def event_handle_relationship_deleted(sender, signal, relationship, **kwargs):
     """Create an Event to let users know that they lost access to a Model"""
+    name = str(relationship.model)
+    if getattr(relationship.model, 'name', False):
+        name = relationship.model.name
     Event.create(
         user=relationship.user,
         message=_("You lost access to %(name)s" % {
-            'name': relationship.model.name if getattr(relationship.model, 'name', False) else str(relationship.model),
+            'name': name
             }),
         current=True)
 

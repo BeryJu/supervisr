@@ -2,10 +2,9 @@
 from typing import List
 
 from supervisr.core.models import Domain
-from supervisr.core.providers.commit import ProviderCommitChange
 from supervisr.core.providers.objects import ProviderObjectMarshall
 from supervisr.dns.models import Zone
-from supervisr.mod.provider.powerdns.models import Domain
+from supervisr.mod.provider.powerdns.models import Domain as PDNSDomain
 
 
 class PowerDNSZoneMarshall(ProviderObjectMarshall[Zone]):
@@ -13,7 +12,7 @@ class PowerDNSZoneMarshall(ProviderObjectMarshall[Zone]):
 
     def create(self, instance: Zone) -> bool:
         """Create instance of Object with **kwargs"""
-        Domain.objects.create(
+        PDNSDomain.objects.create(
             name=instance.domain.domain_name
         )
 
@@ -34,6 +33,7 @@ class PowerDNSZoneMarshall(ProviderObjectMarshall[Zone]):
                 core_domain = Domain(domain_name=domain.name)
             converted.append(Zone(domain=core_domain))
 
+    # pylint: disable=unused-argument
     def update(self, instance: Zone) -> bool:
         """Write updated instance"""
         # pdns_instance = Domain.objects.filter(name=instance.domain.domain_name)

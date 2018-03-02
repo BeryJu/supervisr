@@ -21,7 +21,7 @@ class TestViews(TestCase):
         """
         Test Single View
         """
-        self.assertEqual(test_request(views.view, url_kwargs={
+        self.assertEqual(test_request(views.PageView.as_view(), url_kwargs={
             'slug': 'changelog',
             }).status_code, 200)
 
@@ -29,7 +29,7 @@ class TestViews(TestCase):
         """
         Test Single View (authenticated)
         """
-        self.assertEqual(test_request(views.view, user=self.user, url_kwargs={
+        self.assertEqual(test_request(views.PageView.as_view(), user=self.user, url_kwargs={
             'slug': 'changelog',
             }).status_code, 200)
 
@@ -37,7 +37,7 @@ class TestViews(TestCase):
         """
         Test Single View (invalid slug)
         """
-        self.assertEqual(test_request(views.view, url_kwargs={
+        self.assertEqual(test_request(views.PageView.as_view(), url_kwargs={
             'slug': 'qqqqqqqqqqqqqqqqq',
             }).status_code, 404)
 
@@ -45,18 +45,19 @@ class TestViews(TestCase):
         """
         Test Feed View
         """
-        self.assertEqual(test_request(views.feed).status_code, 200)
+        self.assertEqual(test_request(views.FeedView.as_view()).status_code, 200)
 
     def test_feed_view_auth(self):
         """
         Test Feed View (authenticated)
         """
-        self.assertEqual(test_request(views.feed, user=self.user).status_code, 200)
+        self.assertEqual(test_request(views.FeedView.as_view(),
+                                      user=self.user).status_code, 200)
 
     def test_feed_view_invalid_page(self):
         """
         Test Feed View (invalid page)
         """
-        self.assertEqual(test_request(views.feed, req_kwargs={
+        self.assertEqual(test_request(views.FeedView.as_view(), req_kwargs={
             'page': 999999999
             }).status_code, 200)

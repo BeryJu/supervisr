@@ -13,6 +13,7 @@ from supervisr.dns.forms.resource import ResourceForm
 from supervisr.dns.models import Resource, ResourceSet
 
 
+# pylint: disable=too-many-ancestors
 class ResourceCreateView(BaseWizardView):
     """Wizard to create a new Resource"""
 
@@ -41,8 +42,7 @@ class ResourceUpdateView(GenericUpdateView):
     def redirect(self, instance):
         if 'back' in self.request.GET:
             return redirect(self.request.GET.get('back'))
-        else:
-            return redirect(reverse('supervisr_dns:index'))
+        return redirect(reverse('supervisr_dns:index'))
 
     def get_instance(self):
         return Resource.objects.filter(uuid=self.kwargs.get('resource_uuid'),
@@ -56,9 +56,8 @@ class ResourceDeleteView(GenericDeleteView):
     def redirect(self, instance):
         if 'back' in self.request.GET:
             return redirect(self.request.GET.get('back'))
-        else:
-            return redirect(reverse('supervisr_dns:index'))
+        return redirect(reverse('supervisr_dns:index'))
 
     def get_instance(self):
         return Resource.objects.filter(uuid=self.kwargs.get('resource_uuid'),
-                                             users__in=[self.request.user])
+                                       users__in=[self.request.user])

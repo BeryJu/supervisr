@@ -11,4 +11,4 @@ Pillow
 schedule
 raven
 django-htmlmin
-mkdocs-material
+deepdiff

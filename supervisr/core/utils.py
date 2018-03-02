@@ -6,7 +6,6 @@ import socket
 from glob import glob
 from importlib import import_module
 from importlib.util import module_from_spec, spec_from_file_location
-from time import time as timestamp
 from uuid import uuid4
 
 from django.apps import apps

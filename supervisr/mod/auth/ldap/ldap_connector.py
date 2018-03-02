@@ -10,8 +10,8 @@ import ldap3
 import ldap3.core.exceptions
 from passlib.hash import sha512_crypt
 
+from supervisr.core.decorators import time
 from supervisr.core.models import Setting, User, make_username
-from supervisr.core.utils import time
 from supervisr.mod.auth.ldap.forms.settings import GeneralSettingsForm
 from supervisr.mod.auth.ldap.models import LDAPGroupMapping, LDAPModification
 

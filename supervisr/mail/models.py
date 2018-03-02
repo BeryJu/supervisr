@@ -8,8 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from passlib.hash import sha512_crypt
 
 from supervisr.core.models import (CreatedUpdatedModel, Domain, Event,
-                                   ProviderAcquirable, ProviderInstance, User,
-                                   UserAcquirable)
+                                   ProviderAcquirable, User, UserAcquirable)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -74,7 +73,7 @@ class Account(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
     size = models.BigIntegerField(default=0)
     password = models.CharField(max_length=128, blank=True)
 
-    def set_password(self, invoker: User, new_password: str, salt: str=None, request=None):
+    def set_password(self, invoker: User, new_password: str, salt: str = None, request=None):
         """Sets a new password with a new salt"""
         self.password = sha512_crypt.hash(new_password, salt=salt)
         LOGGER.debug("Updated Password MailAccount %s", self.email)

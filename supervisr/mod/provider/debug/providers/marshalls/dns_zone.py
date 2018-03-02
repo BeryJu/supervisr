@@ -1,8 +1,6 @@
 """supervisr mod provider Debug Zone Marshall"""
 from typing import List
 
-from supervisr.core.models import Domain
-from supervisr.core.providers.commit import ProviderCommitChange
 from supervisr.core.providers.objects import ProviderObjectMarshall
 from supervisr.dns.models import Zone
 
@@ -22,6 +20,7 @@ class DebugZoneMarshall(ProviderObjectMarshall[Zone]):
         """Return List of Object matching key-value filters from **filters"""
         pass
 
+    # pylint: disable=unused-argument
     def update(self, instance: Zone) -> bool:
         """Write updated instance"""
         # pdns_instance = Domain.objects.filter(name=instance.domain.domain_name)

@@ -2,6 +2,7 @@
 
 from django.contrib import messages
 from django.db.models import QuerySet
+from django.http import HttpResponse
 from django.shortcuts import redirect, reverse
 from django.utils.translation import ugettext as _
 
@@ -24,6 +25,7 @@ class MailDomainIndexView(GenericIndexView):
     def get_instance(self) -> QuerySet:
         return self.model.objects.filter(users__in=[self.request.user])
 
+# pylint: disable=too-many-ancestors
 class MailDomainNewWizard(BaseWizardView):
     """Wizard to create MailDomain"""
 
@@ -68,3 +70,27 @@ class MailDomainReadView(GenericReadView):
     def get_instance(self) -> QuerySet:
         return self.model.objects.filter(users__in=[self.request.user],
                                          domain__domain_name=self.kwargs.get('domain'))
+
+class MailDomainUpdateView(GenericUpdateView):
+    """View to edit a single domain"""
+
+    model = MailDomain
+
+    def get_instance(self) -> QuerySet:
+        return self.model.objects.filter(users__in=[self.request.user],
+                                         domain__domain_name=self.kwargs.get('domain'))
+
+    def redirect(self, instance: MailDomain) -> HttpResponse:
+        return redirect(reverse('supervisr_mail:index'))
+
+class MailDomainDeleteView(GenericDeleteView):
+    """View to delete a single domain"""
+
+    model = MailDomain
+
+    def get_instance(self) -> QuerySet:
+        return self.model.objects.filter(users__in=[self.request.user],
+                                         domain__domain_name=self.kwargs.get('domain'))
+
+    def redirect(self, instance: MailDomain) -> HttpResponse:
+        return redirect(reverse('supervisr_mail:index'))

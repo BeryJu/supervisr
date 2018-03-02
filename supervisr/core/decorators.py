@@ -88,7 +88,7 @@ def time(statistic_key):
             result = method(*args, **kw)
             time_end = timestamp()
 
-            stat_set(statistic_key, (time_end - time_start) * 1000)
+            stat_set(statistic_key, time_end - time_start)
             return result
 
         return timed

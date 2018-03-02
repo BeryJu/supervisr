@@ -2,7 +2,6 @@
 from typing import List
 
 from supervisr.core.models import Domain
-from supervisr.core.providers.commit import ProviderCommitChange
 from supervisr.core.providers.objects import ProviderObjectMarshall
 
 
@@ -21,6 +20,7 @@ class DebugDomainMarshall(ProviderObjectMarshall[Domain]):
         """Return List of Object matching key-value filters from **filters"""
         pass
 
+    # pylint: disable=unused-argument
     def update(self, instance: Domain) -> bool:
         """Write updated instance"""
         # pdns_instance = Domain.objects.filter(name=instance.domain.domain_name)

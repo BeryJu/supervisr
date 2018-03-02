@@ -3,11 +3,9 @@ Supervisr DNS Views
 """
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import QuerySet
 from django.http import HttpResponse
-from django.shortcuts import redirect, render, reverse
+from django.shortcuts import redirect, reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.models import (Domain, ProviderAcquirableRelationship,
@@ -107,8 +105,8 @@ class ZoneUpdateView(GenericUpdateView):
         zone.save()
         for provider_instance in form.cleaned_data.get('providers'):
             if not ProviderAcquirableRelationship.objects.filter(
-                  provider_instance=provider_instance,
-                  model=zone).exists():
+                    provider_instance=provider_instance,
+                    model=zone).exists():
                 ProviderAcquirableRelationship.objects.create(
                     provider_instance=provider_instance,
                     model=zone
