@@ -9,4 +9,3 @@ recommonmark
 autopep8
 -e git+https://github.com/BeryJu/pdoc.git#egg=pdoc
 markdown
-pre-commit
