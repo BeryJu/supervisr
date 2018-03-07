@@ -18,7 +18,6 @@ from supervisr.core.forms.providers import CredentialForm, ProviderForm
 from supervisr.core.models import (BaseCredential, ProviderInstance,
                                    UserAcquirableRelationship)
 from supervisr.core.providers.base import get_providers
-from supervisr.core.providers.change import ChangeBuilder
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
                                           GenericUpdateView)
 from supervisr.core.views.wizards import BaseWizardView
@@ -113,20 +112,20 @@ class ProviderUpdateView(GenericUpdateView):
     def redirect(self, instance: ProviderInstance) -> HttpResponse:
         return redirect(reverse('instance-index'))
 
-class ProviderDiffView(View):
-    """Show changes for a single provider"""
+# class ProviderDiffView(View):
+#     """Show changes for a single provider"""
 
-    def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
-        """Show all changes"""
-        provider = get_object_or_404(ProviderInstance, uuid=self.kwargs.get('uuid'),
-                                     useracquirablerelationship__user__in=[request.user])
-        change_builder = ChangeBuilder()
-        changes = change_builder.build_diff(provider)
-        pprint(changes)
-        return render(request, 'provider/diff.html', {
-            'diff': changes,
-            'provider': provider
-        })
+#     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
+#         """Show all changes"""
+#         provider = get_object_or_404(ProviderInstance, uuid=self.kwargs.get('uuid'),
+#                                      useracquirablerelationship__user__in=[request.user])
+#         change_builder = ChangeBuilder()
+#         changes = change_builder.build_diff(provider)
+#         pprint(changes)
+#         return render(request, 'provider/diff.html', {
+#             'diff': changes,
+#             'provider': provider
+#         })
 
 class ProviderDeleteView(GenericDeleteView):
     """Delete instance"""

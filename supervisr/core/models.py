@@ -36,6 +36,7 @@ from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_SETTING_UPDATE,
                                     SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED,
                                     SIG_USER_POST_SIGN_UP)
 from supervisr.core.utils import get_remote_ip, get_reverse_dns
+from supervisr.core.providers.base import BaseProvider
 
 options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('sv_search_url', 'sv_search_fields',)
 
@@ -607,25 +608,19 @@ class Event(CreatedUpdatedModel):
         return "Event '%s' '%s'" % (self.user.username, self.message)
 
 class BaseCredential(CreatedUpdatedModel, CastableModel):
-    """
-    Basic set of credentials
-    """
+    """Basic set of credentials"""
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     form = '' # form class which is used for setup
 
     @staticmethod
     def all_types():
-        """
-        Return all subclasses
-        """
+        """Return all subclasses"""
         return BaseCredential.__subclasses__()
 
     @staticmethod
     def type():
-        """
-        Return type
-        """
+        """Return type"""
         return 'BaseCredential'
 
     def __str__(self):
@@ -634,18 +629,25 @@ class BaseCredential(CreatedUpdatedModel, CastableModel):
     class Meta:
         unique_together = (('owner', 'name'),)
 
+class EmptyCredential(BaseCredential):
+    """Empty Credential"""
+
+    form = 'supervisr.core.forms.providers.EmptyCredentialForm'
+
+    @staticmethod
+    def type():
+        """Return type"""
+        return _('Empty Credential')
+
 class APIKeyCredential(BaseCredential):
-    """
-    Credential which work with an API Key
-    """
+    """Credential which work with an API Key"""
+
     api_key = fields.EncryptedField()
     form = 'supervisr.core.forms.providers.NewCredentialAPIForm'
 
     @staticmethod
     def type():
-        """
-        Return type
-        """
+        """Return type"""
         return _('API Key')
 
 class UserPasswordCredential(BaseCredential):
@@ -687,14 +689,16 @@ class ProviderInstance(CreatedUpdatedModel, UserAcquirable):
     uuid = models.UUIDField(default=uuid.uuid4)
     provider_path = models.TextField()
     credentials = models.ForeignKey('BaseCredential', on_delete=models.CASCADE)
+    _class = None
 
     @property
-    def provider(self):
+    def provider(self) -> BaseProvider:
         """Return instance of provider saved"""
-        path_parts = self.provider_path.split('.')
-        module = import_module('.'.join(path_parts[:-1]))
-        _class = getattr(module, path_parts[-1])
-        return _class(credentials=self.credentials)
+        if not self._class:
+            path_parts = self.provider_path.split('.')
+            module = import_module('.'.join(path_parts[:-1]))
+            self._class = getattr(module, path_parts[-1])
+        return self._class(credentials=self.credentials)
 
     def __str__(self):
         return self.name

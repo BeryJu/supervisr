@@ -1,18 +1,21 @@
-"""
-Supervisr Debug Domain Provider
-"""
+"""Supervisr Debug Domain Provider"""
 
+
+from supervisr.core.providers.base import ProviderObjectTranslator
 from supervisr.core.providers.domain import DomainProvider
-from supervisr.mod.provider.debug.providers.marshalls.core_domain import \
-    DebugDomainMarshall
+from supervisr.core.models import Domain
+from supervisr.mod.provider.debug.providers.translators.core_domain import DebugDomainTranslator
 
 
 class DebugDomainProvider(DomainProvider):
-    """
-    Debug provider
-    """
+    """Debug provider"""
+
     parent = None
-    domain_marshall = DebugDomainMarshall
+
+    def get_translator(self, data_type) -> ProviderObjectTranslator:
+        if data_type == Domain:
+            return DebugDomainTranslator
+        return None
 
     def check_credentials(self, credentials=None):
         """

@@ -1,6 +1,4 @@
-"""
-Supervisr DNS Signals
-"""
+"""Supervisr DNS Signals"""
 import logging
 from datetime import datetime
 
@@ -9,7 +7,8 @@ from django.dispatch import receiver
 from dns.exception import SyntaxError as DNSSyntaxError
 
 from supervisr.core.signals import RobustSignal
-from supervisr.dns.utils import rec_to_rd
+from supervisr.dns.utils import record_to_rdata
+from supervisr.dns.models import Zone,  Record
 
 LOGGER = logging.getLogger(__name__)
 
@@ -19,20 +18,14 @@ SIG_DNS_REC_UPDATE = RobustSignal(providing_args=['zone', 'record'])
 @receiver(post_save)
 # pylint: disable=unused-argument
 def dns_zone_update(sender, instance, created, **kwargs):
-    """
-    Trigger SIG_DNS_ZONE_UPDATE when new record is created or updated
-    """
-    from supervisr.dns.models import Zone
+    """Trigger SIG_DNS_ZONE_UPDATE when new record is created or updated"""
     if isinstance(instance, Zone):
         SIG_DNS_ZONE_UPDATE.send(sender, zone=instance)
 
 @receiver(post_save)
 # pylint: disable=unused-argument
 def dns_rec_update(sender, instance, created, **kwargs):
-    """
-    Trigger SIG_DNS_REC_UPDATE when new record is created or updated
-    """
-    from supervisr.dns.models import Record
+    """Trigger SIG_DNS_REC_UPDATE when new record is created or updated"""
     if isinstance(instance, Record):
         SIG_DNS_REC_UPDATE.send(sender, record=instance, zone=instance.record_zone)
 
@@ -50,7 +43,7 @@ def dns_serial_update(sender, zone, **kwargs):
     if soa:
         # SOA record exists, increase serial
         try:
-            record_data = rec_to_rd(soa)
+            record_data = record_to_rdata(soa, zone)
             now = datetime.now()
             serial_rev = int(str(record_data.serial)[-2:])
             serial_prefix = int(str(record_data.serial)[:-2])

@@ -1,6 +1,4 @@
-"""
-Supervisr Core Domain Provider
-"""
+"""Supervisr Core Domain Provider"""
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -8,9 +6,7 @@ from supervisr.core.providers.base import BaseProvider, ProviderMetadata
 
 
 class DomainProvider(BaseProvider):
-    """
-    Base Provider for all domains
-    """
+    """Base Provider for all domains"""
 
     selectable = False
 
@@ -34,9 +30,7 @@ class DomainProvider(BaseProvider):
 
     # pylint: disable=too-few-public-methods
     class Meta(ProviderMetadata):
-        """
-        Domain Provider meta data
-        """
+        """Domain Provider meta data"""
 
         def __init__(self, provider):
             super(DomainProvider.Meta, self).__init__(provider)

@@ -5,14 +5,12 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import ValidationError
 
-from supervisr.core.decorators import time
 from supervisr.core.models import SVAnonymousUser
 
 
 class EmailBackend(ModelBackend):
     """Authenticate user by E-Mail"""
 
-    @time('EmailBackend.authenticate')
     def authenticate(self, email=None, password=None, **kwargs):
         """Same as default authenticate, except user is searched by E-Mail"""
         user_model = get_user_model()
@@ -28,7 +26,6 @@ class EmailBackend(ModelBackend):
 class APIKeyBackend(ModelBackend):
     """Authenticate user by API Key"""
 
-    @time('APIKeyBackend.authenticate')
     # pylint: disable=unused-argument
     def authenticate(self, request, **creds):
         """Authenticate based on API Key in request"""

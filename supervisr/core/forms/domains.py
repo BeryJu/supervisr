@@ -1,6 +1,4 @@
-"""
-Supervisr Core Domain Forms
-"""
+"""Supervisr Core Domain Forms"""
 
 import logging
 import re
@@ -31,5 +29,6 @@ class DomainForm(forms.ModelForm):
         model = Domain
         fields = ['provider_instance', 'domain_name', 'is_sub']
         labels = {
+            'is_sub': _('Is Subdomain'),
             'provider_instance': _('Provider (Registrar)'),
         }

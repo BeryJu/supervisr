@@ -66,7 +66,7 @@ class RecordNewView(BaseWizardView):
                                 kwargs={'zone': self.kwargs.get('zone')}))
 
 class RecordUpdateView(GenericUpdateView):
-    """Edit a receord"""
+    """Edit a record"""
 
     model = Record
     form = RecordForm

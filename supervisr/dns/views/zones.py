@@ -49,7 +49,7 @@ class ZoneNewView(BaseWizardView):
             unused_domains = Domain.objects.filter(users__in=[self.request.user]) \
                 .exclude(pk__in=domains.values_list('domain', flat=True))
 
-            providers = get_providers(filter_sub=['dns_provider'], path=True)
+            providers = get_providers(capabilities=['dns'], path=True)
             provider_instance = ProviderInstance.objects.filter(
                 provider_path__in=providers,
                 useracquirablerelationship__user__in=[self.request.user])
@@ -72,13 +72,22 @@ class ZoneNewView(BaseWizardView):
         )
         zone.soa = soa_record
         zone.save()
+        for provider_instance in form_dict['0'].cleaned_data.get('providers'):
+            if not ProviderAcquirableRelationship.objects.filter(
+                    provider_instance=provider_instance,
+                    model=zone).exists():
+                ProviderAcquirableRelationship.objects.create(
+                    provider_instance=provider_instance,
+                    model=zone
+                )
+        zone.save(force_update=True)
         UserAcquirableRelationship.objects.create(
             model=zone,
             user=self.request.user)
         UserAcquirableRelationship.objects.create(
             model=soa_record,
             user=self.request.user)
-        messages.success(self.request, _('DNS Domain successfully created'))
+        messages.success(self.request, _('DNS Zone successfully created'))
         return redirect(reverse('supervisr_dns:index'))
 
 class ZoneUpdateView(GenericUpdateView):
@@ -93,7 +102,7 @@ class ZoneUpdateView(GenericUpdateView):
 
     def update_form(self, form: ZoneForm) -> ZoneForm:
         # Create list of all possible provider instances
-        providers = get_providers(filter_sub=['dns_provider'], path=True)
+        providers = get_providers(capabilities=['dns'], path=True)
         provider_instance = ProviderInstance.objects.filter(
             provider_path__in=providers,
             useracquirablerelationship__user__in=[self.request.user])

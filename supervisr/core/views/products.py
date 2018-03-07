@@ -69,7 +69,7 @@ class ProductNewWizard(BaseWizardView):
     #     if step is None:
     #         step = self.steps.current
     #     if step == '0':
-    #         providers = get_providers(filter_sub=['domain_provider'], path=True)
+    #         providers = get_providers(capabilities=['domain'], path=True)
     #         provider_instance = ProviderInstance.objects.filter(
     #             provider_path__in=providers,
     #             useracquirablerelationship__user__in=[self.request.user])

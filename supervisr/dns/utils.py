@@ -14,7 +14,7 @@ import dns.zone
 from dns.rdtypes.ANY.MX import MX
 from dns.rdtypes.ANY.SOA import SOA
 
-from supervisr.dns.models import Record
+from supervisr.dns.models import Record, Zone
 
 
 def date_to_soa(_date: date = date.today()) -> int:
@@ -62,10 +62,10 @@ def zone_to_rec(data, root_zone=''):
     records.append(_soa)
     return records
 
-def rec_to_rd(rec: Record) -> dns.rdata.Rdata:
+def record_to_rdata(record: Record, zone: Zone) -> dns.rdata.Rdata:
     """Convert record to RDATA"""
-    rtype = dns.rdatatype.from_text(rec.type)
+    rtype = dns.rdatatype.from_text(record.type)
     cls = dns.rdataclass.IN
-    origin = dns.name.from_text(rec.domain.domain.domain)
-    tok = dns.tokenizer.Tokenizer(rec.content, '<string>')
+    origin = dns.name.from_text(zone.domain.domain_name)
+    tok = dns.tokenizer.Tokenizer(record.content, '<string>')
     return dns.rdata.from_text(cls, rtype, tok, origin, False)

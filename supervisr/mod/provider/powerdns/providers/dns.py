@@ -1,18 +1,20 @@
-"""
-Supervisr PowerDNS Domain Provider
-"""
+"""Supervisr PowerDNS Domain Provider"""
 
+from supervisr.core.providers.base import ProviderObjectTranslator
+from supervisr.dns.models import Zone
 from supervisr.dns.providers.base import BaseDNSProvider
-from supervisr.mod.provider.powerdns.providers.marshalls.zone import \
-    PowerDNSZoneMarshall
+from supervisr.mod.provider.powerdns.providers.translators.zone import PowerDNSZoneTranslator
 
 
 class PowerDNSDBDNSProvider(BaseDNSProvider):
-    """
-    PowerDNS provider
-    """
+    """PowerDNS provider"""
+
     parent = None
-    zone_marshall = PowerDNSZoneMarshall
+
+    def get_translator(self, data_type) -> ProviderObjectTranslator:
+        if data_type == Zone:
+            return PowerDNSZoneTranslator
+        return None
 
     def check_credentials(self, credentials=None):
         """

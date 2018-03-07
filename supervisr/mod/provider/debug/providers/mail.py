@@ -1,18 +1,19 @@
-"""
-Supervisr Debug Domain Provider
-"""
+"""Supervisr Debug Domain Provider"""
 
+from supervisr.core.providers.base import ProviderObjectTranslator
+from supervisr.mail.models import MailDomain
 from supervisr.mail.providers.base import BaseMailProvider
-from supervisr.mod.provider.debug.providers.marshalls.mail_domain import \
-    DebugDomainMarshall
-
+from supervisr.mod.provider.debug.providers.translators.mail_domain import DebugDomainTranslator
 
 class DebugMailProvider(BaseMailProvider):
-    """
-    Debug provider
-    """
+    """Debug provider"""
+
     parent = None
-    domain_marshall = DebugDomainMarshall
+
+    def get_translator(self, data_type) -> ProviderObjectTranslator:
+        if data_type == MailDomain:
+            return DebugDomainTranslator
+        return None
 
     def check_credentials(self, credentials=None):
         """

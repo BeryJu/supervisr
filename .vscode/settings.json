@@ -1,5 +1,5 @@
 {
-  "python.pythonPath": "${workspaceFolder}/env/bin/python",
+  "python.pythonPath": "${workspaceFolder}\\env\\Scripts\\python.exe",
   "editor.rulers": [
     100
   ],
@@ -17,4 +17,5 @@
     "**/__init__.py": true,
     "**/__pycache__": true
   },
+  "editor.wordWrap": "on",
 }

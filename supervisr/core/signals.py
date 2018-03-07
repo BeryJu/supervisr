@@ -1,6 +1,4 @@
-"""
-Supervisr Core Signal definitions
-"""
+"""Supervisr Core Signal definitions"""
 
 import logging
 
@@ -15,9 +13,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class RobustSignal(Signal):
-    """
-    Signal Class that raises Exceptions in a child class
-    """
+    """Signal Class that raises Exceptions in a child class"""
 
     def send(self, sender, **named):
         results = super(RobustSignal, self).send_robust(sender, **named)
@@ -90,28 +86,28 @@ def stat_output_verbose(signal, key, value, **kwargs):
 # pylint: disable=unused-argument
 def change_on_save(sender, instance, created, **kwargs):
     """Forward signal to ChangeBuilder"""
-    from supervisr.core.providers.change import ChangeBuilder
+    from supervisr.core.providers.multiplexer import ProviderMultiplexer
     from supervisr.core.models import ProviderAcquirable, ProviderAcquirableSingle
 
-    change = ChangeBuilder()
+    multiplexer = ProviderMultiplexer()
     if issubclass(instance.__class__, ProviderAcquirable) and \
         instance.__class__ is not ProviderAcquirable:
-        change.on_model_saved(instance, instance.providers, created)
+        multiplexer.on_model_saved(instance, instance.providers.all())
     elif issubclass(instance.__class__, ProviderAcquirableSingle) and \
         instance.__class__ is not ProviderAcquirableSingle:
-        change.on_model_saved(instance, [instance.provider_instance, ], created)
+        multiplexer.on_model_saved(instance, [instance.provider_instance, ])
 
 @receiver(pre_delete)
 # pylint: disable=unused-argument
 def change_on_delete(sender, instance, *args, **kwargs):
     """Forward signal to ChangeBuilder"""
-    from supervisr.core.providers.change import ChangeBuilder
+    from supervisr.core.providers.multiplexer import ProviderMultiplexer
     from supervisr.core.models import ProviderAcquirable, ProviderAcquirableSingle
 
-    change = ChangeBuilder()
+    multiplexer = ProviderMultiplexer()
     if issubclass(instance.__class__, ProviderAcquirable) and \
         instance.__class__ is not ProviderAcquirable:
-        change.on_model_deleted(instance, instance.providers)
+        multiplexer.on_model_deleted(instance, instance.providers.all())
     elif issubclass(instance.__class__, ProviderAcquirableSingle) and \
         instance.__class__ is not ProviderAcquirableSingle:
-        change.on_model_deleted(instance, [instance.provider_instance, ])
+        multiplexer.on_model_deleted(instance, [instance.provider_instance, ])

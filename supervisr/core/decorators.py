@@ -82,10 +82,10 @@ def time(statistic_key):
     def outer_wrapper(method):
         """Decorator to time a method call"""
 
-        def timed(*args, **kw):
+        def timed(*args, **kwargs):
             """Decorator to time a method call"""
             time_start = timestamp()
-            result = method(*args, **kw)
+            result = method(*args, **kwargs)
             time_end = timestamp()
 
             stat_set(statistic_key, time_end - time_start)
