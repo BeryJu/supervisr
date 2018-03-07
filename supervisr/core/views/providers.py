@@ -1,18 +1,14 @@
-"""
-Supervisr Core Provider Views
-"""
+"""Supervisr Core Provider Views"""
 
 import importlib
-from pprint import pprint
 
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
-from django.http import Http404, HttpRequest, HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.http import Http404, HttpResponse
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import ugettext as _
-from django.views import View
 
 from supervisr.core.forms.providers import CredentialForm, ProviderForm
 from supervisr.core.models import (BaseCredential, ProviderInstance,

@@ -6,11 +6,10 @@ from django import forms
 from django.http import Http404
 from django.utils.translation import ugettext_lazy as _
 
-from supervisr.core.models import (APIKeyCredential, ProviderInstance,
-                                   UserPasswordCredential,
+from supervisr.core.models import (APIKeyCredential, EmptyCredential,
+                                   ProviderInstance, UserPasswordCredential,
                                    UserPasswordServerCredential)
 from supervisr.core.providers.base import get_providers
-from supervisr.core.models import EmptyCredential
 from supervisr.core.utils import path_to_class
 
 LOGGER = logging.getLogger(__name__)

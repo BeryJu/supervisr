@@ -1,9 +1,7 @@
-"""
-Supervisr Core Credential APIv1
-"""
+"""Supervisr Core Credential APIv1"""
 
 from supervisr.core.api.models import UserAcquirableModelAPI
-from supervisr.core.forms.providers import (InternalCredentialForm,
+from supervisr.core.forms.providers import (EmptyCredentialForm,
                                             NewCredentialAPIForm,
                                             NewCredentialUserPasswordForm,
                                             NewCredentialUserPasswordServerForm)
@@ -11,11 +9,10 @@ from supervisr.core.models import BaseCredential
 
 
 class CredentialAPI(UserAcquirableModelAPI):
-    """
-    Credential API
-    """
+    """Credential API"""
+
     model = BaseCredential
-    form = [InternalCredentialForm,
+    form = [EmptyCredentialForm,
             NewCredentialAPIForm,
             NewCredentialUserPasswordForm,
             NewCredentialUserPasswordServerForm]

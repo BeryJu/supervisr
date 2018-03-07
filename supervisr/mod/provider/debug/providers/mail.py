@@ -3,7 +3,9 @@
 from supervisr.core.providers.base import ProviderObjectTranslator
 from supervisr.mail.models import MailDomain
 from supervisr.mail.providers.base import BaseMailProvider
-from supervisr.mod.provider.debug.providers.translators.mail_domain import DebugDomainTranslator
+from supervisr.mod.provider.debug.providers.translators.mail_domain import \
+    DebugDomainTranslator
+
 
 class DebugMailProvider(BaseMailProvider):
     """Debug provider"""

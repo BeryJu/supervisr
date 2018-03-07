@@ -1,10 +1,11 @@
 """Supervisr Debug Domain Provider"""
 
 
+from supervisr.core.models import Domain
 from supervisr.core.providers.base import ProviderObjectTranslator
 from supervisr.core.providers.domain import DomainProvider
-from supervisr.core.models import Domain
-from supervisr.mod.provider.debug.providers.translators.core_domain import DebugDomainTranslator
+from supervisr.mod.provider.debug.providers.translators.core_domain import \
+    DebugDomainTranslator
 
 
 class DebugDomainProvider(DomainProvider):

@@ -1,9 +1,10 @@
 """Supervisr Debug Domain Provider"""
 
 from supervisr.core.providers.base import ProviderObjectTranslator
-from supervisr.dns.providers.base import BaseDNSProvider
 from supervisr.dns.models import Zone
-from supervisr.mod.provider.debug.providers.translators.dns_zone import DebugZoneTranslator
+from supervisr.dns.providers.base import BaseDNSProvider
+from supervisr.mod.provider.debug.providers.translators.dns_zone import \
+    DebugZoneTranslator
 
 
 class DebugDNSProvider(BaseDNSProvider):

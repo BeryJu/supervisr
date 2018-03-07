@@ -1,6 +1,9 @@
 """supervisr core provider exceptions"""
 
-class SupervisrProviderException(Exception):
+from supervisr.core.exceptions import SupervisrException
+
+
+class SupervisrProviderException(SupervisrException):
     """Base Exception for all provider exceptions"""
     pass
 

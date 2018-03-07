@@ -1,7 +1,9 @@
 """supervisr core provider multiplexer"""
 from logging import getLogger
 from typing import List
+
 from django.db.models import Model
+
 from supervisr.core.models import ProviderInstance
 from supervisr.core.providers.base import BaseProvider
 from supervisr.core.providers.objects import ProviderObjectTranslator

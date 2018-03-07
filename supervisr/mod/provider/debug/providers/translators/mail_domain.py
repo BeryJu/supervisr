@@ -1,9 +1,11 @@
 """supervisr mod provider Debug Domain Translator"""
-from typing import List
 from logging import getLogger
-from supervisr.mail.models import MailDomain
+from typing import List
+
 from supervisr.core.providers.exceptions import ProviderObjectNotFoundException
-from supervisr.core.providers.objects import ProviderObjectTranslator, ProviderObject
+from supervisr.core.providers.objects import (ProviderObject,
+                                              ProviderObjectTranslator)
+from supervisr.mail.models import MailDomain
 
 LOGGER = getLogger(__name__)
 

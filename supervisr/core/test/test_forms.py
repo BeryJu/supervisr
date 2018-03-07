@@ -1,6 +1,4 @@
-"""
-Supervisr Core Form Test
-"""
+"""Supervisr Core Form Test"""
 
 import os
 
@@ -9,17 +7,15 @@ from django.test import TestCase
 from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
                                            PasswordResetFinishForm, SignupForm)
 from supervisr.core.forms.domains import DomainForm
-from supervisr.core.models import (ProviderInstance, Setting, User,
-                                   UserAcquirableRelationship, get_system_user)
-from supervisr.core.providers.internal import InternalCredential
+from supervisr.core.models import (EmptyCredential, ProviderInstance, Setting,
+                                   User, UserAcquirableRelationship,
+                                   get_system_user)
 from supervisr.core.test.utils import test_request
 from supervisr.core.views.common import index
 
 
 class TestForms(TestCase):
-    """
-    Supervisr Core Form Test
-    """
+    """Supervisr Core Form Test"""
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
@@ -124,7 +120,7 @@ class TestForms(TestCase):
         Test Domain Form
         """
         user = User.objects.get(pk=get_system_user())
-        creds = InternalCredential.objects.create(
+        creds = EmptyCredential.objects.create(
             owner=user,
             name='internal')
         prov_inst = ProviderInstance.objects.create(

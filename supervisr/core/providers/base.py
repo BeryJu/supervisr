@@ -46,10 +46,12 @@ class BaseProvider(object):
         """Return instance of ProviderMetadata class"""
         return self._meta
 
+    # pylint: disable=unused-argument
     def get_translator(self, data_type) -> ProviderObjectTranslator:
         """Get translator for type. If none available return None"""
         return None
 
+    # pylint: disable=unused-argument
     def get_provider(self, data_type) -> 'BaseProvider':
         """Get provider for type. This function is called if this class has no
         translator for data_type. The returned class will be instantied with the same credentials,

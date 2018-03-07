@@ -1,6 +1,4 @@
-"""
-Supervisr Core test utils
-"""
+"""Supervisr Core test utils"""
 
 from io import StringIO
 
@@ -12,8 +10,7 @@ from django.http import Http404
 from django.http.response import HttpResponseNotFound, HttpResponseServerError
 from django.test import RequestFactory
 
-from supervisr.core.models import ProviderInstance, User
-from supervisr.core.providers.internal import InternalCredential
+from supervisr.core.models import EmptyCredential, ProviderInstance, User
 
 
 # pylint: disable=too-many-arguments
@@ -25,9 +22,7 @@ def test_request(view,
                  req_kwargs=None,
                  headers=None,
                  just_request=False):
-    """
-    Wrapper to make test requests easier
-    """
+    """Wrapper to make test requests easier"""
 
     if url_kwargs is None:
         url_kwargs = {}
@@ -72,20 +67,17 @@ def test_request(view,
         return HttpResponseServerError()
 
 def internal_provider(user):
-    """
-    Quickly create an instance of internal Provider
-    """
-    creds = InternalCredential.objects.create(owner=user, name='internal-unittest-%s' % str(user))
-    prov = ProviderInstance.objects.create(
-        credentials=creds,
+    """Quickly create an instance of internal Provider"""
+    credentials = EmptyCredential.objects.create(owner=user,
+                                                 name='internal-unittest-%s' % str(user))
+    provider = ProviderInstance.objects.create(
+        credentials=credentials,
         provider_path='supervisr.core.providers.internal.InternalBaseProvider'
         )
-    return prov, creds
+    return provider, credentials
 
 def call_command_ret(*args, **kwargs):
-    """
-    This is a wrapper for django's call_command, but it returns the stdout output
-    """
+    """This is a wrapper for django's call_command, but it returns the stdout output"""
     with StringIO() as output:
         call_command(*args, stdout=output, stderr=output, **kwargs)
         return output.getvalue()

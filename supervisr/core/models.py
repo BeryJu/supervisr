@@ -31,12 +31,12 @@ from django.utils.translation import ugettext as _
 
 from supervisr.core import fields
 from supervisr.core.decorators import time as time_method
+from supervisr.core.providers.base import BaseProvider
 from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_SETTING_UPDATE,
                                     SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED,
                                     SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED,
                                     SIG_USER_POST_SIGN_UP)
 from supervisr.core.utils import get_remote_ip, get_reverse_dns
-from supervisr.core.providers.base import BaseProvider
 
 options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('sv_search_url', 'sv_search_fields',)
 

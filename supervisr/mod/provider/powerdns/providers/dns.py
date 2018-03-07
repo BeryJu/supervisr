@@ -3,7 +3,8 @@
 from supervisr.core.providers.base import ProviderObjectTranslator
 from supervisr.dns.models import Zone
 from supervisr.dns.providers.base import BaseDNSProvider
-from supervisr.mod.provider.powerdns.providers.translators.zone import PowerDNSZoneTranslator
+from supervisr.mod.provider.powerdns.providers.translators.zone import \
+    PowerDNSZoneTranslator
 
 
 class PowerDNSDBDNSProvider(BaseDNSProvider):

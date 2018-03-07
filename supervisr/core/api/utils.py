@@ -62,4 +62,3 @@ def api_response_yaml(code, data):
     import yaml
     return HttpResponse(yaml.dump(data, default_flow_style=False),
                         content_type='text/x-yaml', status=code)
-

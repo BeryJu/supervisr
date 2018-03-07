@@ -3,8 +3,8 @@
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
-from supervisr.core.providers.base import BaseProvider, ProviderMetadata
 from supervisr.core.models import EmptyCredential
+from supervisr.core.providers.base import BaseProvider, ProviderMetadata
 from supervisr.core.utils import check_db_connection
 from supervisr.mod.provider.powerdns.providers.dns import PowerDNSDBDNSProvider
 

@@ -7,8 +7,8 @@ from django.dispatch import receiver
 from dns.exception import SyntaxError as DNSSyntaxError
 
 from supervisr.core.signals import RobustSignal
+from supervisr.dns.models import Record, Zone
 from supervisr.dns.utils import record_to_rdata
-from supervisr.dns.models import Zone,  Record
 
 LOGGER = logging.getLogger(__name__)
 

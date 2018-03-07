@@ -7,7 +7,7 @@ from django.dispatch import Signal, receiver
 from passlib.hash import sha512_crypt
 
 from supervisr.core.apps import SupervisrAppConfig
-from supervisr.core.errors import SignalException
+from supervisr.core.exceptions import SignalException
 
 LOGGER = logging.getLogger(__name__)
 

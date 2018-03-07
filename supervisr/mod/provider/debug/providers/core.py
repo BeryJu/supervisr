@@ -2,8 +2,9 @@
 
 from django.utils.translation import ugettext_lazy as _
 
-from supervisr.core.providers.base import BaseProvider, ProviderMetadata, ProviderObjectTranslator
 from supervisr.core.models import EmptyCredential
+from supervisr.core.providers.base import (BaseProvider, ProviderMetadata,
+                                           ProviderObjectTranslator)
 from supervisr.mod.provider.debug.providers.dns import DebugDNSProvider
 from supervisr.mod.provider.debug.providers.domain import DebugDomainProvider
 from supervisr.mod.provider.debug.providers.mail import DebugMailProvider

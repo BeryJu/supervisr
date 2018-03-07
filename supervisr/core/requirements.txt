@@ -11,4 +11,3 @@ Pillow
 schedule
 raven
 django-htmlmin
-deepdiff

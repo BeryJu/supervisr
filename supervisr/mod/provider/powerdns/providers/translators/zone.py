@@ -2,9 +2,11 @@
 from typing import List
 
 from supervisr.core.providers.exceptions import ProviderObjectNotFoundException
-from supervisr.core.providers.objects import ProviderObjectTranslator, ProviderObject
+from supervisr.core.providers.objects import (ProviderObject,
+                                              ProviderObjectTranslator)
 from supervisr.dns.models import Zone
 from supervisr.mod.provider.powerdns.models import Domain
+
 
 class PowerDNSZoneObject(ProviderObject):
     """PowerDNS intermediate Zone object"""
@@ -22,12 +24,12 @@ class PowerDNSZoneObject(ProviderObject):
             domain.account = self.account
             domain.save()
             return False
-        else:
-            self.id = Domain.objects.create(
-                name=self.name,
-                account=self.account,
-            ).id
-            return True
+        # pylint: disable=invalid-name
+        self.id = Domain.objects.create(
+            name=self.name,
+            account=self.account,
+        ).id
+        return True
 
     def delete(self):
         """Delete this instance"""
