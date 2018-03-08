@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
+from django.forms import ModelForm
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
@@ -17,7 +18,7 @@ from supervisr.core.providers.base import get_providers
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
                                           GenericUpdateView)
 from supervisr.core.views.wizards import BaseWizardView
-
+from supervisr.core.utils import path_to_class
 
 class ProviderIndexView(GenericIndexView):
     """Show an overview over all provider instances"""
@@ -147,9 +148,7 @@ class CredentialIndexView(GenericIndexView):
 
 # pylint: disable=too-many-ancestors
 class CredentialNewView(BaseWizardView):
-    """
-    Wizard to create a Domain
-    """
+    """Wizard to create a Domain"""
 
     title = _("New Credentials")
     form_list = [CredentialForm]
@@ -168,18 +167,14 @@ class CredentialNewView(BaseWizardView):
         return form
 
     def process_step(self, form):
-        """
-        Dynamically add forms from provider's setup_ui
-        """
+        """Dynamically add forms from provider's setup_ui"""
         if form.__class__ == CredentialForm:
             # Import provider based on form
             # also check in form if class exists and is subclass of BaseProvider
-            parts = form.cleaned_data.get('credential_type').split('.')
-            package = '.'.join(parts[:-1])
-            module = importlib.import_module(package)
-            _class = getattr(module, parts[-1])
+            _form_class = path_to_class(form.cleaned_data.get('credential_type'))
+            assert issubclass(_form_class, ModelForm)
             # pylint: disable=no-member
-            self.form_list.update({str(int(self.steps.current) + 1): _class})
+            self.form_list.update({str(int(self.steps.current) + 1): _form_class})
         return self.get_form_step_data(form)
 
     # pylint: disable=unused-argument
@@ -190,6 +185,22 @@ class CredentialNewView(BaseWizardView):
         cred.owner = self.request.user
         cred.save()
         messages.success(self.request, _('Credentials successfully created'))
+        return redirect(reverse('credential-index'))
+
+class CredentialUpdateView(GenericUpdateView):
+    """Update Credential"""
+
+    model = BaseCredential
+    form = ModelForm
+
+    def get_instance(self) -> QuerySet:
+        query_set = self.model.objects.filter(name=self.kwargs.get('name'),
+                                              owner=self.request.user)
+        # Get form class from credential instance
+        self.form = path_to_class(query_set.first().cast().form)
+        return query_set
+
+    def redirect(self, instance: BaseCredential) -> HttpResponse:
         return redirect(reverse('credential-index'))
 
 class CredentialDeleteView(GenericDeleteView):

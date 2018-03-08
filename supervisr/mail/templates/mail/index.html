@@ -21,10 +21,10 @@
       </tr>
     </thead>
     <tbody>
-      {% for dom in unused_domains %}
+      {% for domain in unused_domains %}
       <tr>
-        <td>{{ dom }}</td>
-        <td>{{ dom.provider }}</td>
+        <td>{{ domain }}</td>
+        <td>{{ domain.provider }}</td>
         <td><a href="{% url 'supervisr_mail:domain-new' %}">{% trans "Setup mail..." %}</a></td>
       </tr>
       {% endfor %}
@@ -55,14 +55,14 @@
     </tr>
   </thead>
   <tbody>
-    {% for dom in instances %}
-    <tr data-selectable>
-      <td>{{ dom.domain }}</td>
-      <td>{{ dom.users.all|join:"," }}</td>
-      <td>{{ dom.mailaccount_set.all|length }}</td>
-      <td>{{ dom.mailalias_set.all|length }}</td>
-      <td>{{ dom.providers.all|join:"," }}</td>
-      <td>{{ dom.enabled }}</td>
+    {% for domain in instances %}
+    <tr data-selectable data-ctx-edit="{% url 'supervisr_mail:domain-edit' domain=domain.domain.domain_name %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr_mail:domain-delete' domain=domain.domain.domain_name %}?back={{ request.get_full_path }}">
+      <td>{{ domain.domain }}</td>
+      <td>{{ domain.users.all|join:"," }}</td>
+      <td>{{ domain.mailaccount_set.all|length }}</td>
+      <td>{{ domain.mailalias_set.all|length }}</td>
+      <td>{{ domain.providers.all|join:"," }}</td>
+      <td>{{ domain.enabled }}</td>
     </tr>
     {% endfor %}
   </tbody>

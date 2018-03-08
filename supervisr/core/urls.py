@@ -77,6 +77,8 @@ urlpatterns = [
         providers.CredentialIndexView.as_view(), name='credential-index'),
     url(r'^providers/credentials/new/$', providers.CredentialNewView.as_view(),
         name='credential-new'),
+    url(r'^providers/credentials/(?P<name>[a-zA-Z0-9\-\.\_\s]+)/edit/$',
+        providers.CredentialUpdateView.as_view(), name='credential-edit'),
     url(r'^providers/credentials/(?P<name>[a-zA-Z0-9\-\.\_\s]+)/delete/$',
         providers.CredentialDeleteView.as_view(), name='credential-delete'),
     # User views

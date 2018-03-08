@@ -1,4 +1,4 @@
-"""supervisr mail domain views"""
+"""supervisr mail address views"""
 
 from django.contrib import messages
 from django.db.models import QuerySet
@@ -6,92 +6,92 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.core.models import (Domain, ProviderInstance,
+from supervisr.core.models import (ProviderInstance,
                                    UserAcquirableRelationship)
 from supervisr.core.providers.base import get_providers
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
                                           GenericReadView, GenericUpdateView)
 from supervisr.core.views.wizards import BaseWizardView
-from supervisr.mail.forms.domains import MailDomainForm
-from supervisr.mail.models import MailDomain
+from supervisr.mail.forms.addresses import AddressForm
+from supervisr.mail.models import Address, MailDomain
 
 
-class MailDomainIndexView(GenericIndexView):
-    """List of all MailDomains"""
+class AddressIndexView(GenericIndexView):
+    """List of all Addresses"""
 
-    model = MailDomain
+    model = Address
     template = 'mail/index.html'
 
     def get_instance(self) -> QuerySet:
         return self.model.objects.filter(users__in=[self.request.user])
 
 # pylint: disable=too-many-ancestors
-class MailDomainNewWizard(BaseWizardView):
-    """Wizard to create MailDomain"""
+class AddressNewWizard(BaseWizardView):
+    """Wizard to create Address"""
 
-    title = _('New Mail Domain')
-    form_list = [MailDomainForm]
+    title = _('New Mail address')
+    form_list = [AddressForm]
 
     def get_form(self, step=None, data=None, files=None):
-        form = super(MailDomainNewWizard, self).get_form(step, data, files)
+        form = super(AddressNewWizard, self).get_form(step, data, files)
         if step is None:
             step = self.steps.current
         if step == '0':
             domains = MailDomain.objects.filter(users__in=[self.request.user])
-
-            unused_domains = Domain.objects.filter(users__in=[self.request.user]) \
-                .exclude(pk__in=domains.values_list('domain', flat=True))
 
             providers = get_providers(capabilities=['mail'], path=True)
             provider_instance = ProviderInstance.objects.filter(
                 provider_path__in=providers,
                 useracquirablerelationship__user__in=[self.request.user])
 
-            form.fields['domain'].queryset = unused_domains
+            form.fields['domains'].queryset = domains
             form.fields['providers'].queryset = provider_instance
         return form
 
+    # pylint: disable=unused-argument
     def finish(self, form_list):
-        mail_domain = form_list[0].save(commit=False)
-        mail_domain.update_provider_m2m(form_list['0'].cleaned_data.get('providers'))
-        mail_domain.save()
+        mail_address = form_list[0].save(commit=False)
+        mail_address.update_provider_m2m(form_list['0'].cleaned_data.get('providers'))
+        mail_address.save()
         UserAcquirableRelationship.objects.create(
-            model=mail_domain,
+            model=mail_address,
             user=self.request.user)
-        messages.success(self.request, _('Mail Domain successfully created'))
+        messages.success(self.request, _('Mail address successfully created'))
         return redirect(reverse('supervisr_mail:index'))
 
-class MailDomainReadView(GenericReadView):
-    """View details of a single domain"""
 
-    model = MailDomain
-    template = 'mail/domains/view.html'
+class AddressReadView(GenericReadView):
+    """View details of a single address"""
 
-    def get_instance(self) -> QuerySet:
-        return self.model.objects.filter(users__in=[self.request.user],
-                                         domain__domain_name=self.kwargs.get('domain'))
-
-class MailDomainUpdateView(GenericUpdateView):
-    """View to edit a single domain"""
-
-    model = MailDomain
-    form = MailDomainForm
+    model = Address
+    template = 'mail/addresss/view.html'
 
     def get_instance(self) -> QuerySet:
         return self.model.objects.filter(users__in=[self.request.user],
-                                         domain__domain_name=self.kwargs.get('domain'))
+                                         address__address_name=self.kwargs.get('address'))
 
-    def redirect(self, instance: MailDomain) -> HttpResponse:
+
+class AddressUpdateView(GenericUpdateView):
+    """View to edit a single address"""
+
+    model = Address
+
+    def get_instance(self) -> QuerySet:
+        return self.model.objects.filter(users__in=[self.request.user],
+                                         address__address_name=self.kwargs.get('address'))
+
+    def redirect(self, instance: Address) -> HttpResponse:
         return redirect(reverse('supervisr_mail:index'))
 
-class MailDomainDeleteView(GenericDeleteView):
-    """View to delete a single domain"""
 
-    model = MailDomain
+class AddressDeleteView(GenericDeleteView):
+    """View to delete a single address"""
+
+    model = Address
 
     def get_instance(self) -> QuerySet:
         return self.model.objects.filter(users__in=[self.request.user],
-                                         domain__domain_name=self.kwargs.get('domain'))
+                                         address__address_name=self.kwargs.get('address'))
 
-    def redirect(self, instance: MailDomain) -> HttpResponse:
+    def redirect(self, instance: Address) -> HttpResponse:
         return redirect(reverse('supervisr_mail:index'))

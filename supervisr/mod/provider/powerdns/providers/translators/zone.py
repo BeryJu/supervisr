@@ -1,7 +1,8 @@
 """supervisr mod provider powerdns Zone Translator"""
 from typing import List
+from django.db.utils import OperationalError
 
-from supervisr.core.providers.exceptions import ProviderObjectNotFoundException
+from supervisr.core.providers.exceptions import ProviderObjectNotFoundException, SupervisrProviderException
 from supervisr.core.providers.objects import (ProviderObject,
                                               ProviderObjectTranslator)
 from supervisr.dns.models import Zone
@@ -15,29 +16,35 @@ class PowerDNSZoneObject(ProviderObject):
 
     def save(self):
         """Save this instance"""
-        existing = Domain.objects.filter(name=self.name, pk=self.id)
-        if existing.exists():
-            # Domain has been updated
-            assert len(existing) == 1
-            domain = existing.first()
-            domain.name = self.name
-            domain.account = self.account
-            domain.save()
-            return False
-        # pylint: disable=invalid-name
-        self.id = Domain.objects.create(
-            name=self.name,
-            account=self.account,
-        ).id
-        return True
+        try:
+            existing = Domain.objects.filter(name=self.name, pk=self.id)
+            if existing.exists():
+                # Domain has been updated
+                assert len(existing) == 1
+                domain = existing.first()
+                domain.name = self.name
+                domain.account = self.account
+                domain.save()
+                return False
+            # pylint: disable=invalid-name
+            self.id = Domain.objects.create(
+                name=self.name,
+                account=self.account,
+            ).id
+            return True
+        except OperationalError as exc:
+            raise SupervisrProviderException from exc
 
     def delete(self):
         """Delete this instance"""
-        existing = Domain.objects.filter(name=self.name, pk=self.id)
-        if not existing.exists():
-            raise ProviderObjectNotFoundException()
-        assert len(existing) == 1
-        existing.first().delete()
+        try:
+            existing = Domain.objects.filter(name=self.name, pk=self.id)
+            if not existing.exists():
+                raise ProviderObjectNotFoundException()
+            assert len(existing) == 1
+            existing.first().delete()
+        except OperationalError as exc:
+            raise SupervisrProviderException from exc
 
 class PowerDNSZoneTranslator(ProviderObjectTranslator[Zone]):
     """PowerDNS Zone Translator"""

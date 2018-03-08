@@ -58,9 +58,8 @@ class ZoneNewView(BaseWizardView):
             form.fields['providers'].queryset = provider_instance
         return form
 
-    # pylint: disable=unused-argument
-    def done(self, final_forms, form_dict, **kwargs):
-        zone = form_dict['0'].save(commit=False)
+    def finish(self, form_list):
+        zone = form_list[0].save(commit=False)
         # Zone requires an SOA record
         soa_record = Resource.objects.create(
             name='@',
@@ -72,14 +71,7 @@ class ZoneNewView(BaseWizardView):
         )
         zone.soa = soa_record
         zone.save()
-        for provider_instance in form_dict['0'].cleaned_data.get('providers'):
-            if not ProviderAcquirableRelationship.objects.filter(
-                    provider_instance=provider_instance,
-                    model=zone).exists():
-                ProviderAcquirableRelationship.objects.create(
-                    provider_instance=provider_instance,
-                    model=zone
-                )
+        zone.update_provider_m2m(form_list[0].cleaned_data.get('providers'))
         zone.save(force_update=True)
         UserAcquirableRelationship.objects.create(
             model=zone,
@@ -112,17 +104,7 @@ class ZoneUpdateView(GenericUpdateView):
     def save(self, form: ZoneForm) -> Zone:
         zone = form.save(commit=False)
         zone.save()
-        for provider_instance in form.cleaned_data.get('providers'):
-            if not ProviderAcquirableRelationship.objects.filter(
-                    provider_instance=provider_instance,
-                    model=zone).exists():
-                ProviderAcquirableRelationship.objects.create(
-                    provider_instance=provider_instance,
-                    model=zone
-                )
-        for par in ProviderAcquirableRelationship.objects.filter(model=zone):
-            if not par.provider_instance in form.cleaned_data.get('providers'):
-                par.delete()
+        zone.update_provider_m2m(form.cleaned_data.get('providers'))
         return zone
 
     def redirect(self, instance: Zone) -> HttpResponse:

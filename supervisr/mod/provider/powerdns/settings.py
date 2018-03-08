@@ -1,6 +1,4 @@
-"""
-Supervisr PowerDNS Settings
-"""
+"""Supervisr PowerDNS Settings"""
 
 DATABASE_ROUTERS = [
     'supervisr.mod.provider.powerdns.router.PowerDNSRouter',

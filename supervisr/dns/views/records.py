@@ -55,9 +55,8 @@ class RecordNewView(BaseWizardView):
             form.fields['record_zone'].initial = zone_pk
         return form
 
-    # pylint: disable=unused-argument
-    def done(self, final_forms, form_dict, **kwargs):
-        record = form_dict['0'].save()
+    def finish(self, final_forms, form_dict, **kwargs):
+        record = form_list[0].save()
         UserAcquirableRelationship.objects.create(
             model=record,
             user=self.request.user)

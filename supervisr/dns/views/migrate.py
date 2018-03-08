@@ -56,16 +56,15 @@ class BindZoneImportWizard(BaseWizardView):
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 
-    # pylint: disable=unused-argument
-    def done(self, final_forms, form_dict, **kwargs):
-        if form_dict['2'].cleaned_data.get('accept'):
-            records = zone_to_rec(form_dict['1'].cleaned_data.get('zone_data'),
-                                  root_zone=form_dict['0'].cleaned_data.get('domain').domain)
+    def finish(self, form_list):
+        if form_list[2].cleaned_data.get('accept'):
+            records = zone_to_rec(form_list[1].cleaned_data.get('zone_data'),
+                                  root_zone=form_list[0].cleaned_data.get('domain').domain)
             m_dom = Zone.objects.create(
-                name=form_dict['0'].cleaned_data.get('domain'),
-                domain=form_dict['0'].cleaned_data.get('domain'),
-                provider=form_dict['0'].cleaned_data.get('provider'),
-                enabled=form_dict['0'].cleaned_data.get('enabled'))
+                name=form_list[0].cleaned_data.get('domain'),
+                domain=form_list[0].cleaned_data.get('domain'),
+                provider=form_list[0].cleaned_data.get('provider'),
+                enabled=form_list[0].cleaned_data.get('enabled'))
             UserAcquirableRelationship.objects.create(
                 model=m_dom,
                 user=self.request.user)

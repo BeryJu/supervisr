@@ -20,11 +20,10 @@ class ResourceCreateView(BaseWizardView):
     title = _('New Record Resource')
     form_list = [ResourceForm]
 
-    # pylint: disable=unused-argument
-    def done(self, final_forms, form_dict, **kwargs):
+    def finish(self, form_list):
         rset_uuid = self.kwargs.get('rset_uuid')
         rset = get_object_or_404(ResourceSet, uuid=rset_uuid, users__in=[self.request.user])
-        resource = form_dict['0'].save()
+        resource = form_list[0].save()
         rset.resource.add(resource)
         UserAcquirableRelationship.objects.create(
             model=resource,

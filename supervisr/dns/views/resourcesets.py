@@ -38,14 +38,13 @@ class ResourceSetCreateView(BaseWizardView):
     title = _('New Resource Set')
     form_list = [ResourceSetForm]
 
-    # pylint: disable=unused-argument
-    def done(self, final_forms, form_dict, **kwargs):
-        rset = form_dict['0'].save()
+    def finish(self, form_list):
+        resource_set = form_list[0].save()
         UserAcquirableRelationship.objects.create(
-            model=rset,
+            model=resource_set,
             user=self.request.user)
         messages.success(self.request, _('Resource Set successfully created'))
-        return redirect(reverse('supervisr_dns:rset-view', kwargs={'rset_uuid': rset.uuid}))
+        return redirect(reverse('supervisr_dns:rset-view', kwargs={'rset_uuid': resource_set.uuid}))
 
 
 class ResourceSetUpdateView(GenericUpdateView):

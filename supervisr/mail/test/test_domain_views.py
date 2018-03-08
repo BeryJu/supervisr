@@ -11,7 +11,7 @@ from supervisr.core.models import (BaseCredential, Domain, ProviderInstance,
                                    get_system_user)
 from supervisr.core.test.utils import test_request
 from supervisr.mail.models import MailDomain
-from supervisr.mail.views import domain
+from supervisr.mail.views import domains
 
 
 class TestDomainViews(TestCase):

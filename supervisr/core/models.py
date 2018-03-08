@@ -12,6 +12,7 @@ import re
 import time
 import uuid
 from difflib import get_close_matches
+from typing import List
 from importlib import import_module
 
 import django.contrib.auth.models as django_auth_models
@@ -436,6 +437,20 @@ class ProviderAcquirable(CastableModel):
     providers = models.ManyToManyField('ProviderInstance',
                                        through='ProviderAcquirableRelationship', blank=True)
 
+    def update_provider_m2m(self, provider_list: List['ProviderInstance']):
+        """Update m2m relationship to providers from form list"""
+        for provider_instance in provider_list:
+            if not ProviderAcquirableRelationship.objects.filter(
+                    provider_instance=provider_instance,
+                    model=self).exists():
+                ProviderAcquirableRelationship.objects.create(
+                    provider_instance=provider_instance,
+                    model=self
+                )
+        for relationship in ProviderAcquirableRelationship.objects.filter(model=self):
+            if not relationship.provider_instance in provider_list:
+                relationship.delete()
+
 class ProviderAcquirableSingle(CastableModel):
     """Base Class for Models that should have an N-1 relationship with ProviderInstance"""
 
@@ -594,9 +609,7 @@ class Event(CreatedUpdatedModel):
 
     @staticmethod
     def create(**kwargs):
-        """
-        Create an event and set reverse DNS and remote IP
-        """
+        """Create an event and set reverse DNS and remote IP"""
         if 'request' in kwargs:
             request = kwargs.get('request')
             kwargs['remote_ip'] = get_remote_ip(request)
@@ -651,24 +664,20 @@ class APIKeyCredential(BaseCredential):
         return _('API Key')
 
 class UserPasswordCredential(BaseCredential):
-    """
-    Credentials which need a Username and Password
-    """
+    """Credentials which need a Username and Password"""
+
     username = models.TextField()
     password = fields.EncryptedField()
     form = 'supervisr.core.forms.providers.NewCredentialUserPasswordForm'
 
     @staticmethod
     def type():
-        """
-        Return type
-        """
+        """Return type"""
         return _('Username and Password')
 
 class UserPasswordServerCredential(BaseCredential):
-    """
-    UserPasswordCredential which also holds a server
-    """
+    """UserPasswordCredential which also holds a server"""
+
     username = models.TextField()
     password = fields.EncryptedField()
     server = models.CharField(max_length=255)
@@ -676,9 +685,7 @@ class UserPasswordServerCredential(BaseCredential):
 
     @staticmethod
     def type():
-        """
-        Return type
-        """
+        """Return type"""
         return _("Username, Password and Server")
 
 
