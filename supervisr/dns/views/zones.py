@@ -8,8 +8,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.core.models import (Domain, ProviderAcquirableRelationship,
-                                   ProviderInstance,
+from supervisr.core.models import (Domain, ProviderInstance,
                                    UserAcquirableRelationship)
 from supervisr.core.providers.base import get_providers
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,

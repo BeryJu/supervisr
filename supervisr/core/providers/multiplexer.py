@@ -6,8 +6,8 @@ from django.db.models import Model
 
 from supervisr.core.models import ProviderInstance
 from supervisr.core.providers.base import BaseProvider
-from supervisr.core.providers.objects import ProviderObjectTranslator
 from supervisr.core.providers.exceptions import SupervisrProviderException
+from supervisr.core.providers.objects import ProviderObjectTranslator
 
 LOGGER = getLogger(__name__)
 

@@ -2,27 +2,37 @@
 
 from io import StringIO
 
-from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.backends.cached_db import SessionStore
 from django.core.management import call_command
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.http.response import HttpResponseNotFound, HttpResponseServerError
 from django.test import RequestFactory
 
-from supervisr.core.models import EmptyCredential, ProviderInstance, User
+from supervisr.core.models import (EmptyCredential, ProviderInstance,
+                                   SVAnonymousUser, User)
 
 
 # pylint: disable=too-many-arguments
 def test_request(view,
                  method='GET',
-                 user=AnonymousUser,
+                 user=SVAnonymousUser,
                  session_data=None,
                  url_kwargs=None,
                  req_kwargs=None,
                  headers=None,
-                 just_request=False):
-    """Wrapper to make test requests easier"""
+                 just_request=False) -> HttpResponse:
+    """Wrapper to make test requests easier
+
+    Args:
+        method (str): Request method. Defaults to GET.
+        user (User): Requesting user. Defaults to SVAnonymousUser.
+        session_data (dict): Optional dictionary of session data.
+        url_kwargs (dict): Optional dictionary of URL arguments.
+        req_kwargs (dict): Optional dictionary of URL Querystrinng arguments.
+        headers (dict): Optional dictionary of headers.
+        just_request (bool): Only return the Request. Defaults to False
+    """
 
     if url_kwargs is None:
         url_kwargs = {}
@@ -50,8 +60,8 @@ def test_request(view,
     setattr(request, 'session', session)
     setattr(request, '_messages', FallbackStorage(request))
 
-    if user is AnonymousUser:
-        user = AnonymousUser()
+    if user is SVAnonymousUser:
+        user = SVAnonymousUser()
     elif isinstance(user, int):
         user = User.objects.get(pk=user)
     request.user = user
@@ -72,8 +82,7 @@ def internal_provider(user):
                                                  name='internal-unittest-%s' % str(user))
     provider = ProviderInstance.objects.create(
         credentials=credentials,
-        provider_path='supervisr.core.providers.internal.InternalBaseProvider'
-        )
+        provider_path='supervisr.mod.provider.debug.providers.core.DebugProvider')
     return provider, credentials
 
 def call_command_ret(*args, **kwargs):

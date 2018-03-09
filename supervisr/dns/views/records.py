@@ -55,7 +55,7 @@ class RecordNewView(BaseWizardView):
             form.fields['record_zone'].initial = zone_pk
         return form
 
-    def finish(self, final_forms, form_dict, **kwargs):
+    def finish(self, form_list):
         record = form_list[0].save()
         UserAcquirableRelationship.objects.create(
             model=record,

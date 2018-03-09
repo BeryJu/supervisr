@@ -45,7 +45,7 @@ class Address(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
     domains = models.ManyToManyField('MailDomain', through='MailDomainAddressRelationship')
 
     def __str__(self):
-        return "Address %s" % self.address
+        return "Address %s" % self.mail_address
 
 class Forwarder(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
     """Forwader from an address to a target"""
@@ -76,7 +76,7 @@ class Account(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
     def set_password(self, invoker: User, new_password: str, salt: str = None, request=None):
         """Sets a new password with a new salt"""
         self.password = sha512_crypt.hash(new_password, salt=salt)
-        LOGGER.debug("Updated Password MailAccount %s", self.email)
+        LOGGER.debug("Updated Password Account %s", self.name)
         Event.create(
             user=invoker,
             message=_("Changed Password for Mail Account %(account)s" % {'account':str(self)}),

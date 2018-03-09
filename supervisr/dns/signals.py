@@ -14,6 +14,7 @@ LOGGER = logging.getLogger(__name__)
 
 SIG_DNS_ZONE_UPDATE = RobustSignal(providing_args=['zone'])
 SIG_DNS_REC_UPDATE = RobustSignal(providing_args=['zone', 'record'])
+SIG_DNS_RESOURCE_UPDATE = RobustSignal(providing_args=['resource_set'])
 
 @receiver(post_save)
 # pylint: disable=unused-argument
@@ -29,15 +30,15 @@ def dns_rec_update(sender, instance, created, **kwargs):
     if isinstance(instance, Record):
         SIG_DNS_REC_UPDATE.send(sender, record=instance, zone=instance.record_zone)
 
-@receiver([SIG_DNS_REC_UPDATE, SIG_DNS_ZONE_UPDATE])
+@receiver(SIG_DNS_REC_UPDATE)
 # pylint: disable=unused-argument
 def dns_serial_update(sender, zone, **kwargs):
     """Update SOA Serial when zone is changed or record changed"""
     soa = zone.soa
     # Check if there is an updated record this is triggered by
     # and if that record is SOA dont run again
-    if 'record' in kwargs:
-        if kwargs.get('record').type == 'SOA':
+    if 'resource' in kwargs:
+        if kwargs.get('resource').type == 'SOA':
             LOGGER.debug("Not updating serial since SOA was updated")
             return
     if soa:

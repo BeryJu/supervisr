@@ -1,6 +1,4 @@
-"""
-Supervisr Puppet Module Builder
-"""
+"""Supervisr Puppet Module Builder"""
 import glob
 import gzip
 import io

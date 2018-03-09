@@ -41,21 +41,25 @@ class TestForms(TestCase):
         }
 
     def test_signup_form(self):
-        """
-        Test SignupForm's validation
-        """
+        """Test SignupForm's validation"""
         form = SignupForm(data=self.signup_data)
         self.assertTrue(form.is_valid())
 
         # Test duplicate username
-        user_b = User.objects.create(username='form_test_1')
+        user_a = User.objects.create(username='form_test_1')
         self.signup_data['username'] = 'form_test_1'
-        form_b = SignupForm(data=self.signup_data)
-        self.assertFalse(form_b.is_valid())
+        form_a = SignupForm(data=self.signup_data)
+        self.assertFalse(form_a.is_valid())
         self.signup_data['username'] = 'beryjuorg'
-        user_b.delete()
+        user_a.delete()
 
         # Test duplicate email
+        self.signup_data['password_rep'] = 'ayy'
+        form_b = SignupForm(data=self.signup_data)
+        self.assertFalse(form_b.is_valid())
+        self.signup_data['password_rep'] = self.signup_data['password']
+
+        # Test wrong password
         user_c = User.objects.create(username='form_test_1', email='dupe@test.test')
         self.signup_data['email'] = 'dupe@test.test'
         form_c = SignupForm(data=self.signup_data)
@@ -74,16 +78,12 @@ class TestForms(TestCase):
         user_d.delete()
 
     def test_login_form(self):
-        """
-        Test LoginForm's validation
-        """
+        """Test LoginForm's validation"""
         form = LoginForm(data=self.login_data)
         self.assertTrue(form.is_valid())
 
     def test_check_password(self):
-        """
-        Test change_password
-        """
+        """Test change_password"""
         # Set password filter
         Setting.set(key='password:filter', value=r'(.){8}', namespace='supervisr.core')
 
@@ -109,23 +109,19 @@ class TestForms(TestCase):
         self.assertFalse(form_c.is_valid())
 
     def test_password_reset_finish_form(self):
-        """
-        Test PasswordResetFinishForm
-        """
+        """Test PasswordResetFinishForm"""
         form = PasswordResetFinishForm(data=self.signup_data)
         self.assertTrue(form.is_valid())
 
     def test_domain_form(self):
-        """
-        Test Domain Form
-        """
+        """Test Domain Form"""
         user = User.objects.get(pk=get_system_user())
         creds = EmptyCredential.objects.create(
             owner=user,
             name='internal')
         prov_inst = ProviderInstance.objects.create(
             credentials=creds,
-            provider_path='supervisr.core.providers.internal.InternalBaseProvider')
+            provider_path='supervisr.mod.provider.debug.providers.core.DebugProvider')
         UserAcquirableRelationship.objects.create(
             model=prov_inst,
             user=user)

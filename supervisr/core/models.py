@@ -12,8 +12,8 @@ import re
 import time
 import uuid
 from difflib import get_close_matches
-from typing import List
 from importlib import import_module
+from typing import List
 
 import django.contrib.auth.models as django_auth_models
 from django.conf import settings

@@ -1,6 +1,4 @@
-"""
-Supervisr Core Forms
-"""
+"""Supervisr Form utils"""
 import re
 
 from django import forms
@@ -10,9 +8,7 @@ from supervisr.core.models import Setting
 
 
 def check_password(form, check_filter=True):
-    """
-    Check if Password adheres to filter and if passwords matche
-    """
+    """Check if Password adheres to filter and if passwords matche"""
     password_a = form.cleaned_data.get('password')
     password_b = form.cleaned_data.get('password_rep')
     # Check if either field is required.

@@ -1,13 +1,11 @@
 """Supervisr Core Provider Views"""
 
-import importlib
-
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
+from django.forms import ModelForm
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
-from django.forms import ModelForm
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
@@ -15,10 +13,11 @@ from supervisr.core.forms.providers import CredentialForm, ProviderForm
 from supervisr.core.models import (BaseCredential, ProviderInstance,
                                    UserAcquirableRelationship)
 from supervisr.core.providers.base import get_providers
+from supervisr.core.utils import path_to_class
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
                                           GenericUpdateView)
 from supervisr.core.views.wizards import BaseWizardView
-from supervisr.core.utils import path_to_class
+
 
 class ProviderIndexView(GenericIndexView):
     """Show an overview over all provider instances"""
@@ -118,7 +117,6 @@ class ProviderUpdateView(GenericUpdateView):
 #                                      useracquirablerelationship__user__in=[request.user])
 #         change_builder = ChangeBuilder()
 #         changes = change_builder.build_diff(provider)
-#         pprint(changes)
 #         return render(request, 'provider/diff.html', {
 #             'diff': changes,
 #             'provider': provider

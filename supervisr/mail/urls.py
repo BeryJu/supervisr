@@ -7,7 +7,7 @@ from django.conf.urls import url
 from supervisr.core.regex import DOMAIN_REGEX, EMAIL_ADDRESS_REGEX
 #EMAIL_ADDRESS_REGEX, EMAIL_REGEX
 # from supervisr.mail.views import account, alias, core, domain
-from supervisr.mail.views import domains, addresses
+from supervisr.mail.views import addresses, domains
 
 urlpatterns = [
     url(r'^$', domains.MailDomainIndexView.as_view(), name='index'),
@@ -23,11 +23,11 @@ urlpatterns = [
 
     url(r'^address/new/$',
         addresses.AddressNewWizard.as_view(), name='address-new'),
-    url(r'^address/(?P<address>%s)(?P<pk>\d+)/$' % EMAIL_ADDRESS_REGEX,
+    url(r'^address/(?P<address>%s)/(?P<pk>\d+)/$' % EMAIL_ADDRESS_REGEX,
         addresses.AddressReadView.as_view(), name='address-view'),
-    url(r'^address/(?P<address>%s)(?P<pk>\d+)/edit/$' % EMAIL_ADDRESS_REGEX,
+    url(r'^address/(?P<address>%s)/(?P<pk>\d+)/edit/$' % EMAIL_ADDRESS_REGEX,
         addresses.AddressUpdateView.as_view(), name='address-edit'),
-    url(r'^address/(?P<address>%s)(?P<pk>\d+)/delete/$' % EMAIL_ADDRESS_REGEX,
+    url(r'^address/(?P<address>%s)/(?P<pk>\d+)/delete/$' % EMAIL_ADDRESS_REGEX,
         addresses.AddressDeleteView.as_view(), name='address-delete'),
 
     # url(r'^(?P<domain>%s)/account/(?P<account>%s)/edit/$' % (DOMAIN_REGEX, EMAIL_ADDRESS_REGEX),

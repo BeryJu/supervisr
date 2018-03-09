@@ -3,7 +3,7 @@ from datetime import datetime
 
 from django.test import TestCase
 
-from supervisr.core.models import (Domain, ProviderAcquirable, User,
+from supervisr.core.models import (Domain, User, UserAcquirableRelationship,
                                    get_system_user)
 from supervisr.core.test.utils import internal_provider
 from supervisr.dns.models import Record, Resource, ResourceSet, Zone
@@ -26,9 +26,9 @@ class TestSignals(TestCase):
         record_zone = kwargs.pop('record_zone')
         resource = Resource.objects.create(**kwargs)
         resource_set = ResourceSet.objects.create(
-            name='test',
-            resource=[resource]
+            name='test'
         )
+        resource_set.resource.add(resource)
         record = Record.objects.create(
             name='test',
             record_zone=record_zone,
@@ -41,15 +41,17 @@ class TestSignals(TestCase):
         t_domain = Domain.objects.create(
             domain_name='test.beryju.org',
             provider_instance=self.provider)
-        t_zone = Zone.objects.create(
-            domain_name=t_domain)
-        ProviderAcquirable.objects.create(
-            model=t_zone,
-            user=self.user)
+        t_zone = Zone(
+            domain=t_domain)
         t_soa = Resource.objects.create(
             name='test SOA',
             type='SOA',
             content='ns1.s.beryju.org. support.beryju.org. 2017110401 1800 180 2419200 86400')
+        t_zone.soa = t_soa
+        t_zone.save()
+        UserAcquirableRelationship.objects.create(
+            model=t_zone,
+            user=self.user)
         self.assertEqual(record_to_rdata(t_zone.soa, t_zone).serial, 2017110401)
         t_record_a = self.create_single_record(
             record_zone=t_zone,

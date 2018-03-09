@@ -6,8 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.core.models import (ProviderInstance,
-                                   UserAcquirableRelationship)
+from supervisr.core.models import ProviderInstance, UserAcquirableRelationship
 from supervisr.core.providers.base import get_providers
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
                                           GenericReadView, GenericUpdateView)
@@ -23,7 +22,7 @@ class AddressIndexView(GenericIndexView):
     template = 'mail/index.html'
 
     def get_instance(self) -> QuerySet:
-        return self.model.objects.filter(users__in=[self.request.user])
+        return self.model.objects.filter(users__in=[self.request.user]).order_by('mail_address')
 
 # pylint: disable=too-many-ancestors
 class AddressNewWizard(BaseWizardView):
@@ -51,8 +50,8 @@ class AddressNewWizard(BaseWizardView):
     # pylint: disable=unused-argument
     def finish(self, form_list):
         mail_address = form_list[0].save(commit=False)
-        mail_address.update_provider_m2m(form_list['0'].cleaned_data.get('providers'))
         mail_address.save()
+        mail_address.update_provider_m2m(form_list[0].cleaned_data.get('providers'))
         UserAcquirableRelationship.objects.create(
             model=mail_address,
             user=self.request.user)
@@ -64,25 +63,27 @@ class AddressReadView(GenericReadView):
     """View details of a single address"""
 
     model = Address
-    template = 'mail/addresss/view.html'
+    template = 'mail/address/view.html'
 
     def get_instance(self) -> QuerySet:
         return self.model.objects.filter(users__in=[self.request.user],
-                                         address__address_name=self.kwargs.get('address'))
+                                         mail_address=self.kwargs.get('address'),
+                                         pk=self.kwargs.get('pk'))
 
 
 class AddressUpdateView(GenericUpdateView):
     """View to edit a single address"""
 
     model = Address
+    form = AddressForm
 
     def get_instance(self) -> QuerySet:
         return self.model.objects.filter(users__in=[self.request.user],
-                                         address__address_name=self.kwargs.get('address'))
+                                         mail_address=self.kwargs.get('address'),
+                                         pk=self.kwargs.get('pk'))
 
     def redirect(self, instance: Address) -> HttpResponse:
         return redirect(reverse('supervisr_mail:index'))
-
 
 class AddressDeleteView(GenericDeleteView):
     """View to delete a single address"""
@@ -91,7 +92,8 @@ class AddressDeleteView(GenericDeleteView):
 
     def get_instance(self) -> QuerySet:
         return self.model.objects.filter(users__in=[self.request.user],
-                                         address__address_name=self.kwargs.get('address'))
+                                         mail_address=self.kwargs.get('address'),
+                                         pk=self.kwargs.get('pk'))
 
     def redirect(self, instance: Address) -> HttpResponse:
         return redirect(reverse('supervisr_mail:index'))

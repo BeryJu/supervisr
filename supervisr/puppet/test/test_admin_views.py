@@ -1,16 +1,26 @@
-"""
-Supervisr Puppet View Test
-"""
+"""Supervisr Puppet View Test"""
 
+from django.contrib.auth.models import Group
 from django.test import TestCase
 
-from supervisr.core.models import get_system_user
+from supervisr.core.models import User, get_system_user
 from supervisr.core.test.utils import test_request
+from supervisr.puppet.models import PuppetModule
 from supervisr.puppet.views import admin
 
 
 class TestAdminViews(TestCase):
     """Supervisr Puppet View Test"""
+
+    def setUp(self):
+        ps_group = Group.objects.get_or_create(
+            name='Puppet Systemusers')[0]
+        system_user = User.objects.get(pk=get_system_user())
+        ps_group.user_set.add(system_user)
+        PuppetModule.objects.get_or_create(
+            name='supervisr_core',
+            owner=system_user,
+            source_path='supervisr/core/server/config/')
 
     def test_index(self):
         """Test index view"""

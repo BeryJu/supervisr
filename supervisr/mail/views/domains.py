@@ -23,7 +23,8 @@ class MailDomainIndexView(GenericIndexView):
     template = 'mail/index.html'
 
     def get_instance(self) -> QuerySet:
-        return self.model.objects.filter(users__in=[self.request.user])
+        return self.model.objects.filter(users__in=[self.request.user]) \
+                                 .order_by('domain__domain_name')
 
 # pylint: disable=too-many-ancestors
 class MailDomainNewWizard(BaseWizardView):
@@ -53,8 +54,8 @@ class MailDomainNewWizard(BaseWizardView):
 
     def finish(self, form_list):
         mail_domain = form_list[0].save(commit=False)
-        mail_domain.update_provider_m2m(form_list['0'].cleaned_data.get('providers'))
         mail_domain.save()
+        mail_domain.update_provider_m2m(form_list[0].cleaned_data.get('providers'))
         UserAcquirableRelationship.objects.create(
             model=mail_domain,
             user=self.request.user)

@@ -2,10 +2,12 @@
 
 from django.test import TestCase
 
-from supervisr.core.models import get_system_user, UserAcquirableRelationship, User
-from supervisr.mail.views import addresses
+from supervisr.core.models import (User, UserAcquirableRelationship,
+                                   get_system_user)
 from supervisr.core.test.utils import test_request
 from supervisr.mail.models import Address
+from supervisr.mail.views import addresses
+
 
 class TestAddressViews(TestCase):
     """Supervisr Mail AddressView Test"""
@@ -28,11 +30,11 @@ class TestAddressViews(TestCase):
         """test update view (authenticated)"""
         address = Address.objects.create(mail_address='test')
         UserAcquirableRelationship.objects.create(
-            user=User.objects.get(get_system_user()),
+            user=User.objects.get(pk=get_system_user()),
             model=address
             )
         self.assertEqual(test_request(addresses.AddressUpdateView.as_view(),
-                                      req_kwargs={
+                                      url_kwargs={
                                           'address': address.mail_address,
                                           'pk': address.pk
                                       },
@@ -42,11 +44,11 @@ class TestAddressViews(TestCase):
         """test delete view (authenticated)"""
         address = Address.objects.create(mail_address='test')
         UserAcquirableRelationship.objects.create(
-            user=User.objects.get(get_system_user()),
+            user=User.objects.get(pk=get_system_user()),
             model=address
         )
         self.assertEqual(test_request(addresses.AddressDeleteView.as_view(),
-                                      req_kwargs={
+                                      url_kwargs={
                                           'address': address.mail_address,
                                           'pk': address.pk
                                       },

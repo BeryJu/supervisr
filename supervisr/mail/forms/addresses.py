@@ -14,4 +14,4 @@ class AddressForm(ModelForm):
     class Meta:
 
         model = Address
-        fields = ['mail_address', 'enabled', 'domains']
+        fields = ['mail_address', 'enabled', 'domains', 'providers']
