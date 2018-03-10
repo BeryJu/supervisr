@@ -61,7 +61,7 @@ pyroma:
   except:
     - prod
   script:
-    - "inv supervisr.pyroma"
+    - "inv ci.pyroma"
   stage: test
   cache:
     paths:
