@@ -70,6 +70,11 @@ def build_static(ctx):
     if WINDOWS:
         ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
     with ctx.cd('assets'):
-        ctx.run('grunt --no-color', hide='out')
+        ctx.run('npm install')
+        ctx.run('npm upgrade')
+        if WINDOWS:
+            ctx.run('.\\node_modules\\.bin\\grunt --no-color', hide='out')
+        else:
+            ctx.run('.node_modules/.bin/grunt --no-color', hide='out')
     from django.core.management import execute_from_command_line
     execute_from_command_line(['manage.py', 'collectstatic', '--noinput'])
