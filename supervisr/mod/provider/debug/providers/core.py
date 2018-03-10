@@ -20,7 +20,6 @@ class DebugProvider(BaseProvider):
         """Check if credentials are instance of BaseCredential"""
         return True
 
-    # pylint: disable=unused-argument
     def get_translator(self, data_type) -> ProviderObjectTranslator:
         return None
 

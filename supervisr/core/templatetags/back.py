@@ -16,6 +16,7 @@ def is_absolute(url):
     """
     return bool(urlparse(url).netloc)
 
+
 @register.simple_tag(takes_context=True)
 def back(context):
     """

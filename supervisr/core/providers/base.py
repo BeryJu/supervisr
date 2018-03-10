@@ -25,6 +25,8 @@ class ProviderMetadata(object):
         return self.capabilities
 
 # pylint: disable=too-few-public-methods
+
+
 class BaseProvider(object):
     """Generic Interface as base for GenericManagedProvider and GenericUserProvider"""
 
@@ -84,6 +86,7 @@ class BaseProvider(object):
             self.selectable = False
             self.ui_name = _('BaseProvider')
 
+
 def get_providers(capabilities=None, path=False):
     """Get all providers, and filter their sub providers"""
 
@@ -108,7 +111,7 @@ def get_providers(capabilities=None, path=False):
             if capabilities:
                 qualified = True
                 for capability in capabilities:
-                    if not capability in provider_instance._meta.capabilities:
+                    if capability not in provider_instance._meta.capabilities:
                         qualified = False
                 if qualified:
                     valid.append(provider_instance)

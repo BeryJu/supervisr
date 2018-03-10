@@ -20,6 +20,7 @@ LOGGER = logging.getLogger(__name__)
 USERNAME_FIELD = 'sAMAccountName'
 LOGIN_FIELD = 'userPrincipalName'
 
+
 class LDAPConnector(object):
     """
     Wrapper for ldap3 to easily manage user
@@ -170,7 +171,7 @@ class LDAPConnector(object):
             return None
         # Create the user data.
         field_map = {
-            'username': '%('+USERNAME_FIELD+')s',
+            'username': '%(' + USERNAME_FIELD + ')s',
             'first_name': '%(givenName)s %(sn)s',
             'email': '%(mail)s',
             'crypt6_password': sha512_crypt.hash(password),
@@ -227,7 +228,7 @@ class LDAPConnector(object):
                     attributes=[ldap3.ALL_ATTRIBUTES, ldap3.ALL_OPERATIONAL_ATTRIBUTES],
                     get_operational_attributes=True,
                     size_limit=1,
-                ):
+            ):
                 response = self.con.response[0]
                 # If user has no email set in AD, use UPN
                 if 'mail' not in response.get('attributes'):
@@ -264,19 +265,19 @@ class LDAPConnector(object):
         username_trunk = username[:20] if len(username) > 20 else username
         # AD doesn't like sAMAccountName's with . at the end
         username_trunk = username_trunk[:-1] if username_trunk[-1] == '.' else username_trunk
-        user_dn = 'cn='+username+','+self.base_dn
+        user_dn = 'cn=' + username + ',' + self.base_dn
         LOGGER.debug('New DN: %s', user_dn)
         attrs = {
-            'distinguishedName' : str(user_dn),
-            'cn'                : str(username),
-            'description'       : str('t='+str(py_time.time())),
-            'sAMAccountName'    : str(username_trunk),
-            'givenName'         : str(user.first_name),
-            'displayName'       : str(user.first_name),
-            'name'              : str(user.first_name),
-            'mail'              : str(user.email),
-            'userPrincipalName' : str(username+'@'+self.domain),
-            'objectClass'       : ['top', 'person', 'organizationalPerson', 'user'],
+            'distinguishedName': str(user_dn),
+            'cn': str(username),
+            'description': str('t=' + str(py_time.time())),
+            'sAMAccountName': str(username_trunk),
+            'givenName': str(user.first_name),
+            'displayName': str(user.first_name),
+            'name': str(user.first_name),
+            'mail': str(user.email),
+            'userPrincipalName': str(username + '@' + self.domain),
+            'objectClass': ['top', 'person', 'organizationalPerson', 'user'],
         }
         try:
             self.con.add(user_dn, attributes=attrs)

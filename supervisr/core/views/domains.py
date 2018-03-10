@@ -27,6 +27,7 @@ class DomainIndexView(GenericIndexView):
     def get_instance(self) -> HttpResponse:
         return self.model.objects.filter(users__in=[self.request.user]).order_by('domain_name')
 
+
 # pylint: disable=too-many-ancestors
 class DomainNewView(BaseWizardView):
     """Wizard to create a Domain"""
@@ -57,6 +58,7 @@ class DomainNewView(BaseWizardView):
         messages.success(self.request, _('Domain successfully created'))
         return redirect(reverse('domain-index'))
 
+
 class DomainEditView(GenericUpdateView):
     """Update Domain"""
 
@@ -81,6 +83,7 @@ class DomainEditView(GenericUpdateView):
         form.fields['provider'].queryset = provider_instance
         form.request = self.request
         return form
+
 
 class DomainDeleteView(GenericDeleteView):
     """Delete domain"""

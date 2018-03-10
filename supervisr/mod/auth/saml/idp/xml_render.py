@@ -30,12 +30,13 @@ def _get_attribute_statement(params):
     params['ATTRIBUTE_STATEMENT'] = render_to_string('saml/xml/attributes.xml', {
         'attributes': attributes})
 
+
 def _get_in_response_to(params):
     """
     Insert InResponseTo if we have a RequestID.
     Modifies the params dict.
     """
-    #NOTE: I don't like this. We're mixing templating logic here, but the
+    # NOTE: I don't like this. We're mixing templating logic here, but the
     # current design requires this; maybe refactor using better templates, or
     # just bite the bullet and use elementtree to produce the XML; see comments
     # in xml_templates about Canonical XML.
@@ -45,12 +46,14 @@ def _get_in_response_to(params):
     else:
         params['IN_RESPONSE_TO'] = ''
 
+
 def _get_subject(params):
     """
     Insert Subject.
     Modifies the params dict.
     """
     params['SUBJECT_STATEMENT'] = render_to_string('saml/xml/subject.xml', params)
+
 
 def get_assertion_xml(template, parameters, signed=False):
     """
@@ -62,7 +65,7 @@ def get_assertion_xml(template, parameters, signed=False):
     params['ASSERTION_SIGNATURE'] = ''
 
     _get_in_response_to(params)
-    _get_subject(params) # must come before _get_attribute_statement()
+    _get_subject(params)  # must come before _get_attribute_statement()
     _get_attribute_statement(params)
 
     unsigned = render_to_string(template, params)
@@ -74,6 +77,7 @@ def get_assertion_xml(template, parameters, signed=False):
     signature_xml = get_signature_xml()
     params['ASSERTION_SIGNATURE'] = signature_xml
     return render_to_string(template, params)
+
 
 def get_response_xml(parameters, signed=False, assertion_id=''):
     """

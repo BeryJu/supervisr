@@ -48,6 +48,7 @@ class PowerDNSZoneObject(ProviderObject):
         except OperationalError as exc:
             raise SupervisrProviderException from exc
 
+
 class PowerDNSZoneTranslator(ProviderObjectTranslator[Zone]):
     """PowerDNS Zone Translator"""
 

@@ -17,6 +17,7 @@ from supervisr.core.utils import render_to_string
 
 LOGGER = logging.getLogger(__name__)
 
+
 def load_certificate(strip=False):
     """
     Get Public key from config
@@ -26,11 +27,13 @@ def load_certificate(strip=False):
         return strip_pem_header(cert.replace('\r', '')).replace('\n', '')
     return cert
 
+
 def load_private_key():
     """
     Get Private Key from config
     """
     return Setting.get('private_key')
+
 
 def sign_with_signxml(private_key, data, cert, reference_uri=None):
     """
@@ -42,6 +45,7 @@ def sign_with_signxml(private_key, data, cert, reference_uri=None):
     root = etree.fromstring(data)
     signer = XMLSigner(c14n_algorithm='http://www.w3.org/2001/10/xml-exc-c14n#')
     return etree.tostring(signer.sign(root, key=key, cert=cert, reference_uri=reference_uri))
+
 
 def get_signature_xml():
     """

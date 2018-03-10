@@ -31,6 +31,7 @@ class EditUserForm(forms.Form):
             choices.append((themename, themename.title()))
         self.fields['theme'].choices = choices
 
+
 class FeedbackForm(forms.Form):
     """Form to send feedback"""
 

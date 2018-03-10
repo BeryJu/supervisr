@@ -14,6 +14,7 @@ from django.conf.urls import include, url
 
 LOGGER = logging.getLogger(__name__)
 
+
 def auto_discover():
     """Automatically discover API modules and return urlpatterns for them"""
     urlpatterns = []
@@ -47,7 +48,7 @@ def auto_discover():
             module_path = module_path[1:]
         # This is just a sanity check to see if the module is importable
         importlib.import_module(module_path)
-        version_name = module_path.split('.')[-2] # get the second last module name (version)
+        version_name = module_path.split('.')[-2]  # get the second last module name (version)
         namespace = '_'.join(module_path.split('.')[:-1])
         urlpatterns.append(url('%s/' % version_name, include((module_path, namespace),
                                                              namespace=namespace)))

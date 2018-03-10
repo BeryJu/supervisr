@@ -106,6 +106,7 @@ urlpatterns = [
     url(r'^robots\.txt', TemplateView.as_view(template_name='common/robots.txt')),
 ]
 
+
 def get_patterns(mount_path, module, namespace=None):
     """Check if module exists and return an array with urlpatterns"""
     # Check every part of the module chain
@@ -130,7 +131,7 @@ def get_patterns(mount_path, module, namespace=None):
 # Load Urls for all sub apps
 for app in get_apps():
     # API namespace is always generated automatically
-    api_namespace = '_'.join(app.name.split('_')+['api'])
+    api_namespace = '_'.join(app.name.split('_') + ['api'])
     # remove `supervisr/` for mountpath and replace _ with /
     mount_path = app.label.replace('supervisr_', '').replace('_', '/')
 

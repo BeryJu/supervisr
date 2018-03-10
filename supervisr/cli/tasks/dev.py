@@ -6,6 +6,7 @@ from invoke import task
 
 LOGGER = logging.getLogger(__name__)
 
+
 @task
 # pylint: disable=unused-argument
 def init(ctx, name):

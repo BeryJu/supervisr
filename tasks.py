@@ -17,7 +17,6 @@ os.environ.setdefault("SUPERVISR_LOCAL_SETTINGS", "supervisr.local_settings")
 
 # pylint: disable=invalid-name
 namespace = Collection()
-# pylint: disable=protected-access
 for submod in dir(supervisr.cli.tasks):
     if not submod.startswith('_'):
         namespace.add_collection(

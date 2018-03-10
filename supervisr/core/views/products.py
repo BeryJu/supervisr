@@ -23,6 +23,7 @@ def index(request):
         'products': products
     })
 
+
 @login_required
 def view(request, slug):
     """Show more specific Information about a product"""
@@ -45,6 +46,7 @@ def view(request, slug):
         })
     raise Http404
 
+
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def admin_index(request):
@@ -52,7 +54,8 @@ def admin_index(request):
     products = Product.objects.all()
     return render(request, 'product/admin_index.html', {
         'products': products
-        })
+    })
+
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')

@@ -76,6 +76,7 @@ def test_request(view,
     else:
         return HttpResponseServerError()
 
+
 def internal_provider(user):
     """Quickly create an instance of internal Provider"""
     credentials = EmptyCredential.objects.create(owner=user,
@@ -84,6 +85,7 @@ def internal_provider(user):
         credentials=credentials,
         provider_path='supervisr.mod.provider.debug.providers.core.DebugProvider')
     return provider, credentials
+
 
 def call_command_ret(*args, **kwargs):
     """This is a wrapper for django's call_command, but it returns the stdout output"""

@@ -1,6 +1,4 @@
-"""
-Supervisr Static Model Test
-"""
+"""Supervisr Static Model Test"""
 
 import os
 import time
@@ -12,9 +10,7 @@ from supervisr.static.models import FilePage
 
 
 class TestModels(TestCase):
-    """
-    Supervisr Static Model Test
-    """
+    """Supervisr Static Model Test"""
 
     def setUp(self):
         # Create temporary file to create page from
@@ -28,22 +24,18 @@ class TestModels(TestCase):
         os.remove(self.filename)
 
     def test_file_page_update(self):
-        """
-        Make file page to read from test file
-        """
-        fpage = FilePage.objects.create(
+        """Make file page to read from test file"""
+        file_page = FilePage.objects.create(
             path=self.filename,
             author=User.objects.get(pk=get_system_user()))
-        fpage.update_from_file()
-        self.assertEqual(fpage.content, self.content)
+        file_page.update_from_file()
+        self.assertEqual(file_page.content, self.content)
 
     def test_file_page_update_dupe(self):
-        """
-        Update file page twice
-        """
-        fpage = FilePage.objects.create(
+        """Update file page twice"""
+        file_page = FilePage.objects.create(
             path=self.filename,
             author=User.objects.get(pk=get_system_user()))
-        fpage.update_from_file()
-        fpage.update_from_file()
-        self.assertEqual(fpage.content, self.content)
+        file_page.update_from_file()
+        file_page.update_from_file()
+        self.assertEqual(file_page.content, self.content)

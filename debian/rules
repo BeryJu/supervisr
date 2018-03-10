@@ -9,10 +9,10 @@ export DH_VIRTUALENV_INSTALL_SUFFIX=env
 	dh $@ --with=systemd --with=python-virtualenv --skip-install --install-suffix=env #-buildsystem=dh_virtualenv
 
 override_dh_auto_clean:
-	env/bin/invoke clean
+	env/bin/invoke utils.clean
 
 override_dh_auto_build:
-	env/bin/invoke compile-reqs
+	env/bin/invoke utils.compile-reqs
 
 # override_dh_usrlocal to do nothing
 override_dh_usrlocal:

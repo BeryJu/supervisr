@@ -40,20 +40,18 @@ class TestDomainViews(TestCase):
         """Test Index View (Anonymous)"""
         self.assertEqual(test_request(domains.MailDomainReadView.as_view(), url_kwargs={
             'domain': self.domain.domain.domain_name
-            }).status_code, 302)
+        }).status_code, 302)
 
     def test_domain_view_auth(self):
         """Test Index View (Authenticated)"""
-        self.assertEqual(test_request(domains.MailDomainReadView.as_view(),
-                                      user=get_system_user(),
-                                      url_kwargs={
-                                          'domain': self.domain.domain.domain_name
-                                      }).status_code, 200)
+        self.assertEqual(
+            test_request(domains.MailDomainReadView.as_view(),
+                         user=get_system_user(),
+                         url_kwargs={'domain': self.domain.domain.domain_name}).status_code, 200)
 
     def test_domain_view_404(self):
         """Test Index View (non-existant)"""
-        self.assertEqual(test_request(domains.MailDomainReadView.as_view(),
-                                      user=get_system_user(),
-                                      url_kwargs={
-                                          'domain': 'invalid'
-                                      }).status_code, 404)
+        self.assertEqual(
+            test_request(domains.MailDomainReadView.as_view(),
+                         user=get_system_user(),
+                         url_kwargs={'domain': 'invalid'}).status_code, 404)

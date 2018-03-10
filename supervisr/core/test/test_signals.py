@@ -13,7 +13,7 @@ class TestSignals(TestCase):
     """
 
     def setUp(self):
-        self.sig_test = RobustSignal() # This signal is only used during unit-tests
+        self.sig_test = RobustSignal()  # This signal is only used during unit-tests
 
     def test_robust_signal(self):
         """
@@ -26,7 +26,7 @@ class TestSignals(TestCase):
             """
             Throw an exception
             """
-            return 0/0
+            return 0 / 0
 
         self.sig_test.connect(handler)
         try:

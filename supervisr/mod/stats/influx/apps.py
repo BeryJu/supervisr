@@ -10,6 +10,7 @@ from supervisr.core.thread.background import SCHEDULER, catch_exceptions
 
 LOGGER = logging.getLogger(__name__)
 
+
 class SupervisrModStatInfluxConfig(SupervisrAppConfig):
     """Supervisr Influx AppConfig"""
 
@@ -47,7 +48,6 @@ class SupervisrModStatInfluxConfig(SupervisrAppConfig):
 
             except (TimeoutError, ConnectionError, IOError):
                 LOGGER.warning("Failed to connect to influx server '%s'.", Setting.get('host'))
-
 
     def ensure_settings(self):
         return {

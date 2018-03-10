@@ -15,6 +15,7 @@ class RecordAPI(UserAcquirableModelAPI):
     model = Record
     form = RecordForm
 
+
 @logged_in_or_basicauth('Supervisr DNS Update')
 def dyndns_update(request: HttpRequest, zone: str, record: str) -> HttpResponse:
     """

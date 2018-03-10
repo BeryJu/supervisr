@@ -29,9 +29,10 @@ def admin_settings(request: HttpRequest) -> HttpResponse:
     return render(request, 'beacon/settings.html', {
         'form': form,
         'is_master': is_master,
-        'installs':  Pulse.objects.all(),
+        'installs': Pulse.objects.all(),
         'modules': PulseModule.objects.all()
     })
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)

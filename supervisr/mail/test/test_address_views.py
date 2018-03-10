@@ -32,13 +32,11 @@ class TestAddressViews(TestCase):
         UserAcquirableRelationship.objects.create(
             user=User.objects.get(pk=get_system_user()),
             model=address
-            )
-        self.assertEqual(test_request(addresses.AddressUpdateView.as_view(),
-                                      url_kwargs={
-                                          'address': address.mail_address,
-                                          'pk': address.pk
-                                      },
-                                      user=get_system_user()).status_code, 200)
+        )
+        self.assertEqual(
+            test_request(addresses.AddressUpdateView.as_view(),
+                         url_kwargs={'address': address.mail_address, 'pk': address.pk},
+                         user=get_system_user()).status_code, 200)
 
     def test_delete_view_auth(self):
         """test delete view (authenticated)"""
@@ -47,9 +45,7 @@ class TestAddressViews(TestCase):
             user=User.objects.get(pk=get_system_user()),
             model=address
         )
-        self.assertEqual(test_request(addresses.AddressDeleteView.as_view(),
-                                      url_kwargs={
-                                          'address': address.mail_address,
-                                          'pk': address.pk
-                                      },
-                                      user=get_system_user()).status_code, 200)
+        self.assertEqual(
+            test_request(addresses.AddressDeleteView.as_view(),
+                         url_kwargs={'address': address.mail_address, 'pk': address.pk},
+                         user=get_system_user()).status_code, 200)

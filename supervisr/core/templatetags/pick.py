@@ -6,6 +6,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.filter('pick')
 def pick(cont, arg, fallback=''):
     """

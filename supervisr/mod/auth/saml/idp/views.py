@@ -58,6 +58,7 @@ def render_xml(request, template, ctx):
     """
     return render(request, template, context=ctx, content_type="application/xml")
 
+
 @csrf_exempt
 def login_begin(request):
     """
@@ -78,6 +79,7 @@ def login_begin(request):
     request.session['RelayState'] = source.get('RelayState', '')
     return redirect(reverse('supervisr_mod_auth_saml_idp:saml_login_process'))
 
+
 def redirect_to_sp(request, acs_url, saml_response, relay_state):
     """
     Return autosubmit form
@@ -87,8 +89,9 @@ def redirect_to_sp(request, acs_url, saml_response, relay_state):
         'attrs': {
             'SAMLResponse': saml_response,
             'RelayState': relay_state
-            }
-        })
+        }
+    })
+
 
 @login_required
 def login_process(request):
@@ -101,7 +104,7 @@ def login_process(request):
     # Check if user has access
     access = True
     if remote.productextensionsaml2_set.exists() and \
-        remote.productextensionsaml2_set.first().product_set.exists():
+            remote.productextensionsaml2_set.first().product_set.exists():
         # Only check if there is a connection from OAuth2 Application to product
         product = remote.productextensionsaml2_set.first().product_set.first()
         relationship = UserAcquirableRelationship.objects.filter(user=request.user, model=product)
@@ -148,6 +151,7 @@ def login_process(request):
         except exceptions.CannotHandleAssertion as exc:
             return error_response(request, str(exc))
 
+
 @csrf_exempt
 def logout(request):
     """
@@ -168,6 +172,7 @@ def logout(request):
 
     return render(request, 'saml/idp/logged_out.html')
 
+
 @login_required
 @csrf_exempt
 def slo_logout(request):
@@ -176,14 +181,15 @@ def slo_logout(request):
     logs out the user and returns a standard logged-out page.
     """
     request.session['SAMLRequest'] = request.POST['SAMLRequest']
-    #TODO: Parse SAML LogoutRequest from POST data, similar to login_process().
-    #TODO: Add a URL dispatch for this view.
-    #TODO: Modify the base processor to handle logouts?
-    #TODO: Combine this with login_process(), since they are so very similar?
-    #TODO: Format a LogoutResponse and return it to the browser.
-    #XXX: For now, simply log out without validating the request.
+    # TODO: Parse SAML LogoutRequest from POST data, similar to login_process().
+    # TODO: Add a URL dispatch for this view.
+    # TODO: Modify the base processor to handle logouts?
+    # TODO: Combine this with login_process(), since they are so very similar?
+    # TODO: Format a LogoutResponse and return it to the browser.
+    # XXX: For now, simply log out without validating the request.
     auth.logout(request)
     return render(request, 'saml/idp/logged_out.html')
+
 
 def descriptor(request):
     """
@@ -203,6 +209,7 @@ def descriptor(request):
     response = HttpResponse(metadata, content_type='application/xml')
     response['Content-Disposition'] = 'attachment; filename="sv_metadata.xml'
     return response
+
 
 class IDPSettingsView(GenericSettingView):
     """IDP Settings"""

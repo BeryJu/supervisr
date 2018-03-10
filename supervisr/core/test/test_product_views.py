@@ -40,7 +40,7 @@ class TestProductViews(TestCase):
             invite_only=False)
         request = self.factory.get(reverse('product-view', kwargs={
             'slug': test_product.slug
-            }))
+        }))
         request.user = User.objects.get(pk=get_system_user())
         response = products.index(request)
         self.assertEqual(response.status_code, 200)

@@ -45,6 +45,7 @@ class GenericModelView(View):
         """Redirect after a successful write operation"""
         raise NotImplementedError()
 
+
 class GenericIndexView(GenericModelView):
     """Generic view to view a list of objects"""
 
@@ -76,7 +77,7 @@ class GenericIndexView(GenericModelView):
         render_kwargs = self.update_kwargs({'instances': page_instances})
         return self.render(render_kwargs)
 
-# pylint: disable=abstract-method
+
 class GenericReadView(GenericModelView):
     """Generic view to view an object instance"""
 
@@ -101,6 +102,7 @@ class GenericReadView(GenericModelView):
         instance = instances.first()
         render_kwargs = self.update_kwargs({'instance': instance})
         return self.render(render_kwargs)
+
 
 # pylint: disable=abstract-method
 class GenericUpdateView(GenericModelView):
@@ -157,6 +159,7 @@ class GenericUpdateView(GenericModelView):
                                              % {'verbose_name': self.model_verbose_name}))
             return self.redirect(instance)
         return self.render(form)
+
 
 # pylint: disable=abstract-method
 class GenericDeleteView(GenericModelView):

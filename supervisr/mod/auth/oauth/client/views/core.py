@@ -125,13 +125,13 @@ class OAuthCallback(OAuthClientMixin, View):
                         'code': 500,
                         'exc_message': _("Provider %(name)s didn't provide an E-Mail address." % {
                             'name': self.provider.name
-                            }),
-                        })
+                        }),
+                    })
                 except OAuthClientError as exc:
                     return render(request, 'common/error.html', {
                         'code': 500,
                         'exc_message': str(exc),
-                        })
+                    })
             return self.handle_existing_user(self.provider, user, access, info)
 
     # pylint: disable=unused-argument
@@ -157,7 +157,7 @@ class OAuthCallback(OAuthClientMixin, View):
         # Removed padding characters
         username = force_text(base64.urlsafe_b64encode(digest)).replace('=', '')
         # pylint: disable=invalid-name
-        User = get_user_model()
+        User = get_user_model() # noqa
         kwargs = {
             User.USERNAME_FIELD: username,
             'email': '',
@@ -183,7 +183,7 @@ class OAuthCallback(OAuthClientMixin, View):
         login(self.request, user)
         messages.success(self.request, _("Successfully authenticated with %(provider)s!" % {
             'provider': self.provider.ui_name
-            }))
+        }))
         return redirect(self.get_login_redirect(provider, user, access))
 
     def handle_login_failure(self, provider, reason):
@@ -194,7 +194,7 @@ class OAuthCallback(OAuthClientMixin, View):
 
     def handle_new_user(self, provider, access, info):
         "Create a shell auth.User and redirect."
-        if self.request.user.is_authenticated: # pylint: disable=no-else-return
+        if self.request.user.is_authenticated:  # pylint: disable=no-else-return
             # there's already a user logged in, just link them up
             user = self.request.user
             access.user = user
@@ -207,7 +207,7 @@ class OAuthCallback(OAuthClientMixin, View):
                 current=False)
             messages.success(self.request, _("Successfully linked %(provider)s!" % {
                 'provider': self.provider.ui_name
-                }))
+            }))
             return redirect(reverse('supervisr_mod_auth_oauth_client:user_settings'))
         else:
             user = self.get_or_create_user(provider, access, info)
@@ -224,8 +224,9 @@ class OAuthCallback(OAuthClientMixin, View):
                 current=False)
             messages.success(self.request, _("Successfully authenticated with %(provider)s!" % {
                 'provider': self.provider.ui_name
-                }))
+            }))
             return redirect(self.get_login_redirect(provider, user, access, True))
+
 
 @login_required
 def disconnect(request: HttpRequest, provider: str) -> HttpResponse:
@@ -250,5 +251,5 @@ def disconnect(request: HttpRequest, provider: str) -> HttpResponse:
         'object': 'OAuth Connection with %s' % r_provider.ui_name,
         'delete_url': reverse('supervisr_mod_auth_oauth_client:oauth-client-disconnect', kwargs={
             'provider': r_provider.name,
-            })
         })
+    })

@@ -9,6 +9,7 @@ class ZoneImportForm(forms.Form):
 
     zone_data = forms.CharField(widget=forms.Textarea, label=_('Zone Data'))
 
+
 class ZoneImportPreviewForm(forms.Form):
     """Zone import preview form"""
     title = _('Preview Results')

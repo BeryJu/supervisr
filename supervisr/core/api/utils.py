@@ -26,6 +26,7 @@ def api_response(request, data):
         return handler(data=data, code=code)
     return JsonResponse({'error': "type '%s' not found" % selected_format, 'code': 400}, status=400)
 
+
 def api_response_openid(code, data):
     """Serialize data to JSON then apply OpenID field names."""
     remap_table = {
@@ -41,9 +42,11 @@ def api_response_openid(code, data):
             new_data[dest_key] = data['data'][init_key]
     return api_response_json(code, new_data)
 
+
 def api_response_json(code, data):
     """Serialize data to JSON"""
     import json
+
     def date_helper(obj):
         """JSON serializer for objects not serializable by default json code"""
 
@@ -56,6 +59,7 @@ def api_response_json(code, data):
 
     data = json.dumps(data, sort_keys=True, indent=4, default=date_helper)
     return HttpResponse(data, content_type='application/json', status=code)
+
 
 def api_response_yaml(code, data):
     """Serialize data to YAML"""

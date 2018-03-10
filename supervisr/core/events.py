@@ -27,6 +27,7 @@ def event_handle_user_signed_up(sender, signal, user, request, **kwargs):
         current=False,
         request=request)
 
+
 @receiver(SIG_USER_POST_CHANGE_PASS)
 # pylint: disable=unused-argument
 def event_handle_user_changed_pass(signal, user, request, was_reset, **kwargs):
@@ -35,9 +36,10 @@ def event_handle_user_changed_pass(signal, user, request, was_reset, **kwargs):
         user=user,
         message=_("You changed your Password (%(kind)s)" % {
             'kind': _("non-reset") if was_reset is False else _("reset")
-            }),
+        }),
         current=True,
         request=request)
+
 
 @receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED)
 # pylint: disable=unused-argument, invalid-name
@@ -51,8 +53,9 @@ def event_handle_relationship_created(sender, signal, relationship, **kwargs):
         message=_("You gained access to %(class)s %(name)s" % {
             'name': name,
             'class': relationship.model.cast().__class__.__name__,
-            }),
+        }),
         current=True)
+
 
 @receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED)
 # pylint: disable=unused-argument, invalid-name
@@ -65,8 +68,9 @@ def event_handle_relationship_deleted(sender, signal, relationship, **kwargs):
         user=relationship.user,
         message=_("You lost access to %(name)s" % {
             'name': name
-            }),
+        }),
         current=True)
+
 
 @receiver(user_logged_in)
 # pylint: disable=unused-argument
@@ -79,6 +83,7 @@ def event_handler_user_login(sender, signal, user, request, **kwargs):
         hidden=True,
         current=False)
 
+
 @receiver(user_logged_out)
 # pylint: disable=unused-argument
 def event_handler_user_logout(sender, signal, user, request, **kwargs):
@@ -89,6 +94,7 @@ def event_handler_user_logout(sender, signal, user, request, **kwargs):
         request=request,
         hidden=True,
         current=False)
+
 
 @receiver(post_save, sender=Event)
 # pylint: disable=unused-argument

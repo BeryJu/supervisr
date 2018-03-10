@@ -18,6 +18,7 @@ from supervisr.mod.beacon.models import Pulse, PulseModule
 
 LOGGER = logging.getLogger(__name__)
 
+
 class Sender(object):
     """Class that sends anonymized"""
 
@@ -33,7 +34,7 @@ class Sender(object):
         self._endpoint = Setting.get('endpoint')
         self._install_id = Setting.get('install_id', namespace='supervisr.core')
         SIG_SETTING_UPDATE.connect(self.on_setting_update)
-        self._smear_amount = uniform(0.5, 1.5) # Smear between 0.5 and 1.5
+        self._smear_amount = uniform(0.5, 1.5)  # Smear between 0.5 and 1.5
         self._pulse = Pulse(
             install_id=self._install_id,
         )
@@ -69,7 +70,7 @@ class Sender(object):
                         '__ui_name__': 'name',
                         '__author__': 'author',
                         '__email__': 'author_email',
-                    }.items():
+                }.items():
                     value = getattr(base, key, 'Undefined')
                     setattr(pmod, new_key, value)
                 self._modules.append(pmod)

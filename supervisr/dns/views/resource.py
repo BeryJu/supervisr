@@ -31,6 +31,7 @@ class ResourceCreateView(BaseWizardView):
         messages.success(self.request, _('Record Resource successfully created'))
         return redirect(reverse('supervisr_dns:rset-read', kwargs={'rset_uuid': rset.uuid}))
 
+
 class ResourceUpdateView(GenericUpdateView):
     """Update Record Resource"""
 
@@ -46,6 +47,7 @@ class ResourceUpdateView(GenericUpdateView):
     def get_instance(self):
         return Resource.objects.filter(uuid=self.kwargs.get('resource_uuid'),
                                        users__in=[self.request.user])
+
 
 class ResourceDeleteView(GenericDeleteView):
     """Delete Record Resource"""

@@ -54,10 +54,10 @@ def search(request):
             return mark_safe(render_to_string('search/search_section.html', {
                 'results': results,
                 'request': request,
-                }))
+            }))
         return None
 
-    ## Resulsts is a key:value dict of app.verbose_name to rendered html
+    # results is a key:value dict of app.verbose_name to rendered html
     results = {}
     for app in apps.get_app_configs():
         app_result = None

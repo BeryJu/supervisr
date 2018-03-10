@@ -19,6 +19,7 @@ class Pulse(models.Model):
     def __str__(self):
         return "Pulse %s from %s" % (self.install_id, self.time)
 
+
 class PulseModule(models.Model):
     """Model to store information about an installed module"""
 
@@ -30,6 +31,7 @@ class PulseModule(models.Model):
 
     def __str__(self):
         return "PulseModule %s by %s <%s>" % (self.name, self.author, self.author_email)
+
 
 class PulseModuleVersion(models.Model):
     """Store different versions of modules"""

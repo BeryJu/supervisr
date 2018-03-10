@@ -1,6 +1,4 @@
-"""
-Supervisr Stats influx Signals
-"""
+"""Supervisr Stats influx Signals"""
 
 
 from django.contrib.auth.signals import user_logged_in, user_logged_out
@@ -28,6 +26,7 @@ def stats_influx_handle_health(sender, **kwargs):
     else:
         return True
 
+
 @receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED)
 # pylint: disable=unused-argument,invalid-name
 def stats_influx_handle_releationship_created(sender, relationship, **kwargs):
@@ -42,6 +41,7 @@ def stats_influx_handle_releationship_created(sender, relationship, **kwargs):
                                      else relationship.user.username,
                          },
                          count=1)
+
 
 @receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED)
 # pylint: disable=unused-argument,invalid-name
@@ -58,6 +58,7 @@ def stats_influx_handle_releationship_deleted(sender, relationship, **kwargs):
                          },
                          count=1)
 
+
 @receiver(SIG_USER_POST_SIGN_UP)
 # pylint: disable=unused-argument,invalid-name
 def stats_influx_handle_user_post_sign_up(sender, user, **kwargs):
@@ -71,6 +72,7 @@ def stats_influx_handle_user_post_sign_up(sender, user, **kwargs):
                              'user': 'Anonymous' if user.username == '' else user.username,
                          },
                          count=1)
+
 
 @receiver(SIG_USER_POST_CHANGE_PASS)
 # pylint: disable=unused-argument,invalid-name
@@ -86,6 +88,7 @@ def stats_influx_handle_user_post_change_pass(sender, user, **kwargs):
                          },
                          count=1)
 
+
 @receiver(SIG_USER_PASS_RESET_FIN)
 # pylint: disable=unused-argument,invalid-name
 def stats_influx_handle_user_pass_reset_fin(sender, user, **kwargs):
@@ -99,6 +102,7 @@ def stats_influx_handle_user_pass_reset_fin(sender, user, **kwargs):
                              'user': 'Anonymous' if user.username == '' else user.username,
                          },
                          count=1)
+
 
 @receiver(SIG_USER_CONFIRM)
 # pylint: disable=unused-argument,invalid-name
@@ -114,6 +118,7 @@ def stats_influx_handle_user_confirm(sender, user, **kwargs):
                          },
                          count=1)
 
+
 @receiver(user_logged_in)
 # pylint: disable=unused-argument
 def stats_influx_handle_user_login(sender, user, **kwargs):
@@ -127,6 +132,7 @@ def stats_influx_handle_user_login(sender, user, **kwargs):
                              'user': 'Anonymous' if user.username == '' else user.username,
                          },
                          count=1)
+
 
 @receiver(user_logged_out)
 # pylint: disable=unused-argument
@@ -142,6 +148,7 @@ def stats_influx_handle_user_logout(sender, user, **kwargs):
                          },
                          count=1)
 
+
 @receiver(SIG_USER_RESEND_CONFIRM)
 # pylint: disable=unused-argument,invalid-name
 def stats_influx_handle_user_resend_confirm(sender, user, **kwargs):
@@ -156,6 +163,7 @@ def stats_influx_handle_user_resend_confirm(sender, user, **kwargs):
                          },
                          count=1)
 
+
 @receiver(SIG_DOMAIN_CREATED)
 # pylint: disable=unused-argument,invalid-name
 def stats_influx_handle_domain_create(sender, **kwargs):
@@ -168,6 +176,7 @@ def stats_influx_handle_domain_create(sender, **kwargs):
                              'action': 'create'
                          },
                          count=1)
+
 
 @receiver(SIG_SET_STAT)
 # pylint: disable=unused-argument

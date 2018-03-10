@@ -9,7 +9,8 @@ register = template.Library()
 
 LOGGER = logging.getLogger(__name__)
 
+
 @register.simple_tag
-def markdown(mdwn):
+def markdown(source):
     """Simple tag to render markdown from a variable"""
-    return mark_safe(markdown_render(mdwn, extensions=['markdown.extensions.tables']))
+    return mark_safe(markdown_render(source, extensions=['markdown.extensions.tables']))

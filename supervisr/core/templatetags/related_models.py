@@ -8,6 +8,7 @@ from supervisr.core.utils import path_to_class
 
 register = template.Library()
 
+
 @register.simple_tag(takes_context=True)
 def related_models(context, model_path):
     """

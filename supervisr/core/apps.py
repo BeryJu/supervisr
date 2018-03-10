@@ -32,7 +32,7 @@ class SupervisrAppConfig(AppConfig):
         super(SupervisrAppConfig, self).__init__(*args, **kwargs)
 
     def ready(self):
-        #self.check_requirements()
+        # self.check_requirements()
         self.load_init()
         self.merge_settings()
         self.run_ensure_settings()
@@ -73,11 +73,11 @@ class SupervisrAppConfig(AppConfig):
                     importlib.import_module("%s.%s" % (self.name, module))
                 except Exception as exc:  # pylint: disable=broad-except
                     # Log the error but continue starting
-                    raise exc
-                    # LOGGER.error(exc)
+                    LOGGER.error(exc)
 
     def check_requirements(self):
         """Check requirements(-dev) and see if everything is installed"""
+
         def _check_file(self, path):
             # Basedir
             basedir = (os.path.dirname(os.path.dirname(os.path.dirname(
@@ -111,15 +111,15 @@ class SupervisrAppConfig(AppConfig):
                 if not key.startswith('__') and not key.endswith('__') and key.isupper():
                     # Only overwrite if set
                     if overwrite is True or \
-                        hasattr(settings, key) is False and \
-                        key not in blacklist:
+                            hasattr(settings, key) is False and \
+                            key not in blacklist:
                         value = getattr(sub_settings, key)
                         setattr(settings, key, value)
                         counter += 1
             if counter > 0:
                 LOGGER.debug("Overwrote %s settings for %s", counter, self.name)
         except ImportError:
-            pass # ignore non-existant modules
+            pass  # ignore non-existant modules
 
 
 class SupervisrCoreConfig(SupervisrAppConfig):
@@ -155,7 +155,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
             from supervisr.core.models import Setting
             for setting in Setting.objects.all():
                 if setting.namespace == '' or \
-                    setting.key == '':
+                        setting.key == '':
                     setting.delete()
         except (OperationalError, ProgrammingError):
             pass

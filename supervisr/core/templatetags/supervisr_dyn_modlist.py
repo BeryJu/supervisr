@@ -10,6 +10,7 @@ from supervisr.core.utils import get_apps
 
 register = template.Library()
 
+
 @register.simple_tag(takes_context=True)
 def supervisr_dyn_modlist(context):
     """
@@ -34,8 +35,8 @@ def supervisr_dyn_modlist(context):
                 'url': url,
                 'default': True if url == SupervisrAppConfig.admin_url_name else False,
                 'name': title,
-                })
+            })
         sorted_list = sorted(view_list, key=lambda x: x['name'])
         cache.set(key, sorted_list, 1000)
         return sorted_list
-    return cache.get(key) # pragma: no cover
+    return cache.get(key)  # pragma: no cover

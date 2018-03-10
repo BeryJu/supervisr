@@ -14,6 +14,7 @@ from supervisr.core.models import Event, UserAcquirableRelationship
 
 LOGGER = logging.getLogger(__name__)
 
+
 class SupervisrAuthorizationView(AuthorizationView):
     """
     Custom OAuth2 Authorization View which checks for invite_only products
@@ -31,7 +32,7 @@ class SupervisrAuthorizationView(AuthorizationView):
         if 'application' in self.oauth2_data:
             app = self.oauth2_data['application']
             if app.productextensionoauth2_set.exists() and \
-                app.productextensionoauth2_set.first().product_set.exists():
+                    app.productextensionoauth2_set.first().product_set.exists():
                 # Only check if there is a connection from OAuth2 Application to product
                 product = app.productextensionoauth2_set.first().product_set.first()
                 relationship = UserAcquirableRelationship.objects.filter(user=request.user,

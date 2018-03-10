@@ -9,12 +9,14 @@ from supervisr.mod.auth.oauth.client.models import Provider
 
 register = template.Library()
 
+
 @register.simple_tag
 def provider_exists(name):
     """
     Return True if Provider exists
     """
     return Provider.objects.filter(Q(name=name) | Q(ui_name=name)).exists()
+
 
 @register.simple_tag
 def any_provider():

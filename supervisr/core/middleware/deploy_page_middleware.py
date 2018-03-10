@@ -7,6 +7,7 @@ from django.shortcuts import render
 
 DEPLOY_PAGE_PATH = os.path.join(settings.BASE_DIR, 'core/templates/core/deploy.html')
 
+
 def deploy_page(get_response):
     """Middleware to detect Deploy Page Mode"""
 

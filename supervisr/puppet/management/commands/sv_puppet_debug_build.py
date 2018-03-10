@@ -1,6 +1,4 @@
-"""
-Supervisr Puppet Debug Builder
-"""
+"""Supervisr Puppet Debug Builder"""
 
 import logging
 
@@ -12,6 +10,7 @@ from supervisr.puppet.builder import ReleaseBuilder
 from supervisr.puppet.models import PuppetModule
 
 LOGGER = logging.getLogger(__name__)
+
 
 class Command(BaseCommand):
     """Build a Puppet Module without saving it to the DB"""

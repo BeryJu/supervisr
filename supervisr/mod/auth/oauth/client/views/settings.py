@@ -18,7 +18,7 @@ def user_settings(request):
             'provider': prov,
             'state': prov.accountaccess_set.filter(user=request.user).exists(),
             'aas': prov.accountaccess_set.filter(user=request.user)
-            })
+        })
     return render(request, 'mod/auth/oauth/client/settings.html', {
         'provider_state': provider_state,
-        })
+    })

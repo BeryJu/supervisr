@@ -1,4 +1,5 @@
 """ Static settings for supervisr and supervisr.* """
+# flake8: noqa
 ####################################################################################################
 ####################################################################################################
 ###
@@ -58,7 +59,7 @@ from django.contrib import messages
 SYSTEM_USER_NAME = 'supervisr'
 USER_PROFILE_ID_START = 5000
 
-REMEMBER_SESSION_AGE = 60 * 60 * 24 * 30 # One Month
+REMEMBER_SESSION_AGE = 60 * 60 * 24 * 30  # One Month
 
 LOGGER = logging.getLogger(__name__)
 
@@ -102,8 +103,9 @@ INSTALLED_APPS = [
 ]
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))+"/static"
-MEDIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/media"
+STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(
+    os.path.abspath(__file__)))) + "/static"
+MEDIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/media"
 SECRET_KEY = '_k*@6h2u2@q-dku57hhgzb7tnx*ba9wodcb^s9g0j59@=y(@_o' # noqa Debug SECRET_KEY
 DEBUG = True
 ALLOWED_HOSTS = ['*']
@@ -242,6 +244,7 @@ SENTRY_DSN = ('https://c5f3fa4e642d4dbfaa5db684bd0f6a13:7d639a81f'
 
 sys.path.append('/etc/supervisr')
 
+
 def load_local_settings(module_path):
     """Load module *mod* and apply contents to ourselves"""
     try:
@@ -363,7 +366,7 @@ if DEBUG is True:
 # Load subapps's INSTALLED_APPS
 for _app in INSTALLED_APPS:
     if _app.startswith('supervisr') and \
-        not _app.startswith('supervisr.core.'):
+            not _app.startswith('supervisr.core.'):
         _app_package = '.'.join(_app.split('.')[:-2])
         try:
             app_settings = importlib.import_module("%s.settings" % _app_package)

@@ -11,11 +11,12 @@ from supervisr.core.providers.objects import ProviderObjectTranslator
 
 LOGGER = getLogger(__name__)
 
+
 class ProviderMultiplexer(object):
     """Multiplex signals to all relevent providers"""
 
     def _get_translators(self, instance: Model, providers: List[ProviderInstance]) \
-        -> List[ProviderObjectTranslator]:
+            -> List[ProviderObjectTranslator]:
         """Get list of translators which should be run for instance.
         This also detects loops of providers."""
         translators = []
@@ -28,7 +29,7 @@ class ProviderMultiplexer(object):
         return translators
 
     def _get_translator(self, instance: Model, root_provider: BaseProvider, iteration=0)\
-        -> ProviderObjectTranslator:
+            -> ProviderObjectTranslator:
         """Recursively walk through providers.
         Limited to 100 iterations to prevent infinite loops"""
         sub_provider = root_provider.get_provider(type(instance))
@@ -37,7 +38,7 @@ class ProviderMultiplexer(object):
                 LOGGER.debug("Provider walk canceled, 100 iterations reached")
             sub_provider_instance = sub_provider(root_provider.credentials)
             LOGGER.debug("Redirected from %r to %r", root_provider, sub_provider_instance)
-            return self._get_translator(instance, sub_provider_instance, iteration=iteration+1)
+            return self._get_translator(instance, sub_provider_instance, iteration=iteration + 1)
         translator = root_provider.get_translator(type(instance))
         if translator:
             return translator(provider_instance=root_provider)

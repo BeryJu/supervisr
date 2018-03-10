@@ -11,6 +11,7 @@ from supervisr.core.regex import DOMAIN_REGEX
 
 LOGGER = logging.getLogger(__name__)
 
+
 class DomainForm(forms.ModelForm):
     """Form create a new Domain"""
 

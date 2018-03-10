@@ -30,6 +30,7 @@ def index(request):
         # 'domains': domains,
     })
 
+
 # pylint: disable=unused-argument
 def uncaught_404(request, **kwargs):
     """Handle an uncaught 404"""
@@ -37,6 +38,7 @@ def uncaught_404(request, **kwargs):
         # return a json/xml/yaml message if this was an api call
         return api_response(request, {'message': 'not_found'})
     return render(request, 'common/error.html', {'code': 404})
+
 
 # pylint: disable=unused-argument
 def uncaught_500(request, **kwargs):
@@ -50,6 +52,7 @@ def uncaught_500(request, **kwargs):
         # return a json/xml/yaml message if this was an api call
         return api_response(request, {'message': 'unexpected_error'})
     return render(request, 'common/error.html', {'code': 500, 'exc_message': message})
+
 
 def error_response(request, message):
     """Show an error view with message"""

@@ -28,14 +28,15 @@ from supervisr.mod.tfa.utils import otpauth_url
 
 TFA_SESSION_KEY = 'supervisr_mod_2fa_key'
 
-# @otp_required
+
 @login_required
 @reauth_required
 def index(request: HttpRequest) -> HttpResponse:
     """Show empty index page"""
     return render(request, 'core/generic.html', {
         'text': 'Test 2FA passed'
-        })
+    })
+
 
 @login_required
 def verify(request: HttpRequest) -> HttpResponse:
@@ -66,7 +67,8 @@ def verify(request: HttpRequest) -> HttpResponse:
         'extra_links': {
             'account-logout': 'Logout',
         }
-        })
+    })
+
 
 @login_required
 def user_settings(request: HttpRequest) -> HttpResponse:
@@ -79,7 +81,8 @@ def user_settings(request: HttpRequest) -> HttpResponse:
     return render(request, 'tfa/user_settings.html', {
         'static_tokens': static_tokens,
         'state': state,
-        })
+    })
+
 
 @login_required
 @reauth_required
@@ -105,6 +108,8 @@ def disable(request: HttpRequest) -> HttpResponse:
     return redirect(reverse('common-index'))
 
 # pylint: disable=too-many-ancestors
+
+
 @method_decorator([login_required, reauth_required], name="dispatch")
 class TFASetupView(BaseWizardView):
     """Wizard to create a Mail Account"""
@@ -189,6 +194,7 @@ class TFASetupView(BaseWizardView):
             request=self.request,
             send_notification=True)
         return redirect(reverse('supervisr_mod_tfa:tfa-index'))
+
 
 @never_cache
 @login_required

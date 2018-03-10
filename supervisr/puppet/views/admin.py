@@ -27,15 +27,16 @@ def index(request: HttpRequest) -> HttpResponse:
     versions = {}
     for mod in PuppetModule.objects.filter(owner=supervisr_user):
         latest_releases = PuppetModuleRelease.objects \
-                            .filter(module=mod) \
-                            .order_by('-pk')
+            .filter(module=mod) \
+            .order_by('-pk')
         if latest_releases.exists():
             versions[mod] = latest_releases.first()
     return render(request, 'puppet/index.html', {
         'module_count': module_count,
         'versions': versions,
         'download_count': download_count['downloads__sum'],
-        })
+    })
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -54,6 +55,7 @@ def debug_build(request: HttpRequest, user: str, module: str) -> HttpResponse:
     messages.success(request, 'Successfully built %s-%s' % (user, module))
     return redirect(reverse('supervisr_puppet:index'))
 
+
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def debug_render(request: HttpRequest) -> HttpResponse:
@@ -65,7 +67,7 @@ def debug_render(request: HttpRequest) -> HttpResponse:
         builder = ReleaseBuilder(module)
         try:
             rendered = builder.render_template(request.POST.get('templatepath'))
-        except Exception: # pylint: disable=broad-except
+        except Exception:  # pylint: disable=broad-except
             trab = traceback.format_exc()
             rendered = str(trab)
         ctx = {

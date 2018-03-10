@@ -27,19 +27,19 @@ class TestViews(TestCase):
         """Test Single View"""
         self.assertEqual(test_request(views.PageView.as_view(), url_kwargs={
             'slug': 'changelog',
-            }).status_code, 200)
+        }).status_code, 200)
 
     def test_single_view_auth(self):
         """Test Single View (authenticated)"""
         self.assertEqual(test_request(views.PageView.as_view(), user=self.user, url_kwargs={
             'slug': 'changelog',
-            }).status_code, 200)
+        }).status_code, 200)
 
     def test_single_view_not_found(self):
         """Test Single View (invalid slug)"""
         self.assertEqual(test_request(views.PageView.as_view(), url_kwargs={
             'slug': 'qqqqqqqqqqqqqqqqq',
-            }).status_code, 404)
+        }).status_code, 404)
 
     def test_feed_view(self):
         """Test Feed View"""
@@ -54,4 +54,4 @@ class TestViews(TestCase):
         """Test Feed View (invalid page)"""
         self.assertEqual(test_request(views.FeedView.as_view(), req_kwargs={
             'page': 999999999
-            }).status_code, 200)
+        }).status_code, 200)

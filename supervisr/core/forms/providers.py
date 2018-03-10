@@ -14,6 +14,7 @@ from supervisr.core.utils import path_to_class
 
 LOGGER = logging.getLogger(__name__)
 
+
 class ProviderForm(forms.ModelForm):
     """Form create/edit a new Provider"""
 
@@ -48,6 +49,7 @@ class ProviderForm(forms.ModelForm):
         model = ProviderInstance
         fields = ['name', 'provider_path', 'credentials']
 
+
 class CredentialForm(forms.Form):
     """Form create/edit a new Credential"""
 
@@ -56,7 +58,8 @@ class CredentialForm(forms.Form):
     credential_type = forms.ChoiceField(choices=[], required=True,
                                         label=_('Credential Type'))
 
-#pylint: disable=too-few-public-methods
+
+# pylint: disable=too-few-public-methods
 class NewCredentialDetailMeta:
     """Base Class for Credentials Form Meta"""
 
@@ -64,6 +67,7 @@ class NewCredentialDetailMeta:
     widgets = {
         'name': forms.TextInput(),
     }
+
 
 class EmptyCredentialForm(forms.ModelForm):
     """Form for basic input details"""
@@ -75,8 +79,9 @@ class EmptyCredentialForm(forms.ModelForm):
         model = EmptyCredential
 
         widgets = {
-            'name': forms.TextInput(attrs={'value':_('Empty')}),
+            'name': forms.TextInput(attrs={'value': _('Empty')}),
         }
+
 
 class NewCredentialAPIForm(forms.ModelForm):
     """Form to input credential details"""
@@ -91,6 +96,7 @@ class NewCredentialAPIForm(forms.ModelForm):
             'api_key': forms.TextInput(),
         }
 
+
 class NewCredentialUserPasswordForm(forms.ModelForm):
     """For to input credential details"""
     title = 'User and Password'
@@ -103,6 +109,7 @@ class NewCredentialUserPasswordForm(forms.ModelForm):
             'username': forms.TextInput(),
             'password': forms.TextInput(),
         }
+
 
 class NewCredentialUserPasswordServerForm(forms.ModelForm):
     """For to input credential details"""

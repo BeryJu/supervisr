@@ -59,6 +59,7 @@ SIG_GET_MOD_HEALTH = RobustSignal(providing_args=[])
 # Set a statistic
 SIG_SET_STAT = RobustSignal(providing_args=['key', 'value'])
 
+
 @receiver(post_migrate)
 # pylint: disable=unused-argument
 def core_handle_post_migrate(sender, *args, **kwargs):
@@ -68,6 +69,7 @@ def core_handle_post_migrate(sender, *args, **kwargs):
         sender.run_ensure_settings()
         SIG_DO_SETUP.send(sender.name)
 
+
 @receiver(SIG_USER_CHANGE_PASS)
 # pylint: disable=unused-argument
 def crypt6_handle_user_change_pass(signal, user, password, **kwargs):
@@ -76,11 +78,13 @@ def crypt6_handle_user_change_pass(signal, user, password, **kwargs):
     user.crypt6_password = sha512_crypt.hash(password)
     user.save()
 
+
 @receiver(SIG_SET_STAT)
 # pylint: disable=unused-argument
 def stat_output_verbose(signal, key, value, **kwargs):
     """Output stats to LOGGER"""
     LOGGER.debug("Stats: '%s': %r", key, value)
+
 
 @receiver(post_save)
 # pylint: disable=unused-argument
@@ -91,11 +95,12 @@ def change_on_save(sender, instance, created, **kwargs):
 
     multiplexer = ProviderMultiplexer()
     if issubclass(instance.__class__, ProviderAcquirable) and \
-        instance.__class__ is not ProviderAcquirable:
+            instance.__class__ is not ProviderAcquirable:
         multiplexer.on_model_saved(instance, instance.providers.all())
     elif issubclass(instance.__class__, ProviderAcquirableSingle) and \
-        instance.__class__ is not ProviderAcquirableSingle:
+            instance.__class__ is not ProviderAcquirableSingle:
         multiplexer.on_model_saved(instance, [instance.provider_instance, ])
+
 
 @receiver(pre_delete)
 # pylint: disable=unused-argument
@@ -106,8 +111,8 @@ def change_on_delete(sender, instance, *args, **kwargs):
 
     multiplexer = ProviderMultiplexer()
     if issubclass(instance.__class__, ProviderAcquirable) and \
-        instance.__class__ is not ProviderAcquirable:
+            instance.__class__ is not ProviderAcquirable:
         multiplexer.on_model_deleted(instance, instance.providers.all())
     elif issubclass(instance.__class__, ProviderAcquirableSingle) and \
-        instance.__class__ is not ProviderAcquirableSingle:
+            instance.__class__ is not ProviderAcquirableSingle:
         multiplexer.on_model_deleted(instance, [instance.provider_instance, ])

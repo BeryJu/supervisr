@@ -20,7 +20,7 @@ class SupervisrModAuthSAMLProvider(SupervisrAppConfig):
         'processors.nextcloud',
         'processors.wordpress_orange',
         'models',
-        ]
+    ]
 
     def ensure_settings(self):
         from supervisr.core.models import Setting

@@ -9,6 +9,7 @@ from supervisr.core.models import Setting
 
 LOGGER = logging.getLogger(__name__)
 
+
 class Command(BaseCommand):
     """Edit settings via manage.py"""
 

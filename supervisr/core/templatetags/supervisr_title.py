@@ -10,6 +10,7 @@ from supervisr.core.models import Setting
 
 register = template.Library()
 
+
 @register.simple_tag(takes_context=True)
 def supervisr_title(context, title=None):
     """
@@ -33,4 +34,4 @@ def supervisr_title(context, title=None):
         'title': title,
         'branding': branding,
         'app': app,
-        })
+    })

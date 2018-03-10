@@ -23,6 +23,7 @@ class EmailBackend(ModelBackend):
                 return user
         return None
 
+
 class APIKeyBackend(ModelBackend):
     """Authenticate user by API Key"""
 

@@ -16,6 +16,7 @@ class Comment(models.Model):
     class Meta:
         db_table = 'comments'
 
+
 class Cryptokey(models.Model):
     """PowerDNS imported Cryptokey"""
 
@@ -27,6 +28,7 @@ class Cryptokey(models.Model):
     class Meta:
         db_table = 'cryptokeys'
 
+
 class DomainMetadata(models.Model):
     """PowerDNS imported DomainMetadata"""
 
@@ -36,6 +38,7 @@ class DomainMetadata(models.Model):
 
     class Meta:
         db_table = 'domainmetadata'
+
 
 class Domain(models.Model):
     """PowerDNS imported Domain"""
@@ -49,6 +52,7 @@ class Domain(models.Model):
 
     class Meta:
         db_table = 'domains'
+
 
 class Record(models.Model):
     """PowerDNS imported Record"""
@@ -68,6 +72,7 @@ class Record(models.Model):
     class Meta:
         db_table = 'records'
 
+
 class Supermaster(models.Model):
     """PowerDNS imported Supermaster"""
 
@@ -78,6 +83,7 @@ class Supermaster(models.Model):
     class Meta:
         db_table = 'supermasters'
         unique_together = (('ip', 'nameserver'),)
+
 
 class TSIGKey(models.Model):
     """PowerDNS imported TSIGKey"""

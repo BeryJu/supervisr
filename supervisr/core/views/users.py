@@ -46,6 +46,7 @@ def index(request: HttpRequest) -> HttpResponse:
         form = EditUserForm(initial=initial_data)
     return render(request, 'user/index.html', {'form': form})
 
+
 @login_required
 def events(request: HttpRequest) -> HttpResponse:
     """Show a paginated list of all events"""
@@ -62,6 +63,7 @@ def events(request: HttpRequest) -> HttpResponse:
         event_page = paginator.page(paginator.num_pages)
 
     return render(request, 'user/events.html', {'events': event_page})
+
 
 @login_required
 def send_feedback(request: HttpRequest) -> HttpResponse:
@@ -81,7 +83,8 @@ def send_feedback(request: HttpRequest) -> HttpResponse:
         'title': 'Send Feedback',
         'primary_action': 'Send',
         'form': form
-        })
+    })
+
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(reauth_required, name='dispatch')
@@ -102,7 +105,7 @@ class UserDeleteView(View):
             'title': 'Delete %s' % request.user.username,
             'delete_url': reverse('user-delete'),
             'extra_markup': '<h4>%s</h4>' % _('This action cannot be reversed!')
-            })
+        })
 
     def post(self, request: HttpRequest) -> HttpResponse:
         """Handle post request

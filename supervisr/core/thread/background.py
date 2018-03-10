@@ -28,13 +28,14 @@ def catch_exceptions(cancel_on_failure: bool = False) -> Callable:
             """Inner Wrapper"""
             try:
                 return job_func(*args, **kwargs)
-            except Exception: # pylint: disable=broad-except
+            except Exception:  # pylint: disable=broad-except
                 LOGGER.warning(traceback.format_exc())
                 if cancel_on_failure:
                     return CancelJob
         return wrapper
 
     return outer_wrap
+
 
 class BackgroundThread(Thread):
     """

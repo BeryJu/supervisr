@@ -41,17 +41,20 @@ from supervisr.core.utils import get_remote_ip, get_reverse_dns
 
 options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('sv_search_url', 'sv_search_fields',)
 
+
 def expiry_date():
     """
     Return the default expiry for AccountConfirmations
     """
-    return time.time() + 172800 # 2 days
+    return time.time() + 172800  # 2 days
+
 
 def make_username(username):
     """
     Return username cut to 32 chars, also make POSIX conform
     """
     return (re.sub(r'([^a-zA-Z0-9\.\s-])', '_', str(username))[:32]).lower()
+
 
 def get_random_string(length=10):
     """
@@ -63,7 +66,8 @@ def get_random_string(length=10):
     offset = random.randint(0, 25 - length - 1)
     # Python3 changed the way we need to encode
     res = base64.b64encode(uid.bytes, altchars=b'_-')
-    return res[offset:offset+length].decode("utf-8")
+    return res[offset:offset + length].decode("utf-8")
+
 
 def get_userid():
     """
@@ -84,6 +88,7 @@ def get_userid():
             connection._rollback()
         return settings.USER_PROFILE_ID_START
 
+
 def get_system_user():
     """
     Return supervisr's System User PK. This is created with the initial Migration,
@@ -92,7 +97,8 @@ def get_system_user():
     system_users = User.objects.filter(username=settings.SYSTEM_USER_NAME)
     if system_users.exists():
         return system_users.first().id
-    return 1 # Django starts AutoField's with 1 not 0
+    return 1  # Django starts AutoField's with 1 not 0
+
 
 class CastableModel(models.Model):
     """
@@ -116,6 +122,7 @@ class CastableModel(models.Model):
     class Meta:
         abstract = True
 
+
 class CreatedUpdatedModel(models.Model):
     """
     Base Abstract Model to save created and update
@@ -125,6 +132,7 @@ class CreatedUpdatedModel(models.Model):
 
     class Meta:
         abstract = True
+
 
 class User(AbstractUser):
     """Custom Usermodel which has a few extra fields"""
@@ -146,6 +154,8 @@ class User(AbstractUser):
         return self.username
 
 # pylint: disable=abstract-method
+
+
 class SVAnonymousUser(django_auth_models.AnonymousUser):
     """Custom Anonymous User with extra attributes"""
 
@@ -158,6 +168,8 @@ class SVAnonymousUser(django_auth_models.AnonymousUser):
 django_auth_models.AnonymousUser = SVAnonymousUser
 
 # pylint: disable=too-few-public-methods
+
+
 class GlobalPermissionManager(models.Manager):
     """GlobalPermissionManager"""
 
@@ -165,6 +177,7 @@ class GlobalPermissionManager(models.Manager):
         """Filter for us"""
         return super(GlobalPermissionManager, self).\
             get_queryset().filter(content_type__model='global_permission')
+
 
 class GlobalPermission(Permission):
     """A global permission, not attached to a model"""
@@ -181,6 +194,7 @@ class GlobalPermission(Permission):
         )
         self.content_type = ctype
         super(GlobalPermission, self).save(*args, **kwargs)
+
 
 class Setting(CreatedUpdatedModel):
     """
@@ -323,6 +337,7 @@ class Setting(CreatedUpdatedModel):
 
         unique_together = (('key', 'namespace'), )
 
+
 class AccountConfirmation(CreatedUpdatedModel):
     """
     Save information about actions that need to be confirmed
@@ -352,6 +367,7 @@ class AccountConfirmation(CreatedUpdatedModel):
         return "AccountConfirmation %s, expired: %r" % \
             (self.user.email, self.is_expired)
 
+
 @receiver(pre_delete)
 # pylint: disable=unused-argument
 def relationship_pre_delete(sender, instance, **kwargs):
@@ -361,6 +377,7 @@ def relationship_pre_delete(sender, instance, **kwargs):
         SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED.send(
             sender=UserAcquirableRelationship,
             relationship=instance)
+
 
 class ProductExtension(CreatedUpdatedModel, CastableModel):
     """
@@ -372,6 +389,7 @@ class ProductExtension(CreatedUpdatedModel, CastableModel):
 
     def __str__(self):
         return "ProductExtension %s" % self.extension_name
+
 
 class StagedProviderChange(CreatedUpdatedModel):
     """Store information about a staged Provider change"""
@@ -394,6 +412,7 @@ class StagedProviderChange(CreatedUpdatedModel):
     def __str__(self):
         return "StagedProviderChange %s %s" % (self.action, self.model_path)
 
+
 class UserAcquirable(CastableModel):
     """Base Class for Models that should have an N-M relationship with Users"""
 
@@ -403,11 +422,12 @@ class UserAcquirable(CastableModel):
     def copy_user_relationships_to(self, target: 'UserAcquirable'):
         """Copy UserAcquirableRelationship associated with `self` and copy them to `to`"""
         for user_id in self.useracquirablerelationship_set \
-          .values_list('user', flat=True).distinct():
+                .values_list('user', flat=True).distinct():
             UserAcquirableRelationship.objects.create(
                 model=target,
                 user=User.objects.get(pk=user_id)
             )
+
 
 class UserAcquirableRelationship(models.Model):
     """Relationship between User and any Class subclassing UserAcquirable"""
@@ -430,6 +450,7 @@ class UserAcquirableRelationship(models.Model):
 
         unique_together = (('user', 'model'),)
 
+
 class ProviderAcquirable(CastableModel):
     """Base Class for Models that should have an N-M relationship with ProviderInstance"""
 
@@ -448,14 +469,16 @@ class ProviderAcquirable(CastableModel):
                     model=self
                 )
         for relationship in ProviderAcquirableRelationship.objects.filter(model=self):
-            if not relationship.provider_instance in provider_list:
+            if relationship.provider_instance not in provider_list:
                 relationship.delete()
+
 
 class ProviderAcquirableSingle(CastableModel):
     """Base Class for Models that should have an N-1 relationship with ProviderInstance"""
 
     provider_acquirable_Single_id = models.AutoField(primary_key=True)
     provider_instance = models.ForeignKey('ProviderInstance', on_delete=models.CASCADE)
+
 
 class ProviderAcquirableRelationship(models.Model):
     """Relationship between ProviderInstance and any Class subclassing ProviderAcquirable"""
@@ -470,6 +493,7 @@ class ProviderAcquirableRelationship(models.Model):
     class Meta:
 
         unique_together = (('provider_instance', 'model'),)
+
 
 class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
     """
@@ -513,6 +537,7 @@ class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
                     user=missing_user,
                     model=self)
 
+
 class Domain(UserAcquirable, ProviderAcquirableSingle, CreatedUpdatedModel):
     """
     Information about a Domain, which is used for other sub-apps.
@@ -528,6 +553,7 @@ class Domain(UserAcquirable, ProviderAcquirableSingle, CreatedUpdatedModel):
 
         default_related_name = 'domains'
         sv_search_fields = ['domain_name', 'provider_instance__name']
+
 
 class Event(CreatedUpdatedModel):
     """
@@ -620,11 +646,12 @@ class Event(CreatedUpdatedModel):
     def __str__(self):
         return "Event '%s' '%s'" % (self.user.username, self.message)
 
+
 class BaseCredential(CreatedUpdatedModel, CastableModel):
     """Basic set of credentials"""
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    form = '' # form class which is used for setup
+    form = ''  # form class which is used for setup
 
     @staticmethod
     def all_types():
@@ -642,6 +669,7 @@ class BaseCredential(CreatedUpdatedModel, CastableModel):
     class Meta:
         unique_together = (('owner', 'name'),)
 
+
 class EmptyCredential(BaseCredential):
     """Empty Credential"""
 
@@ -651,6 +679,7 @@ class EmptyCredential(BaseCredential):
     def type():
         """Return type"""
         return _('Empty Credential')
+
 
 class APIKeyCredential(BaseCredential):
     """Credential which work with an API Key"""
@@ -663,6 +692,7 @@ class APIKeyCredential(BaseCredential):
         """Return type"""
         return _('API Key')
 
+
 class UserPasswordCredential(BaseCredential):
     """Credentials which need a Username and Password"""
 
@@ -674,6 +704,7 @@ class UserPasswordCredential(BaseCredential):
     def type():
         """Return type"""
         return _('Username and Password')
+
 
 class UserPasswordServerCredential(BaseCredential):
     """UserPasswordCredential which also holds a server"""
@@ -710,6 +741,7 @@ class ProviderInstance(CreatedUpdatedModel, UserAcquirable):
     def __str__(self):
         return self.name
 
+
 @receiver(SIG_USER_POST_SIGN_UP)
 # pylint: disable=unused-argument
 def product_handle_post_signup(sender, signal, user, **kwargs):
@@ -722,6 +754,7 @@ def product_handle_post_signup(sender, signal, user, **kwargs):
         UserAcquirableRelationship.objects.create(
             user=user,
             model=product)
+
 
 @receiver(post_save, sender=Domain)
 # pylint: disable=unused-argument

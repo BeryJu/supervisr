@@ -65,6 +65,6 @@ class TestSignals(TestCase):
         t_record_a.save()
         self.assertEqual(record_to_rdata(t_zone.soa, t_zone).serial, correct_serial_b)
         t_soa.content = 'ns1.s.beryju.org. support.beryju.org. ' \
-                               '2aa017110401 1800 180 2419200 86400'
+            '2aa017110401 1800 180 2419200 86400'
         t_soa.save()
         self.assertIn('2aa017110401', t_zone.soa.content)

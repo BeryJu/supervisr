@@ -34,6 +34,8 @@ PROVIDER_TEMPLATES = {
 }
 
 # pylint: disable=too-many-ancestors
+
+
 class ProviderCreateView(BaseWizardView):
     """Wizard to create a Domain"""
 
@@ -83,6 +85,7 @@ class ProviderCreateView(BaseWizardView):
         messages.success(self.request, _('Provider Instance successfully created'))
         return redirect(reverse('instance-index'))
 
+
 class ProviderUpdateView(GenericUpdateView):
     """Update instance"""
 
@@ -122,12 +125,13 @@ class ProviderUpdateView(GenericUpdateView):
 #             'provider': provider
 #         })
 
+
 class ProviderDeleteView(GenericDeleteView):
     """Delete instance"""
 
     model = ProviderInstance
 
-    def get_instance(self) ->  QuerySet:
+    def get_instance(self) -> QuerySet:
         return self.model.objects.filter(uuid=self.kwargs.get('uuid'),
                                          useracquirablerelationship__user__in=[self.request.user])
 
@@ -145,6 +149,8 @@ class CredentialIndexView(GenericIndexView):
         return self.model.objects.filter(owner=self.request.user).order_by('name')
 
 # pylint: disable=too-many-ancestors
+
+
 class CredentialNewView(BaseWizardView):
     """Wizard to create a Domain"""
 
@@ -185,6 +191,7 @@ class CredentialNewView(BaseWizardView):
         messages.success(self.request, _('Credentials successfully created'))
         return redirect(reverse('credential-index'))
 
+
 class CredentialUpdateView(GenericUpdateView):
     """Update Credential"""
 
@@ -200,6 +207,7 @@ class CredentialUpdateView(GenericUpdateView):
 
     def redirect(self, instance: BaseCredential) -> HttpResponse:
         return redirect(reverse('credential-index'))
+
 
 class CredentialDeleteView(GenericDeleteView):
     """View to delete Credential"""

@@ -13,7 +13,7 @@ def check_password(form, check_filter=True):
     password_b = form.cleaned_data.get('password_rep')
     # Check if either field is required.
     if form.fields['password'].required is False and \
-        form.fields['password_rep'].required is False:
+            form.fields['password_rep'].required is False:
         return password_a
     if password_a != password_b:
         raise forms.ValidationError(_("Your passwords do not match"))
@@ -23,5 +23,5 @@ def check_password(form, check_filter=True):
             desc = Setting.get('password:filter:description')
             raise forms.ValidationError(_("Password has to contain %(desc)s" % {
                 'desc': desc
-                }))
+            }))
     return password_a

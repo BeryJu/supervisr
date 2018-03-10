@@ -3,6 +3,7 @@ from typing import Generic, List, TypeVar
 
 T = TypeVar('T')
 
+
 class ProviderObject(object):
     """This class defines properties that should be returned from queries.
 
@@ -25,6 +26,7 @@ class ProviderObject(object):
     def delete(self):
         """Delete this instance from provider"""
         raise NotImplementedError()
+
 
 class ProviderObjectTranslator(Generic[T]):
     """Gather all methods related to a certain object in context of a Provider"""

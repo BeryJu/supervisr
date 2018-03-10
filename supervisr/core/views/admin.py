@@ -25,10 +25,11 @@ from supervisr.core.utils import get_reverse_dns
 def index(request):
     """Admin index"""
     # Subtract the system user
-    user_count = User.objects.all().count() -1
+    user_count = User.objects.all().count() - 1
     return render(request, '_admin/index.html', {
         'user_count': user_count,
-        })
+    })
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -46,7 +47,8 @@ def users(request):
         accounts = paginator.page(paginator.num_pages)
     return render(request, '_admin/users.html', {
         'users': accounts,
-        })
+    })
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -81,6 +83,7 @@ def info(request):
         info_data[handler.__module__.split('.')[0]] = mod_info
     return render(request, '_admin/info.html', {'info': info_data})
 
+
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def events(request):
@@ -97,6 +100,7 @@ def events(request):
         event_page = paginator.page(paginator.num_pages)
 
     return render(request, '_admin/events.html', {'events': event_page})
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)

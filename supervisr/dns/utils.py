@@ -21,6 +21,7 @@ def date_to_soa(_date: date = date.today()) -> int:
     """Convert date to SOA serial number"""
     return int("%04d%02d%02d" % (_date.year, _date.month, _date.day))
 
+
 def zone_to_rec(data, root_zone=''):
     """Convert BIND zone to DB records"""
     # TODO: Make algorithm to create resource_set for each unique set of records with common name
@@ -63,6 +64,7 @@ def zone_to_rec(data, root_zone=''):
                     records.append(record)
     records.append(_soa)
     return records
+
 
 def record_to_rdata(record: Record, zone: Zone) -> dns.rdata.Rdata:
     """Convert record to RDATA"""

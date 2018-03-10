@@ -15,6 +15,7 @@ from supervisr.mod.auth.oauth.client.views.core import (OAuthCallback,
 
 LOGGER = logging.getLogger(__name__)
 
+
 class DiscordOAuthRedirect(OAuthRedirect):
     """
     Discord OAuth2 Redirect
@@ -24,6 +25,7 @@ class DiscordOAuthRedirect(OAuthRedirect):
         return {
             'scope': 'email identify',
         }
+
 
 class DiscordOAuth2Client(OAuth2Client):
     """
@@ -45,6 +47,7 @@ class DiscordOAuth2Client(OAuth2Client):
             return None
         else:
             return response.json() or response.text
+
 
 class DiscordOAuth2Callback(OAuthCallback):
     """

@@ -42,7 +42,8 @@ def settings(request: HttpRequest, namespace: str) -> HttpResponse:
         'settings': all_settings,
         'namespaces': namespaces,
         'current_namespace': namespace
-        })
+    })
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -50,13 +51,14 @@ def mod_default(request: HttpRequest) -> HttpResponse:
     """Default view for modules without admin view"""
     return render(request, '_admin/mod_default.html', {'mod': request.GET.get('mod', '')})
 
+
 @method_decorator(login_required, name='dispatch')
 @method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class GenericSettingView(View):
     """Generic Setting View"""
 
-    form = None # type: Type[SettingsForm]
-    template_name = 'core/generic_form.html' # type: str
+    form = None  # type: Type[SettingsForm]
+    template_name = 'core/generic_form.html'  # type: str
     extra_data = {}
 
     def render(self, request: HttpRequest, form: SettingsForm) -> HttpResponse:
@@ -80,7 +82,7 @@ class GenericSettingView(View):
         Returns:
             Login template
         """
-        form = self.form() # pylint: disable=not-callable
+        form = self.form()  # pylint: disable=not-callable
         return self.render(request, form)
 
     def post(self, request: HttpRequest) -> HttpResponse:
@@ -92,7 +94,7 @@ class GenericSettingView(View):
         Returns:
             Either a redirect to next view or login template if any errors exist
         """
-        form = self.form(request.POST) # pylint: disable=not-callable
+        form = self.form(request.POST)  # pylint: disable=not-callable
         if form.is_valid():
             form.save()
             messages.success(request, _('Settings successfully updated.'))

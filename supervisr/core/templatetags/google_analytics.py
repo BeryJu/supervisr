@@ -9,6 +9,7 @@ from supervisr.core.models import Setting
 
 register = template.Library()
 
+
 @register.simple_tag(takes_context=True)
 def google_analytics(context):
     """

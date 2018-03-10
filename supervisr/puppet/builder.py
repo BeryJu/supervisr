@@ -20,6 +20,7 @@ from supervisr.puppet.utils import ForgeImporter
 
 LOGGER = logging.getLogger(__name__)
 
+
 # pylint: disable=too-many-instance-attributes
 class ReleaseBuilder(object):
     """Class to build PuppetModuleRelease's in Memory from files and templates"""
@@ -71,7 +72,7 @@ class ReleaseBuilder(object):
             'settings': conf.settings,
             'puppet_systemgroup': Group.objects.get(name='Puppet Systemusers'),
             'User': User.objects,
-            })
+        })
         return context
 
     def to_tarinfo(self, template, ctx, rel_path):
@@ -167,6 +168,6 @@ class ReleaseBuilder(object):
                     version=self.version,
                     release=File(temp_file))
         elif force_rebuild is True:
-            with open(prefix+'.tgz', mode='w+b') as file:
+            with open(prefix + '.tgz', mode='w+b') as file:
                 file.write(gzipped)
-                LOGGER.debug("Wrote module to %s", prefix+'.tgz')
+                LOGGER.debug("Wrote module to %s", prefix + '.tgz')

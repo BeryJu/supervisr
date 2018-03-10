@@ -51,6 +51,7 @@ RECORD_TYPES = (
     ('URI', 'URI'),
 )
 
+
 class Zone(ProviderAcquirable, UserAcquirable):
     """DNS Zone"""
 
@@ -60,6 +61,7 @@ class Zone(ProviderAcquirable, UserAcquirable):
 
     def __str__(self):
         return "Zone %s" % self.domain.domain_name
+
 
 class Record(UserAcquirable):
     """DNS Record"""
@@ -72,6 +74,7 @@ class Record(UserAcquirable):
 
     def __str__(self):
         return "Record %s" % self.name
+
 
 class Resource(UserAcquirable):
     """Record Resource"""
@@ -86,6 +89,7 @@ class Resource(UserAcquirable):
 
     def __str__(self):
         return "RecordData %s %s" % (self.type, self.content)
+
 
 class ResourceSet(UserAcquirable):
     """Connect Record to Resource"""

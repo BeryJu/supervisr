@@ -131,7 +131,7 @@ class TestPuppetForgeAPI(TestCase):
                 'version': '1.0.0',
                 'module': 'supervisr_core',
                 'key': 'wrong_key',
-                }).status_code, 404)
+            }).status_code, 404)
         self.assertEqual(test_request(
             forge_api.file,
             url_kwargs={
@@ -139,4 +139,4 @@ class TestPuppetForgeAPI(TestCase):
                 'version': '1.0.0',
                 'module': 'supervisr_core',
                 'key': self.key
-                }).status_code, 200)
+            }).status_code, 200)

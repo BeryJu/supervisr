@@ -44,4 +44,4 @@ def admin_settings(request: HttpRequest) -> HttpResponse:
         form = SettingsForm(initial=initial_data)
     return render(request, 'stats/influx/settings.html', {
         'form': form
-        })
+    })

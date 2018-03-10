@@ -9,6 +9,7 @@ from supervisr.core.providers.objects import (ProviderObject,
 
 LOGGER = getLogger(__name__)
 
+
 class DebugDomainObject(ProviderObject):
     """Debug Domain Object"""
 
@@ -18,6 +19,7 @@ class DebugDomainObject(ProviderObject):
 
     def delete(self):
         LOGGER.debug("Instance %s deleted", self.name)
+
 
 class DebugDomainTranslator(ProviderObjectTranslator[Domain]):
     """Debug Domain Translator"""

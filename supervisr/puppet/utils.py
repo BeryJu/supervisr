@@ -1,6 +1,4 @@
-"""
-Supervisr Puppet Utils
-"""
+"""Supervisr Puppet Utils"""
 
 import json
 import logging
@@ -16,10 +14,9 @@ from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 
 LOGGER = logging.getLogger(__name__)
 
+
 class ForgeImporter(object):
-    """
-    Helper class to import users, modules and releases from PuppetForge
-    """
+    """Helper class to import users, modules and releases from PuppetForge"""
 
     BASE_URL = 'https://forgeapi.puppetlabs.com'
     output_base = os.path.join(settings.MEDIA_ROOT, 'puppet', 'modules')
@@ -116,7 +113,7 @@ class ForgeImporter(object):
                     changelog=release['changelog'],
                     license=release['license'],
                     release=File(open(filename, mode='rb'))
-                    )
+                )
 
                 os.remove(filename)
             else:

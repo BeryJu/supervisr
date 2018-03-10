@@ -24,7 +24,7 @@ coverage:
   except:
     - prod
   script:
-    - "inv supervisr.coverage"
+    - "inv ci.coverage"
   stage: test
   cache:
     paths:
@@ -43,7 +43,7 @@ isort:
   except:
     - prod
   script:
-    - "inv supervisr.isort"
+    - "inv ci.isort"
   stage: test
   cache:
     paths:
@@ -52,7 +52,16 @@ migrations:
   except:
     - prod
   script:
-    - "inv utils.migrate"
+    - "inv supervisr.migrate"
+  stage: test
+  cache:
+    paths:
+      - env/
+pyroma:
+  except:
+    - prod
+  script:
+    - "inv supervisr.pyroma"
   stage: test
   cache:
     paths:
@@ -61,7 +70,7 @@ prospector:
   except:
     - prod
   script:
-    - "inv supervisr.prospector"
+    - "inv ci.prospector"
   stage: test
   cache:
     paths:
@@ -70,7 +79,7 @@ pylint:
   except:
     - prod
   script:
-    - "inv supervisr.lint"
+    - "inv ci.lint"
   stage: test
   cache:
     paths:
@@ -79,7 +88,7 @@ unittest:
   except:
     - prod
   script:
-    - "inv supervisr.unittest"
+    - "inv ci.unittest"
   stage: test
   cache:
     paths:
@@ -93,8 +102,8 @@ unittest_mysql:
     - prod
   script:
     - pip install pymysql
-    - inv migrate
-    - inv unittest
+    - inv supervisr.migrate
+    - inv ci.unittest
   variables:
     SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_mysql
   stage: test-db
@@ -111,8 +120,8 @@ unittest_pgsql:
     - prod
   script:
     - pip install psycopg2
-    - inv migrate
-    - inv unittest
+    - inv supervisr.migrate
+    - inv ci.unittest
   variables:
     SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_pgsql
   stage: test-db

@@ -91,21 +91,21 @@ class TestForms(TestCase):
         form_a = ChangePasswordForm(data={
             'password': 'test',
             'password_rep': '',
-            })
+        })
         self.assertFalse(form_a.is_valid())
 
         # test non-matching passwords
         form_b = ChangePasswordForm(data={
             'password': 'test',
             'password_rep': 'testb',
-            })
+        })
         self.assertFalse(form_b.is_valid())
 
         # test weak password
         form_c = ChangePasswordForm(data={
             'password': 'test',
             'password_rep': 'test',
-            })
+        })
         self.assertFalse(form_c.is_valid())
 
     def test_password_reset_finish_form(self):

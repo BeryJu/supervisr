@@ -4,7 +4,7 @@ Simply run
 
 ```
 supervisr-ctl mod.install https://git.beryju.org/BeryJu.org/supervisr_mod_contrib_bacula.git
-supervisr-ctl utils.migrate
+supervisr-ctl supervisr.migrate
 systemctl restart supervisr
 ```
 

@@ -24,6 +24,7 @@ class AddressIndexView(GenericIndexView):
     def get_instance(self) -> QuerySet:
         return self.model.objects.filter(users__in=[self.request.user]).order_by('mail_address')
 
+
 # pylint: disable=too-many-ancestors
 class AddressNewWizard(BaseWizardView):
     """Wizard to create Address"""
@@ -47,7 +48,6 @@ class AddressNewWizard(BaseWizardView):
             form.fields['providers'].queryset = provider_instance
         return form
 
-    # pylint: disable=unused-argument
     def finish(self, form_list):
         mail_address = form_list[0].save(commit=False)
         mail_address.save()
@@ -84,6 +84,7 @@ class AddressUpdateView(GenericUpdateView):
 
     def redirect(self, instance: Address) -> HttpResponse:
         return redirect(reverse('supervisr_mail:index'))
+
 
 class AddressDeleteView(GenericDeleteView):
     """View to delete a single address"""

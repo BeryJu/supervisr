@@ -20,6 +20,7 @@ from supervisr.core.utils import get_apps
 REAUTH_KEY = getattr(settings, 'REAUTH_KEY', 'supervisr_require_reauth_done')
 REAUTH_MARGIN = getattr(settings, 'REAUTH_MARGIN', 300)
 
+
 def anonymous_required(view_function):
     """
     Decorator to only allow a view for anonymous users
@@ -37,6 +38,7 @@ def anonymous_required(view_function):
     wrap.__name__ = view_function.__name__
     return wrap
 
+
 def reauth_required(view_function):
     """
     Decorator to force a re-authentication before continuing
@@ -53,18 +55,18 @@ def reauth_required(view_function):
         now = timestamp()
 
         if REAUTH_KEY in req.session and \
-            req.session[REAUTH_KEY] < (now - REAUTH_MARGIN):
+                req.session[REAUTH_KEY] < (now - REAUTH_MARGIN):
             # Timestamp in session but expired
             del req.session[REAUTH_KEY]
 
         if REAUTH_KEY not in req.session:
             # Timestamp not in session, force user to reauth
-            return redirect(reverse('account-reauth')+'?'+
+            return redirect(reverse('account-reauth') + '?' +
                             urlencode({'next': req.path}))
 
         if REAUTH_KEY in req.session and \
-            req.session[REAUTH_KEY] >= (now - REAUTH_MARGIN) and \
-            req.session[REAUTH_KEY] <= now:
+                req.session[REAUTH_KEY] >= (now - REAUTH_MARGIN) and \
+                req.session[REAUTH_KEY] <= now:
             # Timestamp in session and valid
             return view_function(*args, **kwargs)
 
@@ -95,6 +97,7 @@ def time(statistic_key):
 
     return outer_wrapper
 
+
 def require_setting(path, value, message=_('This function has been administratively disabled.')):
     """Check if setting under *key* has value of *value*
 
@@ -118,8 +121,8 @@ def require_setting(path, value, message=_('This function has been administrativ
 
             # pylint: disable=unidiomatic-typecheck
             if setting.exists() and \
-                    (type(value) == bool and setting.first().value_bool != value or \
-                    type(value) != bool and setting.first().value != value):
+                    (type(value) == bool and setting.first().value_bool != value or
+                     type(value) != bool and setting.first().value != value):
                 # Only show error if setting exists and doesnt match value
                 return render(request, 'common/error.html', {'message': message})
 
@@ -131,6 +134,7 @@ def require_setting(path, value, message=_('This function has been administrativ
         return wrap
 
     return outer_wrap
+
 
 def ifapp(app_name):
     """Only executes ifapp_func if app_name is installed"""
@@ -146,7 +150,7 @@ def ifapp(app_name):
                 app_cache.append(app.label)
             cache.set(cache_key, app_cache, 1000)
             return app_cache
-        return cache.get(cache_key) # pragma: no cover
+        return cache.get(cache_key)  # pragma: no cover
 
     app_cache = get_app_labels()
 
@@ -202,6 +206,7 @@ def view_or_basicauth(view, request, test_func, realm, *args, **kwargs):
     response.status_code = 401
     response['WWW-Authenticate'] = 'Basic realm="%s"' % realm
     return response
+
 
 def logged_in_or_basicauth(realm=""):
     """

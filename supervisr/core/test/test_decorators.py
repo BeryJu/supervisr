@@ -48,15 +48,16 @@ class TestDecorators(TestCase):
         self.assertEqual(test_request(reauth_required(common.index),
                                       user=get_system_user()).status_code, 302)
         # Test reauth with valid time
-        self.assertEqual(test_request(reauth_required(common.index),
-                                      user=get_system_user(), session_data={
-                                          REAUTH_KEY: time.time()
-                                      }).status_code, 200)
+        self.assertEqual(
+            test_request(reauth_required(common.index),
+                         user=get_system_user(),
+                         session_data={REAUTH_KEY: time.time()}).status_code, 200)
         # Test reauth with old time time
-        self.assertEqual(test_request(reauth_required(common.index),
-                                      user=get_system_user(), session_data={
-                                          REAUTH_KEY: time.time() - REAUTH_MARGIN - 100
-                                      }).status_code, 302)
+        self.assertEqual(
+            test_request(reauth_required(common.index),
+                         user=get_system_user(),
+                         session_data={REAUTH_KEY: time.time() - REAUTH_MARGIN - 100}).status_code,
+            302)
 
     def test_ifapp(self):
         """
@@ -74,7 +75,7 @@ class TestDecorators(TestCase):
             """
             Only run this function if app '_invalid-name' is present
             """
-            pass # pragma: no cover
+            pass  # pragma: no cover
 
         self.assertTrue(test_core())
         self.assertEqual(test_invalid(), False)

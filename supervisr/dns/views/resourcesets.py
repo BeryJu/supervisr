@@ -14,7 +14,6 @@ from supervisr.dns.forms.resourcesets import ResourceSetForm
 from supervisr.dns.models import ResourceSet
 
 
-# pylint: disable=abstract-method
 class ResourceSetReadView(GenericReadView):
     """View Resource Set"""
 

@@ -31,11 +31,8 @@ LOG_LEVEL_FILE = 'DEBUG'
 LOG_FILE = '/var/log/supervisr/supervisr.log'
 
 # This can be used to log messages to a remote syslog serve
-#LOG_SYSLOG_HOST = '172.16.1.30'
-#LOG_SYSLOG_PORT = 12239
-
-# Set this to your GitLab API key to directly report errors to gitlab
-#LOG_GITLAB_API_KEY = ''
+# LOG_SYSLOG_HOST = '172.16.1.30'
+# LOG_SYSLOG_PORT = 12239
 
 DATABASES = {
     'default': db_settings_from_dbconfig(path.join(LOCAL_BASE, 'database-config')),

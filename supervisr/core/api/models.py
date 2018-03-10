@@ -173,6 +173,7 @@ class ModelAPI(CRUDAPI):
         r_inst.delete()
         return {'success': True}
 
+
 class UserAcquirableModelAPI(ModelAPI):
     """ModelAPI optimized for UserAcquirable Models"""
 

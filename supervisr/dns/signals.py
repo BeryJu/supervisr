@@ -16,6 +16,7 @@ SIG_DNS_ZONE_UPDATE = RobustSignal(providing_args=['zone'])
 SIG_DNS_REC_UPDATE = RobustSignal(providing_args=['zone', 'record'])
 SIG_DNS_RESOURCE_UPDATE = RobustSignal(providing_args=['resource_set'])
 
+
 @receiver(post_save)
 # pylint: disable=unused-argument
 def dns_zone_update(sender, instance, created, **kwargs):
@@ -23,12 +24,14 @@ def dns_zone_update(sender, instance, created, **kwargs):
     if isinstance(instance, Zone):
         SIG_DNS_ZONE_UPDATE.send(sender, zone=instance)
 
+
 @receiver(post_save)
 # pylint: disable=unused-argument
 def dns_rec_update(sender, instance, created, **kwargs):
     """Trigger SIG_DNS_REC_UPDATE when new record is created or updated"""
     if isinstance(instance, Record):
         SIG_DNS_REC_UPDATE.send(sender, record=instance, zone=instance.record_zone)
+
 
 @receiver(SIG_DNS_REC_UPDATE)
 # pylint: disable=unused-argument

@@ -222,9 +222,7 @@ class TestAccount(TestCase):
         reset_res = test_request(accounts.PasswordResetFinishView.as_view(),
                                  method='POST',
                                  user=user,
-                                 url_kwargs={
-                                     'uuid': uuid
-                                 },
+                                 url_kwargs={'uuid': uuid},
                                  req_kwargs=self.change_data)
 
         self.assertEqual(reset_res.status_code, 302)

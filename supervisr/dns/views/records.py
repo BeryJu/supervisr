@@ -64,6 +64,7 @@ class RecordNewView(BaseWizardView):
         return redirect(reverse('supervisr_dns:record-list',
                                 kwargs={'zone': self.kwargs.get('zone')}))
 
+
 class RecordUpdateView(GenericUpdateView):
     """Edit a record"""
 
@@ -89,6 +90,7 @@ class RecordUpdateView(GenericUpdateView):
         form.fields['record_zone'].queryset = user_zones
         form.fields['record_zone'].initial = zone_pk
         return form
+
 
 class RecordDeleteView(GenericDeleteView):
     """Delete a record"""

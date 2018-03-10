@@ -50,10 +50,10 @@ def send_message(recipients, subject, **kwargs):
 
     try:
         # Actually send the mail
-        sent = send_mail(subject, django_text, django_from, \
-            recipients, **django_kwargs)
+        sent = send_mail(subject, django_text, django_from,
+                         recipients, **django_kwargs)
         LOGGER.debug("Sent '%s' email to %s: %s", subject, recipients, sent)
-        return sent == 1 # send_mail returns either 0 or 1
+        return sent == 1  # send_mail returns either 0 or 1
     except (ConnectionRefusedError, gaierror) as exc:
         # Always return true when debugging
         if settings.DEBUG:
@@ -61,6 +61,7 @@ def send_message(recipients, subject, **kwargs):
             return True
         else:
             raise
+
 
 @receiver(SIG_USER_POST_SIGN_UP)
 # pylint: disable=unused-argument
@@ -87,12 +88,14 @@ def mail_handle_user_signed_up(sender, signal, user, request, **kwargs):
         template='email/acount_confirm.html',
         template_context={'url': url})
 
+
 @receiver(SIG_USER_RESEND_CONFIRM)
 def mail_handle_user_resend_confirm(sender, signal, user, request, **kwargs):
     """
     Resend the user a confirmation email
     """
     return mail_handle_user_signed_up(sender, signal, user, request, **kwargs)
+
 
 @receiver(SIG_USER_PASS_RESET_INIT)
 # pylint: disable=unused-argument

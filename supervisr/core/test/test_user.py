@@ -47,7 +47,6 @@ class TestUser(TestCase):
         edit_res = test_request(users.index, user=m_user)
         self.assertEqual(edit_res.status_code, 200)
 
-
     # def test_user_settings_edit(self):
     #     """
     #     Test user settings view and update a setting

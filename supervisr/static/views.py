@@ -28,7 +28,8 @@ class PageView(View):
         return render(request, page.template, {
             'page': page,
             'related_langs': related_langs
-            })
+        })
+
 
 class FeedView(View):
     """Show a feed with all pages"""
@@ -54,4 +55,4 @@ class FeedView(View):
 
         return render(request, 'static/feed.html', {
             'pages': pages
-            })
+        })

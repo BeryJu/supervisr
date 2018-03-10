@@ -34,7 +34,7 @@ class TestUtils(TestCase):
         self.assertEqual(get_remote_ip(request2), '2.3.4.5')
 
     @skipUnless(sys.platform.startswith('win'), 'requires Windows')
-    def test_reverse_dns_win(self): # pragma: no cover
+    def test_reverse_dns_win(self):  # pragma: no cover
         """
         Test reverse_dns (windows)
         """
@@ -42,7 +42,7 @@ class TestUtils(TestCase):
         self.assertEqual(reverse, socket.getfqdn())
 
     @skipUnless(sys.platform.endswith('nix'), 'requires Linux')
-    def test_reverse_dns_nix(self): # pragma: no cover
+    def test_reverse_dns_nix(self):  # pragma: no cover
         """
         Test reverse_dns (nix)
         """

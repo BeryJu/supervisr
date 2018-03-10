@@ -29,6 +29,7 @@ class MailDomain(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
         """
         return self.mailaccount_set.filter(is_catchall=True).exists()
 
+
 class MailDomainAddressRelationship(CreatedUpdatedModel, UserAcquirable):
     """Store relationship between Address and MailDomains"""
 
@@ -36,6 +37,7 @@ class MailDomainAddressRelationship(CreatedUpdatedModel, UserAcquirable):
     mail_address = models.ForeignKey('Address', on_delete=models.CASCADE)
     is_catchall = models.BooleanField(default=False)
     enabled = models.BooleanField(default=True)
+
 
 class Address(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
     """Single Mail address"""
@@ -47,6 +49,7 @@ class Address(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
     def __str__(self):
         return "Address %s" % self.mail_address
 
+
 class Forwarder(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
     """Forwader from an address to a target"""
 
@@ -56,6 +59,7 @@ class Forwarder(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
     def __str__(self):
         return "Forwarder '%s' => '%s'" % (self.source_address, self.destination_address)
 
+
 class AccountAddressRelationship(CreatedUpdatedModel, UserAcquirable):
     """Store relationship between Account and Address"""
 
@@ -64,12 +68,13 @@ class AccountAddressRelationship(CreatedUpdatedModel, UserAcquirable):
     can_send = models.BooleanField(default=True)
     can_receive = models.BooleanField(default=True)
 
+
 class Account(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
     """Mail Account that stores mail"""
 
     name = models.TextField()
     addresses = models.ManyToManyField(Address, through=AccountAddressRelationship)
-    quota = models.BigIntegerField(default=0) # account quota in MB. 0 == unlimited
+    quota = models.BigIntegerField(default=0)  # account quota in MB. 0 == unlimited
     size = models.BigIntegerField(default=0)
     password = models.CharField(max_length=128, blank=True)
 
@@ -79,7 +84,7 @@ class Account(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
         LOGGER.debug("Updated Password Account %s", self.name)
         Event.create(
             user=invoker,
-            message=_("Changed Password for Mail Account %(account)s" % {'account':str(self)}),
+            message=_("Changed Password for Mail Account %(account)s" % {'account': str(self)}),
             request=request)
         self.save()
 

@@ -27,6 +27,8 @@ class MailDomainIndexView(GenericIndexView):
                                  .order_by('domain__domain_name')
 
 # pylint: disable=too-many-ancestors
+
+
 class MailDomainNewWizard(BaseWizardView):
     """Wizard to create MailDomain"""
 
@@ -62,6 +64,7 @@ class MailDomainNewWizard(BaseWizardView):
         messages.success(self.request, _('Mail Domain successfully created'))
         return redirect(reverse('supervisr_mail:index'))
 
+
 class MailDomainReadView(GenericReadView):
     """View details of a single domain"""
 
@@ -71,6 +74,7 @@ class MailDomainReadView(GenericReadView):
     def get_instance(self) -> QuerySet:
         return self.model.objects.filter(users__in=[self.request.user],
                                          domain__domain_name=self.kwargs.get('domain'))
+
 
 class MailDomainUpdateView(GenericUpdateView):
     """View to edit a single domain"""
@@ -84,6 +88,7 @@ class MailDomainUpdateView(GenericUpdateView):
 
     def redirect(self, instance: MailDomain) -> HttpResponse:
         return redirect(reverse('supervisr_mail:index'))
+
 
 class MailDomainDeleteView(GenericDeleteView):
     """View to delete a single domain"""

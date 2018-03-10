@@ -30,6 +30,8 @@ class ZoneIndexView(GenericIndexView):
                                  .order_by('domain__domain_name')
 
 # pylint: disable=too-many-ancestors
+
+
 class ZoneNewView(BaseWizardView):
     """
     Wizard to create a blank Zone
@@ -81,6 +83,7 @@ class ZoneNewView(BaseWizardView):
         messages.success(self.request, _('DNS Zone successfully created'))
         return redirect(reverse('supervisr_dns:index'))
 
+
 class ZoneUpdateView(GenericUpdateView):
     """Update a Zone"""
 
@@ -108,6 +111,7 @@ class ZoneUpdateView(GenericUpdateView):
 
     def redirect(self, instance: Zone) -> HttpResponse:
         return redirect(reverse('supervisr_dns:index'))
+
 
 class ZoneDeleteView(GenericDeleteView):
     """Delete a Zone"""

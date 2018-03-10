@@ -15,17 +15,17 @@ def tfa_force_verify(get_response):
 
         # pylint: disable=too-many-boolean-expressions
         if request.user.is_authenticated and \
-            user_has_device(request.user) and \
-            not request.user.is_verified() and \
-            request.path != reverse('supervisr_mod_tfa:tfa-verify') and \
-            request.path != reverse('account-logout') and \
-            not request.META.get('HTTP_AUTHORIZATION', '').startswith('Bearer'):
+                user_has_device(request.user) and \
+                not request.user.is_verified() and \
+                request.path != reverse('supervisr_mod_tfa:tfa-verify') and \
+                request.path != reverse('account-logout') and \
+                not request.META.get('HTTP_AUTHORIZATION', '').startswith('Bearer'):
             # User has 2FA set up but is not verified
 
             # At this point the request is already forwarded to the target destination
             # So we just add the current request's path as next parameter
             args = '?%s' % urlencode({'next': request.get_full_path()})
-            return redirect(reverse('supervisr_mod_tfa:tfa-verify')+args)
+            return redirect(reverse('supervisr_mod_tfa:tfa-verify') + args)
 
         response = get_response(request)
         return response
