@@ -1,14 +1,28 @@
 """supervisr tasks"""
 
 from invoke import task
+from invoke.platform import WINDOWS
 
 
-@task()
+@task
 # pylint: disable=unused-argument
 def migrate(ctx):
     """Apply migrations"""
     from django.core.management import execute_from_command_line
     execute_from_command_line(['manage.py', 'migrate'])
+
+
+@task
+def run_celery(ctx, debug=False):
+    """Run Celery worker"""
+    if debug and WINDOWS:
+        # Workaround since celery is not supported on windows since version 4
+        # https://github.com/celery/celery/issues/4178
+        ctx.run("celery -A supervisr.core worker -l info -Ofair -c 1 --pool=solo")
+    elif debug:
+        ctx.run("celery -A supervisr.core worker -l info -Ofair -c 1")
+    else:
+        ctx.run("celery -A supervisr.core worker -l info -Ofair")
 
 
 @task

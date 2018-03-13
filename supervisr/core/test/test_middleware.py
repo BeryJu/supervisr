@@ -59,7 +59,7 @@ class TestMiddleware(TestCase):
         setattr(request, 'session', 'session')
         setattr(request, '_messages', FallbackStorage(request))
         request.user = self.sys_user
-        response = permanent_message(common.index)(request)
+        response = permanent_message(common.IndexView.as_view())(request)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(test_message in response.content.decode('utf-8'))
         self.assertEqual(response.content.decode('utf-8').count(test_message), 1)
@@ -78,7 +78,7 @@ class TestMiddleware(TestCase):
         setattr(request, '_messages', FallbackStorage(request))
         messages.add_message(request, getattr(messages, test_level.upper()), test_message)
         request.user = self.sys_user
-        response = permanent_message(common.index)(request)
+        response = permanent_message(common.IndexView.as_view())(request)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(test_message in response.content.decode('utf-8'))
         self.assertEqual(response.content.decode('utf-8').count(test_message), 1)
@@ -96,7 +96,7 @@ class TestMiddleware(TestCase):
         })
         setattr(req_imper, 'user', User.objects.get(pk=get_system_user()))
         setattr(req_imper, 'session', {})
-        res_imper = impersonate(common.index)(req_imper)
+        res_imper = impersonate(common.IndexView.as_view())(req_imper)
         self.assertEqual(res_imper.status_code, 200)
         self.assertIn('test user', res_imper.content.decode('utf-8'))
         # Test un-impersonate
@@ -107,6 +107,6 @@ class TestMiddleware(TestCase):
         setattr(rep_unim, 'session', {
             'impersonate_id': other_user.pk
         })
-        res_unim = impersonate(common.index)(rep_unim)
+        res_unim = impersonate(common.IndexView.as_view())(rep_unim)
         self.assertEqual(res_unim.status_code, 200)
         self.assertNotIn('test user', res_unim.content.decode('utf-8'))

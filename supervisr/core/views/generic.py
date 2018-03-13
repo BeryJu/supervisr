@@ -13,7 +13,15 @@ from django.utils.translation import ugettext as _
 from django.views import View
 
 
-class GenericModelView(View):
+class LoginRequiredView(View):
+    """Utility View class that always requires login"""
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LoginRequiredView, self).dispatch(*args, **kwargs)
+
+
+class GenericModelView(LoginRequiredView):
     """Generic View to interact with a model"""
 
     model = None

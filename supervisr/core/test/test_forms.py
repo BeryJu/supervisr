@@ -11,7 +11,7 @@ from supervisr.core.models import (EmptyCredential, ProviderInstance, Setting,
                                    User, UserAcquirableRelationship,
                                    get_system_user)
 from supervisr.core.test.utils import test_request
-from supervisr.core.views.common import index
+from supervisr.core.views.common import IndexView
 
 
 class TestForms(TestCase):
@@ -131,7 +131,7 @@ class TestForms(TestCase):
             'domain_name': 'test.org',
             'provider_instance': prov_inst.pk
         })
-        form_a.request = test_request(index, user=user, just_request=True)
+        form_a.request = test_request(IndexView.as_view(), user=user, just_request=True)
         self.assertTrue(form_a.is_valid())
 
         # Test invalid domain
@@ -139,7 +139,7 @@ class TestForms(TestCase):
             'domain_name': '1test.',
             'provider_instance': prov_inst.pk
         })
-        form_b.request = test_request(index, user=user, just_request=True)
+        form_b.request = test_request(IndexView.as_view(), user=user, just_request=True)
         self.assertFalse(form_b.is_valid())
 
         # Test invalid provider
@@ -147,5 +147,5 @@ class TestForms(TestCase):
             'domain_name': 'test.org',
             'provider_instance': -1
         })
-        form_c.request = test_request(index, user=user, just_request=True)
+        form_c.request = test_request(IndexView.as_view(), user=user, just_request=True)
         self.assertFalse(form_c.is_valid())

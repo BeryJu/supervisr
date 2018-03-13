@@ -1,4 +1,4 @@
-django
+django>=2.0
 invoke
 cherrypy<=11.0.0
 pymysql
@@ -8,6 +8,6 @@ docutils
 pyyaml
 passlib
 Pillow
-schedule
 raven
 django-htmlmin
+celery

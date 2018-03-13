@@ -43,18 +43,18 @@ class TestDecorators(TestCase):
         Test reauth_required decorator
         """
         # View as AnonymousUser should return 302
-        self.assertEqual(test_request(reauth_required(common.index),
+        self.assertEqual(test_request(reauth_required(common.IndexView.as_view()),
                                       user=AnonymousUser()).status_code, 302)
-        self.assertEqual(test_request(reauth_required(common.index),
+        self.assertEqual(test_request(reauth_required(common.IndexView.as_view()),
                                       user=get_system_user()).status_code, 302)
         # Test reauth with valid time
         self.assertEqual(
-            test_request(reauth_required(common.index),
+            test_request(reauth_required(common.IndexView.as_view()),
                          user=get_system_user(),
                          session_data={REAUTH_KEY: time.time()}).status_code, 200)
         # Test reauth with old time time
         self.assertEqual(
-            test_request(reauth_required(common.index),
+            test_request(reauth_required(common.IndexView.as_view()),
                          user=get_system_user(),
                          session_data={REAUTH_KEY: time.time() - REAUTH_MARGIN - 100}).status_code,
             302)

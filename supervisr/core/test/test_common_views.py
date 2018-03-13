@@ -23,12 +23,12 @@ class TestCommonViews(TestCase):
         """Test Index View (Anonymous)"""
         request = self.factory.get(reverse('common-index'))
         request.user = SVAnonymousUser()
-        response = common.index(request)
+        response = common.IndexView.as_view()(request)
         self.assertEqual(response.status_code, 302)
 
     def test_index_view_auth(self):
         """Test Index View (Authenticated)"""
         request = self.factory.get(reverse('common-index'))
         request.user = User.objects.get(pk=get_system_user())
-        response = common.index(request)
+        response = common.IndexView.as_view()(request)
         self.assertEqual(response.status_code, 200)

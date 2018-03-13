@@ -27,5 +27,5 @@ class TestMiddleware(TestCase):
         """
         request = self.factory.get(reverse('common-index'))
         request.user = AnonymousUser()
-        response = tfa_force_verify(common.index)(request)
+        response = tfa_force_verify(common.IndexView.as_view())(request)
         self.assertEqual(response.status_code, 302)

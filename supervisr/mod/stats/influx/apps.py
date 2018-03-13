@@ -1,14 +1,6 @@
 """Supervisr Stats Influx AppConfig"""
 
-import logging
-import os
-
-import psutil
-
 from supervisr.core.apps import SupervisrAppConfig
-from supervisr.core.thread.background import SCHEDULER, catch_exceptions
-
-LOGGER = logging.getLogger(__name__)
 
 
 class SupervisrModStatInfluxConfig(SupervisrAppConfig):
@@ -19,35 +11,6 @@ class SupervisrModStatInfluxConfig(SupervisrAppConfig):
     label = 'supervisr_mod_stats_influx'
     verbose_name = 'Supervisr mod_stats_influx'
     title_modifier = lambda self, request: 'Stats/Influx'
-
-    def ready(self):
-        super(SupervisrModStatInfluxConfig, self).ready()
-        SupervisrModStatInfluxConfig._worker()
-
-    @staticmethod
-    def _worker():
-        from supervisr.core.models import Setting
-        from supervisr.mod.stats.influx.influx_client import InfluxClient
-
-        if Setting.get_bool('enabled'):
-            try:
-                client = InfluxClient()
-                client.connect()
-
-                @catch_exceptions()
-                def send():
-                    """
-                    Send CPU and Memory usage
-                    """
-                    process = psutil.Process(os.getpid())
-                    client.write('server',
-                                 memory=process.memory_info().rss / 1024 / 1024,
-                                 cpu=process.cpu_percent())
-
-                SCHEDULER.every(10).seconds.do(send)
-
-            except (TimeoutError, ConnectionError, IOError):
-                LOGGER.warning("Failed to connect to influx server '%s'.", Setting.get('host'))
 
     def ensure_settings(self):
         return {

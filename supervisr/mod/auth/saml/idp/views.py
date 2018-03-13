@@ -21,7 +21,7 @@ from OpenSSL.crypto import load_certificate
 
 from supervisr.core.models import Event, Setting, UserAcquirableRelationship
 from supervisr.core.utils import render_to_string
-from supervisr.core.views.common import error_response
+from supervisr.core.views.common import ErrorResponseView
 from supervisr.core.views.settings import GenericSettingView
 from supervisr.mod.auth.saml.idp import exceptions, registry, xml_signing
 from supervisr.mod.auth.saml.idp.forms.settings import IDPSettingsForm
@@ -149,7 +149,7 @@ def login_process(request):
                 raise Http404
             return full_res
         except exceptions.CannotHandleAssertion as exc:
-            return error_response(request, str(exc))
+            return ErrorResponseView.as_view()(request, str(exc))
 
 
 @csrf_exempt

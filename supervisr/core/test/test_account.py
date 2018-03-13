@@ -109,7 +109,7 @@ class TestAccount(TestCase):
                                  method='POST',
                                  req_kwargs=self.login_data)
         self.assertEqual(login_res.status_code, 302)
-        self.assertEqual(login_res.url, reverse(common.index))
+        self.assertEqual(login_res.url, reverse(common.IndexView.as_view()))
 
     def test_signup_view_post(self):
         """
@@ -226,4 +226,4 @@ class TestAccount(TestCase):
                                  req_kwargs=self.change_data)
 
         self.assertEqual(reset_res.status_code, 302)
-        self.assertEqual(reset_res.url, reverse(common.index))
+        self.assertEqual(reset_res.url, reverse(common.IndexView.as_view()))

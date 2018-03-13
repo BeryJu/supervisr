@@ -35,6 +35,7 @@ SIG_USER_PASS_RESET_INIT = RobustSignal(providing_args=['user'])
 SIG_USER_PASS_RESET_FIN = RobustSignal(providing_args=['user'])
 SIG_USER_CONFIRM = RobustSignal(providing_args=['user', 'request'])
 SIG_USER_RESEND_CONFIRM = RobustSignal(providing_args=['user', 'request'])
+SIG_CELERY_SCHEDULER = RobustSignal(providing_args=[])
 
 SIG_DOMAIN_CREATED = RobustSignal(providing_args=['domain'])
 

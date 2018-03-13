@@ -1,4 +1,4 @@
-django
+django>=2.0
 invoke
 cherrypy<=11.0.0
 pymysql
@@ -8,14 +8,14 @@ docutils
 pyyaml
 passlib
 Pillow
-schedule
 raven
 django-htmlmin
+celery
 dnspython
 requests
+# In here you can specify pip modules that should be installed
 requests
 django-two-factor-auth
-# In here you can specify pip modules that should be installed
 ldap3
 pyasn1<=0.3.0
 slumber

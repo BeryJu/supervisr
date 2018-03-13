@@ -21,8 +21,8 @@ from supervisr.core.views import (accounts, admin, common, domains, products,
 LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=invalid-name
-handler404 = 'supervisr.core.views.common.uncaught_404'
-handler500 = 'supervisr.core.views.common.uncaught_500'
+handler404 = common.Uncaught404View.as_view()
+handler500 = common.Uncaught500View.as_view()
 
 admin_django.site.index_title = _('Supervisr Admin')
 admin_django.site.site_title = _('supervisr')
@@ -33,7 +33,7 @@ admin_django.site.logout = RedirectView.as_view(pattern_name='account-logout',
 
 urlpatterns = [
     # Account views
-    url(r'^$', common.index, name='common-index'),
+    url(r'^$', common.IndexView.as_view(), name='common-index'),
     url(r'^search/$', search.search, name='search'),
     url(r'^accounts/login/$', accounts.LoginView.as_view(), name=django_settings.LOGIN_URL),
     url(r'^accounts/login/reauth/$', accounts.ReauthView.as_view(), name='account-reauth'),

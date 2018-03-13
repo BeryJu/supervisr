@@ -6,8 +6,8 @@ from django.db.models import Model
 
 from supervisr.core.models import ProviderInstance
 from supervisr.core.providers.base import BaseProvider
-from supervisr.core.providers.exceptions import SupervisrProviderException
 from supervisr.core.providers.objects import ProviderObjectTranslator
+from supervisr.core.providers.tasks import provider_do_delete, provider_do_save
 
 LOGGER = getLogger(__name__)
 
@@ -49,19 +49,13 @@ class ProviderMultiplexer(object):
         LOGGER.debug("instance %r, providers %r", instance, providers)
         for translator in self._get_translators(instance, providers):
             provider_object = translator.to_external(instance)
-            try:
-                provider_object.save()
-            except SupervisrProviderException as exc:
-                LOGGER.warning("Provider Exception: %r", exc)
-            LOGGER.debug("Saved instance.")
+            provider_do_save.delay(provider_object)
+            LOGGER.info("Fired task provider_do_save")
 
     def on_model_deleted(self, instance: Model, providers: List[ProviderInstance]):
         """Notify providers that model is about to be deleted"""
         LOGGER.debug("instance %r, providers %r", instance, providers)
         for translator in self._get_translators(instance, providers):
             provider_object = translator.to_external(instance)
-            try:
-                provider_object.delete()
-            except SupervisrProviderException as exc:
-                LOGGER.warning("Provider Exception: %r", exc)
-            LOGGER.debug("Deleted instance.")
+            provider_do_delete.delay(provider_object)
+            LOGGER.info("Fired task provider_do_delete")

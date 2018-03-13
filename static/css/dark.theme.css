@@ -402,12 +402,6 @@ div.breadcrumbs {
 div.breadcrumbs a {
   color: #002538 !important;
 }
-tr.selected {
-  background-color: #34505d !important;
-}
-select > option {
-  background-color: #22343c !important;
-}
 .home-cards .home-cards-container {
   background-color: #22343c !important;
 }

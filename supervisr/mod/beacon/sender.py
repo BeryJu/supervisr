@@ -13,7 +13,6 @@ from django.urls import reverse
 
 from supervisr.core.models import Domain, Setting, User
 from supervisr.core.signals import SIG_SETTING_UPDATE
-from supervisr.core.thread.background import catch_exceptions
 from supervisr.mod.beacon.models import Pulse, PulseModule
 
 LOGGER = logging.getLogger(__name__)
@@ -106,8 +105,7 @@ class Sender(object):
         elif sender.key == 'endpoint':
             self._endpoint = sender.value
 
-    @catch_exceptions()
     def tick(self):
-        """This method is called by supervisr.core.thread.background.BackgroundThread."""
+        """This method is called by celer task in supervisr.mod.beacon.signals."""
         self._collect_count()
         self.send(self.bundle())

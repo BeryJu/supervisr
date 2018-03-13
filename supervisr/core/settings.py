@@ -120,6 +120,13 @@ MEDIA_URL = '/media/'
 LOGIN_REDIRECT_URL = 'user-index'
 LOGIN_URL = 'account-login'
 
+# Celery settings
+# Add a 10 minute timeout to all Celery tasks.
+CELERY_TASK_SOFT_TIME_LIMIT = 600
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_ACCEPT_CONTENT = ['pickle']
+
 # Settings are taken from DB, these are dev keys as per
 # https://developers.google.com/recaptcha/docs/faq
 RECAPTCHA_PUBLIC_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'

@@ -12,8 +12,6 @@ from django.core.cache import cache
 from django.db.utils import OperationalError, ProgrammingError
 from pip.req import parse_requirements
 
-from supervisr.core.thread.background import BackgroundThread
-
 LOGGER = logging.getLogger(__name__)
 
 
@@ -134,6 +132,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
         'models',
         'providers.base',
         'providers.domain',
+        'providers.tasks',
     ]
     navbar_title = 'Core'
     verbose_name = 'Supervisr Core'
@@ -141,7 +140,6 @@ class SupervisrCoreConfig(SupervisrAppConfig):
     def ready(self):
         super(SupervisrCoreConfig, self).ready()
         self.clear_cache()
-        BackgroundThread().start()
         # Check for invalid settings
         self.cleanup_settings()
         # Set external_domain on raven
