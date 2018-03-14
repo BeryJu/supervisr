@@ -100,6 +100,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.admindocs',
     'raven.contrib.django.raven_compat',
+    'django_celery_results',
 ]
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -124,8 +125,11 @@ LOGIN_URL = 'account-login'
 # Add a 10 minute timeout to all Celery tasks.
 CELERY_TASK_SOFT_TIME_LIMIT = 600
 CELERY_TIMEZONE = TIME_ZONE
-CELERY_TASK_SERIALIZER = 'pickle'
-CELERY_ACCEPT_CONTENT = ['pickle']
+# CELERY_TASK_SERIALIZER = 'pickle'
+# CELERY_ACCEPT_CONTENT = ['pickle']
+CELERY_BROKER_URL = 'redis://localhost'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BEAT_SCHEDULE = {}
 
 # Settings are taken from DB, these are dev keys as per
 # https://developers.google.com/recaptcha/docs/faq
@@ -370,6 +374,10 @@ if DEBUG is True:
     INSTALLED_APPS.append('debug_toolbar')
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
 
+if TEST is True:
+    # Run celery tasks locally in unit tests
+    CELERY_ALWAYS_EAGER = True
+
 # Load subapps's INSTALLED_APPS
 for _app in INSTALLED_APPS:
     if _app.startswith('supervisr') and \
@@ -381,5 +389,6 @@ for _app in INSTALLED_APPS:
             MIDDLEWARE.extend(getattr(app_settings, 'MIDDLEWARE', []))
             AUTHENTICATION_BACKENDS.extend(getattr(app_settings, 'AUTHENTICATION_BACKENDS', []))
             DATABASE_ROUTERS.extend(getattr(app_settings, 'DATABASE_ROUTERS', []))
+            CELERY_BEAT_SCHEDULE.update(getattr(app_settings, 'CELERY_BEAT_SCHEDULE', {}))
         except ImportError:
             pass

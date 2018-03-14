@@ -100,7 +100,10 @@ class SupervisrAppConfig(AppConfig):
             _check_file(self, 'requirements-dev.txt')
 
     def merge_settings(self, overwrite=False):
-        """Load settings file and add/overwrite"""
+        """Load settings file and add/overwrite.
+
+        A similarm thing is also done in settings.py itself, so you can modify INSTALLED_APPS
+        and such."""
         blacklist = ['INSTALLED_APPS', 'MIDDLEWARE', 'SECRET_KEY']
         try:
             counter = 0

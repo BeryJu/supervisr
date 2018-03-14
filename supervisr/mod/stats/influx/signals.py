@@ -5,8 +5,8 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.dispatch import receiver
 
 from supervisr.core.models import Setting
-from supervisr.core.signals import (SIG_CELERY_SCHEDULER, SIG_DOMAIN_CREATED,
-                                    SIG_GET_MOD_HEALTH, SIG_SET_STAT,
+from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_GET_MOD_HEALTH,
+                                    SIG_SET_STAT,
                                     SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED,
                                     SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED,
                                     SIG_USER_CONFIRM, SIG_USER_PASS_RESET_FIN,
@@ -14,14 +14,6 @@ from supervisr.core.signals import (SIG_CELERY_SCHEDULER, SIG_DOMAIN_CREATED,
                                     SIG_USER_POST_SIGN_UP,
                                     SIG_USER_RESEND_CONFIRM)
 from supervisr.mod.stats.influx.influx_client import InfluxClient
-from supervisr.mod.stats.influx.tasks import push_influx_data
-
-
-@receiver(SIG_CELERY_SCHEDULER)
-# pylint: disable=unused-argument
-def stats_influx_setup_schedule(sender, **kwargs):
-    """Set up celery scheduler"""
-    sender.add_periodic_task(10.0, push_influx_data.s())
 
 
 @receiver(SIG_GET_MOD_HEALTH)

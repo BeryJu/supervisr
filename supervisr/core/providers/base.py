@@ -24,9 +24,8 @@ class ProviderMetadata(object):
         """Return all subproviders this provider has"""
         return self.capabilities
 
+
 # pylint: disable=too-few-public-methods
-
-
 class BaseProvider(object):
     """Generic Interface as base for GenericManagedProvider and GenericUserProvider"""
 

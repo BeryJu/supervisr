@@ -11,3 +11,5 @@ Pillow
 raven
 django-htmlmin
 celery
+django-celery-beat
+django-celery-results

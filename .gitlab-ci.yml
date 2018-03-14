@@ -3,7 +3,6 @@ before_script:
   - "python3 -m pip install -U virtualenv"
   - "virtualenv env"
   - "source env/bin/activate"
-  - "pip3 install invoke"
   - "pip install -U -r requirements.txt -r requirements-dev.txt"
 stages:
   - test
@@ -15,9 +14,10 @@ variables:
   # Configure mysql environment variables (https://hub.docker.com/r/_/mysql/)
   MYSQL_DATABASE: supervisr_test
   MYSQL_ROOT_PASSWORD: 'EK-5jnKfjrGRm<77'
-  POSTGRES_DB: supervisr_test
-  POSTGRES_USER: supervisr
-  POSTGRES_PASSWORD: 'EK-5jnKfjrGRm<77'
+  SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_mysql
+services:
+# - redis:latest
+  - mysql:latest
 
 # All normal tests
 coverage:
@@ -94,44 +94,6 @@ unittest:
     paths:
       - env/
 
-# Database tests
-unittest_mysql:
-  services:
-    - mysql:latest
-  except:
-    - prod
-  script:
-    - pip install pymysql
-    - inv supervisr.migrate
-    - inv ci.unittest
-  variables:
-    SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_mysql
-  stage: test-db
-  only:
-    - db-*
-    - release-*
-  cache:
-    paths:
-      - env/
-unittest_pgsql:
-  services:
-    - postgres:latest
-  except:
-    - prod
-  script:
-    - pip install psycopg2
-    - inv supervisr.migrate
-    - inv ci.unittest
-  variables:
-    SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_pgsql
-  stage: test-db
-  only:
-    - db-*
-    - release-*
-  cache:
-    paths:
-      - env/
-
 # Release test
 bundle_release:
   before_script:
@@ -146,8 +108,8 @@ bundle_release:
 
 # Deploy
 deploy:
-  before_script:
-    - ''
+  before_script: []
+  services: []
   environment:
     name: production
     url: "https://my.beryju.org"
