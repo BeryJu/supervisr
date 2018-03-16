@@ -2,7 +2,10 @@
 
 import os
 
+import pymysql
 from celery import Celery
+
+pymysql.install_as_MySQLdb()
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")

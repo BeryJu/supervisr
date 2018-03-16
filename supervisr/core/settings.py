@@ -100,7 +100,6 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.admindocs',
     'raven.contrib.django.raven_compat',
-    'django_celery_results',
 ]
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -125,10 +124,8 @@ LOGIN_URL = 'account-login'
 # Add a 10 minute timeout to all Celery tasks.
 CELERY_TASK_SOFT_TIME_LIMIT = 600
 CELERY_TIMEZONE = TIME_ZONE
-# CELERY_TASK_SERIALIZER = 'pickle'
-# CELERY_ACCEPT_CONTENT = ['pickle']
 CELERY_BROKER_URL = 'redis://localhost'
-CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_BACKEND = 'redis://localhost'
 CELERY_BEAT_SCHEDULE = {}
 
 # Settings are taken from DB, these are dev keys as per
@@ -353,7 +350,7 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'schedule': {
+        'celery': {
             'handlers': LOG_HANDLERS,
             'level': 'DEBUG',
             'propagate': True,

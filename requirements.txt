@@ -11,8 +11,7 @@ Pillow
 raven
 django-htmlmin
 celery
-django-celery-beat
-django-celery-results
+redis
 dnspython
 requests
 # In here you can specify pip modules that should be installed
