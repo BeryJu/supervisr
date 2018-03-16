@@ -14,7 +14,7 @@ variables:
   # Configure mysql environment variables (https://hub.docker.com/r/_/mysql/)
   MYSQL_DATABASE: supervisr_test
   MYSQL_ROOT_PASSWORD: 'EK-5jnKfjrGRm<77'
-  SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_mysql
+  SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_ci
 services:
 # - redis:latest
   - mysql:latest
