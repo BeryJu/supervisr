@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 
 from supervisr.core.fields import EncryptedField
 from supervisr.mod.auth.oauth.client.clients import get_client
@@ -23,7 +22,6 @@ class ProviderManager(models.Manager):
         return self.get(name=name)
 
 
-@python_2_unicode_compatible
 class Provider(models.Model):
     "Configuration for OAuth provider."
 
@@ -72,7 +70,6 @@ class AccountAccessManager(models.Manager):
         return self.get(identifier=identifier, provider=provider)
 
 
-@python_2_unicode_compatible
 class AccountAccess(models.Model):
     "Authorized remote OAuth provider."
 

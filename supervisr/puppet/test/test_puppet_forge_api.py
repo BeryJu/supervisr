@@ -28,8 +28,8 @@ class TestPuppetForgeAPI(TestCase):
 
     def setUp(self):
         """Build supervisr-supervisr_core module once"""
-        ps_group = Group.objects.get_or_create(
-            name='Puppet Systemusers')[0]
+        ps_group, _group_created = Group.objects.get_or_create(
+            name='Puppet Systemusers')
         system_user = User.objects.get(pk=get_system_user())
         ps_group.user_set.add(system_user)
         PuppetModule.objects.get_or_create(
