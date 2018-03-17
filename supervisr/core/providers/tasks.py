@@ -1,6 +1,7 @@
 """supervisr core provider tasks"""
 from logging import getLogger
 
+from django.core.exceptions import MultipleObjectsReturned
 from django.db.models import Model
 
 from supervisr.core.celery import CELERY_APP
@@ -15,8 +16,8 @@ LOGGER = getLogger(__name__)
 def get_instance(model: Model, model_pk: int) -> Model:
     """Get Model instance from DB"""
     try:
-        return model.objects.get(model_pk)
-    except (Model.MultipleObjectsReturned, Model.DoesNotExist) as exc:
+        return model.objects.get(pk=model_pk)
+    except (MultipleObjectsReturned, model.DoesNotExist) as exc:
         raise SupervisrProviderException from exc
 
 
@@ -50,7 +51,7 @@ def provider_do_save(self, provider_pk: int, model: str, model_pk: int):
         provider_object.save()
         LOGGER.debug("Saved instance.")
     except SupervisrProviderException:
-        self.retry(args=[provider_object], countdown=2 ** self.request.retries)
+        self.retry(args=[provider_pk, model, model_pk], countdown=2 ** self.request.retries)
 
 
 @CELERY_APP.task(bind=True, max_retries=10)
@@ -61,4 +62,4 @@ def provider_do_delete(self, provider_pk: int, model: str, model_pk: int):
         provider_object.delete()
         LOGGER.debug("Deleted instance.")
     except SupervisrProviderException:
-        self.retry(args=[provider_object], countdown=2 ** self.request.retries)
+        self.retry(args=[provider_pk, model, model_pk], countdown=2 ** self.request.retries)

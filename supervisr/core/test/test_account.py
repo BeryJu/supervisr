@@ -12,7 +12,7 @@ from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
 from supervisr.core.models import AccountConfirmation, User, get_system_user
 from supervisr.core.signals import SIG_USER_RESEND_CONFIRM
 from supervisr.core.test.utils import test_request
-from supervisr.core.views import accounts, common
+from supervisr.core.views import accounts
 
 
 class TestAccount(TestCase):
@@ -109,7 +109,7 @@ class TestAccount(TestCase):
                                  method='POST',
                                  req_kwargs=self.login_data)
         self.assertEqual(login_res.status_code, 302)
-        self.assertEqual(login_res.url, reverse(common.IndexView.as_view()))
+        self.assertEqual(login_res.url, reverse('common-index'))
 
     def test_signup_view_post(self):
         """
@@ -226,4 +226,4 @@ class TestAccount(TestCase):
                                  req_kwargs=self.change_data)
 
         self.assertEqual(reset_res.status_code, 302)
-        self.assertEqual(reset_res.url, reverse(common.IndexView.as_view()))
+        self.assertEqual(reset_res.url, reverse('common-index'))

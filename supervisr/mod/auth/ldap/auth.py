@@ -7,6 +7,7 @@ from supervisr.mod.auth.ldap.ldap_connector import LDAPConnector
 
 LOGGER = getLogger(__name__)
 
+
 class LDAPBackend(ModelBackend):
     """Authenticate users against LDAP Server"""
 
@@ -22,5 +23,4 @@ class LDAPBackend(ModelBackend):
             return None
         if not LDAPConnector.enabled:
             return None
-        LOGGER.debug("attempting to authenticate %r", kwargs)
         return self._ldap.auth_user(**kwargs)

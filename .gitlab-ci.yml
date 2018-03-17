@@ -16,7 +16,7 @@ variables:
   MYSQL_ROOT_PASSWORD: 'EK-5jnKfjrGRm<77'
   SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_ci
 services:
-# - redis:latest
+  - redis:latest
   - mysql:latest
 
 # All normal tests
