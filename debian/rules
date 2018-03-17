@@ -14,6 +14,13 @@ override_dh_auto_clean:
 override_dh_auto_build:
 	env/bin/invoke utils.compile-reqs
 
+override_dh_installinit:
+	dh_installinit --name=supervisr
+	dh_installinit --name=supervisr-task-runner
+	dh_installinit --name=supervisr-task-scheduler
+	dh_installinit --name=supervisr-task-monitor
+
+
 # override_dh_usrlocal to do nothing
 override_dh_usrlocal:
 

@@ -20,9 +20,21 @@ def run_celery(ctx, debug=False):
         # https://github.com/celery/celery/issues/4178
         ctx.run("celery -A supervisr.core worker -l info -Ofair -c 1 --pool=solo")
     elif debug:
-        ctx.run("celery -A supervisr.core worker -l info -Ofair -c 1")
+        ctx.run("celery -A supervisr.core worker -l debug -Ofair -c 1")
     else:
         ctx.run("celery -A supervisr.core worker -l info -Ofair")
+
+
+@task
+def run_celery_beats(ctx):
+    """Run Celery beat worker"""
+    ctx.run("celery -A supervisr.core beats")
+
+
+@task
+def run_celery_flower(ctx):
+    """Run Celery flower"""
+    ctx.run("celery -A supervisr.core flower")
 
 
 @task
