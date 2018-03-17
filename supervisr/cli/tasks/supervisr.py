@@ -26,15 +26,15 @@ def run_celery(ctx, debug=False):
 
 
 @task
-def run_celery_beats(ctx):
+def run_celery_beat(ctx):
     """Run Celery beat worker"""
-    ctx.run("celery -A supervisr.core beats")
+    ctx.run("celery -A supervisr.core beat")
 
 
 @task
 def run_celery_flower(ctx):
     """Run Celery flower"""
-    ctx.run("celery -A supervisr.core flower")
+    ctx.run("celery -A supervisr.core flower --address=127.0.0.1")
 
 
 @task

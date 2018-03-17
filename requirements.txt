@@ -1,4 +1,6 @@
+dnspython
 django>=2.0
+pip<=9.0.1
 invoke
 cherrypy<=11.0.0
 pymysql
@@ -12,11 +14,13 @@ raven
 django-htmlmin
 celery
 redis
-dnspython
+django-redis
+flower
+
 requests
 # In here you can specify pip modules that should be installed
-django-two-factor-auth
 requests
+django-two-factor-auth
 ldap3
 pyasn1<=0.3.0
 slumber
@@ -24,11 +28,11 @@ slumber
 slumber
 influxdb>=4.1.1
 psutil
-django-oauth-toolkit
-django-cors-middleware
-pycrypto>=2.4
-requests_oauthlib>=0.4.2
-oauthlib>=2.0.6
 beautifulsoup4>=4.6.0
 lxml>=3.8.0
 signxml
+pycrypto>=2.4
+requests_oauthlib>=0.4.2
+oauthlib>=2.0.6
+django-oauth-toolkit
+django-cors-middleware

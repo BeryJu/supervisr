@@ -34,6 +34,10 @@ LOG_FILE = '/var/log/supervisr/supervisr.log'
 # LOG_SYSLOG_HOST = '172.16.1.30'
 # LOG_SYSLOG_PORT = 12239
 
+# Specify redis connection string
+# Format: <user>:<password>@<hostname>:<port>/<db_number>
+REDIS = 'localhost'
+
 DATABASES = {
     'default': db_settings_from_dbconfig(path.join(LOCAL_BASE, 'database-config')),
 }

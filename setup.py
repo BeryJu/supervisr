@@ -47,7 +47,7 @@ setup(
         'Topic:: System:: Systems Administration',
     ],
     python_requires='>=3.5',
-    scripts=['scripts/supervisr-dev'],
+    scripts=['scripts/supervisr-ctl'],
     url="https://supervisr.beryju.org/docs/",
     zip_safe=False,
 )

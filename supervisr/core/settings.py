@@ -120,12 +120,12 @@ MEDIA_URL = '/media/'
 LOGIN_REDIRECT_URL = 'user-index'
 LOGIN_URL = 'account-login'
 
+REDIS = 'localhost'
+
 # Celery settings
 # Add a 10 minute timeout to all Celery tasks.
 CELERY_TASK_SOFT_TIME_LIMIT = 600
 CELERY_TIMEZONE = TIME_ZONE
-CELERY_BROKER_URL = 'redis://localhost'
-CELERY_RESULT_BACKEND = 'redis://localhost'
 CELERY_BEAT_SCHEDULE = {}
 
 # Settings are taken from DB, these are dev keys as per
@@ -134,17 +134,6 @@ RECAPTCHA_PUBLIC_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
 RECAPTCHA_PRIVATE_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 
 INTERNAL_IPS = ['127.0.0.1']
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.path.join(BASE_DIR, 'cache'),
-        'TIMEOUT': 60,
-        'OPTIONS': {
-            'MAX_ENTRIES': 1000
-        }
-    }
-}
 
 MIDDLEWARE = [
     # Load DeployPage first so we can save unnecessary errores
@@ -262,13 +251,32 @@ def load_local_settings(module_path):
                 globals()[key] = value
         LOGGER.warning("Loaded '%s' as local_settings", module_path)
         return True
-    except ImportError as exception:
+    except (ImportError, PermissionError) as exception:
         LOGGER.info('Not loaded %s because %s', module_path, exception)
         return False
 
 for _module in [os.environ.get('SUPERVISR_LOCAL_SETTINGS', 'supervisr.local_settings'), 'config']:
     if load_local_settings(_module):
         break
+
+# Apply redis settings from local_settings
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://%s" % REDIS,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+DJANGO_REDIS_IGNORE_EXCEPTIONS = True
+DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS = True
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
+CELERY_BROKER_URL = 'redis://%s' % REDIS
+CELERY_RESULT_BACKEND = 'redis://%s' % REDIS
 
 SERVER_EMAIL = EMAIL_FROM
 ENVIRONMENT = 'production' if DEBUG is False else 'development'

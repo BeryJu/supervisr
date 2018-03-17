@@ -9,6 +9,7 @@ set -e
 dbc_mysql_createdb_encoding="UTF8"
 dbc_generate_include=sh:/etc/supervisr/database-config
 dbc_go supervisr "$@"
+declare -a services=("supervisr-task-runner.service" "supervisr.service" "supervisr-task-scheduler.service" "supervisr-task-monitor.service")
 
 if [ -z "`getent group supervisr`" ]; then
   addgroup --quiet --system supervisr
@@ -28,6 +29,12 @@ chown -R supervisr: /etc/supervisr/
 chmod 440 /etc/supervisr/secret_key
 echo " * Running Database Migration"
 supervisr-ctl supervisr.migrate
+echo " * Starting Services..."
+for service in "${services[@]}"
+do
+	systemctl enable $service
+	systemctl restart $service
+done
 
 #DEBHELPER#
 

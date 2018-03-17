@@ -4,7 +4,7 @@ SUPERVISR_PACKAGED=false
 
 # Check if this file is a symlink, if so, read real base dir
 BASE_DIR=$(dirname $(readlink -f ${BASH_SOURCE[0]} 2> /dev/null) 2> /dev/null)
-if [ $? -eq 0 ] && [ "$BASE_DIR" != $(pwd)  ]; then
+if [ $? -eq 0 ] && [ "$BASE_DIR" != $(pwd) ] && [[ "$BASE_DIR" != *env/bin ]]; then
 	cd $BASE_DIR
 	SUPERVISR_PACKAGED=true
 fi
@@ -26,8 +26,13 @@ if [ $SUPERVISR_PACKAGED == true ]; then
 	fi
 	/bin/su -s /bin/bash -c "cd $BASE_DIR && source env/bin/activate && $COMMAND && deactivate" supervisr
 else
-	cd $BASE_DIR
-	source env/bin/activate
-	$COMMAND
-	deactivate
+	# Check if we're already in a virtualenv, if so just run the command
+	if [ -n $VIRTUAL_ENV ]; then
+		$COMMAND
+	else
+		cd $BASE_DIR
+		source env/bin/activate
+		$COMMAND
+		deactivate
+	fi
 fi

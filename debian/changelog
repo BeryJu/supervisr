@@ -1,3 +1,35 @@
+supervisr (0.2.0+dev) unstable; urgency=medium
+
+  * [dns] current state of resourcesets
+  * [dns] resource set current state
+  * [core] fix message error with GenericEditView
+  * [CI] add pre-commit checks
+  * clean migrations, rewrite most of provider, merge resource-set
+  * start mail rebuild, add debug provider
+  * [core] make name field in user settings optional
+  * add ProviderProxy to handle StagedProviderChanges, fix unit tests
+  * more cleanup, fix most style issues, re-add static and such
+  * update requirements
+  * providers mostly working, need some better error catching
+  * cleanup code style, fix imports
+  * cleanup, add mail address views, move invoke tasks, fix address unittests
+  * more cleanup, fix all style and unittest issues
+  * fix all style issues, unittests, prospector errors, etc
+  * fix pyroma CI test
+  * [assets] rebuild assets
+  * start to implement celery as task runner, migrate common views to CBV
+  * improve provider tasks so pickle is not needed
+  * fix mysql config
+  * fix mysql config again
+  * [ci] fix mysql settings again
+  * add redis requirement, add debvug logging to authenticators
+  * [ci] add separate config CI, fix redis connection string
+  * [ci] re-enable redis service
+  * [*] adjust code to new pylint version
+  * [debian] add all service files, switch to installinit, add more inv tasks
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Sat, 17 Mar 2018 09:30:55 +0000
+
 supervisr (0.1.2.2) unstable; urgency=medium
 
   * [ci] fix build for tags

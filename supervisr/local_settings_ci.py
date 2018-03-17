@@ -18,5 +18,5 @@ DATABASES = {
     }
 }
 
-CELERY_BROKER_URL = 'redis://redis'
-CELERY_RESULT_BACKEND = 'redis://redis'
+REDIS = 'redis'
+

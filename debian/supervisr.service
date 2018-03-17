@@ -1,7 +1,7 @@
 [Unit]
 Description=supervisr
 After=syslog.target network.target
-Requires=network.target
+Requires=network.target supervisr-task-runner.service
 
 [Service]
 User=supervisr

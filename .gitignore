@@ -98,6 +98,7 @@ ENV/
 
 # Local settings
 local_settings.py
+build/
 
 # Compiled HTML files
 *.html.py
@@ -174,3 +175,9 @@ supervisr/core/templates/core/deploy.html
 docgen/supervisr/
 .sass-cache
 site/
+
+# Debian package exclusions
+*debhelper*
+debian/files
+debian/supervisr.substvars
+debian/supervisr/
