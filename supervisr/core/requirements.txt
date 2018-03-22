@@ -15,4 +15,3 @@ celery
 redis
 django-redis
 flower
-
