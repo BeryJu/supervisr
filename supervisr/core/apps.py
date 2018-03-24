@@ -143,12 +143,25 @@ class SupervisrCoreConfig(SupervisrAppConfig):
     def ready(self):
         super(SupervisrCoreConfig, self).ready()
         self.clear_cache()
+        self.add_permissions()
         # Check for invalid settings
         self.cleanup_settings()
         # Set external_domain on raven
         from supervisr.core.models import Setting
         settings.RAVEN_CONFIG['tags']['external_domain'] = Setting.get('domain')
         settings.RAVEN_CONFIG['tags']['install_id'] = Setting.get('install_id')
+
+    def add_permissions(self):
+        """Add global permissions needed for core"""
+        from supervisr.core.models import GlobalPermission
+        from django.contrib.auth.models import Permission
+        from django.contrib.contenttypes.models import ContentType
+        content_type = ContentType.objects.get_for_model(GlobalPermission)
+        Permission.objects.get_or_create(
+            codename='core_product_can_create',
+            name='Can create supervisr_core Products',
+            content_type=content_type,
+        )
 
     def cleanup_settings(self):
         """Cleanup settings without namespace or key"""

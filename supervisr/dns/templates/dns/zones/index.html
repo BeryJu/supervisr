@@ -44,7 +44,12 @@
     {% endfor %}
   </tbody>
 </table>
-{% include 'blocks/block_pagination.html' with pages=instances %} {% endblock %} {% block scripts %}
+{% include 'blocks/block_pagination.html' with pages=instances %}
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
 <script>
   clrTableSelect('.container');
-</script> {% endblock %}
+</script>
+{% endblock %}

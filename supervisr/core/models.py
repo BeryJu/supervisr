@@ -197,9 +197,7 @@ class GlobalPermission(Permission):
 
 
 class Setting(CreatedUpdatedModel):
-    """
-    Save key-value settings to db
-    """
+    """Save key-value settings to db"""
     setting_id = models.AutoField(primary_key=True)
     key = models.CharField(max_length=255)
     namespace = models.CharField(max_length=255)
@@ -505,11 +503,9 @@ class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
     name = models.TextField()
     slug = models.SlugField(blank=True)
     description = models.TextField(blank=True)
-    price = models.DecimalField(decimal_places=3, max_digits=65, default=0.00)
     invite_only = models.BooleanField(default=True)
     auto_add = models.BooleanField(default=False)
     auto_all_add = models.BooleanField(default=False)
-    revision = models.IntegerField(default=1)
     managed = models.BooleanField(default=True)
     management_url = models.URLField(max_length=1000, blank=True, null=True)
     extensions = models.ManyToManyField(ProductExtension, blank=True)

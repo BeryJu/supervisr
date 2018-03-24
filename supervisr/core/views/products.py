@@ -1,11 +1,9 @@
-"""
-Supervisr Core Product Views Views
-"""
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import Http404
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+"""Supervisr Core Product Views Views"""
+from django.contrib.auth.decorators import (login_required,
+                                            permission_required,
+                                            user_passes_test)
+from django.http import Http404, HttpRequest, HttpResponse
+from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 
@@ -16,7 +14,7 @@ from supervisr.core.views.wizards import BaseWizardView
 
 
 @login_required
-def index(request):
+def index(request: HttpRequest) -> HttpResponse:
     """Show an Index of all Products that a user can access"""
     products = Product.objects.filter(invite_only=False)
     return render(request, 'product/index.html', {
@@ -25,10 +23,10 @@ def index(request):
 
 
 @login_required
-def view(request, slug):
+def view(request: HttpRequest, slug) -> HttpResponse:
     """Show more specific Information about a product"""
     @ifapp('supervisr_static')
-    def redirect_to_static(request, slug):
+    def redirect_to_static(request: HttpRequest, slug) -> HttpResponse:
         """if static app is installed, use static's productpage"""
         from supervisr.static.views import PageView
         return PageView.as_view()(request, slug)
@@ -49,7 +47,7 @@ def view(request, slug):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def admin_index(request):
+def admin_index(request: HttpRequest) -> HttpResponse:
     """Show product overview for admins"""
     products = Product.objects.all()
     return render(request, 'product/admin_index.html', {
@@ -58,35 +56,14 @@ def admin_index(request):
 
 
 @method_decorator(login_required, name='dispatch')
-@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
+@method_decorator(permission_required('supervisr_core.core_product_can_create'), name='dispatch')
 # pylint: disable=too-many-ancestors
 class ProductNewWizard(BaseWizardView):
     """Wizard to create a Product"""
 
     title = _("New Product")
     form_list = [ProductForm]
-    registrars = None
 
-    # def get_form(self, step=None, data=None, files=None):
-    #     form = super(ProductNewWizard, self).get_form(step, data, files)
-    #     if step is None:
-    #         step = self.steps.current
-    #     if step == '0':
-    #         providers = get_providers(capabilities=['domain'], path=True)
-    #         provider_instance = ProviderInstance.objects.filter(
-    #             provider_path__in=providers,
-    #             useracquirablerelationship__user__in=[self.request.user])
-    #         form.fields['provider'].queryset = provider_instance
-    #         form.request = self.request
-    #     return form
-
-    # pylint: disable=unused-argument
-    def done(self, final_forms, form_dict, **kwargs):
-        domain = form_dict['0'].save(commit=False)
-        domain.name = domain.domain
-        domain.save()
-        UserAcquirableRelationship.objects.create(
-            model=domain,
-            user=self.request.user)
-        messages.success(self.request, _('Product successfully created'))
-        return redirect(reverse('domain-index'))
+    def finish(self, form_list) -> HttpResponse:
+        """stuff"""
+        pass
