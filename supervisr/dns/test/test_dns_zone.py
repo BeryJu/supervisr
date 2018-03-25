@@ -1,6 +1,4 @@
-"""
-Supervisr DNS DNSDomain Test
-"""
+"""Supervisr DNS DNSDomain Test"""
 
 from django.test import TestCase
 
@@ -9,26 +7,20 @@ from django.test import TestCase
 
 
 class TestDNSDomain(TestCase):
-    """
-    Supervisr DNS DNSDomain Test
-    """
+    """Supervisr DNS DNSDomain Test"""
 
     def setUp(self):
         pass
 
     def test_dnsdomain_get_set(self):
-        """
-        Test DNSDomain's domain setter and getter
-        """
+        """Test DNSDomain's domain setter and getter"""
         pass
         # domain = Domain.objects.create(
         #     name='beryjuorgtesting.xyz',
         #     slug='domain-beryjuorgtestingxyz',
-        #     invite_only=True,
-        #     price=0)
+        #     invite_only=True)
         # dns_domain = DNSDomain.objects.create(
-        #     domain=domain,
-        #     price=0)
+        #     domain=domain)
         # self.assertEqual(dns_domain.domain, domain)
         # dns_domain.domain = domain
         # dns_domain.save()

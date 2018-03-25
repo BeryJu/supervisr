@@ -92,6 +92,8 @@ urlpatterns = [
     url(r'^admin/info/$', admin.info, name='admin-info'),
     url(r'^admin/events/$', admin.events, name='admin-events'),
     url(r'^admin/debug/$', admin.debug, name='admin-debug'),
+    url(r'^admin/flower/$', admin.FlowerView.as_view(), name='admin-flower'),
+    url(r'^proxy/flower/(?P<path>.*)$', admin.FlowerProxy.as_view(), name='admin-flower-proxy'),
     url(r'^admin/products/$', products.admin_index, name='admin-product_index'),
     # Settings
     url(r'^admin/settings/mod/default/$', settings.mod_default, name='admin-mod_default'),

@@ -101,9 +101,7 @@ def get_system_user():
 
 
 class CastableModel(models.Model):
-    """
-    Base Model for Models using Inheritance to cast them
-    """
+    """Base Model for Models using Inheritance to cast them"""
 
     @time_method('CastableModel.cast')
     def cast(self):
@@ -124,9 +122,7 @@ class CastableModel(models.Model):
 
 
 class CreatedUpdatedModel(models.Model):
-    """
-    Base Abstract Model to save created and update
-    """
+    """Base Abstract Model to save created and update"""
     created = models.DateField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 
@@ -153,9 +149,8 @@ class User(AbstractUser):
             return self.first_name
         return self.username
 
+
 # pylint: disable=abstract-method
-
-
 class SVAnonymousUser(django_auth_models.AnonymousUser):
     """Custom Anonymous User with extra attributes"""
 
@@ -167,9 +162,8 @@ class SVAnonymousUser(django_auth_models.AnonymousUser):
 
 django_auth_models.AnonymousUser = SVAnonymousUser
 
+
 # pylint: disable=too-few-public-methods
-
-
 class GlobalPermissionManager(models.Manager):
     """GlobalPermissionManager"""
 

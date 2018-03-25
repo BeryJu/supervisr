@@ -25,8 +25,7 @@ LOGGER = logging.getLogger(__name__)
 # pylint: disable=too-many-arguments, too-many-locals
 def send_message(
         self, recipients: List[str], subject: str, template: str = None,
-        template_context: dict = None, from_address: str = None, text: str = None, **kwargs
-    ):
+        template_context: dict = None, from_address: str = None, text: str = None, **kwargs):
     """Send emails in the background. For each recipient a new E-Mail is generated.
 
     Args:

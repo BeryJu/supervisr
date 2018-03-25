@@ -100,6 +100,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.admindocs',
     'raven.contrib.django.raven_compat',
+    'revproxy',
 ]
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -314,7 +315,7 @@ LOGGING = {
         'console': {
             'level': LOG_LEVEL_CONSOLE,
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+            'formatter': 'default',
         },
         'sentry': {
             'level': 'ERROR',

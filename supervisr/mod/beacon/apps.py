@@ -1,6 +1,6 @@
 """Supervisr module beacon app config"""
 
-from supervisr.core.apps import SupervisrAppConfig
+from supervisr.core.apps import SettingBootstrapper, SupervisrAppConfig
 
 
 class SupervisrModBeaconConfig(SupervisrAppConfig):
@@ -13,8 +13,8 @@ class SupervisrModBeaconConfig(SupervisrAppConfig):
     title_modifier = lambda self, request: 'Beacon'
     navbar_enabled = lambda self, request: True
 
-    def ensure_settings(self):
-        return {
-            'enabled': True,
-            'endpoint': 'https://my.beryju.org'
-        }
+    def bootstrap(self):
+        settings = SettingBootstrapper()
+        settings.add(key='enabled', value=True)
+        settings.add(key='endpoint', value='https://my.beryju.org')
+        return settings,

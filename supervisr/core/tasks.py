@@ -42,16 +42,19 @@ class SupervisrTask(Task):
             return self._progress
         return None
 
+
 @CELERY_APP.task(bind=True)
 def stat_proxy(self, key, value):
     """Handle statistic sending in a task"""
     SIG_SET_STAT.send(key=key, value=value, sender=self)
 
+
 @CELERY_APP.task(bind=True, base=SupervisrTask)
 def debug_progress_task(self, seconds, **kwargs):
     """Debug task to test progress"""
     self.prepare(**kwargs)
+    self.progress.total = seconds
     for i in range(seconds):
         time.sleep(1)
-        self.progress.set(i + 1, max=seconds)
+        self.progress.set(i + 1)
     return 'done'

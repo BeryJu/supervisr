@@ -36,7 +36,6 @@ class TestProductViews(TestCase):
             name="test product",
             slug="test-product",
             description="test product",
-            price=0.000,
             invite_only=False)
         request = self.factory.get(reverse('product-view', kwargs={
             'slug': test_product.slug

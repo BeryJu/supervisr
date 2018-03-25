@@ -31,9 +31,9 @@ class SupervisrAppConfig(AppConfig):
 
     def ready(self):
         # self.check_requirements()
-        self.load_init()
+        self._load_init()
         self.merge_settings()
-        self.run_ensure_settings()
+        self.run_bootstrap()
         super(SupervisrAppConfig, self).ready()
 
     def clear_cache(self):
@@ -41,27 +41,20 @@ class SupervisrAppConfig(AppConfig):
         cache.clear()
         LOGGER.debug("Successfully cleared Cache")
 
-    def run_ensure_settings(self):
-        """Make sure settings defined in `ensure_settings` are theere"""
+    def run_bootstrap(self):
+        """Run and apply all boostrappers"""
         try:
-            from supervisr.core.models import Setting
-            items = self.ensure_settings()
-            namespace = '.'.join(self.__module__.split('.')[:-1])
-            for key, defv in items.items():
-                Setting.objects.get_or_create(
-                    key=key,
-                    namespace=namespace,
-                    defaults={'value': defv})
-            if items:
-                LOGGER.debug("Ensured %d settings", len(items))
+            bootstrappers = self.bootstrap()
+            for bootstrapper in bootstrappers:
+                bootstrapper.apply(self)
         except (OperationalError, ProgrammingError):
             pass
 
-    def ensure_settings(self):
-        """By Default ensure no settings"""
-        return {}
+    def bootstrap(self):
+        """Bootstrap Settings or Permissions"""
+        return []
 
-    def load_init(self):
+    def _load_init(self):
         """Load initial modules for decorators"""
         LOGGER.debug("Loaded %s", self.name)
         for module in self.init_modules:
@@ -102,7 +95,7 @@ class SupervisrAppConfig(AppConfig):
     def merge_settings(self, overwrite=False):
         """Load settings file and add/overwrite.
 
-        A similarm thing is also done in settings.py itself, so you can modify INSTALLED_APPS
+        A similar thing is also done in settings.py itself, so you can modify INSTALLED_APPS
         and such."""
         blacklist = ['INSTALLED_APPS', 'MIDDLEWARE', 'SECRET_KEY']
         try:
@@ -121,6 +114,52 @@ class SupervisrAppConfig(AppConfig):
                 LOGGER.debug("Overwrote %s settings for %s", counter, self.name)
         except ImportError:
             pass  # ignore non-existant modules
+
+
+class Bootstrapper(object):
+    """Class to help with ensuring certain Model instances exist on startup"""
+
+    rows = []
+
+    def add(self, **kwargs):
+        """Add a row that should be applied"""
+        self.rows.append(kwargs)
+
+    def apply(self, invoker):
+        """Apply rows to database. This method must be overwritten by subclasses"""
+        raise NotImplementedError()
+
+
+class SettingBootstrapper(Bootstrapper):
+    """Bootstrapper to create Settings"""
+
+    def __init__(self):
+        self.rows = []
+
+    def apply(self, invoker):
+        from supervisr.core.models import Setting
+        namespace = '.'.join(invoker.__module__.split('.')[:-1])
+        for row in self.rows:
+            Setting.objects.get_or_create(
+                key=row.get('key'),
+                namespace=namespace,
+                defaults={'value': row.get('value')})
+
+
+class PermissionBootstrapper(Bootstrapper):
+    """Bootstrapper to create Permissions"""
+
+    def __init__(self):
+        self.rows = []
+
+    def apply(self, invoker):
+        from supervisr.core.models import GlobalPermission
+        from django.contrib.auth.models import Permission
+        from django.contrib.contenttypes.models import ContentType
+        content_type = ContentType.objects.get_for_model(GlobalPermission)
+        for row in self.rows:
+            row['content_type'] = content_type
+            Permission.objects.get_or_create(**row)
 
 
 class SupervisrCoreConfig(SupervisrAppConfig):
@@ -143,7 +182,6 @@ class SupervisrCoreConfig(SupervisrAppConfig):
     def ready(self):
         super(SupervisrCoreConfig, self).ready()
         self.clear_cache()
-        self.add_permissions()
         # Check for invalid settings
         self.cleanup_settings()
         # Set external_domain on raven
@@ -151,17 +189,31 @@ class SupervisrCoreConfig(SupervisrAppConfig):
         settings.RAVEN_CONFIG['tags']['external_domain'] = Setting.get('domain')
         settings.RAVEN_CONFIG['tags']['install_id'] = Setting.get('install_id')
 
-    def add_permissions(self):
-        """Add global permissions needed for core"""
-        from supervisr.core.models import GlobalPermission
-        from django.contrib.auth.models import Permission
-        from django.contrib.contenttypes.models import ContentType
-        content_type = ContentType.objects.get_for_model(GlobalPermission)
-        Permission.objects.get_or_create(
-            codename='core_product_can_create',
-            name='Can create supervisr_core Products',
-            content_type=content_type,
-        )
+    def bootstrap(self):
+        """Add permissions and settings"""
+        permissions = PermissionBootstrapper()
+        permissions.add(codename='core_product_can_create',
+                        name='Can create supervisr_core Products')
+        settings = SettingBootstrapper()
+        settings.add(key='signup:enabled', value=True)
+        settings.add(key='password_reset:enabled', value=True)
+        settings.add(key='banner:enabled', value=False)
+        settings.add(key='banner:level', value='info')
+        settings.add(key='banner:message', value='')
+        settings.add(key='branding', value='supervisr')
+        settings.add(key='branding:icon', value='')
+        settings.add(key='domain', value='http://localhost/')
+        settings.add(key='recaptcha:enabled', value=False)
+        settings.add(key='recaptcha:private', value='')
+        settings.add(key='recaptcha:public', value='')
+        settings.add(key='install_id', value=uuid.uuid4())
+        settings.add(key='password:filter', value=r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)'
+                                                  r'(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}')
+        settings.add(key='password:filter:description', value='Minimum 8 characters at least 1 '
+                                                              'Uppercase Alphabet, 1 Lowercase '
+                                                              'Alphabet, 1 Number and 1 Special '
+                                                              'Character')
+        return permissions, settings
 
     def cleanup_settings(self):
         """Cleanup settings without namespace or key"""
@@ -173,24 +225,3 @@ class SupervisrCoreConfig(SupervisrAppConfig):
                     setting.delete()
         except (OperationalError, ProgrammingError):
             pass
-
-    def ensure_settings(self):
-        """ensure Core settings"""
-        return {
-            'signup:enabled': True,
-            'password_reset:enabled': True,
-            'banner:enabled': False,
-            'banner:level': 'info',
-            'banner:message': '',
-            'branding': 'supervisr',
-            'branding:icon': '',
-            'domain': 'http://localhost/',
-            'password:filter': r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])'
-                               r'[A-Za-z\d$@$!%*?&]{8,}',
-            'password:filter:description': 'Minimum 8 characters at least 1 Uppercase Alphabet, 1'
-                                           'Lowercase Alphabet, 1 Number and 1 Special Character',
-            'recaptcha:enabled': False,
-            'recaptcha:private': '',
-            'recaptcha:public': '',
-            'install_id': uuid.uuid4(),
-        }
