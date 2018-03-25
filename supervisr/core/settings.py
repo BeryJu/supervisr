@@ -305,16 +305,16 @@ LOGGING = {
             'format': ('[%(asctime)s] %(levelname)s '
                        '[%(name)s::%(funcName)s::%(lineno)s] %(message)s'),
         },
-        'syslog': {
-            'format': '%(asctime)s supervisr %(funcName)s: %(message)s',
-            'datefmt': '%Y-%m-%dT%H:%M:%S',
+        'verbose': {
+            'format': ('%(process)-5d %(thread)d %(name)-45s '
+                       '%(levelname)-8s %(funcName)-20s %(message)s'),
         },
     },
     'handlers': {
         'console': {
             'level': LOG_LEVEL_CONSOLE,
             'class': 'logging.StreamHandler',
-            'formatter': 'default',
+            'formatter': 'verbose',
         },
         'sentry': {
             'level': 'ERROR',
@@ -323,7 +323,7 @@ LOGGING = {
         'syslog': {
             'level': LOG_LEVEL_FILE,
             'class': 'logging.handlers.SysLogHandler',
-            'formatter': 'syslog',
+            'formatter': 'verbose',
             'address': (LOG_SYSLOG_HOST, LOG_SYSLOG_PORT)
         },
         'file': {

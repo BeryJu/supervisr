@@ -1,6 +1,4 @@
-"""
-Supervisr Core Events
-"""
+"""supervisr Core Events"""
 
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.db.models.signals import post_save
@@ -18,9 +16,7 @@ from supervisr.core.signals import (SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED,
 @receiver(SIG_USER_POST_SIGN_UP)
 # pylint: disable=unused-argument
 def event_handle_user_signed_up(sender, signal, user, request, **kwargs):
-    """
-    Create an Event when a user signed up
-    """
+    """Create an Event when a user signed up"""
     Event.create(
         user=user,
         message=_("You Signed up"),
@@ -101,7 +97,7 @@ def event_handler_user_logout(sender, signal, user, request, **kwargs):
 def event_handler_send_mail(sender, signal, instance, **kwargs):
     """Send an email if an event with send_notification is created"""
     if instance.send_notification is True:
-        send_message(
+        send_message.delay(
             recipients=[instance.user.email],
             subject=instance.message,
             template='email/generic_email.html',

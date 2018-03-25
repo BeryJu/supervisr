@@ -73,9 +73,10 @@ def send_feedback(request: HttpRequest) -> HttpResponse:
         if form.is_valid():
             email = request.user.email
             text = form.cleaned_data.get('message')
-            send_message(['support@beryju.org', 'admin@beryju.org'],
-                         '[Supervisr] Feedback from %s' % email,
-                         text='User %s sent feedback: %s' % (email, text))
+            send_message.delay(
+                recipients=['support@beryju.org', 'admin@beryju.org'],
+                subject='[supervisr] Feedback from %s' % email,
+                text='User %s sent feedback: %s' % (email, text))
             messages.success(request, _('Successfully sent feedback.'))
 
     form = FeedbackForm(initial={'email': request.user.email})

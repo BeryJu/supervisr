@@ -1,6 +1,4 @@
-"""
-Supervisr Core Admin Views
-"""
+"""Supervisr Core Admin Views"""
 
 
 import platform
@@ -17,6 +15,7 @@ from django.utils.translation import ugettext as _
 
 from supervisr.core.models import Event, Setting, User, get_system_user
 from supervisr.core.signals import SIG_GET_MOD_INFO, SIG_SETTING_UPDATE
+from supervisr.core.tasks import debug_progress_task
 from supervisr.core.utils import get_reverse_dns
 
 
@@ -116,4 +115,8 @@ def debug(request):
             setting = Setting.get('domain')
             SIG_SETTING_UPDATE.send(sender=setting)
             messages.success(request, _('Successfully updated settings.'))
+        elif 'start_task' in request.POST:
+            seconds = int(request.POST.get('start_task_sec'))
+            result = debug_progress_task.delay(seconds, invoker=request.user.pk)
+            messages.success(request, _('Started Task, ID: %(id)s' % {'id': result.id}))
     return render(request, '_admin/debug.html')

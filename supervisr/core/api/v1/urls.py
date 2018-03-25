@@ -1,6 +1,4 @@
-"""
-Supervisr Core V1 API Urls
-"""
+"""Supervisr Core V1 API Urls"""
 
 from django.conf.urls import url
 
@@ -9,6 +7,7 @@ from supervisr.core.api.v1.domains import DomainAPI
 from supervisr.core.api.v1.events import EventAPI
 from supervisr.core.api.v1.providers import ProviderAPI
 from supervisr.core.api.v1.system import SystemAPI
+from supervisr.core.api.v1.tasks import TaskAPI
 
 urlpatterns = [
     url(r'^accounts/(?P<verb>\w+)/$', AccountAPI.as_view(), name='accounts'),
@@ -16,4 +15,5 @@ urlpatterns = [
     url(r'^events/(?P<verb>\w+)/$', EventAPI.as_view(), name='events'),
     url(r'^providers/(?P<verb>\w+)/$', ProviderAPI.as_view(), name='providers'),
     url(r'^system/(?P<verb>\w+)/$', SystemAPI.as_view(), name='system'),
+    url(r'^tasks/(?P<verb>\w+)/$', TaskAPI.as_view(), name='tasks'),
 ]

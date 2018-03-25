@@ -115,47 +115,7 @@
     </div>
   </div>
   {% endblock %}
-  <style>
-    .bottom-dock {
-      height: 30%;
-      max-height: 300px;
-      border-top: 1px solid #152127;
-    }
-    .bottom-dock table.table {
-      margin-top: 0;
-    }
-  </style>
-  <div class="bottom-dock">
-      <ul id="bottom-dock-tabs" class="nav" role="tablist">
-        <li role="presentation" class="nav-item">
-          <button id="tab-tasks" class="btn btn-link nav-link" aria-controls="panel-tasks" aria-selected="false" type="button">{% trans 'Recent Tasks' %}</button>
-        </li>
-        <li role="presentation" class="nav-item">
-          <button id="tab-alerts" class="btn btn-link nav-link" aria-controls="panel-alert" aria-selected="false" type="button">{% trans 'Alerts' %}</button>
-        </li>
-      </ul>
-    <div class="content-container">
-      <section id="panel-tasks" role="tabpanel" aria-labelledby="tab-tasks" aria-hidden="true">
-        <table class="table">
-          <thead>
-            <th>{% trans 'Task Name' %}</th>
-            <th>{% trans 'Target' %}</th>
-            <th>{% trans 'Status' %}</th>
-            <th>{% trans 'Initiator' %}</th>
-            <th>{% trans 'Queued For' %}</th>
-            <th>{% trans 'Start Time' %}</th>
-            <th>{% trans 'Completion Time' %}</th>
-          </thead>
-          <tbody>
-
-          </tbody>
-        </table>
-      </section>
-      <section id="panel-alert" role="tabpanel" aria-labelledby="tab-alerts" aria-hidden="true">
-        ...
-      </section>
-    </div>
-  </div>
+  {#{% include 'core/bottom_dock.html' %}#}
 </div>
 {% endblock %}
 

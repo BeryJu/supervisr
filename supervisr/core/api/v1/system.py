@@ -1,6 +1,4 @@
-"""
-Supervisr Core APIv1
-"""
+"""Supervisr Core APIv1"""
 
 from django.core.cache import cache
 
@@ -18,9 +16,7 @@ class SystemAPI(API):
 
     @staticmethod
     def init_user_filter(user):
-        """
-        This method is used to check if the user has access
-        """
+        """This method is used to check if the user has access"""
         return True
 
     def _cache_status(self):
