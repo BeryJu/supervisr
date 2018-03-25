@@ -1,28 +1,38 @@
+supervisr (0.2.0+dew2) unstable; urgency=medium
+
+  * [core] fix CI, install django-redis
+  * [*] use {{ block.super }} for script blocks
+  * [core] add progress API
+  * [*] unify ensure_settings to SettingsBootstrapper
+  * [core] fix requirements missing django-revproxy
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Sun, 25 Mar 2018 17:24:15 +0000
+
 supervisr (0.2.0+dev) unstable; urgency=medium
 
   * [dns] current state of resourcesets
   * [dns] resource set current state
   * [core] fix message error with GenericEditView
   * [CI] add pre-commit checks
-  * clean migrations, rewrite most of provider, merge resource-set
-  * start mail rebuild, add debug provider
+  * [*] clean migrations, rewrite most of provider, merge resource-set
+  * [mail] start mail rebuild, add debug provider
   * [core] make name field in user settings optional
-  * add ProviderProxy to handle StagedProviderChanges, fix unit tests
-  * more cleanup, fix most style issues, re-add static and such
-  * update requirements
-  * providers mostly working, need some better error catching
-  * cleanup code style, fix imports
-  * cleanup, add mail address views, move invoke tasks, fix address unittests
-  * more cleanup, fix all style and unittest issues
-  * fix all style issues, unittests, prospector errors, etc
-  * fix pyroma CI test
+  * [core] add ProviderProxy to handle StagedProviderChanges, fix unit tests
+  * [*] more cleanup, fix most style issues, re-add static and such
+  * [*] update requirements
+  * [core] providers mostly working, need some better error catching
+  * [core] cleanup code style, fix imports
+  * [mail] cleanup, add mail address views, move invoke tasks, fix address unittests
+  * [core]more cleanup, fix all style and unittest issues
+  * [*] fix all style issues, unittests, prospector errors, etc
+  * [ci] fix pyroma CI test
   * [assets] rebuild assets
-  * start to implement celery as task runner, migrate common views to CBV
-  * improve provider tasks so pickle is not needed
-  * fix mysql config
-  * fix mysql config again
+  * [core] start to implement celery as task runner, migrate common views to CBV
+  * [core] improve provider tasks so pickle is not needed
+  * [ci] fix mysql config
+  * [ci] fix mysql config again
   * [ci] fix mysql settings again
-  * add redis requirement, add debvug logging to authenticators
+  * [core] add redis requirement, add debvug logging to authenticators
   * [ci] add separate config CI, fix redis connection string
   * [ci] re-enable redis service
   * [*] adjust code to new pylint version
