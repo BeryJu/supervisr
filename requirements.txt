@@ -14,6 +14,8 @@ celery
 redis
 django-redis
 flower
+django-revproxy
+urllib3<1.23,>=1.21.1
 dnspython
 requests
 # In here you can specify pip modules that should be installed
@@ -22,7 +24,7 @@ django-two-factor-auth
 ldap3
 pyasn1<=0.3.0
 slumber
-apache-libcloud
+# apache-libcloud
 slumber
 slumber
 influxdb>=4.1.1
