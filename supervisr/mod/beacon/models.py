@@ -3,8 +3,10 @@
 from django.db import models
 from django.utils.translation import ugettext as _
 
+from supervisr.core.models import CreatedUpdatedModel
 
-class Pulse(models.Model):
+
+class Pulse(CreatedUpdatedModel):
     """Model to store data received by and install"""
 
     pulse_id = models.AutoField(primary_key=True)
