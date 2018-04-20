@@ -22,11 +22,11 @@ class TestDomainViews(TestCase):
         self.provider = ProviderInstance.objects.create(
             provider_path='supervisr.core.providers.base.BaseProvider',
             credentials=self.provider_credentials)
-        self.ddomain = Domain.objects.create(domain_name=_domain,
-                                             is_sub=True,
-                                             provider_instance=self.provider)
+        self.ddomain = Domain.objects.by(self.user).create(domain_name=_domain,
+                                                           is_sub=True,
+                                                           provider_instance=self.provider)
         UserAcquirableRelationship.objects.create(user=self.user, model=self.ddomain)
-        self.domain = MailDomain.objects.create(domain=self.ddomain)
+        self.domain = MailDomain.objects.by(self.user).create(domain=self.ddomain)
         ProviderAcquirableRelationship.objects.create(model=self.domain,
                                                       provider_instance=self.provider)
         UserAcquirableRelationship.objects.create(user=self.user, model=self.domain)

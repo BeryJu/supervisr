@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('kind', models.CharField(blank=True, max_length=32, null=True)),
                 ('content', models.TextField(blank=True, null=True)),
-                ('domain', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_mod_provider_powerdns.Domain')),
+                ('domain', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_mod_provider_nix_dns.Domain')),
             ],
             options={
                 'db_table': 'domainmetadata',
@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
                 ('disabled', models.IntegerField(blank=True, null=True)),
                 ('ordername', models.CharField(blank=True, max_length=255, null=True)),
                 ('auth', models.IntegerField(blank=True, null=True)),
-                ('domain', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='supervisr_mod_provider_powerdns.Domain')),
+                ('domain', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='supervisr_mod_provider_nix_dns.Domain')),
             ],
             options={
                 'db_table': 'records',
@@ -118,11 +118,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='cryptokey',
             name='domain',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_mod_provider_powerdns.Domain'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_mod_provider_nix_dns.Domain'),
         ),
         migrations.AddField(
             model_name='comment',
             name='domain',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_mod_provider_powerdns.Domain'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='supervisr_mod_provider_nix_dns.Domain'),
         ),
     ]

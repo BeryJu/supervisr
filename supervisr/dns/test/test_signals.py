@@ -38,7 +38,7 @@ class TestSignals(TestCase):
 
     def test_signal_soa_update(self):
         """Test automated SOA update"""
-        t_domain = Domain.objects.create(
+        t_domain = Domain.objects.by(self.user).create(
             domain_name='test.beryju.org',
             provider_instance=self.provider)
         t_zone = Zone(
@@ -48,7 +48,7 @@ class TestSignals(TestCase):
             type='SOA',
             content='ns1.s.beryju.org. support.beryju.org. 2017110401 1800 180 2419200 86400')
         t_zone.soa = t_soa
-        t_zone.save()
+        t_zone.by(self.user).save()
         UserAcquirableRelationship.objects.create(
             model=t_zone,
             user=self.user)

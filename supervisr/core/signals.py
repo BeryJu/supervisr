@@ -2,7 +2,7 @@
 
 import logging
 
-from django.db.models.signals import post_migrate, post_save, pre_delete
+from django.db.models.signals import post_migrate
 from django.dispatch import Signal, receiver
 from passlib.hash import sha512_crypt
 
@@ -85,35 +85,3 @@ def crypt6_handle_user_change_pass(signal, user, password, **kwargs):
 def stat_output_verbose(signal, key, value, **kwargs):
     """Output stats to LOGGER"""
     LOGGER.debug("Stats: '%s': %r", key, value)
-
-
-@receiver(post_save)
-# pylint: disable=unused-argument
-def change_on_save(sender, instance, created, **kwargs):
-    """Forward signal to ChangeBuilder"""
-    from supervisr.core.providers.multiplexer import ProviderMultiplexer
-    from supervisr.core.models import ProviderAcquirable, ProviderAcquirableSingle
-
-    multiplexer = ProviderMultiplexer()
-    if issubclass(instance.__class__, ProviderAcquirable) and \
-            instance.__class__ is not ProviderAcquirable:
-        multiplexer.on_model_saved(instance, instance.providers.all())
-    elif issubclass(instance.__class__, ProviderAcquirableSingle) and \
-            instance.__class__ is not ProviderAcquirableSingle:
-        multiplexer.on_model_saved(instance, [instance.provider_instance, ])
-
-
-@receiver(pre_delete)
-# pylint: disable=unused-argument
-def change_on_delete(sender, instance, *args, **kwargs):
-    """Forward signal to ChangeBuilder"""
-    from supervisr.core.providers.multiplexer import ProviderMultiplexer
-    from supervisr.core.models import ProviderAcquirable, ProviderAcquirableSingle
-
-    multiplexer = ProviderMultiplexer()
-    if issubclass(instance.__class__, ProviderAcquirable) and \
-            instance.__class__ is not ProviderAcquirable:
-        multiplexer.on_model_deleted(instance, instance.providers.all())
-    elif issubclass(instance.__class__, ProviderAcquirableSingle) and \
-            instance.__class__ is not ProviderAcquirableSingle:
-        multiplexer.on_model_deleted(instance, [instance.provider_instance, ])

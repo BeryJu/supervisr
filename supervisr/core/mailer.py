@@ -91,7 +91,9 @@ def mail_handle_user_signed_up(sender, signal, user, request, **kwargs):
     domain = Setting.get('domain')
     branding = Setting.get('branding')
     url = domain + reverse('account-confirm', kwargs={'uuid': account_confirmation.pk})
-    return send_message.delay(
+
+    return user.task_apply_async(
+        send_message,
         recipients=[user.email],
         subject=_("Confirm your account on %(branding)s" %
                   {
@@ -124,7 +126,8 @@ def mail_handle_pass_reset_init(sender, signal, user, **kwargs):
     branding = Setting.get('branding')
     url = domain + reverse('account-reset_password_confirm',
                            kwargs={'uuid': account_confirmations.pk})
-    return send_message.delay(
+    return user.task_apply_async(
+        send_message.delay
         recipients=[user.email],
         subject=_("Step 2/3 - Reset your Password on %(branding)s" %
                   {

@@ -2,14 +2,32 @@
 
 import os
 
+import celery
 import pymysql
-from celery import Celery
+from django.conf import settings
+from raven import Client
+from raven.contrib.celery import register_logger_signal, register_signal
 
 pymysql.install_as_MySQLdb()
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
 os.environ.setdefault("SUPERVISR_LOCAL_SETTINGS", "supervisr.local_settings")
+
+
+class Celery(celery.Celery):
+    """Custom Celery class with Raven configured"""
+
+    # pylint: disable=method-hidden
+    def on_configure(self):
+        """Update raven client"""
+        client = Client(settings.SENTRY_DSN)
+
+        # register a custom filter to filter out duplicate logs
+        register_logger_signal(client)
+
+        # hook into the Celery error handler
+        register_signal(client)
 
 CELERY_APP = Celery('supervisr')
 

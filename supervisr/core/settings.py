@@ -84,7 +84,7 @@ INSTALLED_APPS = [
     'supervisr.core.apps.SupervisrCoreConfig',
     'supervisr.puppet.apps.SupervisrPuppetConfig',
     'supervisr.dns.apps.SupervisrDNSConfig',
-    'supervisr.mod.provider.powerdns.apps.SupervisrModProviderPowerDNSConfig',
+    'supervisr.mod.provider.nix_dns.apps.SupervisrModProviderNixDNSConfig',
     'supervisr.mod.provider.debug.apps.SupervisrModProviderDebugConfig',
     'supervisr.mail.apps.SupervisrMailConfig',
     'supervisr.static.apps.SupervisrStaticConfig',
@@ -276,6 +276,7 @@ DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS = True
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 
+CELERY_TASK_DEFAULT_QUEUE = 'supervisr'
 CELERY_BROKER_URL = 'redis://%s' % REDIS
 CELERY_RESULT_BACKEND = 'redis://%s' % REDIS
 

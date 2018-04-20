@@ -119,7 +119,7 @@ def debug(request: HttpRequest) -> HttpResponse:
             messages.success(request, _('Successfully updated settings.'))
         elif 'start_task' in request.POST:
             seconds = int(request.POST.get('start_task_sec'))
-            result = debug_progress_task.delay(seconds, invoker=request.user.pk)
+            result = request.user.task_apply_async(debug_progress_task, seconds)
             messages.success(request, _('Started Task, ID: %(id)s' % {'id': result.id}))
     return render(request, '_admin/debug.html')
 

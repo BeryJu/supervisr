@@ -22,8 +22,7 @@ class TestModels(TestCase):
         """
         Test MailAccount's set_password
         """
-        mx_account = Account.objects.create(
-            name='unittest-test')
+        mx_account = Account.objects.by(self.user).create(name='unittest-test')
         user = User.objects.get(pk=get_system_user())
         mx_account.set_password(user, 'test', salt='testtest')
         self.assertEqual(mx_account.password, ('$6$rounds=656000$testtest$CaN82QPQ6BrS4VJ7R8Nuxoow'

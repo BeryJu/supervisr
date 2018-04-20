@@ -8,7 +8,7 @@ from supervisr.core.providers.exceptions import (ProviderObjectNotFoundException
 from supervisr.core.providers.objects import (ProviderObject,
                                               ProviderObjectTranslator)
 from supervisr.dns.models import Zone
-from supervisr.mod.provider.powerdns.models import Domain
+from supervisr.mod.provider.nix_dns.models import Domain
 
 
 class PowerDNSZoneObject(ProviderObject):

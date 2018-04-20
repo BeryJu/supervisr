@@ -1,12 +1,12 @@
-"""
-Supervisr Core Account Test
-"""
+"""Supervisr Core Account Test"""
 
 import os
 
+from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
 
+from supervisr.core.decorators import reauth_required
 from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
                                            SignupForm)
 from supervisr.core.models import AccountConfirmation, User, get_system_user
@@ -16,9 +16,7 @@ from supervisr.core.views import accounts
 
 
 class TestAccount(TestCase):
-    """
-    Supervisr Core Account Test
-    """
+    """Supervisr Core Account Test"""
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
@@ -227,3 +225,13 @@ class TestAccount(TestCase):
 
         self.assertEqual(reset_res.status_code, 302)
         self.assertEqual(reset_res.url, reverse('common-index'))
+
+    def test_reauth(self):
+        """Test reauth_required decorator"""
+        @reauth_required
+        # pylint: disable=unused-argument
+        def test_view(request):
+            """Test view"""
+            return HttpResponse('ok')
+
+        self.assertEqual(test_request(test_view, ).status_code, 302)

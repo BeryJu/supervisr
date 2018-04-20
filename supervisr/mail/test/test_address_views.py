@@ -12,6 +12,9 @@ from supervisr.mail.views import addresses
 class TestAddressViews(TestCase):
     """Supervisr Mail AddressView Test"""
 
+    def setUp(self):
+        self.user = User.objects.get(pk=get_system_user())
+
     def test_index_view(self):
         """test index view (anonymous)"""
         self.assertEqual(test_request(addresses.AddressIndexView.as_view()).status_code, 302)
@@ -28,9 +31,9 @@ class TestAddressViews(TestCase):
 
     def test_update_view_auth(self):
         """test update view (authenticated)"""
-        address = Address.objects.create(mail_address='test')
+        address = Address.objects.by(self.user).create(mail_address='test')
         UserAcquirableRelationship.objects.create(
-            user=User.objects.get(pk=get_system_user()),
+            user=self.user,
             model=address
         )
         self.assertEqual(
@@ -40,9 +43,9 @@ class TestAddressViews(TestCase):
 
     def test_delete_view_auth(self):
         """test delete view (authenticated)"""
-        address = Address.objects.create(mail_address='test')
+        address = Address.objects.by(self.user).create(mail_address='test')
         UserAcquirableRelationship.objects.create(
-            user=User.objects.get(pk=get_system_user()),
+            user=self.user,
             model=address
         )
         self.assertEqual(
