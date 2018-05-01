@@ -16,6 +16,8 @@ django-redis
 flower
 django-revproxy
 urllib3<1.23,>=1.21.1
+pip>=10
+pycryptodome
 dnspython
 requests
 # In here you can specify pip modules that should be installed
@@ -24,12 +26,11 @@ django-two-factor-auth
 ldap3
 pyasn1<=0.3.0
 slumber
-# apache-libcloud
+apache-libcloud
 slumber
 slumber
 influxdb>=4.1.1
 psutil
-pycrypto>=2.4
 requests_oauthlib>=0.4.2
 oauthlib>=2.0.6
 django-oauth-toolkit

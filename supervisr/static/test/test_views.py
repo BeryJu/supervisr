@@ -1,9 +1,6 @@
 """Supervisr Static View Test"""
 
-from django.test import TestCase
-
-from supervisr.core.models import User, get_system_user
-from supervisr.core.test.utils import test_request
+from supervisr.core.test.utils import TestCase, test_request
 from supervisr.static import views
 from supervisr.static.models import FilePage
 
@@ -12,7 +9,7 @@ class TestViews(TestCase):
     """ Supervisr Static View Test """
 
     def setUp(self):
-        self.user = User.objects.get(pk=get_system_user())
+        super(TestViews, self).setUp()
         names = ['CHANGELOG.md', 'ATTRIBUTIONS.md']
         for name in names:
             page_name = name.split('.')[0]
@@ -20,7 +17,7 @@ class TestViews(TestCase):
                 title=page_name.title(),
                 slug=page_name.lower(),
                 path=name,
-                author=self.user,
+                author=self.system_user,
                 published=True)
 
     def test_single_view(self):
@@ -31,7 +28,7 @@ class TestViews(TestCase):
 
     def test_single_view_auth(self):
         """Test Single View (authenticated)"""
-        self.assertEqual(test_request(views.PageView.as_view(), user=self.user, url_kwargs={
+        self.assertEqual(test_request(views.PageView.as_view(), user=self.system_user, url_kwargs={
             'slug': 'changelog',
         }).status_code, 200)
 
@@ -48,7 +45,7 @@ class TestViews(TestCase):
     def test_feed_view_auth(self):
         """Test Feed View (authenticated)"""
         self.assertEqual(test_request(views.FeedView.as_view(),
-                                      user=self.user).status_code, 200)
+                                      user=self.system_user).status_code, 200)
 
     def test_feed_view_invalid_page(self):
         """Test Feed View (invalid page)"""

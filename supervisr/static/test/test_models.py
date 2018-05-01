@@ -3,9 +3,7 @@
 import os
 import time
 
-from django.test import TestCase
-
-from supervisr.core.models import User, get_system_user
+from supervisr.core.test.utils import TestCase
 from supervisr.static.models import FilePage
 
 
@@ -13,6 +11,7 @@ class TestModels(TestCase):
     """Supervisr Static Model Test"""
 
     def setUp(self):
+        super(TestModels, self).setUp()
         # Create temporary file to create page from
         self.content = 'testtestpeoqir901324jioeaer'
         self.filename = 'test-%s.txt' % time.time()
@@ -27,7 +26,7 @@ class TestModels(TestCase):
         """Make file page to read from test file"""
         file_page = FilePage.objects.create(
             path=self.filename,
-            author=User.objects.get(pk=get_system_user()))
+            author=self.system_user)
         file_page.update_from_file()
         self.assertEqual(file_page.content, self.content)
 
@@ -35,7 +34,7 @@ class TestModels(TestCase):
         """Update file page twice"""
         file_page = FilePage.objects.create(
             path=self.filename,
-            author=User.objects.get(pk=get_system_user()))
+            author=self.system_user)
         file_page.update_from_file()
         file_page.update_from_file()
         self.assertEqual(file_page.content, self.content)

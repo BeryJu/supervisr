@@ -1,8 +1,6 @@
 """Supervisr DNS View Test"""
-from django.test import TestCase
 
-from supervisr.core.models import get_system_user
-from supervisr.core.test.utils import test_request
+from supervisr.core.test.utils import TestCase, test_request
 from supervisr.dns.views.zones import ZoneIndexView
 
 
@@ -12,4 +10,4 @@ class TestDNSViews(TestCase):
     def test_zone_index(self):
         """Test zone_index view"""
         self.assertEqual(test_request(ZoneIndexView.as_view(),
-                                      user=get_system_user()).status_code, 200)
+                                      user=self.system_user).status_code, 200)

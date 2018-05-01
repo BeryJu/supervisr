@@ -3,10 +3,9 @@
 import json
 
 from django.contrib.auth.models import Group
-from django.test import TestCase
 
-from supervisr.core.models import Setting, User, get_system_user
-from supervisr.core.test.utils import test_request
+from supervisr.core.models import Setting
+from supervisr.core.test.utils import TestCase, test_request
 from supervisr.puppet.api.v1 import forge_api
 from supervisr.puppet.builder import ReleaseBuilder
 from supervisr.puppet.models import PuppetModule
@@ -28,13 +27,13 @@ class TestPuppetForgeAPI(TestCase):
 
     def setUp(self):
         """Build supervisr-supervisr_core module once"""
+        super(TestPuppetForgeAPI, self).setUp()
         ps_group, _group_created = Group.objects.get_or_create(
             name='Puppet Systemusers')
-        system_user = User.objects.get(pk=get_system_user())
-        ps_group.user_set.add(system_user)
+        ps_group.user_set.add(self.system_user)
         PuppetModule.objects.get_or_create(
             name='supervisr_core',
-            owner=system_user,
+            owner=self.system_user,
             source_path='supervisr/core/server/config/')
         _builder = ReleaseBuilder(PuppetModule.objects.filter(name='supervisr_core').first())
         _builder.build()

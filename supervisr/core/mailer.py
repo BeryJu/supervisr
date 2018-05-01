@@ -127,7 +127,7 @@ def mail_handle_pass_reset_init(sender, signal, user, **kwargs):
     url = domain + reverse('account-reset_password_confirm',
                            kwargs={'uuid': account_confirmations.pk})
     return user.task_apply_async(
-        send_message.delay
+        send_message.delay,
         recipients=[user.email],
         subject=_("Step 2/3 - Reset your Password on %(branding)s" %
                   {

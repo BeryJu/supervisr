@@ -23,7 +23,7 @@ def index(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
-def view(request: HttpRequest, slug) -> HttpResponse:
+def view(request: HttpRequest, slug: str) -> HttpResponse:
     """Show more specific Information about a product"""
     @ifapp('supervisr_static')
     def redirect_to_static(request: HttpRequest, slug) -> HttpResponse:
@@ -36,12 +36,15 @@ def view(request: HttpRequest, slug) -> HttpResponse:
     if product.invite_only is False or \
         UserAcquirableRelationship.objects.filter(user=request.user,
                                                   model=product).exists():
-        static = redirect_to_static(request, slug)
-        if static:
-            return static
-        return render(request, 'product/view.html', {
-            'product': product
-        })
+        try:
+            static = redirect_to_static(request, slug)
+            if static:
+                return static
+            raise Http404
+        except Http404:
+            return render(request, 'product/view.html', {
+                'product': product
+            })
     raise Http404
 
 

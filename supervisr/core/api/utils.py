@@ -45,8 +45,6 @@ def api_response_openid(code, data):
 
 def api_response_json(code, data):
     """Serialize data to JSON"""
-    import json
-
     def date_helper(obj):
         """JSON serializer for objects not serializable by default json code"""
 
@@ -57,8 +55,11 @@ def api_response_json(code, data):
 
         raise TypeError("Type %s not serializable" % type(obj))
 
-    data = json.dumps(data, sort_keys=True, indent=4, default=date_helper)
-    return HttpResponse(data, content_type='application/json', status=code)
+    return JsonResponse(data, status=code, json_dumps_params={
+        'sort_keys': True,
+        'indent': 4,
+        'default': date_helper
+    })
 
 
 def api_response_yaml(code, data):

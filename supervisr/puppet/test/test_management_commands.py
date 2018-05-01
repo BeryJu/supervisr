@@ -3,10 +3,8 @@
 from unittest import expectedFailure
 
 from django.contrib.auth.models import Group
-from django.test import TestCase
 
-from supervisr.core.models import User, get_system_user
-from supervisr.core.test.utils import call_command_ret
+from supervisr.core.test.utils import TestCase, call_command_ret
 from supervisr.puppet.models import PuppetModule
 
 
@@ -14,13 +12,13 @@ class TestManagementCommands(TestCase):
     """Supervisr Core ManagementCommands Test"""
 
     def setUp(self):
+        super(TestManagementCommands, self).setUp()
         ps_group, _group_created = Group.objects.get_or_create(
             name='Puppet Systemusers')
-        system_user = User.objects.get(pk=get_system_user())
-        ps_group.user_set.add(system_user)
+        ps_group.user_set.add(self.system_user)
         PuppetModule.objects.get_or_create(
             name='supervisr_core',
-            owner=system_user,
+            owner=self.system_user,
             source_path='supervisr/core/server/config/')
 
     def test_sv_puppet_debug_build(self):

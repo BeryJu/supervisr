@@ -8,6 +8,8 @@ from time import time as timestamp
 from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.core.cache import cache
+from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
+from django.db.utils import InternalError, OperationalError, ProgrammingError
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -37,6 +39,30 @@ def anonymous_required(view_function):
     wrap.__doc__ = view_function.__doc__
     wrap.__name__ = view_function.__name__
     return wrap
+
+
+def database_catchall(default):
+    """Decorator to catch all possible Database Errors and return a default value"""
+
+    def outer_wrapper(method):
+        """Decorator to catch all possible Database Errors and return a default value"""
+
+        def catchall(*args, **kwargs):
+            """Decorator to catch all possible Database Errors and return a default value"""
+            try:
+                return method(*args, **kwargs)
+            except (AppRegistryNotReady, ObjectDoesNotExist,
+                    OperationalError, InternalError, ProgrammingError):
+                # Handle Postgres transaction revert
+                if 'postgresql' in settings.DATABASES['default']['ENGINE']:
+                    from django.db import connection
+                    # pylint: disable=protected-access
+                    connection._rollback()
+                return default
+
+        return catchall
+
+    return outer_wrapper
 
 
 def reauth_required(view_function):

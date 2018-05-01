@@ -1,19 +1,16 @@
 """Supervisr Core Product Test"""
 
-import os
-
-from django.test import TestCase
-
 from supervisr.core.models import (Event, Product, User,
                                    UserAcquirableRelationship)
 from supervisr.core.signals import SIG_USER_POST_SIGN_UP
+from supervisr.core.test.utils import TestCase
 
 
 class TestProduct(TestCase):
     """Supervisr Core Product Test"""
 
     def setUp(self):
-        os.environ['RECAPTCHA_TESTING'] = 'True'
+        super(TestProduct, self).setUp()
         self.product_a = Product.objects.create(
             name="Test Product A",
             slug="test-product-a",

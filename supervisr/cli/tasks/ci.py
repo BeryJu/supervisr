@@ -6,7 +6,7 @@ import os
 from functools import wraps
 
 from invoke import task
-from invoke.platform import WINDOWS
+from invoke.terminals import WINDOWS
 
 if WINDOWS:
     PYTHON_EXEC = 'python'

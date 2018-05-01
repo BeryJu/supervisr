@@ -6,7 +6,7 @@ import random
 from glob import glob
 
 from invoke import task
-from invoke.platform import WINDOWS
+from invoke.terminals import WINDOWS
 
 try:
     import django

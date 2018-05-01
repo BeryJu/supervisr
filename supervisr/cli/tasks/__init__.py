@@ -2,7 +2,7 @@
 
 
 def _import_submodules(package_name):
-    """ Import all submodules of a module, recursively
+    """Import all submodules of a module, recursively
 
     :param package_name: Package name
     :type package_name: str

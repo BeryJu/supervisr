@@ -2,7 +2,7 @@ astroid
 coverage
 isort
 pylint
-pylint-django
+pylint-django<=0.9.4
 prospector
 django-debug-toolbar
 recommonmark

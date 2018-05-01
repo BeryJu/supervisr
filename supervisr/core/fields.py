@@ -56,12 +56,13 @@ class SignedAESEncryption(object):
     AES sign helper
     """
     cipher_class = Crypto.Cipher.AES
+    mode = Crypto.Cipher.AES.MODE_EAX
     prefix = b'$AES'
     #: enable hmac signature of cypher text with the same key (default: True)
     sign = True
 
     def __init__(self, *args, **kwargs):
-        self.cipher = self.cipher_class.new(self.get_key())
+        self.cipher = self.cipher_class.new(self.get_key(), mode=self.mode)
         super(SignedAESEncryption, self).__init__(*args, **kwargs)
 
     def get_key(self):

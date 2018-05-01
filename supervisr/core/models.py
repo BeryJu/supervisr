@@ -13,16 +13,16 @@ from difflib import get_close_matches
 from importlib import import_module
 from typing import List
 
-import django.contrib.auth.models as django_auth_models
 from celery.result import AsyncResult
 from django.conf import settings
+from django.contrib.auth import models as django_auth_models
 from django.contrib.auth.models import AbstractUser, Permission
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
-from django.db import IntegrityError, models, transaction
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import models
 from django.db.models import Max, options
 from django.db.models.signals import post_save, pre_delete
-from django.db.utils import InternalError, OperationalError, ProgrammingError
+from django.db.utils import OperationalError, ProgrammingError
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.urls import reverse
@@ -30,10 +30,10 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 
 from supervisr.core import fields
+from supervisr.core.decorators import database_catchall
 from supervisr.core.decorators import time as time_method
 from supervisr.core.progress import Progress
 from supervisr.core.providers.base import BaseProvider
-from supervisr.core.providers.multiplexer import ProviderMultiplexer
 from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_SETTING_UPDATE,
                                     SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED,
                                     SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED,
@@ -64,33 +64,26 @@ def get_random_string(length=10):
     return res[offset:offset + length].decode("utf-8")
 
 
+@database_catchall(settings.USER_PROFILE_ID_START)
 def get_userid():
     """Get the next higher unix user_id, since we can't set the start for django's AutoField"""
     # Custom default to set the unix_userid since we can't have an
     # AutoField as non-primary-key. Also so we can set a custom start,
     # which is settings.USER_PROFILE_ID_START
-    try:
-        highest = User.objects.all().aggregate(Max('unix_userid'))['unix_userid__max']
-        return highest + 1 if highest is not None else settings.USER_PROFILE_ID_START
-    except (AppRegistryNotReady, ObjectDoesNotExist,
-            OperationalError, InternalError, ProgrammingError):
-        # Handle Postgres transaction revert
-        if 'postgresql' in settings.DATABASES['default']['ENGINE']:
-            from django.db import connection
-            # pylint: disable=protected-access
-            connection._rollback()
-        return settings.USER_PROFILE_ID_START
+    highest = User.objects.all().aggregate(Max('unix_userid'))['unix_userid__max']
+    return highest + 1 if highest is not None else settings.USER_PROFILE_ID_START
 
 
-def get_system_user():
+@database_catchall(None)
+def get_system_user() -> 'User':
     """
-    Return supervisr's System User PK. This is created with the initial Migration,
+    Return supervisr's System User. This is created with the initial Migration,
     but might not be ID 1
     """
     system_users = User.objects.filter(username=settings.SYSTEM_USER_NAME)
     if system_users.exists():
-        return system_users.first().id
-    return 1  # Django starts AutoField's with 1 not 0
+        return system_users.first()
+    return None
 
 
 class CastableModel(models.Model):
@@ -153,6 +146,10 @@ class User(AbstractUser):
             task_uuid=async_result.id,
             invoker=self,
         )
+        if not users:
+            users = [self]
+        else:
+            users = [self] + users
         task_obj.users.add(*users)
 
 
@@ -433,12 +430,15 @@ class UserAcquirableRelationship(models.Model):
     model = models.ForeignKey('UserAcquirable', on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
+        first_save = False
         if self.pk is None:
+            first_save = True
+        super(UserAcquirableRelationship, self).save(*args, **kwargs)
+        if first_save:
             # Trigger event that we were saved
             SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED.send(
                 sender=UserAcquirableRelationship,
                 relationship=self)
-        super(UserAcquirableRelationship, self).save(*args, **kwargs)
 
     def __str__(self):
         return "User '%s' <=> UserAcquirable '%s'" % (self.user, self.model.cast())
@@ -448,121 +448,12 @@ class UserAcquirableRelationship(models.Model):
         unique_together = (('user', 'model'),)
 
 
-class InvokerModelQuerySet(models.QuerySet):
-    """QuerySet for InvokerModel"""
-
-    _invoker = None
-
-    def by(self, invoker: User) -> 'InvokerModelQuerySet':
-        """Chainable Method to set invoker"""
-        self._invoker = invoker
-        return self
-    by.queryset_only = False
-
-    def create(self, **kwargs):
-        """Create a new object with the given kwargs, saving it to the database
-        and returning the created object."""
-        assert self._invoker is not None, ("This model requires an invoker for creating. "
-                                           "Use the `.by` Method.")
-        obj = self.model(**kwargs)
-        obj.by(self._invoker)
-        obj.save(force_insert=True)
-        return obj
-
-    def delete(self, *args, **kwargs):
-        """Delete wrapper that requires an invoker"""
-        assert self._invoker is not None, ("This model requires an invoker for deleting. "
-                                           "Use the `.by` Method.")
-        return super(InvokerModelQuerySet, self).delete(*args, **kwargs)
-
-
-class InvokerModel(models.Model):
-    """Abstract Model that requires an invoker to save/delete"""
-
-    _invoker = None
-    objects = InvokerModelQuerySet.as_manager()
-
-    def by(self, invoker: User) -> 'InvokerModel':
-        """Chainable Method to set invoker"""
-        self._invoker = invoker
-        return self
-
-    # pylint: disable=unused-argument
-    def save(self, *args, **kwargs):
-        """Save wrapper that requires an invoker"""
-        assert self._invoker, "This model requires an invoker for saving. Use the `.by` Method."
-        return super(InvokerModel, self).save(*args, **kwargs)
-
-    # pylint: disable=unused-argument
-    def delete(self, *args, **kwargs):
-        """Delete wrapper that requires an invoker"""
-        assert self._invoker, "This model requires an invoker for deleting. Use the `.by` Method."
-        return super(InvokerModel, self).delete(*args, **kwargs)
-
-    class Meta:
-        abstract = True
-
-
-class ProviderQuerySet(InvokerModelQuerySet):
-    """QuerySet for all Provider Models"""
-
-    def create(self, *args, **kwargs):
-        """create proxy that directly calls ProviderMultiplexer"""
-        super_result = super(ProviderQuerySet, self).create(*args, **kwargs)
-        # pylint: disable=protected-access
-        super_result._provider_save(self._invoker, *args, **kwargs)
-        return super_result
-
-    def delete(self, *args, **kwargs):
-        """delete proxy that directly calls ProviderMultiplexer"""
-        super_result = super(ProviderQuerySet, self).delete(*args, **kwargs)
-        for instance in self:
-            # pylint: disable=protected-access
-            instance._provider_delete(self._invoker, *args, **kwargs)
-        return super_result
-
-
-class ProviderModel(InvokerModel):
-    """Base Model for all Provider Models"""
-
-    objects = ProviderQuerySet()
-    multiplexer = ProviderMultiplexer()
-
-    def save(self, *args, **kwargs):
-        """save proxy that directly calls ProviderMultiplexer"""
-        super_result = super(ProviderModel, self).save(*args, **kwargs)
-        self._provider_save(self._invoker, *args, **kwargs)
-        return super_result
-
-    def delete(self, *args, **kwargs):
-        """delete proxy that directly calls ProviderMultiplexer"""
-        self._provider_delete(self._invoker, *args, **kwargs)
-        return super(ProviderModel, self).delete(*args, **kwargs)
-
-    def _provider_save(self, *args, **kwargs):
-        pass
-
-    def _provider_delete(self, *args, **kwargs):
-        pass
-
-    class Meta:
-        abstract = True
-
-
-class ProviderAcquirable(ProviderModel, CastableModel):
+class ProviderAcquirable(CastableModel):
     """Base Class for Models that should have an N-M relationship with ProviderInstance"""
 
     provider_acquirable_id = models.AutoField(primary_key=True)
     providers = models.ManyToManyField('ProviderInstance',
                                        through='ProviderAcquirableRelationship', blank=True)
-
-    def _provider_delete(self, invoker: User, *args, **kwargs):
-        """Delete Provider instances"""
-        self.multiplexer.on_model_deleted(invoker, self, self.providers.all())
-
-    def _provider_save(self, invoker: User, *args, **kwargs):
-        """Save Provider instances"""
-        self.multiplexer.on_model_saved(invoker, self, self.providers.all())
 
     def update_provider_m2m(self, provider_list: List['ProviderInstance']):
         """Update m2m relationship to providers from form list"""
@@ -579,19 +470,11 @@ class ProviderAcquirable(ProviderModel, CastableModel):
                 relationship.delete()
 
 
-class ProviderAcquirableSingle(ProviderModel, CastableModel):
+class ProviderAcquirableSingle(CastableModel):
     """Base Class for Models that should have an N-1 relationship with ProviderInstance"""
 
     provider_acquirable_Single_id = models.AutoField(primary_key=True)
     provider_instance = models.ForeignKey('ProviderInstance', on_delete=models.CASCADE)
-
-    def _provider_delete(self, invoker: User, *args, **kwargs):
-        """Delete Provider instances"""
-        self.multiplexer.on_model_deleted(invoker, self, [self.provider_instance, ])
-
-    def _provider_save(self, invoker: User, *args, **kwargs):
-        """Save Provider instances"""
-        self.multiplexer.on_model_saved(invoker, self, [self.provider_instance, ])
 
 
 class ProviderAcquirableRelationship(models.Model):
@@ -650,7 +533,6 @@ class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
                     model=self)
 
 
-# pylint: disable=too-many-ancestors
 class Domain(ProviderAcquirableSingle, UserAcquirable, CreatedUpdatedModel):
     """
     Information about a Domain, which is used for other sub-apps.
@@ -658,7 +540,6 @@ class Domain(ProviderAcquirableSingle, UserAcquirable, CreatedUpdatedModel):
     """
     domain_name = models.CharField(max_length=253, unique=True)
     is_sub = models.BooleanField(default=False)
-    objects = ProviderQuerySet.as_manager()
 
     def __str__(self):
         return self.domain_name

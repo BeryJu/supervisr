@@ -1,21 +1,15 @@
-"""
-Supervisr Core User Test
-"""
+"""Supervisr Core User Test"""
 
 import os
 
-from django.test import TestCase
-
 from supervisr.core.forms.accounts import SignupForm
 from supervisr.core.models import User
-from supervisr.core.test.utils import test_request
+from supervisr.core.test.utils import TestCase, test_request
 from supervisr.core.views import accounts, users
 
 
 class TestUser(TestCase):
-    """
-    Supervisr Core User Test
-    """
+    """Supervisr Core User Test"""
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
@@ -31,9 +25,7 @@ class TestUser(TestCase):
         }
 
     def test_user_settings(self):
-        """
-        Test user settings view
-        """
+        """Test user settings view"""
         signup_form = SignupForm(self.signup_data)
         self.assertTrue(signup_form.is_valid())
 

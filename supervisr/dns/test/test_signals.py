@@ -1,11 +1,8 @@
 """Supervisr DNS Signal Test"""
 from datetime import datetime
 
-from django.test import TestCase
-
-from supervisr.core.models import (Domain, User, UserAcquirableRelationship,
-                                   get_system_user)
-from supervisr.core.test.utils import internal_provider
+from supervisr.core.models import Domain, UserAcquirableRelationship
+from supervisr.core.test.utils import TestCase, internal_provider
 from supervisr.dns.models import Record, Resource, ResourceSet, Zone
 from supervisr.dns.utils import record_to_rdata
 
@@ -18,8 +15,8 @@ class TestSignals(TestCase):
     credentials = None
 
     def setUp(self):
-        self.user = User.objects.get(pk=get_system_user())
-        self.provider, self.credentials = internal_provider(self.user)
+        super(TestSignals, self).setUp()
+        self.provider, self.credentials = internal_provider(self.system_user)
 
     def create_single_record(self, **kwargs) -> Record:
         """Create record, resource and resourceset"""
@@ -38,7 +35,7 @@ class TestSignals(TestCase):
 
     def test_signal_soa_update(self):
         """Test automated SOA update"""
-        t_domain = Domain.objects.by(self.user).create(
+        t_domain = Domain.objects.create(
             domain_name='test.beryju.org',
             provider_instance=self.provider)
         t_zone = Zone(
@@ -48,10 +45,10 @@ class TestSignals(TestCase):
             type='SOA',
             content='ns1.s.beryju.org. support.beryju.org. 2017110401 1800 180 2419200 86400')
         t_zone.soa = t_soa
-        t_zone.by(self.user).save()
+        t_zone.save()
         UserAcquirableRelationship.objects.create(
             model=t_zone,
-            user=self.user)
+            user=self.system_user)
         self.assertEqual(record_to_rdata(t_zone.soa, t_zone).serial, 2017110401)
         t_record_a = self.create_single_record(
             record_zone=t_zone,

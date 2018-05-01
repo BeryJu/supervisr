@@ -1,10 +1,8 @@
 """Supervisr Puppet View Test"""
 
 from django.contrib.auth.models import Group
-from django.test import TestCase
 
-from supervisr.core.models import User, get_system_user
-from supervisr.core.test.utils import test_request
+from supervisr.core.test.utils import TestCase, test_request
 from supervisr.puppet.models import PuppetModule
 from supervisr.puppet.views import admin
 
@@ -13,29 +11,29 @@ class TestAdminViews(TestCase):
     """Supervisr Puppet View Test"""
 
     def setUp(self):
+        super(TestAdminViews, self).setUp()
         ps_group, _group_created = Group.objects.get_or_create(
             name='Puppet Systemusers')
-        system_user = User.objects.get(pk=get_system_user())
-        ps_group.user_set.add(system_user)
+        ps_group.user_set.add(self.system_user)
         PuppetModule.objects.get_or_create(
             name='supervisr_core',
-            owner=system_user,
+            owner=self.system_user,
             source_path='supervisr/core/server/config/')
 
     def test_index(self):
         """Test index view"""
         self.assertEqual(test_request(admin.debug_build,
-                                      user=get_system_user(),
+                                      user=self.system_user,
                                       url_kwargs={
                                           'user': 'supervisr',
                                           'module': 'supervisr_core'
                                       }).status_code, 302)
-        self.assertEqual(test_request(admin.index, user=get_system_user()).status_code, 200)
+        self.assertEqual(test_request(admin.index, user=self.system_user).status_code, 200)
 
     def test_debug_build_valid(self):
         """Test debug_build view (valid data)"""
         self.assertEqual(test_request(admin.debug_build,
-                                      user=get_system_user(),
+                                      user=self.system_user,
                                       url_kwargs={
                                           'user': 'supervisr',
                                           'module': 'supervisr_core'
@@ -44,13 +42,13 @@ class TestAdminViews(TestCase):
     def test_debug_build_invalid(self):
         """Test debug_build view (invalid data)"""
         self.assertEqual(test_request(admin.debug_build,
-                                      user=get_system_user(),
+                                      user=self.system_user,
                                       url_kwargs={
                                           'user': 'qwerqwer',
                                           'module': 'supervisr_core'
                                       }).status_code, 404)
         self.assertEqual(test_request(admin.debug_build,
-                                      user=get_system_user(),
+                                      user=self.system_user,
                                       url_kwargs={
                                           'user': 'supervisr',
                                           'module': 'superqwerqwrvisr_core'
@@ -59,13 +57,13 @@ class TestAdminViews(TestCase):
     def test_debug_render(self):
         """Test debug_render view (GET)"""
         self.assertEqual(test_request(admin.debug_render,
-                                      user=get_system_user()).status_code, 200)
+                                      user=self.system_user).status_code, 200)
 
     def test_debug_render_post(self):
         """Test debug_render view (POST)"""
         self.assertEqual(test_request(admin.debug_render,
                                       method='POST',
-                                      user=get_system_user(),
+                                      user=self.system_user,
                                       req_kwargs={
                                           'templatepath': 'supervisr/core/server/'
                                                           'config/manifests/users/normal.pp'
@@ -75,7 +73,7 @@ class TestAdminViews(TestCase):
         """Test debug_render view (POST, invalid path)"""
         self.assertEqual(test_request(admin.debug_render,
                                       method='POST',
-                                      user=get_system_user(),
+                                      user=self.system_user,
                                       req_kwargs={
                                           'templatepath': 'aaaa'
                                       }).status_code, 200)

@@ -1,16 +1,12 @@
 """Supervisr Core Form Test"""
 
-import os
-
-from django.test import TestCase
 
 from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
                                            PasswordResetFinishForm, SignupForm)
 from supervisr.core.forms.domains import DomainForm
 from supervisr.core.models import (EmptyCredential, ProviderInstance, Setting,
-                                   User, UserAcquirableRelationship,
-                                   get_system_user)
-from supervisr.core.test.utils import test_request
+                                   User, UserAcquirableRelationship)
+from supervisr.core.test.utils import TestCase, test_request
 from supervisr.core.views.common import IndexView
 
 
@@ -18,7 +14,7 @@ class TestForms(TestCase):
     """Supervisr Core Form Test"""
 
     def setUp(self):
-        os.environ['RECAPTCHA_TESTING'] = 'True'
+        super(TestForms, self).setUp()
         self.signup_data = {
             'name': 'Test user',
             'username': 'beryjuorg',
@@ -115,23 +111,22 @@ class TestForms(TestCase):
 
     def test_domain_form(self):
         """Test Domain Form"""
-        user = User.objects.get(pk=get_system_user())
         creds = EmptyCredential.objects.create(
-            owner=user,
+            owner=self.system_user,
             name='internal')
         prov_inst = ProviderInstance.objects.create(
             credentials=creds,
             provider_path='supervisr.mod.provider.debug.providers.core.DebugProvider')
         UserAcquirableRelationship.objects.create(
             model=prov_inst,
-            user=user)
+            user=self.system_user)
 
         # Test valid form
         form_a = DomainForm(data={
             'domain_name': 'test.org',
             'provider_instance': prov_inst.pk
         })
-        form_a.request = test_request(IndexView.as_view(), user=user, just_request=True)
+        form_a.request = test_request(IndexView.as_view(), user=self.system_user, just_request=True)
         self.assertTrue(form_a.is_valid())
 
         # Test invalid domain
@@ -139,7 +134,7 @@ class TestForms(TestCase):
             'domain_name': '1test.',
             'provider_instance': prov_inst.pk
         })
-        form_b.request = test_request(IndexView.as_view(), user=user, just_request=True)
+        form_b.request = test_request(IndexView.as_view(), user=self.system_user, just_request=True)
         self.assertFalse(form_b.is_valid())
 
         # Test invalid provider
@@ -147,5 +142,5 @@ class TestForms(TestCase):
             'domain_name': 'test.org',
             'provider_instance': -1
         })
-        form_c.request = test_request(IndexView.as_view(), user=user, just_request=True)
+        form_c.request = test_request(IndexView.as_view(), user=self.system_user, just_request=True)
         self.assertFalse(form_c.is_valid())

@@ -10,7 +10,7 @@ from django.apps import AppConfig
 from django.conf import settings
 from django.core.cache import cache
 from django.db.utils import OperationalError, ProgrammingError
-from pip.req import parse_requirements
+from pip._internal.req import parse_requirements
 
 LOGGER = logging.getLogger(__name__)
 

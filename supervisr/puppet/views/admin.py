@@ -23,7 +23,7 @@ def index(request: HttpRequest) -> HttpResponse:
     module_count = len(PuppetModule.objects.all())
     download_count = PuppetModuleRelease.objects.all().aggregate(Sum('downloads'))
     # Show latest version of internal modules
-    supervisr_user = User.objects.get(pk=get_system_user())
+    supervisr_user = get_system_user()
     versions = {}
     for mod in PuppetModule.objects.filter(owner=supervisr_user):
         latest_releases = PuppetModuleRelease.objects \

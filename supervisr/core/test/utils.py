@@ -1,5 +1,6 @@
 """Supervisr Core test utils"""
 
+import os
 from io import StringIO
 
 from django.contrib.messages.storage.fallback import FallbackStorage
@@ -8,9 +9,10 @@ from django.core.management import call_command
 from django.http import Http404, HttpResponse
 from django.http.response import HttpResponseNotFound, HttpResponseServerError
 from django.test import RequestFactory
+from django.test import TestCase as DjangoTestCase
 
 from supervisr.core.models import (EmptyCredential, ProviderInstance,
-                                   SVAnonymousUser, User)
+                                   SVAnonymousUser, User, get_system_user)
 
 
 # pylint: disable=too-many-arguments
@@ -92,6 +94,15 @@ def call_command_ret(*args, **kwargs):
     with StringIO() as output:
         call_command(*args, stdout=output, stderr=output, **kwargs)
         return output.getvalue()
+
+
+class TestCase(DjangoTestCase):
+    """Django TestCase Wrapper that automatically fetches System User"""
+
+    def setUp(self):
+        self.system_user = get_system_user()
+        os.environ['RECAPTCHA_TESTING'] = 'True'
+
 
 # def oauth2_get_token(user):
 #     """

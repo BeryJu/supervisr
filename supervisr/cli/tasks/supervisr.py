@@ -1,7 +1,7 @@
 """supervisr tasks"""
 
 from invoke import task
-from invoke.platform import WINDOWS
+from invoke.terminals import WINDOWS
 
 
 @task
