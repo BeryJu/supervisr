@@ -30,6 +30,7 @@ coverage:
     paths:
       - env/
 pip_install:
+  before_script: ''
   except:
     - prod
   script:
