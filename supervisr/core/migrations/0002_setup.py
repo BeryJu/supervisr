@@ -30,7 +30,7 @@ def create_puppet_module(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('supervisr_core', '0005_stagedproviderchange'),
+        ('supervisr_core', '0001_initial'),
     ]
 
     operations = [

@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('supervisr_core', '0007_auto_20180302_1849'),
+        ('supervisr_core', '0002_setup'),
     ]
 
     operations = [

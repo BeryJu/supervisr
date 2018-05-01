@@ -14,6 +14,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.http import urlencode
+from django.utils.functional import wraps
 from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.statistics import stat_set
@@ -36,9 +37,7 @@ def anonymous_required(view_function):
             return redirect(reverse('common-index'))
         return view_function(*args, **kwargs)
 
-    wrap.__doc__ = view_function.__doc__
-    wrap.__name__ = view_function.__name__
-    return wrap
+    return wraps(view_function)(wrap)
 
 
 def database_catchall(default):
@@ -59,8 +58,10 @@ def database_catchall(default):
                     # pylint: disable=protected-access
                     connection._rollback()
                 return default
+            else:
+                return default
 
-        return catchall
+        return wraps(method)(catchall)
 
     return outer_wrapper
 
@@ -99,9 +100,7 @@ def reauth_required(view_function):
         # This should never be reached, just return False
         return False  # pragma: no cover
 
-    wrap.__doc__ = view_function.__doc__
-    wrap.__name__ = view_function.__name__
-    return wrap
+    return wraps(view_function)(wrap)
 
 
 def time(statistic_key):
@@ -119,7 +118,7 @@ def time(statistic_key):
             stat_set(statistic_key, time_end - time_start)
             return result
 
-        return timed
+        return wraps(method)(timed)
 
     return outer_wrapper
 
@@ -154,10 +153,7 @@ def require_setting(path, value, message=_('This function has been administrativ
 
             return view_func(request, *args, **kwargs)
 
-        wrap.__doc__ = view_func.__doc__
-        wrap.__name__ = view_func.__name__
-
-        return wrap
+        return wraps(view_func)(wrap)
 
     return outer_wrap
 
@@ -188,10 +184,7 @@ def ifapp(app_name):
             if app_name in app_cache or app_name == 'supervisr_core':
                 return ifapp_func(*args, **kwargs)
             return False
-        wrap.__doc__ = ifapp_func.__doc__
-        wrap.__name__ = ifapp_func.__name__
-
-        return wrap
+        return wraps(ifapp_func)(wrap)
 
     return outer_wrap
 
@@ -264,15 +257,11 @@ def logged_in_or_basicauth(realm=""):
     You can provide the name of the realm to ask for authentication within.
     """
     def view_decorator(func):
-        """
-        Outter wrapper
-        """
+        """Outter wrapper"""
         def wrapper(request, *args, **kwargs):
-            """
-            Inner wrapper
-            """
+            """Inner wrapper"""
             return view_or_basicauth(func, request,
                                      lambda u: u.is_authenticated,
                                      realm, *args, **kwargs)
-        return wrapper
+        return wraps(func)(wrapper)
     return view_decorator

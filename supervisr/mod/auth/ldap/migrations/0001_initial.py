@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('auth', '0009_alter_user_last_name_max_length'),
-        ('supervisr_core', '0007_auto_20180302_1849'),
+        ('supervisr_core', '0002_setup'),
     ]
 
     operations = [
