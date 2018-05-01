@@ -7,7 +7,7 @@ DATABASES = {
         'NAME': 'supervisr_test',
         'USER': 'root',
         'PASSWORD': 'EK-5jnKfjrGRm<77',
-        'HOST': 'mysql',
+        'HOST': 'mariadb',
         'PORT': '',
         'OPTIONS': {
             'charset': 'utf8',
