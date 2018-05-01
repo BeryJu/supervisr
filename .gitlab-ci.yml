@@ -17,7 +17,7 @@ variables:
   SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_ci
 services:
   - redis:latest
-  - mysql:latest
+  - mariadb:latest
 
 # All normal tests
 coverage:
