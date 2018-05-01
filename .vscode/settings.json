@@ -1,5 +1,5 @@
 {
-  "python.pythonPath": "${workspaceFolder}/env/bin/python",
+  "python.pythonPath": "${workspaceFolder}\\env\\Scripts\\python.exe",
   "python.linting.prospectorEnabled": true,
   "editor.rulers": [
     100

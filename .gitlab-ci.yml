@@ -30,7 +30,8 @@ coverage:
     paths:
       - env/
 pip_install:
-  before_script: []
+  before_script:
+    - "python3 -m pip install -U virtualenv"
   except:
     - prod
   script:
@@ -48,7 +49,7 @@ isort:
   cache:
     paths:
       - env/
-migrations:
+migration_mariadb:
   except:
     - prod
   script:
