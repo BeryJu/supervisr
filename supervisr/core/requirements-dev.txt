@@ -1,4 +1,4 @@
-astroid
+astroid==1.5.3
 coverage
 isort
 pylint

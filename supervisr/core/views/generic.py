@@ -164,7 +164,7 @@ class GenericUpdateView(GenericModelView):
         if form.is_valid():
             self.save(form)
             messages.success(self.request, _('Successfully edited %(verbose_name)s'
-                                             % {'verbose_name': self.model_verbose_name}))
+                                             % {'verbose_name': self.model_verbose_name }))
             return self.redirect(instance)
         return self.render(form)
 
