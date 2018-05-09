@@ -30,14 +30,15 @@ coverage:
     paths:
       - env/
 pip_install:
+  before_script:
+    - "python3 -m pip install -U virtualenv"
   except:
     - prod
   script:
-    - "deactivate"
     - "virtualenv env"
     - "source env/bin/activate"
-    - "pip install git+${CI_REPOSITORY_URL}#egg=supervisr"
-    - "cp -R ./env/lib/python*/site-packages/supervisr/mod/_seed/* ."
+    - "pip install git+${CI_REPOSITORY_URL}@${CI_COMMIT_REF_NAME}#egg=supervisr[dev]"
+    - "cp -R ./env/lib/python*/site-packages/supervisr/cli/_seed/* ."
     - "python manage.py migrate"
 isort:
   except:
@@ -48,7 +49,7 @@ isort:
   cache:
     paths:
       - env/
-migrations:
+migration_mariadb:
   except:
     - prod
   script:
