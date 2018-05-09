@@ -520,7 +520,7 @@ class EmailMissingView(View):
         Returns:
             Login template
         """
-        return render(request, 'account/login.html', {
+        return render(request, 'core/generic_form_login.html', {
             'form': form,
             'title': _("SSO - Add missing E-Mail"),
             'primary_action': _("Add"),
@@ -560,6 +560,5 @@ class EmailMissingView(View):
                 request=request
             )
             messages.success(request, _('Successfully sent confirmation E-Mail'))
-            django_logout(request)
-            return redirect(reverse('common-loign'))
+            return redirect(reverse(settings.LOGIN_URL))
         return self.render(request, form=form)

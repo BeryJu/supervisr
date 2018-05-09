@@ -57,7 +57,7 @@ class SignedAESEncryption(object):
 
     def is_encrypted(self, value):
         """Return true if value is encrypted"""
-        return value.startswith(force_text(self.prefix))
+        return force_text(value).startswith(self.prefix)
 
     def decrypt(self, cypher_text):
         """Decrypt cypher_text"""

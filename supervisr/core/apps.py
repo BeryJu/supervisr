@@ -199,6 +199,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
         settings.add(key='password_reset:enabled', value=True)
         settings.add(key='signin:enabled', value=True)
         settings.add(key='banner:enabled', value=False)
+        settings.add(key='account:email:required', value=True)
         settings.add(key='banner:level', value='info')
         settings.add(key='banner:message', value='')
         settings.add(key='branding', value='supervisr')
