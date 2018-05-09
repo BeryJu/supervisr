@@ -3,50 +3,38 @@ Supervisr DNS record views
 """
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.http import Http404
-from django.shortcuts import redirect, render, reverse
+from django.db.models import QuerySet
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.core.models import UserProductRelationship
+from supervisr.core.models import UserAcquirableRelationship
+from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
+                                          GenericUpdateView)
 from supervisr.core.views.wizards import BaseWizardView
 from supervisr.dns.forms.records import RecordForm
 from supervisr.dns.models import Record, Zone
 
 
-@login_required
-def list_records(req, zone):
-    """
-    Show list of records for zone
-    """
-    # check if zone exists
-    zones = Zone.objects.filter(domain__domain=zone, users__in=[req.user])
-    if not zones.exists():
-        raise Http404
-    r_zone = zones.first()
-    # get all records for the zone
-    all_records = Record.objects.filter(
-        domain=r_zone, users__in=[req.user]).order_by('name')
+class RecordIndexView(GenericIndexView):
+    """Show a list of all records for zone"""
 
-    paginator = Paginator(all_records, req.user.rows_per_page)
+    model = Record
+    template = 'dns/records/index.html'
+    zone = None
 
-    page = req.GET.get('page')
-    try:
-        records = paginator.page(page)
-    except PageNotAnInteger:
-        records = paginator.page(1)
-    except EmptyPage:
-        records = paginator.page(paginator.num_pages)
+    def get_instance(self) -> QuerySet:
+        self.zone = get_object_or_404(Zone, domain__domain_name=self.kwargs.get('zone'),
+                                      users__in=[self.request.user])
+        return self.model.objects.filter(record_zone=self.zone,
+                                         users__in=[self.request.user]).order_by('name')
 
-    return render(req, 'dns/records/index.html', {
-        'records': records,
-        'zone': r_zone,
-    })
+    def update_kwargs(self, kwargs: dict) -> dict:
+        kwargs['zone'] = self.zone
+        return kwargs
+
 
 # pylint: disable=too-many-ancestors
-
-
 class RecordNewView(BaseWizardView):
     """
     Wizard to create a blank Record
@@ -62,93 +50,61 @@ class RecordNewView(BaseWizardView):
         if step == '0':
             user_zones = Zone.objects.filter(users__in=[self.request.user])
             zone_pk = user_zones.filter(
-                domain__domain=self.kwargs['zone']).first().pk
-            form.fields['domain'].queryset = user_zones
-            form.fields['domain'].initial = zone_pk
+                domain__domain_name=self.kwargs.get('zone')).first().pk
+            form.fields['record_zone'].queryset = user_zones
+            form.fields['record_zone'].initial = zone_pk
         return form
 
-    # pylint: disable=unused-argument
-    def done(self, final_forms, form_dict, **kwargs):
-        record = form_dict['0'].save(commit=False)
-        record.save()
-        UserProductRelationship.objects.create(
-            product=record,
+    def finish(self, form_list):
+        record = form_list[0].save()
+        UserAcquirableRelationship.objects.create(
+            model=record,
             user=self.request.user)
         messages.success(self.request, _('DNS Record successfully created'))
-        return redirect(reverse('supervisr_dns:dns-record-list',
-                                kwargs={'zone': self.kwargs['zone']}))
+        return redirect(reverse('supervisr_dns:record-list',
+                                kwargs={'zone': self.kwargs.get('zone')}))
 
 
-@login_required
-def update(req, zone, record, uuid):
-    """
-    Edit a record
-    """
-    # Check if zone exists before doing anything else
-    zones = Zone.objects.filter(domain__domain=zone, users__in=[req.user])
-    if not zones.exists():
-        raise Http404
-    r_zone = zones.first()
-    # Check if the record exists too
-    records = Record.objects.filter(domain=r_zone, users__in=[req.user], name=record, uuid=uuid)
-    if not records.exists():
-        raise Http404
-    assert len(records) == 1
-    r_record = records.first()
+class RecordUpdateView(GenericUpdateView):
+    """Edit a record"""
 
-    # Make a list of all zones so user can switch zones
-    user_zones = Zone.objects.filter(users__in=[req.user])
-    zone_pk = user_zones.filter(domain__domain=zone).first().pk
+    model = Record
+    form = RecordForm
+    zone = None
 
-    if req.method == 'POST':
-        form = RecordForm(req.POST, instance=r_record)
-        form.fields['domain'].queryset = user_zones
-        form.fields['domain'].initial = zone_pk
-        if form.is_valid():
-            r_record.save()
-            messages.success(req, _('Successfully edited Record'))
-            return redirect(reverse('supervisr_dns:dns-record-list', kwargs={'zone': zone}))
-        messages.error(req, _("Invalid Record"))
-    else:
-        form = RecordForm(instance=r_record)
-        form.fields['domain'].queryset = user_zones
-        form.fields['domain'].initial = zone_pk
-    return render(req, 'core/generic_form_modal.html', {
-        'form': form,
-        'primary_action': 'Save',
-        'title': 'Record Edit',
-        'size': 'lg',
-    })
+    def get_instance(self) -> QuerySet:
+        self.zone = get_object_or_404(Zone, domain__domain_name=self.kwargs.get('zone'),
+                                      users__in=[self.request.user])
+        return self.model.objects.filter(record_zone=self.zone, users__in=[self.request.user],
+                                         name=self.kwargs.get('record'),
+                                         uuid=self.kwargs.get('uuid'))
+
+    def redirect(self, instance: Record) -> HttpResponse:
+        return redirect(reverse('supervisr_dns:record-list',
+                                kwargs={'zone': self.kwargs.get('zone')}))
+
+    def update_form(self, form: RecordForm) -> RecordForm:
+        # Make a list of all zones so user can switch zones
+        user_zones = Zone.objects.filter(users__in=[self.request.user])
+        zone_pk = user_zones.filter(domain__domain_name=self.kwargs.get('zone')).first().pk
+        form.fields['record_zone'].queryset = user_zones
+        form.fields['record_zone'].initial = zone_pk
+        return form
 
 
-@login_required
-def delete(request, zone, record, uuid):
-    """
-    Delete a record
-    """
-    # Check if zone exists before doing anything else
-    zones = Zone.objects.filter(domain__domain=zone, users__in=[request.user])
-    if not zones.exists():
-        raise Http404
-    r_zone = zones.first()
+class RecordDeleteView(GenericDeleteView):
+    """Delete a record"""
 
-    records = Record.objects.filter(domain=r_zone, users__in=[request.user], name=record, uuid=uuid)
-    if not records.exists():
-        raise Http404
-    assert len(records) == 1
-    r_record = records.first()
+    model = Record
+    zone = None
 
-    if request.method == 'POST' and 'confirmdelete' in request.POST:
-        # User confirmed deletion
-        r_record.delete()
-        messages.success(request, _('Record successfully deleted'))
-        return redirect(reverse('supervisr_dns:dns-record-list', kwargs={'zone': zone}))
+    def get_instance(self) -> QuerySet:
+        self.zone = get_object_or_404(Zone, domain__domain_name=self.kwargs.get('zone'),
+                                      users__in=[self.request.user])
+        return self.model.objects.filter(record_zone=self.zone, users__in=[self.request.user],
+                                         name=self.kwargs.get('record'),
+                                         uuid=self.kwargs.get('uuid'))
 
-    return render(request, 'core/generic_delete.html', {
-        'object': 'Record %s' % r_record.name,
-        'delete_url': reverse('supervisr_dns:dns-record-delete', kwargs={
-            'zone': zone,
-            'record': record,
-            'uuid': r_record.uuid,
-        })
-    })
+    def redirect(self, instance: Record) -> HttpResponse:
+        return redirect(reverse('supervisr_dns:record-list',
+                                kwargs={'zone': self.kwargs.get('zone')}))

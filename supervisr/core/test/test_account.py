@@ -1,27 +1,22 @@
-"""
-Supervisr Core Account Test
-"""
+"""Supervisr Core Account Test"""
 
-import os
-
-from django.test import TestCase
+from django.http import HttpResponse
 from django.urls import reverse
 
+from supervisr.core.decorators import reauth_required
 from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
                                            SignupForm)
-from supervisr.core.models import AccountConfirmation, User, get_system_user
+from supervisr.core.models import AccountConfirmation, User
 from supervisr.core.signals import SIG_USER_RESEND_CONFIRM
-from supervisr.core.test.utils import test_request
-from supervisr.core.views import accounts, common
+from supervisr.core.test.utils import TestCase, test_request
+from supervisr.core.views import accounts
 
 
 class TestAccount(TestCase):
-    """
-    Supervisr Core Account Test
-    """
+    """Supervisr Core Account Test"""
 
     def setUp(self):
-        os.environ['RECAPTCHA_TESTING'] = 'True'
+        super(TestAccount, self).setUp()
         self.signup_data = {
             'name': 'Test user',
             'username': 'beryjuorg',
@@ -44,16 +39,12 @@ class TestAccount(TestCase):
         }
 
     def test_signup_view(self):
-        """
-        Test account.signup view (Anonymous)
-        """
+        """Test account.signup view (Anonymous)"""
         res = test_request(accounts.SignupView.as_view())
         self.assertEqual(res.status_code, 200)
 
     def test_login_view(self):
-        """
-        Test account.login view (Anonymous)
-        """
+        """Test account.login view (Anonymous)"""
         res = test_request(accounts.LoginView.as_view())
         self.assertEqual(res.status_code, 200)
         # test login with post
@@ -66,32 +57,22 @@ class TestAccount(TestCase):
         self.assertEqual(res.status_code, 302)
 
     def test_logout_view(self):
-        """
-        Test account.logout view
-        """
-        res = test_request(accounts.LogoutView.as_view(), user=get_system_user())
+        """Test account.logout view"""
+        res = test_request(accounts.LogoutView.as_view(), user=self.system_user)
         self.assertEqual(res.status_code, 302)
 
     def test_signup_view_auth(self):
-        """
-        Test account.signup view (Authenticated)
-        """
-        res = test_request(accounts.SignupView.as_view(),
-                           user=get_system_user())
+        """Test account.signup view (Authenticated)"""
+        res = test_request(accounts.SignupView.as_view(), user=self.system_user)
         self.assertEqual(res.status_code, 302)
 
     def test_login_view_auth(self):
-        """
-        Test account.login view (Authenticated)
-        """
-        res = test_request(accounts.LoginView.as_view(),
-                           user=get_system_user())
+        """Test account.login view (Authenticated)"""
+        res = test_request(accounts.LoginView.as_view(), user=self.system_user)
         self.assertEqual(res.status_code, 302)
 
     def test_login_view_post(self):
-        """
-        Test account.login view POST (Anonymous)
-        """
+        """Test account.login view POST (Anonymous)"""
         signup_form = SignupForm(self.signup_data)
         self.assertTrue(signup_form.is_valid())
 
@@ -109,12 +90,10 @@ class TestAccount(TestCase):
                                  method='POST',
                                  req_kwargs=self.login_data)
         self.assertEqual(login_res.status_code, 302)
-        self.assertEqual(login_res.url, reverse(common.index))
+        self.assertEqual(login_res.url, reverse('common-index'))
 
     def test_signup_view_post(self):
-        """
-        Test account.signup view POST (Anonymous)
-        """
+        """Test account.signup view POST (Anonymous)"""
         form = SignupForm(self.signup_data)
         self.assertTrue(form.is_valid())
 
@@ -124,9 +103,7 @@ class TestAccount(TestCase):
         self.assertEqual(res.status_code, 302)
 
     def test_change_password(self):
-        """
-        Test account.change_password
-        """
+        """Test account.change_password"""
         signup_form = SignupForm(self.signup_data)
         self.assertTrue(signup_form.is_valid())
 
@@ -150,8 +127,8 @@ class TestAccount(TestCase):
         self.assertEqual(res.status_code, 302)
         self.assertEqual(res.url, reverse('common-index'))
 
-        res = test_request(accounts.ChangePasswordView.as_view(),
-                           user=user, )
+        res = test_request(accounts.ChangePasswordView.as_view(), user=user)
+        # print(res.content.decode('utf-8'))
         self.assertEqual(res.status_code, 200)
 
     def test_reset_password_init_view(self):
@@ -222,10 +199,18 @@ class TestAccount(TestCase):
         reset_res = test_request(accounts.PasswordResetFinishView.as_view(),
                                  method='POST',
                                  user=user,
-                                 url_kwargs={
-                                     'uuid': uuid
-                                 },
+                                 url_kwargs={'uuid': uuid},
                                  req_kwargs=self.change_data)
 
         self.assertEqual(reset_res.status_code, 302)
-        self.assertEqual(reset_res.url, reverse(common.index))
+        self.assertEqual(reset_res.url, reverse('common-index'))
+
+    def test_reauth(self):
+        """Test reauth_required decorator"""
+        @reauth_required
+        # pylint: disable=unused-argument
+        def test_view(request):
+            """Test view"""
+            return HttpResponse('ok')
+
+        self.assertEqual(test_request(test_view, ).status_code, 302)

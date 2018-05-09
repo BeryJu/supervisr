@@ -3,27 +3,30 @@ Supervisr Core Domain Views
 """
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.db.models import QuerySet
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.forms.domains import DomainForm
 from supervisr.core.models import (Domain, ProviderInstance,
-                                   UserProductRelationship)
+                                   UserAcquirableRelationship)
 from supervisr.core.providers.base import get_providers
-from supervisr.core.views.generic import GenericDeleteView, GenericUpdateView
+from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
+                                          GenericUpdateView)
 from supervisr.core.views.wizards import BaseWizardView
 
 
-@login_required
-def index(request):
-    """Show a n overview over all domains"""
-    user_domains = Domain.objects.filter(
-        users__in=[request.user])
-    return render(request, 'domain/index.html', {'domains': user_domains})
+class DomainIndexView(GenericIndexView):
+    """Show an overview over all domains"""
+
+    model = Domain
+    template = 'domain/index.html'
+
+    def get_instance(self) -> HttpResponse:
+        return self.model.objects.filter(users__in=[self.request.user]).order_by('domain_name')
+
 
 # pylint: disable=too-many-ancestors
 class DomainNewView(BaseWizardView):
@@ -38,24 +41,23 @@ class DomainNewView(BaseWizardView):
         if step is None:
             step = self.steps.current
         if step == '0':
-            providers = get_providers(filter_sub=['domain_provider'], path=True)
+            providers = get_providers(capabilities=['domain'], path=True)
             provider_instance = ProviderInstance.objects.filter(
                 provider_path__in=providers,
-                userproductrelationship__user__in=[self.request.user])
-            form.fields['provider'].queryset = provider_instance
+                useracquirablerelationship__user__in=[self.request.user])
+            form.fields['provider_instance'].queryset = provider_instance
             form.request = self.request
         return form
 
     # pylint: disable=unused-argument
     def done(self, final_forms, form_dict, **kwargs) -> HttpResponse:
-        domain = form_dict['0'].save(commit=False)
-        domain.name = domain.domain
-        domain.save()
-        UserProductRelationship.objects.create(
-            product=domain,
+        domain = form_dict['0'].save()
+        UserAcquirableRelationship.objects.create(
+            model=domain,
             user=self.request.user)
         messages.success(self.request, _('Domain successfully created'))
         return redirect(reverse('domain-index'))
+
 
 class DomainEditView(GenericUpdateView):
     """Update Domain"""
@@ -68,19 +70,20 @@ class DomainEditView(GenericUpdateView):
 
     def get_instance(self) -> QuerySet:
         """Get domain from name"""
-        return self.model.objects.filter(domain=self.kwargs.get('domain'),
+        return self.model.objects.filter(domain_name=self.kwargs.get('domain'),
                                          users__in=[self.request.user])
 
     def update_form(self, form: DomainForm) -> DomainForm:
         """Add providers to domainForm"""
         # Create list of all possible provider instances
-        providers = get_providers(filter_sub=['domain_provider'], path=True)
+        providers = get_providers(capabilities=['domain'], path=True)
         provider_instance = ProviderInstance.objects.filter(
             provider_path__in=providers,
-            userproductrelationship__user__in=[self.request.user])
+            useracquirablerelationship__user__in=[self.request.user])
         form.fields['provider'].queryset = provider_instance
         form.request = self.request
         return form
+
 
 class DomainDeleteView(GenericDeleteView):
     """Delete domain"""
@@ -92,5 +95,5 @@ class DomainDeleteView(GenericDeleteView):
 
     def get_instance(self) -> QuerySet:
         """Get domain from name"""
-        return self.model.objects.filter(domain=self.kwargs.get('domain'),
+        return self.model.objects.filter(domain_name=self.kwargs.get('domain'),
                                          users__in=[self.request.user])

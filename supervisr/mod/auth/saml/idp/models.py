@@ -27,6 +27,7 @@ class SAMLRemote(CreatedUpdatedModel):
     def __str__(self):
         return "SAMLRemote %s (processor=%s)" % (self.name, self.processor_path)
 
+
 class ProductExtensionSAML2(ProductExtension):
     """
     Associate a SAML2 Remote with a Product

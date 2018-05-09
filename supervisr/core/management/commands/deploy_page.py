@@ -75,7 +75,8 @@ DEPLOY_PAGE_HTML = """
   </div>
 </body>
 </html>
-""" # noqa
+"""  # noqa
+
 
 class Command(BaseCommand):
     """Turns deploy page on or off via manage.py"""
@@ -95,6 +96,9 @@ class Command(BaseCommand):
         else:
             try:
                 os.unlink(deploy_page_path)
+                LOGGER.info("Disabled Deploy Page")
+            except FileNotFoundError:
+                LOGGER.info("Deploy Page was already disabled.")
             except IOError:
-                pass
-            LOGGER.info("Disabled Deploy Page")
+                LOGGER.warning("Failed to disable Deploy Page")
+                raise

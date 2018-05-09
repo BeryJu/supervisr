@@ -1,27 +1,20 @@
-"""
-Supervisr Core Product Test
-"""
+"""Supervisr Core Product Test"""
 
-import os
-
-from django.test import TestCase
-
-from supervisr.core.models import Event, Product, User, UserProductRelationship
+from supervisr.core.models import (Event, Product, User,
+                                   UserAcquirableRelationship)
 from supervisr.core.signals import SIG_USER_POST_SIGN_UP
+from supervisr.core.test.utils import TestCase
 
 
 class TestProduct(TestCase):
-    """
-    Supervisr Core Product Test
-    """
+    """Supervisr Core Product Test"""
 
     def setUp(self):
-        os.environ['RECAPTCHA_TESTING'] = 'True'
+        super(TestProduct, self).setUp()
         self.product_a = Product.objects.create(
             name="Test Product A",
             slug="test-product-a",
             description="Test Product A with auto_add=True",
-            price=0.000,
             auto_add=True)
         # self.assertEqual(self.product_a.pk, 1)
         self.user = User.objects.create(
@@ -30,63 +23,38 @@ class TestProduct(TestCase):
         self.assertNotEqual(self.user.pk, None)
 
     def test_auto_add(self):
-        """
-        Test Product's auto_add
-        """
+        """Test Product's auto_add"""
         SIG_USER_POST_SIGN_UP.send(
             sender=None,
             user=self.user,
             request=None)
-        rel = UserProductRelationship.objects.filter(
-            product=self.product_a,
+        rel = UserAcquirableRelationship.objects.filter(
+            model=self.product_a,
             user=self.user)
         self.assertTrue(rel.exists())
 
     def test_auto_add_all(self):
-        """
-        Test Product's auto_all_add
-        """
+        """Test Product's auto_all_add"""
         product_b = Product.objects.create(
             name="Test Product B",
             slug="test-product-b",
             description="Test Product B with auto_all_add=True",
-            price=0.000,
             auto_all_add=True)
         # self.assertEqual(product_b.pk, 2)
-        rel = UserProductRelationship.objects.filter(
-            product=product_b,
+        rel = UserAcquirableRelationship.objects.filter(
+            model=product_b,
             user=self.user)
         self.assertTrue(rel.exists())
 
-    def test_instance_name(self):
-        """
-        Test UserProductRelationship's instance_name
-        """
-        product = Product.objects.create(
-            name="Test Product B",
-            slug="test-product-b",
-            description="Test Product B with auto_all_add=True",
-            price=0.000,
-            auto_all_add=True)
-        rel = UserProductRelationship(
-            product=product,
-            user=self.user,
-            instance_name='test')
-        self.assertEqual(rel.name, 'test')
-
     def test_product_delete(self):
-        """
-        Test deletion of product
-        """
+        """Test deletion of product"""
         product = Product.objects.create(
             name="Test Product B",
             slug="test-product-b",
             description="Test Product B with auto_all_add=True",
-            price=0.000,
             auto_all_add=True)
-        UserProductRelationship(
-            product=product,
-            user=self.user,
-            instance_name='test')
+        UserAcquirableRelationship(
+            model=product,
+            user=self.user)
         product.delete()
         self.assertTrue(Event.objects.filter(user=self.user).exists())

@@ -31,12 +31,25 @@
     <a href="{% url 'admin-product_index' %}" class="nav-link {% is_active 'admin-product_index' %}">
       {% trans 'Products' %}
     </a>
-    <a href="{% url 'admin-info' %}" class="nav-link {% is_active 'admin-info' %}">
-      {% trans "System Information" %}
-    </a>
     <a href="{% url 'admin-events' %}" class="nav-link {% is_active 'admin-events' %}">
       {% trans "Events" %}
     </a>
+    <section class="nav-group">
+      <input id="admin_modules" type="checkbox">
+      <label for="admin_modules">{% trans "Monitoring" %}</label>
+      <ul class="nav-list">
+        <li>
+          <a href="{% url 'admin-info' %}" class="nav-link {% is_active 'admin-info' %}">
+            {% trans "System Information" %}
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'admin-flower' %}" class="nav-link {% is_active 'admin-flower' %}">
+            {% trans "Flower" %}
+          </a>
+        </li>
+      </ul>
+    </section>
     <section class="nav-group">
       <input id="django-admin" type="checkbox">
       <label for="django-admin">{% trans "Django Builtins" %}</label>

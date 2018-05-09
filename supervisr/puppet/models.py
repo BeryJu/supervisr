@@ -1,6 +1,4 @@
-"""
-Supervisr Puppet Models
-"""
+"""Supervisr Puppet Models"""
 import hashlib
 import json
 import logging
@@ -11,6 +9,7 @@ from django.db import models
 from pymysql.err import InternalError
 
 LOGGER = logging.getLogger(__name__)
+
 
 class PuppetModuleRelease(models.Model):
     """Store Information about a Puppet Module Release"""
@@ -75,6 +74,7 @@ class PuppetModuleRelease(models.Model):
 
     def __str__(self):
         return "PuppetModuleRelease '%s-%s'" % (self.module.name, self.version)
+
 
 class PuppetModule(models.Model):
     """Store Information about a Puppet Module"""

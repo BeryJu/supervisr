@@ -14,4 +14,4 @@ class WordpressOrangeProcessor(Processor):
         # Orange expects an audience in this format
         # https://<host>/wp-content/plugins/miniorange-saml-20-single-sign-on/
         self._audience = self._remote.acs_url + \
-          'wp-content/plugins/miniorange-saml-20-single-sign-on/'
+            'wp-content/plugins/miniorange-saml-20-single-sign-on/'

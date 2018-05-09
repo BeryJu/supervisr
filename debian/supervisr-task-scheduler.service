@@ -1,0 +1,16 @@
+[Unit]
+Description=supervisr Task Scheduler
+After=syslog.target network.target
+Requires=network.target supervisr-task-runner.service
+
+[Service]
+User=supervisr
+Group=supervisr
+WorkingDirectory=/usr/share/supervisr
+Type=simple
+ExecStart=/usr/bin/supervisr-ctl supervisr.run-celery-beat
+Environment=SUPERVISR_LOCAL_SETTINGS=config
+
+[Install]
+WantedBy=multi-user.target
+

@@ -1,23 +1,28 @@
-"""
-Supervisr Core ManagementCommands Test
-"""
+"""Supervisr Core ManagementCommands Test"""
 
 from unittest import expectedFailure
 
-from django.test import TestCase
+from django.contrib.auth.models import Group
 
-from supervisr.core.test.utils import call_command_ret
+from supervisr.core.test.utils import TestCase, call_command_ret
+from supervisr.puppet.models import PuppetModule
 
 
 class TestManagementCommands(TestCase):
-    """
-    Supervisr Core ManagementCommands Test
-    """
+    """Supervisr Core ManagementCommands Test"""
+
+    def setUp(self):
+        super(TestManagementCommands, self).setUp()
+        ps_group, _group_created = Group.objects.get_or_create(
+            name='Puppet Systemusers')
+        ps_group.user_set.add(self.system_user)
+        PuppetModule.objects.get_or_create(
+            name='supervisr_core',
+            owner=self.system_user,
+            source_path='supervisr/core/server/config/')
 
     def test_sv_puppet_debug_build(self):
-        """
-        Test puppet module build
-        """
+        """Test puppet module build"""
         self.assertEqual(call_command_ret('sv_puppet_debug_build',
                                           '--module', 'supervisr-supervisr_core'),
                          'Built Module supervisr_core!\n')
@@ -33,9 +38,7 @@ class TestManagementCommands(TestCase):
 
     # pylint: disable=invalid-name
     def test_sv_puppet_debug_build_inv_json(self):
-        """
-        Test puppet module build with invalid metadata json
-        """
+        """Test puppet module build with invalid metadata json"""
         pass
 
     # def test_sv_puppet_import(self):
@@ -50,15 +53,11 @@ class TestManagementCommands(TestCase):
     @expectedFailure
     # pylint: disable=invalid-name
     def test_sv_puppet_import_invalid_user(self):
-        """
-        Test Invalid PuppetForge Import (wrong username)
-        """
+        """Test Invalid PuppetForge Import (wrong username)"""
         call_command_ret('sv_puppet_import', '--module', 'wrong_name-wrong_name')
 
     @expectedFailure
     # pylint: disable=invalid-name
     def test_sv_puppet_import_invalid_mod(self):
-        """
-        Test Invalid PuppetForge Import (wrong module)
-        """
+        """Test Invalid PuppetForge Import (wrong module)"""
         call_command_ret('sv_puppet_import', '--module', 'puppetlabs-wrong_name')

@@ -1,35 +1,39 @@
-"""
-Supervisr Core test utils
-"""
+"""Supervisr Core test utils"""
 
-from datetime import timedelta
+import os
 from io import StringIO
 
-from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.backends.cached_db import SessionStore
 from django.core.management import call_command
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.http.response import HttpResponseNotFound, HttpResponseServerError
 from django.test import RequestFactory
-from django.utils import timezone
-from oauth2_provider.models import AccessToken, Application
+from django.test import TestCase as DjangoTestCase
 
-from supervisr.core.models import ProviderInstance, User
-from supervisr.core.providers.internal import InternalCredential
+from supervisr.core.models import (EmptyCredential, ProviderInstance,
+                                   SVAnonymousUser, User, get_system_user)
 
 
 # pylint: disable=too-many-arguments
 def test_request(view,
                  method='GET',
-                 user=AnonymousUser,
+                 user=SVAnonymousUser,
                  session_data=None,
                  url_kwargs=None,
                  req_kwargs=None,
                  headers=None,
-                 just_request=False):
-    """
-    Wrapper to make test requests easier
+                 just_request=False) -> HttpResponse:
+    """Wrapper to make test requests easier
+
+    Args:
+        method (str): Request method. Defaults to GET.
+        user (User): Requesting user. Defaults to SVAnonymousUser.
+        session_data (dict): Optional dictionary of session data.
+        url_kwargs (dict): Optional dictionary of URL arguments.
+        req_kwargs (dict): Optional dictionary of URL Querystrinng arguments.
+        headers (dict): Optional dictionary of headers.
+        just_request (bool): Only return the Request. Defaults to False
     """
 
     if url_kwargs is None:
@@ -58,8 +62,8 @@ def test_request(view,
     setattr(request, 'session', session)
     setattr(request, '_messages', FallbackStorage(request))
 
-    if user is AnonymousUser:
-        user = AnonymousUser()
+    if user is SVAnonymousUser:
+        user = SVAnonymousUser()
     elif isinstance(user, int):
         user = User.objects.get(pk=user)
     request.user = user
@@ -74,41 +78,48 @@ def test_request(view,
     else:
         return HttpResponseServerError()
 
+
 def internal_provider(user):
-    """
-    Quickly create an instance of internal Provider
-    """
-    creds = InternalCredential.objects.create(owner=user, name='internal-unittest-%s' % str(user))
-    prov = ProviderInstance.objects.create(
-        credentials=creds,
-        provider_path='supervisr.core.providers.internal.InternalBaseProvider'
-        )
-    return prov, creds
+    """Quickly create an instance of internal Provider"""
+    credentials = EmptyCredential.objects.create(owner=user,
+                                                 name='internal-unittest-%s' % str(user))
+    provider = ProviderInstance.objects.create(
+        credentials=credentials,
+        provider_path='supervisr.mod.provider.debug.providers.core.DebugProvider')
+    return provider, credentials
+
 
 def call_command_ret(*args, **kwargs):
-    """
-    This is a wrapper for django's call_command, but it returns the stdout output
-    """
+    """This is a wrapper for django's call_command, but it returns the stdout output"""
     with StringIO() as output:
         call_command(*args, stdout=output, stderr=output, **kwargs)
         return output.getvalue()
 
-def oauth2_get_token(user):
-    """
-    Generate an OAuth2 Token for unittests
-    """
-    app = Application.objects.create(
-        client_type=Application.CLIENT_CONFIDENTIAL,
-        authorization_grant_type=Application.GRANT_AUTHORIZATION_CODE,
-        redirect_uris='https://supervisr-unittest.beryju.org/oauth2/callback',
-        name='dummy',
-        user=user
-    )
-    access_token = AccessToken.objects.create(
-        user=user,
-        scope='read write',
-        expires=timezone.now() + timedelta(seconds=300),
-        token='secret-access-token-key',
-        application=app
-    )
-    return "Bearer {0}".format(access_token)
+
+class TestCase(DjangoTestCase):
+    """Django TestCase Wrapper that automatically fetches System User"""
+
+    def setUp(self):
+        self.system_user = get_system_user()
+        os.environ['RECAPTCHA_TESTING'] = 'True'
+
+
+# def oauth2_get_token(user):
+#     """
+#     Generate an OAuth2 Token for unittests
+#     """
+#     app = Application.objects.create(
+#         client_type=Application.CLIENT_CONFIDENTIAL,
+#         authorization_grant_type=Application.GRANT_AUTHORIZATION_CODE,
+#         redirect_uris='https://supervisr-unittest.beryju.org/oauth2/callback',
+#         name='dummy',
+#         user=user
+#     )
+#     access_token = AccessToken.objects.create(
+#         user=user,
+#         scope='read write',
+#         expires=timezone.now() + timedelta(seconds=300),
+#         token='secret-access-token-key',
+#         application=app
+#     )
+#     return "Bearer {0}".format(access_token)

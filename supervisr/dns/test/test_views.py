@@ -1,30 +1,13 @@
-"""
-Supervisr DNS View Test
-"""
+"""Supervisr DNS View Test"""
 
-# from supervisr.core.models import User
-from django.test import RequestFactory, TestCase
-
-# from django.urls import reverse
-
-# from supervisr.core.models import get_system_user
-# from supervisr.dns.views import core
+from supervisr.core.test.utils import TestCase, test_request
+from supervisr.dns.views.zones import ZoneIndexView
 
 
 class TestDNSViews(TestCase):
-    """
-    Supervisr DNS View Test
-    """
+    """Supervisr DNS View Test"""
 
-    def setUp(self):
-        self.factory = RequestFactory()
-
-    def test_module_list(self):
-        """
-        Test module_list view
-        """
-        pass
-        # req = self.factory.get(reverse('dns:index'))
-        # req.user = User.objects.get(pk=get_system_user())
-        # res = dns.index(request)
-        # self.assertEqual(res.status_code, 200)
+    def test_zone_index(self):
+        """Test zone_index view"""
+        self.assertEqual(test_request(ZoneIndexView.as_view(),
+                                      user=self.system_user).status_code, 200)

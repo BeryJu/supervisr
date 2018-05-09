@@ -1,12 +1,10 @@
-"""
-Supervisr Invoke Tasks
-"""
+"""Supervisr Invoke Tasks"""
 import os
 from importlib import import_module
 
 from invoke import Collection
 
-import supervisr._tasks
+import supervisr.cli.tasks
 
 try:
     import pymysql
@@ -19,8 +17,9 @@ os.environ.setdefault("SUPERVISR_LOCAL_SETTINGS", "supervisr.local_settings")
 
 # pylint: disable=invalid-name
 namespace = Collection()
-# pylint: disable=protected-access
-for submod in dir(supervisr._tasks):
+for submod in dir(supervisr.cli.tasks):
     if not submod.startswith('_'):
+        if 'ci' in submod and os.getenv('SUPERVISR_PACKAGED', "False").title() == 'True':
+            continue
         namespace.add_collection(
-            Collection.from_module(import_module('supervisr._tasks.%s' % submod)))
+            Collection.from_module(import_module('supervisr.cli.tasks.%s' % submod)))

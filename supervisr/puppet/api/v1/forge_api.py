@@ -1,6 +1,4 @@
-"""
-Supervisr Puppet Forge API views
-"""
+"""Supervisr Puppet Forge API views"""
 
 import logging
 from wsgiref.util import FileWrapper
@@ -13,6 +11,7 @@ from supervisr.core.models import Setting, User
 from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 
 LOGGER = logging.getLogger(__name__)
+
 
 def check_key(view_function):
     """Decorator to check puppet key in url"""
@@ -31,11 +30,13 @@ def check_key(view_function):
     wrap.__name__ = view_function.__name__
     return wrap
 
+
 @check_key
 # pylint: disable=unused-argument
 def module_list(request: HttpRequest) -> HttpResponse:
     """Return a list of modules"""
     return HttpResponse('Not Implemented yet!', status=501)
+
 
 @check_key
 # pylint: disable=unused-argument
@@ -53,17 +54,20 @@ def module(request: HttpRequest, user: str, module: str) -> HttpResponse:
 
     return JsonResponse(_json_module(r_module))
 
+
 @check_key
 # pylint: disable=unused-argument
 def user_list(request: HttpRequest) -> HttpResponse:
     """Return user list"""
     return HttpResponse('Not Implemented yet!', status=501)
 
+
 @check_key
 # pylint: disable=unused-argument
 def user(request: HttpRequest, user: str) -> HttpResponse:
     """Return user information"""
     return HttpResponse('Not Implemented yet!', status=501)
+
 
 @check_key
 def release_list(request: HttpRequest) -> HttpResponse:
@@ -90,6 +94,7 @@ def release_list(request: HttpRequest) -> HttpResponse:
         "results": _json_release_list(releases)
     })
 
+
 @check_key
 # pylint: disable=unused-argument
 def release(request: HttpRequest, user: str, module: str, version: str) -> HttpResponse:
@@ -111,6 +116,7 @@ def release(request: HttpRequest, user: str, module: str, version: str) -> HttpR
 
     return JsonResponse(_json_release(r_rel))
 
+
 @check_key
 # pylint: disable=unused-argument
 def file(request: HttpRequest, user: str, module: str, version: str) -> HttpResponse:
@@ -131,10 +137,10 @@ def file(request: HttpRequest, user: str, module: str, version: str) -> HttpResp
     p_module.save()
     return response
 
+
 # Json helpers
 # These methods convert PuppetModules or PuppetModuleReleases into Objects
 # which have the same structure as https://forgeapi.puppetlabs.com/
-
 def _json_release(release: PuppetModuleRelease):
     """Convert a single release"""
     return {
@@ -143,7 +149,7 @@ def _json_release(release: PuppetModuleRelease):
             'module': release.module.name,
             'version': release.version,
             'key': Setting.get('url_key')
-            }),
+        }),
         "slug": "%s-%s-%s" % (release.module.owner.username, release.module.name, release.version),
         "version": release.version,
         "module": {
@@ -151,14 +157,14 @@ def _json_release(release: PuppetModuleRelease):
                 'user': release.module.owner.username,
                 'module': release.module.name,
                 'key': Setting.get('url_key')
-                }),
+            }),
             "slug": "%s-%s" % (release.module.owner.username, release.module.name),
             "name": release.module.name,
             "owner": {
                 "url": reverse('supervisr_puppet_api_v1:user', kwargs={
                     'user': release.module.owner.username,
                     'key': Setting.get('url_key')
-                    }),
+                }),
                 "slug": release.module.owner.username,
                 "username": release.module.owner.username,
             }
@@ -168,7 +174,7 @@ def _json_release(release: PuppetModuleRelease):
         "supported": release.module.supported,
         "file_size": release.get_size,
         "file_md5": release.get_md5,
-        "file_uri": "/v3/files/%s-%s-%s.tar.gz" % (release.module.owner.username, \
+        "file_uri": "/v3/files/%s-%s-%s.tar.gz" % (release.module.owner.username,
                                                    release.module.name, release.version),
         "downloads": release.get_downloads,
         "readme": release.readme,
@@ -178,12 +184,14 @@ def _json_release(release: PuppetModuleRelease):
         "updated_at": release.update_at,
     }
 
+
 def _json_release_list(releases):
     """Create a list of releases"""
     arr = []
     for rel in releases:
         arr.append(_json_release(rel))
     return arr
+
 
 def _json_module(module: PuppetModule):
     """Convert a single module"""
@@ -192,7 +200,7 @@ def _json_module(module: PuppetModule):
             'user': module.owner.username,
             'module': module.name,
             'key': Setting.get('url_key')
-            }),
+        }),
         "name": module.name,
         "downloads": module.downloads,
         "created_at": module.create_at,
@@ -203,10 +211,10 @@ def _json_module(module: PuppetModule):
             "uri": reverse('supervisr_puppet_api_v1:user', kwargs={
                 'user': module.owner.username,
                 'key': Setting.get('url_key')
-                }),
+            }),
             "username": module.owner.username
         },
-        "current_release": _json_release(module.puppetmodulerelease_set.all() \
+        "current_release": _json_release(module.puppetmodulerelease_set.all()
                                          .order_by('-pk').first()),
         "releases": _json_release_list(module.puppetmodulerelease_set.all()),
         "homepage_url": "uri",

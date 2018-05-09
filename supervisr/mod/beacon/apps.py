@@ -1,7 +1,6 @@
 """Supervisr module beacon app config"""
 
-from supervisr.core.apps import SupervisrAppConfig
-from supervisr.core.thread.background import SCHEDULER
+from supervisr.core.apps import SettingBootstrapper, SupervisrAppConfig
 
 
 class SupervisrModBeaconConfig(SupervisrAppConfig):
@@ -14,17 +13,8 @@ class SupervisrModBeaconConfig(SupervisrAppConfig):
     title_modifier = lambda self, request: 'Beacon'
     navbar_enabled = lambda self, request: True
 
-    def ready(self):
-        super(SupervisrModBeaconConfig, self).ready()
-        from supervisr.mod.beacon.sender import Sender
-        sender = Sender()
-        SCHEDULER.every(15).minutes.do(sender.tick)
-        # Running a tick when the app starts breaks the admin interface somehow
-        # since sender.tick calls reverse internally to figure out the endpoint URL.
-        # sender.tick()
-
-    def ensure_settings(self):
-        return {
-            'enabled': True,
-            'endpoint': 'https://my.beryju.org'
-        }
+    def bootstrap(self):
+        settings = SettingBootstrapper()
+        settings.add(key='enabled', value=True)
+        settings.add(key='endpoint', value='https://my.beryju.org')
+        return settings,

@@ -1,4 +1,5 @@
 """ Static settings for supervisr and supervisr.* """
+# flake8: noqa
 ####################################################################################################
 ####################################################################################################
 ###
@@ -58,7 +59,7 @@ from django.contrib import messages
 SYSTEM_USER_NAME = 'supervisr'
 USER_PROFILE_ID_START = 5000
 
-REMEMBER_SESSION_AGE = 60 * 60 * 24 * 30 # One Month
+REMEMBER_SESSION_AGE = 60 * 60 * 24 * 30  # One Month
 
 LOGGER = logging.getLogger(__name__)
 
@@ -83,8 +84,8 @@ INSTALLED_APPS = [
     'supervisr.core.apps.SupervisrCoreConfig',
     'supervisr.puppet.apps.SupervisrPuppetConfig',
     'supervisr.dns.apps.SupervisrDNSConfig',
-    'supervisr.server.apps.SupervisrServerConfig',
-    'supervisr.web.apps.SupervisrWebConfig',
+    'supervisr.mod.provider.nix_dns.apps.SupervisrModProviderNixDNSConfig',
+    'supervisr.mod.provider.debug.apps.SupervisrModProviderDebugConfig',
     'supervisr.mail.apps.SupervisrMailConfig',
     'supervisr.static.apps.SupervisrStaticConfig',
     'supervisr.mod.beacon.apps.SupervisrModBeaconConfig',
@@ -94,19 +95,18 @@ INSTALLED_APPS = [
     'supervisr.mod.auth.oauth.client.apps.SupervisrModAuthOAuthClientConfig',
     'supervisr.mod.tfa.apps.SupervisrModTFAConfig',
     'supervisr.mod.stats.influx.apps.SupervisrModStatInfluxConfig',
-    'supervisr.mod.provider.google.apps.SupervisrModProviderGoogleConfig',
-    'supervisr.mod.provider.vmware.apps.SupervisrModProviderVMwareConfig',
-    'supervisr.mod.provider.foreman.apps.SupervisrModProviderForemanConfig',
     'supervisr.mod.provider.onlinenet.apps.SupervisrModProviderOnlineNetConfig',
     'formtools',
     'django.contrib.admin',
     'django.contrib.admindocs',
     'raven.contrib.django.raven_compat',
+    'revproxy',
 ]
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))+"/static"
-MEDIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/media"
+STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(
+    os.path.abspath(__file__)))) + "/static"
+MEDIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/media"
 SECRET_KEY = '_k*@6h2u2@q-dku57hhgzb7tnx*ba9wodcb^s9g0j59@=y(@_o' # noqa Debug SECRET_KEY
 DEBUG = True
 ALLOWED_HOSTS = ['*']
@@ -121,23 +121,20 @@ MEDIA_URL = '/media/'
 LOGIN_REDIRECT_URL = 'user-index'
 LOGIN_URL = 'account-login'
 
+REDIS = 'localhost'
+
+# Celery settings
+# Add a 10 minute timeout to all Celery tasks.
+CELERY_TASK_SOFT_TIME_LIMIT = 600
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULE = {}
+
 # Settings are taken from DB, these are dev keys as per
 # https://developers.google.com/recaptcha/docs/faq
 RECAPTCHA_PUBLIC_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
 RECAPTCHA_PRIVATE_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 
 INTERNAL_IPS = ['127.0.0.1']
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.path.join(BASE_DIR, 'cache'),
-        'TIMEOUT': 60,
-        'OPTIONS': {
-            'MAX_ENTRIES': 1000
-        }
-    }
-}
 
 MIDDLEWARE = [
     # Load DeployPage first so we can save unnecessary errores
@@ -234,7 +231,7 @@ STATICFILES_FINDERS = (
 EMAIL_FROM = 'Supervisr <supervisr@localhost>'
 
 LOG_LEVEL_FILE = 'DEBUG'
-LOG_LEVEL_CONSOLE = 'INFO'
+LOG_LEVEL_CONSOLE = 'DEBUG' if DEBUG else 'INFO'
 LOG_FILE = '/dev/null'
 
 LOG_SYSLOG_HOST = '127.0.0.1'
@@ -245,6 +242,7 @@ SENTRY_DSN = ('https://c5f3fa4e642d4dbfaa5db684bd0f6a13:7d639a81f'
 
 sys.path.append('/etc/supervisr')
 
+
 def load_local_settings(module_path):
     """Load module *mod* and apply contents to ourselves"""
     try:
@@ -254,13 +252,33 @@ def load_local_settings(module_path):
                 globals()[key] = value
         LOGGER.warning("Loaded '%s' as local_settings", module_path)
         return True
-    except ImportError as exception:
+    except (ImportError, PermissionError) as exception:
         LOGGER.info('Not loaded %s because %s', module_path, exception)
         return False
 
 for _module in [os.environ.get('SUPERVISR_LOCAL_SETTINGS', 'supervisr.local_settings'), 'config']:
     if load_local_settings(_module):
         break
+
+# Apply redis settings from local_settings
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://%s" % REDIS,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+DJANGO_REDIS_IGNORE_EXCEPTIONS = True
+DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS = True
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
+CELERY_TASK_DEFAULT_QUEUE = 'supervisr'
+CELERY_BROKER_URL = 'redis://%s' % REDIS
+CELERY_RESULT_BACKEND = 'redis://%s' % REDIS
 
 SERVER_EMAIL = EMAIL_FROM
 ENVIRONMENT = 'production' if DEBUG is False else 'development'
@@ -289,9 +307,9 @@ LOGGING = {
             'format': ('[%(asctime)s] %(levelname)s '
                        '[%(name)s::%(funcName)s::%(lineno)s] %(message)s'),
         },
-        'syslog': {
-            'format': '%(asctime)s supervisr %(funcName)s: %(message)s',
-            'datefmt': '%Y-%m-%dT%H:%M:%S',
+        'verbose': {
+            'format': ('%(process)-5d %(thread)d %(name)-45s '
+                       '%(levelname)-8s %(funcName)-20s %(message)s'),
         },
     },
     'handlers': {
@@ -307,7 +325,7 @@ LOGGING = {
         'syslog': {
             'level': LOG_LEVEL_FILE,
             'class': 'logging.handlers.SysLogHandler',
-            'formatter': 'syslog',
+            'formatter': 'verbose',
             'address': (LOG_SYSLOG_HOST, LOG_SYSLOG_PORT)
         },
         'file': {
@@ -342,7 +360,7 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'schedule': {
+        'celery': {
             'handlers': LOG_HANDLERS,
             'level': 'DEBUG',
             'propagate': True,
@@ -363,10 +381,14 @@ if DEBUG is True:
     INSTALLED_APPS.append('debug_toolbar')
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
 
+if TEST is True:
+    # Run celery tasks locally in unit tests
+    CELERY_ALWAYS_EAGER = True
+
 # Load subapps's INSTALLED_APPS
 for _app in INSTALLED_APPS:
     if _app.startswith('supervisr') and \
-        not _app.startswith('supervisr.core.'):
+            not _app.startswith('supervisr.core.'):
         _app_package = '.'.join(_app.split('.')[:-2])
         try:
             app_settings = importlib.import_module("%s.settings" % _app_package)
@@ -374,5 +396,6 @@ for _app in INSTALLED_APPS:
             MIDDLEWARE.extend(getattr(app_settings, 'MIDDLEWARE', []))
             AUTHENTICATION_BACKENDS.extend(getattr(app_settings, 'AUTHENTICATION_BACKENDS', []))
             DATABASE_ROUTERS.extend(getattr(app_settings, 'DATABASE_ROUTERS', []))
+            CELERY_BEAT_SCHEDULE.update(getattr(app_settings, 'CELERY_BEAT_SCHEDULE', {}))
         except ImportError:
             pass

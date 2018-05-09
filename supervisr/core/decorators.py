@@ -3,22 +3,26 @@ supervisr view decorators
 """
 
 import base64
-import time
+from time import time as timestamp
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.core.cache import cache
+from django.core.exceptions import AppRegistryNotReady, ObjectDoesNotExist
+from django.db.utils import InternalError, OperationalError, ProgrammingError
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils.functional import wraps
 from django.utils.http import urlencode
 from django.utils.translation import ugettext_lazy as _
 
-from supervisr.core.models import Setting
+from supervisr.core.statistics import stat_set
 from supervisr.core.utils import get_apps
 
 REAUTH_KEY = getattr(settings, 'REAUTH_KEY', 'supervisr_require_reauth_done')
 REAUTH_MARGIN = getattr(settings, 'REAUTH_MARGIN', 300)
+
 
 def anonymous_required(view_function):
     """
@@ -33,9 +37,34 @@ def anonymous_required(view_function):
             return redirect(reverse('common-index'))
         return view_function(*args, **kwargs)
 
-    wrap.__doc__ = view_function.__doc__
-    wrap.__name__ = view_function.__name__
-    return wrap
+    return wraps(view_function)(wrap)
+
+
+def database_catchall(default):
+    """Decorator to catch all possible Database Errors and return a default value"""
+
+    def outer_wrapper(method):
+        """Decorator to catch all possible Database Errors and return a default value"""
+
+        def catchall(*args, **kwargs):
+            """Decorator to catch all possible Database Errors and return a default value"""
+            try:
+                return method(*args, **kwargs)
+            except (AppRegistryNotReady, ObjectDoesNotExist,
+                    OperationalError, InternalError, ProgrammingError):
+                # Handle Postgres transaction revert
+                if 'postgresql' in settings.DATABASES['default']['ENGINE']:
+                    from django.db import connection
+                    # pylint: disable=protected-access
+                    connection._rollback()
+                return default
+            else:
+                return default
+
+        return wraps(method)(catchall)
+
+    return outer_wrapper
+
 
 def reauth_required(view_function):
     """
@@ -50,30 +79,49 @@ def reauth_required(view_function):
         if not req or not req.user or not req.user.is_authenticated:
             return redirect(reverse('account-login'))
 
-        now = time.time()
+        now = timestamp()
 
         if REAUTH_KEY in req.session and \
-            req.session[REAUTH_KEY] < (now - REAUTH_MARGIN):
+                req.session[REAUTH_KEY] < (now - REAUTH_MARGIN):
             # Timestamp in session but expired
             del req.session[REAUTH_KEY]
 
         if REAUTH_KEY not in req.session:
             # Timestamp not in session, force user to reauth
-            return redirect(reverse('account-reauth')+'?'+
+            return redirect(reverse('account-reauth') + '?' +
                             urlencode({'next': req.path}))
 
         if REAUTH_KEY in req.session and \
-            req.session[REAUTH_KEY] >= (now - REAUTH_MARGIN) and \
-            req.session[REAUTH_KEY] <= now:
+                req.session[REAUTH_KEY] >= (now - REAUTH_MARGIN) and \
+                req.session[REAUTH_KEY] <= now:
             # Timestamp in session and valid
             return view_function(*args, **kwargs)
 
         # This should never be reached, just return False
         return False  # pragma: no cover
 
-    wrap.__doc__ = view_function.__doc__
-    wrap.__name__ = view_function.__name__
-    return wrap
+    return wraps(view_function)(wrap)
+
+
+def time(statistic_key):
+    """Decorator to time a method call"""
+
+    def outer_wrapper(method):
+        """Decorator to time a method call"""
+
+        def timed(*args, **kwargs):
+            """Decorator to time a method call"""
+            time_start = timestamp()
+            result = method(*args, **kwargs)
+            time_end = timestamp()
+
+            stat_set(statistic_key, time_end - time_start)
+            return result
+
+        return wraps(method)(timed)
+
+    return outer_wrapper
+
 
 def require_setting(path, value, message=_('This function has been administratively disabled.')):
     """Check if setting under *key* has value of *value*
@@ -91,24 +139,24 @@ def require_setting(path, value, message=_('This function has been administrativ
         """Check if setting under *key* has value of *value*"""
         def wrap(request, *args, **kwargs):
             """Check if setting under *key* has value of *value*"""
+            from supervisr.core.models import Setting
+
             namespace, key = path.split('/')
             setting = Setting.objects.filter(namespace=namespace, key=key)
 
             # pylint: disable=unidiomatic-typecheck
             if setting.exists() and \
-                    (type(value) == bool and setting.first().value_bool != value or \
-                    type(value) != bool and setting.first().value != value):
+                    (type(value) == bool and setting.first().value_bool != value or
+                     type(value) != bool and setting.first().value != value):
                 # Only show error if setting exists and doesnt match value
                 return render(request, 'common/error.html', {'message': message})
 
             return view_func(request, *args, **kwargs)
 
-        wrap.__doc__ = view_func.__doc__
-        wrap.__name__ = view_func.__name__
-
-        return wrap
+        return wraps(view_func)(wrap)
 
     return outer_wrap
+
 
 def ifapp(app_name):
     """Only executes ifapp_func if app_name is installed"""
@@ -124,7 +172,7 @@ def ifapp(app_name):
                 app_cache.append(app.label)
             cache.set(cache_key, app_cache, 1000)
             return app_cache
-        return cache.get(cache_key) # pragma: no cover
+        return cache.get(cache_key)  # pragma: no cover
 
     app_cache = get_app_labels()
 
@@ -136,10 +184,7 @@ def ifapp(app_name):
             if app_name in app_cache or app_name == 'supervisr_core':
                 return ifapp_func(*args, **kwargs)
             return False
-        wrap.__doc__ = ifapp_func.__doc__
-        wrap.__name__ = ifapp_func.__name__
-
-        return wrap
+        return wraps(ifapp_func)(wrap)
 
     return outer_wrap
 
@@ -181,6 +226,7 @@ def view_or_basicauth(view, request, test_func, realm, *args, **kwargs):
     response['WWW-Authenticate'] = 'Basic realm="%s"' % realm
     return response
 
+
 def logged_in_or_basicauth(realm=""):
     """
     A simple decorator that requires a user to be logged in. If they are not
@@ -211,15 +257,11 @@ def logged_in_or_basicauth(realm=""):
     You can provide the name of the realm to ask for authentication within.
     """
     def view_decorator(func):
-        """
-        Outter wrapper
-        """
+        """Outter wrapper"""
         def wrapper(request, *args, **kwargs):
-            """
-            Inner wrapper
-            """
+            """Inner wrapper"""
             return view_or_basicauth(func, request,
                                      lambda u: u.is_authenticated,
                                      realm, *args, **kwargs)
-        return wrapper
+        return wraps(func)(wrapper)
     return view_decorator

@@ -19,6 +19,7 @@ class GoogleOAuthRedirect(OAuthRedirect):
             'scope': 'email profile',
         }
 
+
 class GoogleOAuth2Callback(OAuthCallback):
     """
     Google OAuth2 Callback

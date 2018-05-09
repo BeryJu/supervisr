@@ -10,13 +10,11 @@ from django.db.models.fields import NOT_PROVIDED
 from django.http import Http404
 
 from supervisr.core.api.crud import CRUDAPI
-from supervisr.core.models import Product, UserProductRelationship
+from supervisr.core.models import UserAcquirable, UserAcquirableRelationship
 
 
 class ModelAPI(CRUDAPI):
-    """
-    Basic API for Models
-    """
+    """Basic API for Models"""
 
     model = None
     form = None
@@ -26,9 +24,7 @@ class ModelAPI(CRUDAPI):
     editable_fields = ['name']
 
     def pre_handler(self, handler, request):
-        """
-        Check if form is set and read fields from it
-        """
+        """Check if form is set and read fields from it"""
         if self.form:
             # Wrapper for single form APIs
             if not isinstance(self.form, collections.Sequence):
@@ -57,17 +53,13 @@ class ModelAPI(CRUDAPI):
 
     @staticmethod
     def user_filter(queryset, user):
-        """
-        This method is used to check if the user has access
-        """
+        """This method is used to check if the user has access"""
         if not user.is_authenticated:
             raise PermissionDenied
         return queryset
 
     def model_to_dict(self, qs):
-        """
-        Convert queryset to dict
-        """
+        """Convert queryset to dict"""
         final_arr = []
         for m_inst in qs:
             inst_dict = {'pk': m_inst.pk}
@@ -81,9 +73,7 @@ class ModelAPI(CRUDAPI):
 
     @staticmethod
     def sanitize_data(data, keyset):
-        """
-        Sanitize data with keyset
-        """
+        """Sanitize data with keyset"""
         new_data = {}
         for key, value in data.items():
             if key in keyset:
@@ -92,18 +82,14 @@ class ModelAPI(CRUDAPI):
 
     @staticmethod
     def check_keys(data, keyset):
-        """
-        Check if data has all keys it should have
-        """
+        """Check if data has all keys it should have"""
         for key in keyset:
             if key not in data:
                 raise KeyError('Key %s not in data' % key)
         return True
 
     def fill_with_defaults(self, data):
-        """
-        Fill up data with defaults from model
-        """
+        """Fill up data with defaults from model"""
         # pylint: disable=not-callable
         model = self.model()
         for field in model._meta.get_fields():
@@ -116,9 +102,7 @@ class ModelAPI(CRUDAPI):
         return data
 
     def resolve_foreign_key(self, data):
-        """
-        Check for fields which are ForeignKey and resolve pk to instance
-        """
+        """Check for fields which are ForeignKey and resolve pk to instance"""
         # pylint: disable=not-callable
         model = self.model()
         for field in model._meta.get_fields():
@@ -132,9 +116,7 @@ class ModelAPI(CRUDAPI):
         return data
 
     def create(self, request, data):
-        """
-        Create instance based on request data
-        """
+        """Create instance based on request data"""
         # Make sure only allowed fields are present
         sanitized = ModelAPI.sanitize_data(data, self.editable_fields)
         # # Fill data with model default data
@@ -147,9 +129,7 @@ class ModelAPI(CRUDAPI):
         return self.model_to_dict([inst, ])
 
     def read(self, request, data):
-        """
-        Show list of models
-        """
+        """Show list of models"""
         # Make sure only allowed fields are present
         sanitized = ModelAPI.sanitize_data(data, self.queryable_fields)
         all_instances = self.model.objects.filter(**sanitized)
@@ -158,9 +138,7 @@ class ModelAPI(CRUDAPI):
         return self.model_to_dict(filtered)
 
     def update(self, request, data):
-        """
-        Update model based on pk parameter
-        """
+        """Update model based on pk parameter"""
         # Check if primary key is set
         if 'pk' not in data:
             raise Http404
@@ -182,9 +160,7 @@ class ModelAPI(CRUDAPI):
         return self.model_to_dict([r_inst, ])
 
     def delete(self, request, data):
-        """
-        Delete model instance
-        """
+        """Delete model instance"""
         # Check if primary key is set
         if 'pk' not in data:
             raise Http404
@@ -197,20 +173,17 @@ class ModelAPI(CRUDAPI):
         r_inst.delete()
         return {'success': True}
 
-class ProductAPI(ModelAPI):
-    """
-    ModelAPI optimized for Product-based Models
-    """
 
-    model = Product
+class UserAcquirableModelAPI(ModelAPI):
+    """ModelAPI optimized for UserAcquirable Models"""
+
+    model = UserAcquirable
 
     def create(self, request, data):
-        """
-        Create instance based on request data
-        """
-        orig = super(ProductAPI, self).create(request, data)
-        prod = orig[0]
-        UserProductRelationship.objects.create(
-            product=prod,
+        """Create instance based on request data"""
+        original = super(UserAcquirableModelAPI, self).create(request, data)
+        model = original[0]
+        UserAcquirableRelationship.objects.create(
+            model=model,
             user=request.user)
-        return orig
+        return original

@@ -10,6 +10,7 @@ from supervisr.core.models import CastableModel, CreatedUpdatedModel, Product
 
 LOGGER = logging.getLogger(__name__)
 
+
 class StaticPage(CreatedUpdatedModel, CastableModel):
     """Store static page"""
     content = models.TextField()
@@ -29,6 +30,7 @@ class StaticPage(CreatedUpdatedModel, CastableModel):
 
     class Meta:
         unique_together = (('slug', 'language',),)
+
 
 class FilePage(StaticPage):
     """Stora static page, which is read from file on start"""
@@ -53,6 +55,7 @@ class FilePage(StaticPage):
 
     def __str__(self):
         return "FilePage %s (slug=%s, path=%s)" % (self.title, self.slug, self.path)
+
 
 class ProductPage(StaticPage):
     """A Page specific for a product"""

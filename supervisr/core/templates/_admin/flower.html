@@ -1,0 +1,37 @@
+{% extends "_admin/base.html" %}
+
+{% load supervisr_title %}
+{% load i18n %}
+{% load setting %}
+
+{% block title %}
+{% supervisr_title "Flower" %}
+{% endblock %}
+
+{% block header %}
+{{ block.super }}
+<style>
+  .row {
+    height: calc(100% - 60px - 1rem);
+  }
+  .col-md-12 {
+    height: 100%;
+  }
+  iframe {
+    height: 100%;
+    width: 100%;
+    border: 0;
+  }
+</style>
+{% endblock %}
+
+{% block content_area %}
+<div class="container">
+  <h1><clr-icon shape="flame" size="48"></clr-icon>{% trans "Flower" %}</h1>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <iframe src="{% url 'admin-flower-proxy' path='' %}"></iframe>
+  </div>
+</div>
+{% endblock %}

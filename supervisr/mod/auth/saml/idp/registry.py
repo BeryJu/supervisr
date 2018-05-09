@@ -17,6 +17,7 @@ def get_processor(remote):
     proc = path_to_class(remote.processor_path)
     return proc(remote)
 
+
 def find_processor(request):
     """
     Returns the Processor instance that is willing to handle this request.

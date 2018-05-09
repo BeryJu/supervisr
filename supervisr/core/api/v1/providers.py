@@ -2,13 +2,13 @@
 Supervisr Core Provider APIv1
 """
 
-from supervisr.core.api.models import ProductAPI
+from supervisr.core.api.models import UserAcquirableModelAPI
 from supervisr.core.forms.providers import ProviderForm
 from supervisr.core.models import ProviderInstance
 from supervisr.core.providers.base import get_providers
 
 
-class ProviderAPI(ProductAPI):
+class ProviderAPI(UserAcquirableModelAPI):
     """
     Provider API
     """

@@ -8,6 +8,7 @@ from supervisr.core.providers.domain import DomainProvider
 
 LOGGER = logging.getLogger(__name__)
 
+
 class OnlineNetDomainProvider(DomainProvider):
     """
     OnlineNet provider

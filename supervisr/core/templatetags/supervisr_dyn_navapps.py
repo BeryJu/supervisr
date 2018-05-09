@@ -15,6 +15,7 @@ register = template.Library()
 
 LOGGER = logging.getLogger(__name__)
 
+
 @register.simple_tag(takes_context=True)
 def supervisr_dyn_navapps(context):
     """
@@ -45,10 +46,10 @@ def supervisr_dyn_navapps(context):
                         'label': app.label,
                         'title': title,
                         'index': index
-                        })
+                    })
                 except NoReverseMatch:
                     LOGGER.debug("View '%s' not reversable, ignoring %s", index, app.name)
         sorted_list = sorted(app_list, key=lambda x: x.get('label'))
         cache.set(key, sorted_list, 1000)
         return sorted_list
-    return cache.get(key) # pragma: no cover
+    return cache.get(key)  # pragma: no cover

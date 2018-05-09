@@ -2,6 +2,8 @@
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.db import models
 from django.db.models.query import QuerySet
 from django.forms import ModelForm
 from django.http import Http404, HttpRequest, HttpResponse
@@ -11,7 +13,15 @@ from django.utils.translation import ugettext as _
 from django.views import View
 
 
-class GenericModelView(View):
+class LoginRequiredView(View):
+    """Utility View class that always requires login"""
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LoginRequiredView, self).dispatch(*args, **kwargs)
+
+
+class GenericModelView(LoginRequiredView):
     """Generic View to interact with a model"""
 
     model = None
@@ -40,10 +50,42 @@ class GenericModelView(View):
         raise NotImplementedError()
 
     def redirect(self, instance) -> HttpResponse:
-        """Redirect after a successful edit"""
+        """Redirect after a successful write operation"""
         raise NotImplementedError()
 
-# pylint: disable=abstract-method
+
+class GenericIndexView(GenericModelView):
+    """Generic view to view a list of objects"""
+
+    def render(self, kwargs: dict) -> HttpResponse:
+        """Render template with kwargs"""
+        return render(self.request, self.template, kwargs)
+
+    def update_kwargs(self, kwargs: dict) -> dict:
+        """Add additional data to render kwargs"""
+        return kwargs
+
+    def redirect(self, instance) -> HttpResponse:
+        """This method isnt used by GenericIndexView"""
+        pass
+
+    def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
+        """Handle get request"""
+        instances = self.get_instance()
+        paginator = Paginator(instances, request.user.rows_per_page)
+
+        page = request.GET.get('page')
+        try:
+            page_instances = paginator.page(page)
+        except PageNotAnInteger:
+            page_instances = paginator.page(1)
+        except EmptyPage:
+            page_instances = paginator.page(paginator.num_pages)
+
+        render_kwargs = self.update_kwargs({'instances': page_instances})
+        return self.render(render_kwargs)
+
+
 class GenericReadView(GenericModelView):
     """Generic view to view an object instance"""
 
@@ -51,9 +93,13 @@ class GenericReadView(GenericModelView):
         """Render template with kwargs"""
         return render(self.request, self.template, kwargs)
 
-    def update_kwargs(self, kwargs):
+    def update_kwargs(self, kwargs) -> dict:
         """Add additional data to render kwargs"""
         return kwargs
+
+    def redirect(self, instance) -> HttpResponse:
+        """Since this a read-only view we don't need this method"""
+        pass
 
     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle get request"""
@@ -64,6 +110,7 @@ class GenericReadView(GenericModelView):
         instance = instances.first()
         render_kwargs = self.update_kwargs({'instance': instance})
         return self.render(render_kwargs)
+
 
 # pylint: disable=abstract-method
 class GenericUpdateView(GenericModelView):
@@ -90,6 +137,10 @@ class GenericUpdateView(GenericModelView):
         """Edit form instance after it has been instantiated"""
         return form
 
+    def save(self, form: ModelForm) -> models.Model:
+        """Save the data from the form"""
+        return form.save()
+
     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle Get request"""
         instances = self.get_instance()
@@ -111,11 +162,12 @@ class GenericUpdateView(GenericModelView):
         # pylint: disable=not-callable
         form = self.update_form(self.form(request.POST, instance=instance))
         if form.is_valid():
-            form.save()
+            self.save(form)
             messages.success(self.request, _('Successfully edited %(verbose_name)s'
-                                             % {'verbose_name': self.model_verbose_name }))
+                                             % {'verbose_name': self.model_verbose_name}))
             return self.redirect(instance)
         return self.render(form)
+
 
 # pylint: disable=abstract-method
 class GenericDeleteView(GenericModelView):

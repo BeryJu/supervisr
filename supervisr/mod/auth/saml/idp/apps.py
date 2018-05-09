@@ -1,6 +1,6 @@
 """Supervisr mod saml_idp app config"""
 
-from supervisr.core.apps import SupervisrAppConfig
+from supervisr.core.apps import SettingBootstrapper, SupervisrAppConfig
 
 
 class SupervisrModAuthSAMLProvider(SupervisrAppConfig):
@@ -20,16 +20,16 @@ class SupervisrModAuthSAMLProvider(SupervisrAppConfig):
         'processors.nextcloud',
         'processors.wordpress_orange',
         'models',
-        ]
+    ]
 
-    def ensure_settings(self):
+    def bootstrap(self):
+        settings = SettingBootstrapper()
         from supervisr.core.models import Setting
         domain = Setting.get('domain')
-        return {
-            'issuer': domain,
-            'certificate': '',
-            'private_key': '',
-            'signing': True,
-            'autosubmit': True,
-            'assertion_valid_for': 15
-        }
+        settings.add(key='issuer', value=domain)
+        settings.add(key='certificate', value='')
+        settings.add(key='private_key', value='')
+        settings.add(key='signing', value=True)
+        settings.add(key='autosubmit', value=True)
+        settings.add(key='assertion_valid_for', value=1)
+        return settings,

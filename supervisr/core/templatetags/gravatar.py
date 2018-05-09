@@ -9,6 +9,7 @@ from django.utils.html import escape
 
 register = template.Library()
 
+
 @register.simple_tag
 def gravatar(email, size=None, rating=None):
     """

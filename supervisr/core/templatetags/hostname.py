@@ -7,12 +7,14 @@ from django import template
 
 register = template.Library()
 
+
 @register.simple_tag
 def hostname():
     """
     Return the current Host's short hostname
     """
     return socket.gethostname()
+
 
 @register.simple_tag
 def fqdn():

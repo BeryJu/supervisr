@@ -19,6 +19,9 @@
   <a data-ctx-name="trash" class="btn">
     <clr-icon shape="trash"></clr-icon>
   </a>
+  <a data-ctx-name="diff" class="btn">
+    <clr-icon shape="layers"></clr-icon>
+  </a>
 </div>
 <table class="table instances">
   <thead>
@@ -26,15 +29,17 @@
       <th>{% trans 'Name' %}</th>
       <th>{% trans 'Provider' %}</th>
       <th>{% trans 'Credentials' %}</th>
+      <th>{% trans 'Capabilities' %}</th>
       <th>{% trans 'Authentication Status' %}</th>
     </tr>
   </thead>
   <tbody>
-    {% for instance in providers %}
+    {% for instance in instances %}
     <tr data-selectable data-ctx-edit="{% url 'instance-edit' uuid=instance.uuid %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'instance-delete' uuid=instance.uuid %}?back={{ request.get_full_path }}">
       <td><span>{{ instance.name }}</span></td>
       <td><span>{{ instance.provider.get_meta.ui_name }}</span></td>
       <td><span>{{ instance.credentials.name }}</span></td>
+      <td><span>{{ instance.provider.get_meta.get_capabilities|join:', ' }}</span></td>
       <td>
         {% with status=instance.provider.check_status %}
           {% if status == True %}
@@ -51,6 +56,7 @@
 {% endblock %}
 
 {% block scripts %}
+{{ block.super }}
 <script>
 clrTableSelect('.container');
 </script>

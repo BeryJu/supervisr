@@ -1,28 +1,20 @@
-"""
-Supervisr Core Form Test
-"""
+"""Supervisr Core Form Test"""
 
-import os
-
-from django.test import TestCase
 
 from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
                                            PasswordResetFinishForm, SignupForm)
 from supervisr.core.forms.domains import DomainForm
-from supervisr.core.models import (ProviderInstance, Setting, User,
-                                   UserProductRelationship, get_system_user)
-from supervisr.core.providers.internal import InternalCredential
-from supervisr.core.test.utils import test_request
-from supervisr.core.views.common import index
+from supervisr.core.models import (EmptyCredential, ProviderInstance, Setting,
+                                   User, UserAcquirableRelationship)
+from supervisr.core.test.utils import TestCase, test_request
+from supervisr.core.views.common import IndexView
 
 
 class TestForms(TestCase):
-    """
-    Supervisr Core Form Test
-    """
+    """Supervisr Core Form Test"""
 
     def setUp(self):
-        os.environ['RECAPTCHA_TESTING'] = 'True'
+        super(TestForms, self).setUp()
         self.signup_data = {
             'name': 'Test user',
             'username': 'beryjuorg',
@@ -45,21 +37,25 @@ class TestForms(TestCase):
         }
 
     def test_signup_form(self):
-        """
-        Test SignupForm's validation
-        """
+        """Test SignupForm's validation"""
         form = SignupForm(data=self.signup_data)
         self.assertTrue(form.is_valid())
 
         # Test duplicate username
-        user_b = User.objects.create(username='form_test_1')
+        user_a = User.objects.create(username='form_test_1')
         self.signup_data['username'] = 'form_test_1'
-        form_b = SignupForm(data=self.signup_data)
-        self.assertFalse(form_b.is_valid())
+        form_a = SignupForm(data=self.signup_data)
+        self.assertFalse(form_a.is_valid())
         self.signup_data['username'] = 'beryjuorg'
-        user_b.delete()
+        user_a.delete()
 
         # Test duplicate email
+        self.signup_data['password_rep'] = 'ayy'
+        form_b = SignupForm(data=self.signup_data)
+        self.assertFalse(form_b.is_valid())
+        self.signup_data['password_rep'] = self.signup_data['password']
+
+        # Test wrong password
         user_c = User.objects.create(username='form_test_1', email='dupe@test.test')
         self.signup_data['email'] = 'dupe@test.test'
         form_c = SignupForm(data=self.signup_data)
@@ -78,16 +74,12 @@ class TestForms(TestCase):
         user_d.delete()
 
     def test_login_form(self):
-        """
-        Test LoginForm's validation
-        """
+        """Test LoginForm's validation"""
         form = LoginForm(data=self.login_data)
         self.assertTrue(form.is_valid())
 
     def test_check_password(self):
-        """
-        Test change_password
-        """
+        """Test change_password"""
         # Set password filter
         Setting.set(key='password:filter', value=r'(.){8}', namespace='supervisr.core')
 
@@ -95,65 +87,60 @@ class TestForms(TestCase):
         form_a = ChangePasswordForm(data={
             'password': 'test',
             'password_rep': '',
-            })
+        })
         self.assertFalse(form_a.is_valid())
 
         # test non-matching passwords
         form_b = ChangePasswordForm(data={
             'password': 'test',
             'password_rep': 'testb',
-            })
+        })
         self.assertFalse(form_b.is_valid())
 
         # test weak password
         form_c = ChangePasswordForm(data={
             'password': 'test',
             'password_rep': 'test',
-            })
+        })
         self.assertFalse(form_c.is_valid())
 
     def test_password_reset_finish_form(self):
-        """
-        Test PasswordResetFinishForm
-        """
+        """Test PasswordResetFinishForm"""
         form = PasswordResetFinishForm(data=self.signup_data)
         self.assertTrue(form.is_valid())
 
     def test_domain_form(self):
-        """
-        Test Domain Form
-        """
-        user = User.objects.get(pk=get_system_user())
-        creds = InternalCredential.objects.create(
-            owner=user,
+        """Test Domain Form"""
+        creds = EmptyCredential.objects.create(
+            owner=self.system_user,
             name='internal')
         prov_inst = ProviderInstance.objects.create(
             credentials=creds,
-            provider_path='supervisr.core.providers.internal.InternalBaseProvider')
-        UserProductRelationship.objects.create(
-            product=prov_inst,
-            user=user)
+            provider_path='supervisr.mod.provider.debug.providers.core.DebugProvider')
+        UserAcquirableRelationship.objects.create(
+            model=prov_inst,
+            user=self.system_user)
 
         # Test valid form
         form_a = DomainForm(data={
-            'domain': 'test.org',
-            'provider': prov_inst.pk
+            'domain_name': 'test.org',
+            'provider_instance': prov_inst.pk
         })
-        form_a.request = test_request(index, user=user, just_request=True)
+        form_a.request = test_request(IndexView.as_view(), user=self.system_user, just_request=True)
         self.assertTrue(form_a.is_valid())
 
         # Test invalid domain
         form_b = DomainForm(data={
-            'domain': '1test.',
-            'provider': prov_inst.pk
+            'domain_name': '1test.',
+            'provider_instance': prov_inst.pk
         })
-        form_b.request = test_request(index, user=user, just_request=True)
+        form_b.request = test_request(IndexView.as_view(), user=self.system_user, just_request=True)
         self.assertFalse(form_b.is_valid())
 
         # Test invalid provider
         form_c = DomainForm(data={
-            'domain': 'test.org',
-            'provider': -1
+            'domain_name': 'test.org',
+            'provider_instance': -1
         })
-        form_c.request = test_request(index, user=user, just_request=True)
+        form_c.request = test_request(IndexView.as_view(), user=self.system_user, just_request=True)
         self.assertFalse(form_c.is_valid())

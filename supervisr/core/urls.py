@@ -21,8 +21,8 @@ from supervisr.core.views import (accounts, admin, common, domains, products,
 LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=invalid-name
-handler404 = 'supervisr.core.views.common.uncaught_404'
-handler500 = 'supervisr.core.views.common.uncaught_500'
+handler404 = common.Uncaught404View.as_view()
+handler500 = common.Uncaught500View.as_view()
 
 admin_django.site.index_title = _('Supervisr Admin')
 admin_django.site.site_title = _('supervisr')
@@ -33,7 +33,7 @@ admin_django.site.logout = RedirectView.as_view(pattern_name='account-logout',
 
 urlpatterns = [
     # Account views
-    url(r'^$', common.index, name='common-index'),
+    url(r'^$', common.IndexView.as_view(), name='common-index'),
     url(r'^search/$', search.search, name='search'),
     url(r'^accounts/login/$', accounts.LoginView.as_view(), name=django_settings.LOGIN_URL),
     url(r'^accounts/login/reauth/$', accounts.ReauthView.as_view(), name='account-reauth'),
@@ -56,26 +56,31 @@ urlpatterns = [
     url(r'^products/new/$', products.ProductNewWizard.as_view(), name='products-new'),
     url(r'^products/(?P<slug>[a-zA-Z0-9\-]+)/$', products.view, name='product-view'),
     # Domain views
-    url(r'^domains/$', domains.index, name='domain-index'),
+    url(r'^domains/$', domains.DomainIndexView.as_view(), name='domain-index'),
     url(r'^domains/new/$', domains.DomainNewView.as_view(), name='domain-new'),
     url(r'^domains/(?P<domain>%s)/edit/$' % DOMAIN_REGEX,
         domains.DomainEditView.as_view(), name='domain-edit'),
     url(r'^domains/(?P<domain>%s)/delete/$' % DOMAIN_REGEX,
         domains.DomainDeleteView.as_view(), name='domain-delete'),
     # Provider
-    url(r'^providers/instances/$', providers.instance_index, name='instance-index'),
-    url(r'^providers/instances/new/$', providers.ProviderNewView.as_view(),
+    url(r'^providers/instances/$', providers.ProviderIndexView.as_view(), name='instance-index'),
+    url(r'^providers/instances/new/$', providers.ProviderCreateView.as_view(),
         name='instance-new'),
-    url(r'^providers/instances/(?P<uuid>%s)/edit/$' % UUID_REGEX, providers.instance_edit,
-        name='instance-edit'),
-    url(r'^providers/instances/(?P<uuid>%s)/delete/$' % UUID_REGEX, providers.instance_delete,
-        name='instance-delete'),
+    # url(r'^providers/instances/(?P<uuid>%s)/diff/$' % UUID_REGEX,
+    #     providers.ProviderDiffView.as_view(), name='instance-diff'),
+    url(r'^providers/instances/(?P<uuid>%s)/edit/$' % UUID_REGEX,
+        providers.ProviderUpdateView.as_view(), name='instance-edit'),
+    url(r'^providers/instances/(?P<uuid>%s)/delete/$' % UUID_REGEX,
+        providers.ProviderDeleteView.as_view(), name='instance-delete'),
     # Credentials
-    url(r'^providers/credentials/$', providers.credential_index, name='credential-index'),
+    url(r'^providers/credentials/$',
+        providers.CredentialIndexView.as_view(), name='credential-index'),
     url(r'^providers/credentials/new/$', providers.CredentialNewView.as_view(),
         name='credential-new'),
+    url(r'^providers/credentials/(?P<name>[a-zA-Z0-9\-\.\_\s]+)/edit/$',
+        providers.CredentialUpdateView.as_view(), name='credential-edit'),
     url(r'^providers/credentials/(?P<name>[a-zA-Z0-9\-\.\_\s]+)/delete/$',
-        providers.credential_delete, name='credential-delete'),
+        providers.CredentialDeleteView.as_view(), name='credential-delete'),
     # User views
     url(r'^user/$', users.index, name='user-index'),
     url(r'^user/events/$', users.events, name='user-events'),
@@ -87,6 +92,8 @@ urlpatterns = [
     url(r'^admin/info/$', admin.info, name='admin-info'),
     url(r'^admin/events/$', admin.events, name='admin-events'),
     url(r'^admin/debug/$', admin.debug, name='admin-debug'),
+    url(r'^admin/flower/$', admin.FlowerView.as_view(), name='admin-flower'),
+    url(r'^proxy/flower/(?P<path>.*)$', admin.FlowerProxy.as_view(), name='admin-flower-proxy'),
     url(r'^admin/products/$', products.admin_index, name='admin-product_index'),
     # Settings
     url(r'^admin/settings/mod/default/$', settings.mod_default, name='admin-mod_default'),
@@ -100,6 +107,7 @@ urlpatterns = [
     # Robots.txt to stop 404s
     url(r'^robots\.txt', TemplateView.as_view(template_name='common/robots.txt')),
 ]
+
 
 def get_patterns(mount_path, module, namespace=None):
     """Check if module exists and return an array with urlpatterns"""
@@ -125,7 +133,7 @@ def get_patterns(mount_path, module, namespace=None):
 # Load Urls for all sub apps
 for app in get_apps():
     # API namespace is always generated automatically
-    api_namespace = '_'.join(app.name.split('_')+['api'])
+    api_namespace = '_'.join(app.name.split('_') + ['api'])
     # remove `supervisr/` for mountpath and replace _ with /
     mount_path = app.label.replace('supervisr_', '').replace('_', '/')
 

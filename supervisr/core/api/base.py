@@ -17,6 +17,7 @@ from supervisr.core.api.utils import api_response
 
 LOGGER = logging.getLogger(__name__)
 
+
 class API(View):
     """
     Basic API
@@ -79,8 +80,8 @@ class API(View):
     def authenticate_with_key(self, request: HttpRequest):
         """Try to authenticate with request data"""
         if settings.API_KEY_PARAM in request.GET or \
-            settings.API_KEY_PARAM in request.POST or \
-            settings.API_KEY_PARAM in request.META:
+                settings.API_KEY_PARAM in request.POST or \
+                settings.API_KEY_PARAM in request.META:
 
             user = authenticate(request)
             if user:

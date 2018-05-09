@@ -1,6 +1,4 @@
-"""
-Supervisr Core Account Views
-"""
+"""Supervisr Core Account Views"""
 
 import logging
 import time
@@ -38,6 +36,7 @@ from supervisr.core.signals import (SIG_USER_CHANGE_PASS, SIG_USER_CONFIRM,
 
 LOGGER = logging.getLogger(__name__)
 
+
 @method_decorator(anonymous_required, name='dispatch')
 class LoginView(View):
     """View to handle login logic"""
@@ -56,12 +55,15 @@ class LoginView(View):
             extra_links['account-reset_password_init'] = 'Reset your password'
         if Setting.get_bool('signup:enabled'):
             extra_links['account-signup'] = 'Sign up for an account'
+        # signin:enabled == False removes form
+        if not Setting.get_bool('signin:enabled'):
+            form = None
         return render(request, 'account/login.html', {
             'form': form,
             'title': _("SSO - Login"),
             'primary_action': _("Login"),
             'extra_links': extra_links
-            })
+        })
 
     def get(self, request: HttpRequest) -> HttpResponse:
         """Handle Get request
@@ -118,7 +120,7 @@ class LoginView(View):
         if cleaned_data.get('remember') is True:
             request.session.set_expiry(settings.REMEMBER_SESSION_AGE)
         else:
-            request.session.set_expiry(0) # Expires when browser is closed
+            request.session.set_expiry(0)  # Expires when browser is closed
         messages.success(request, _("Successfully logged in!"))
         LOGGER.debug("Successfully logged in %s", user.username)
         # Check if there is a next GET parameter and redirect to that
@@ -159,6 +161,7 @@ class LoginView(View):
         LOGGER.debug("Failed to log in %s", email)
         return redirect(reverse('account-login'))
 
+
 @method_decorator(anonymous_required, name='dispatch')
 @method_decorator(require_setting('supervisr.core/signup:enabled', True), name='dispatch')
 class SignupView(View):
@@ -177,7 +180,7 @@ class SignupView(View):
             'form': form,
             'title': _("SSO - Signup"),
             'primary_action': _("Signup")
-            })
+        })
 
     def create_user(self, data: Dict, request: HttpRequest = None) -> User:
         """Create user from data
@@ -199,7 +202,7 @@ class SignupView(View):
             first_name=data.get('name'),
             crypt6_password=sha512_crypt.hash(data.get('password')),
             unix_username=make_username(data.get('username'))
-            )
+        )
         new_user.is_active = False
         new_user.set_password(data.get('password'))
         new_user.save()
@@ -308,6 +311,7 @@ class ChangePasswordView(View):
         form = ChangePasswordForm()
         return self.render(request, form)
 
+
 @method_decorator(require_GET, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class LogoutView(View):
@@ -318,6 +322,7 @@ class LogoutView(View):
         django_logout(request)
         messages.success(request, _("Successfully logged out!"))
         return redirect(reverse('common-index'))
+
 
 @method_decorator(require_GET, name='dispatch')
 @method_decorator(anonymous_required, name='dispatch')
@@ -352,6 +357,7 @@ class AccountConfirmationView(View):
             raise Http404
         return redirect(reverse('account-login'))
 
+
 @method_decorator(anonymous_required, name='dispatch')
 @method_decorator(require_GET, name='dispatch')
 @method_decorator(require_setting('supervisr.core/password_reset:enabled', True), name='dispatch')
@@ -385,6 +391,7 @@ class PasswordResetInitView(View):
         """Get empty form"""
         form = PasswordResetInitForm()
         return self.render(request, form)
+
 
 @method_decorator(anonymous_required, name='dispatch')
 @method_decorator(require_GET, name='dispatch')
@@ -436,6 +443,7 @@ class PasswordResetFinishView(View):
         form = PasswordResetFinishForm()
         return self.render(request, form)
 
+
 @method_decorator(require_GET, name='dispatch')
 @method_decorator(anonymous_required, name='dispatch')
 class ConfirmationResendView(View):
@@ -461,6 +469,7 @@ class ConfirmationResendView(View):
             return redirect(reverse('account-login'))
         raise Http404
 
+
 @method_decorator(login_required, name='dispatch')
 class ReauthView(View):
     """View to re-authenticate user before important actions"""
@@ -471,7 +480,7 @@ class ReauthView(View):
             'form': form,
             'title': _("SSO - Re-Authenticate"),
             'primary_action': _("Login"),
-            })
+        })
 
     def post(self, request: HttpRequest) -> HttpResponse:
         """Handle Post request to validate password"""
@@ -497,6 +506,7 @@ class ReauthView(View):
         form = ReauthForm(initial={'email': request.user.email})
         return self.render(request, form)
 
+
 @method_decorator(login_required, name='dispatch')
 class EmailMissingView(View):
     """View to ask user for missing email"""
@@ -510,11 +520,11 @@ class EmailMissingView(View):
         Returns:
             Login template
         """
-        return render(request, 'account/login.html', {
+        return render(request, 'core/generic_form_login.html', {
             'form': form,
             'title': _("SSO - Add missing E-Mail"),
             'primary_action': _("Add"),
-            })
+        })
 
     def get(self, request: HttpRequest) -> HttpResponse:
         """Handle Get request
@@ -550,6 +560,5 @@ class EmailMissingView(View):
                 request=request
             )
             messages.success(request, _('Successfully sent confirmation E-Mail'))
-            django_logout(request)
-            return redirect(reverse('common-loign'))
+            return redirect(reverse(settings.LOGIN_URL))
         return self.render(request, form=form)

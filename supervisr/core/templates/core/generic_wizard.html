@@ -93,6 +93,7 @@
 {% endblock %}
 
 {% block scripts %}
+{{ block.super }}
 <script>
   $('[name="submit"].btn').on('click', function (e) {
     var hasErrors = false;

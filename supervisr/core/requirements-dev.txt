@@ -1,11 +1,14 @@
 astroid==1.5.3
 coverage
 isort
-pylint==1.7.5
-pylint-django
+pylint
+pylint-django<=0.9.4
 prospector
 django-debug-toolbar
 recommonmark
 autopep8
--e git+https://github.com/BeryJu/pdoc.git#egg=pdoc
+-e git+https://github.com/BeryJu/pdoc.git@ebb38ec5d2a023a31442757bba697c60d315578f#egg=pdoc
 markdown
+pre-commit
+mkdocs-material
+pyroma<=2.0

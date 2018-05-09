@@ -25,6 +25,7 @@ class GeneralSettingsForm(SettingsForm):
         'mode': forms.ChoiceField(widget=forms.RadioSelect, choices=MODE_CHOICES),
     }
 
+
 class ConnectionSettings(SettingsForm):
     """Connection settings form"""
 
@@ -41,6 +42,7 @@ class ConnectionSettings(SettingsForm):
         'server:tls': forms.BooleanField(required=False, label=_('Server TLS')),
     }
 
+
 class AuthenticationBackendSettings(SettingsForm):
     """Authentication backend settings"""
 
@@ -50,6 +52,7 @@ class AuthenticationBackendSettings(SettingsForm):
     attrs_map = {
         'base': {'placeholder': 'DN in which to search for users'},
     }
+
 
 class CreateUsersSettings(SettingsForm):
     """Create users settings"""

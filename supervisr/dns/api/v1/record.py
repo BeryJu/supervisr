@@ -3,17 +3,18 @@ Supervisr DNS r1 Record API
 """
 from django.http import HttpRequest, HttpResponse
 
-from supervisr.core.api.models import ProductAPI
+from supervisr.core.api.models import UserAcquirableModelAPI
 from supervisr.core.decorators import logged_in_or_basicauth
 from supervisr.core.utils import get_remote_ip
 from supervisr.dns.forms.records import RecordForm
 from supervisr.dns.models import Record, Zone
 
 
-class RecordAPI(ProductAPI):
+class RecordAPI(UserAcquirableModelAPI):
     """Record API"""
     model = Record
     form = RecordForm
+
 
 @logged_in_or_basicauth('Supervisr DNS Update')
 def dyndns_update(request: HttpRequest, zone: str, record: str) -> HttpResponse:

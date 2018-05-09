@@ -1,6 +1,4 @@
-"""
-Supervisr Puppet Module Builder
-"""
+"""Supervisr Puppet Module Builder"""
 import glob
 import gzip
 import io
@@ -15,12 +13,13 @@ from django.contrib.auth.models import Group
 from django.core.files import File
 from django.template import loader
 
+from supervisr.core.decorators import time
 from supervisr.core.models import User
-from supervisr.core.utils import time
 from supervisr.puppet.models import PuppetModuleRelease
 from supervisr.puppet.utils import ForgeImporter
 
 LOGGER = logging.getLogger(__name__)
+
 
 # pylint: disable=too-many-instance-attributes
 class ReleaseBuilder(object):
@@ -73,7 +72,7 @@ class ReleaseBuilder(object):
             'settings': conf.settings,
             'puppet_systemgroup': Group.objects.get(name='Puppet Systemusers'),
             'User': User.objects,
-            })
+        })
         return context
 
     def to_tarinfo(self, template, ctx, rel_path):
@@ -169,6 +168,6 @@ class ReleaseBuilder(object):
                     version=self.version,
                     release=File(temp_file))
         elif force_rebuild is True:
-            with open(prefix+'.tgz', mode='w+b') as file:
+            with open(prefix + '.tgz', mode='w+b') as file:
                 file.write(gzipped)
-                LOGGER.debug("Wrote module to %s", prefix+'.tgz')
+                LOGGER.debug("Wrote module to %s", prefix + '.tgz')

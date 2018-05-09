@@ -8,7 +8,7 @@ from django.http import HttpResponse, JsonResponse
 
 
 def api_response(request, data):
-    """Prase data in correct format extracted from request"""
+    """Parse data in correct format extracted from request"""
     selected_format = 'json'
     # Check if format is set as a GET Param
     format_keys = ['type', 'format']
@@ -26,8 +26,9 @@ def api_response(request, data):
         return handler(data=data, code=code)
     return JsonResponse({'error': "type '%s' not found" % selected_format, 'code': 400}, status=400)
 
+
 def api_response_openid(code, data):
-    """This method only renames some keys for OpenID, then uses JSON"""
+    """Serialize data to JSON then apply OpenID field names."""
     remap_table = {
         'id': 'sub',
         'pk': 'sub',
@@ -41,9 +42,9 @@ def api_response_openid(code, data):
             new_data[dest_key] = data['data'][init_key]
     return api_response_json(code, new_data)
 
+
 def api_response_json(code, data):
-    """Pass dict to django and let it handle the encoding etc"""
-    import json
+    """Serialize data to JSON"""
     def date_helper(obj):
         """JSON serializer for objects not serializable by default json code"""
 
@@ -54,11 +55,15 @@ def api_response_json(code, data):
 
         raise TypeError("Type %s not serializable" % type(obj))
 
-    data = json.dumps(data, sort_keys=True, indent=4, default=date_helper)
-    return HttpResponse(data, content_type='application/json', status=code)
+    return JsonResponse(data, status=code, json_dumps_params={
+        'sort_keys': True,
+        'indent': 4,
+        'default': date_helper
+    })
+
 
 def api_response_yaml(code, data):
-    """Return data as yaml dict"""
+    """Serialize data to YAML"""
     import yaml
     return HttpResponse(yaml.dump(data, default_flow_style=False),
                         content_type='text/x-yaml', status=code)

@@ -19,7 +19,7 @@
   </a>
 </h1>
 <div class="btn-group btn-link btn-icon-link">
-  <a href="{% url 'supervisr_dns:rres-create' %}" class="btn">
+  <a href="{% url 'supervisr_dns:resource-create' rset_uuid=instance.uuid %}" class="btn">
     <clr-icon shape="add"></clr-icon>
   </a>
   <a data-ctx-name="edit" class="btn">
@@ -41,8 +41,8 @@
   </thead>
   <tbody>
     {% for rec in records %}
-    <tr data-selectable data-ctx-edit="{% url 'supervisr_dns:rres-update' zone=dom.domain %}?back={{ request.get_full_path }}" data-ctx-trash="{%
-    url 'supervisr_dns:rres-delete' zone=dom.domain %}?back={{ request.get_full_path }}">
+    <tr data-selectable data-ctx-edit="{% url 'supervisr_dns:resource-update' resource_uuid=rec.uuid %}?back={{ request.get_full_path }}" data-ctx-trash="{%
+    url 'supervisr_dns:resource-delete' resource_uuid=rec.uuid %}?back={{ request.get_full_path }}">
       <td>{{ rec.name }}</td>
       <td>{{ rec.type }}</td>
       <td>{{ rec.ttl }}</td>
@@ -56,6 +56,7 @@
 {% endblock %}
 
 {% block scripts %}
+{{ block.super }}
 <script>
 clrTableSelect('.container');
 </script>

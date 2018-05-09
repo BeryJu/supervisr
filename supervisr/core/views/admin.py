@@ -1,7 +1,4 @@
-"""
-Supervisr Core Admin Views
-"""
-
+"""Supervisr Core Admin Views"""
 
 import platform
 import sys
@@ -12,27 +9,32 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.cache import cache
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
+from revproxy.views import ProxyView
 
 from supervisr.core.models import Event, Setting, User, get_system_user
 from supervisr.core.signals import SIG_GET_MOD_INFO, SIG_SETTING_UPDATE
+from supervisr.core.tasks import debug_progress_task
 from supervisr.core.utils import get_reverse_dns
+from supervisr.core.views.generic import LoginRequiredView
 
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def index(request):
+def index(request: HttpRequest) -> HttpResponse:
     """Admin index"""
     # Subtract the system user
-    user_count = User.objects.all().count() -1
+    user_count = User.objects.all().count() - 1
     return render(request, '_admin/index.html', {
         'user_count': user_count,
-        })
+    })
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def users(request):
+def users(request: HttpRequest) -> HttpResponse:
     """Show a list of all users"""
     users = User.objects.all().order_by('date_joined').exclude(pk=get_system_user())
     paginator = Paginator(users, request.user.rows_per_page)
@@ -46,11 +48,12 @@ def users(request):
         accounts = paginator.page(paginator.num_pages)
     return render(request, '_admin/users.html', {
         'users': accounts,
-        })
+    })
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def info(request):
+def info(request: HttpRequest) -> HttpResponse:
     """Show system information"""
     info_data = {
         'Version': {
@@ -81,9 +84,10 @@ def info(request):
         info_data[handler.__module__.split('.')[0]] = mod_info
     return render(request, '_admin/info.html', {'info': info_data})
 
+
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def events(request):
+def events(request: HttpRequest) -> HttpResponse:
     """Show paginated list of all events"""
     event_list = Event.objects.all().order_by('-create_date')
     paginator = Paginator(event_list, request.user.rows_per_page)
@@ -98,9 +102,10 @@ def events(request):
 
     return render(request, '_admin/events.html', {'events': event_page})
 
+
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def debug(request):
+def debug(request: HttpRequest) -> HttpResponse:
     """Show some misc debug buttons"""
     if request.method == 'POST':
         if 'raise_error' in request.POST:
@@ -112,4 +117,21 @@ def debug(request):
             setting = Setting.get('domain')
             SIG_SETTING_UPDATE.send(sender=setting)
             messages.success(request, _('Successfully updated settings.'))
+        elif 'start_task' in request.POST:
+            seconds = int(request.POST.get('start_task_sec'))
+            result = request.user.task_apply_async(debug_progress_task, seconds)
+            messages.success(request, _('Started Task, ID: %(id)s' % {'id': result.id}))
     return render(request, '_admin/debug.html')
+
+
+class FlowerView(LoginRequiredView):
+    """View to show iframe with flower"""
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Show template with iframe for flower"""
+        return render(request, '_admin/flower.html')
+
+
+class FlowerProxy(ProxyView, LoginRequiredView):
+    """Flower Proxy"""
+    upstream = 'http://localhost:5555'

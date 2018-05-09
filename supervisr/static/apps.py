@@ -7,6 +7,7 @@ from supervisr.core.apps import SupervisrAppConfig
 
 LOGGER = logging.getLogger(__name__)
 
+
 class SupervisrStaticConfig(SupervisrAppConfig):
     """supervisr Static app config"""
 
@@ -28,9 +29,9 @@ class SupervisrStaticConfig(SupervisrAppConfig):
         """Update all FilePages from File"""
         from supervisr.static.models import FilePage
         count = 0
-        for fpage in FilePage.objects.all():
-            if fpage.update_from_file():
-                LOGGER.debug("Successfully updated %s with '%s'", fpage.title, fpage.path)
+        for file_page in FilePage.objects.all():
+            if file_page.update_from_file():
+                LOGGER.debug("Successfully updated %s with '%s'", file_page.title, file_page.path)
                 count += 1
         LOGGER.debug("Successfully updated %d FilePages", count)
 
@@ -39,7 +40,7 @@ class SupervisrStaticConfig(SupervisrAppConfig):
         from supervisr.core.models import User
         from supervisr.core.models import Product, get_system_user
         from supervisr.static.models import ProductPage
-        products = Product.objects.filter(auto_generated=False).exclude(productpage__isnull=False)
+        products = Product.objects.all().exclude(productpage__isnull=False)
         for prod in products:
             ProductPage.objects.create(
                 title=prod.name,

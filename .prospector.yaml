@@ -10,12 +10,3 @@ ignore-paths:
 
 uses:
  - django
-
-pylint:
-  disable:
-     - redefined-outer-name
-     - arguments-differ
-     - no-self-use
-     - cyclic-import
-     - fixme
-     - locally-disabled

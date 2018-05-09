@@ -26,7 +26,7 @@ class RecordForm(forms.ModelForm):
     class Meta:
 
         model = Record
-        fields = ['domain', 'name', 'resource_set']
+        fields = ['name', 'resource_set', 'record_zone']
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': "Set to '@' for root-level records."}),
         }

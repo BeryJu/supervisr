@@ -30,10 +30,10 @@
     </tr>
   </thead>
   <tbody>
-    {% for domain in domains %}
-      <tr data-selectable data-ctx-edit="{% url 'domain-edit' domain=domain.domain %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'domain-delete' domain=domain.domain %}?back={{ request.get_full_path }}">
-        <td>{{ domain.domain }}</td>
-        <td>{{ domain.provider.name }}</td>
+    {% for domain in instances %}
+      <tr data-selectable data-ctx-edit="{% url 'domain-edit' domain=domain.domain_name %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'domain-delete' domain=domain.domain_name %}?back={{ request.get_full_path }}">
+        <td>{{ domain.domain_name }}</td>
+        <td>{{ domain.provider_instance.name }}</td>
         <td>
           {% if domain.managed %}
           <clr-icon shape="check"></clr-icon>
@@ -55,6 +55,7 @@
 {% endblock %}
 
 {% block scripts %}
+{{ block.super }}
 <script>
 clrTableSelect('');
 </script>

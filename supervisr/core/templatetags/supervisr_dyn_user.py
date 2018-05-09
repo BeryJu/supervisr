@@ -9,6 +9,7 @@ from supervisr.core.utils import get_apps
 
 register = template.Library()
 
+
 @register.simple_tag(takes_context=True)
 def supervisr_dyn_user(context):
     """
@@ -35,8 +36,8 @@ def supervisr_dyn_user(context):
                 app_list.append({
                     'title': title,
                     'view': view
-                    })
+                })
         sorted_list = sorted(app_list, key=lambda x: x['title'])
         cache.set(key, sorted_list, 1000)
         return sorted_list
-    return cache.get(key) # pragma: no cover
+    return cache.get(key)  # pragma: no cover

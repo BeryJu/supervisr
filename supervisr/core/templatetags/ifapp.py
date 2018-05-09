@@ -11,6 +11,7 @@ register = template.Library()
 
 LOGGER = logging.getLogger(__name__)
 
+
 @register.simple_tag()
 def ifapp(*args):
     """

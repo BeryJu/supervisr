@@ -3,7 +3,6 @@ before_script:
   - "python3 -m pip install -U virtualenv"
   - "virtualenv env"
   - "source env/bin/activate"
-  - "pip3 install invoke"
   - "pip install -U -r requirements.txt -r requirements-dev.txt"
 stages:
   - test
@@ -15,44 +14,55 @@ variables:
   # Configure mysql environment variables (https://hub.docker.com/r/_/mysql/)
   MYSQL_DATABASE: supervisr_test
   MYSQL_ROOT_PASSWORD: 'EK-5jnKfjrGRm<77'
-  POSTGRES_DB: supervisr_test
-  POSTGRES_USER: supervisr
-  POSTGRES_PASSWORD: 'EK-5jnKfjrGRm<77'
+  SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_ci
+services:
+  - redis:latest
+  - mariadb:latest
 
 # All normal tests
 coverage:
   except:
     - prod
   script:
-    - "inv supervisr.coverage"
+    - "inv ci.coverage"
   stage: test
   cache:
     paths:
       - env/
 pip_install:
+  before_script:
+    - "python3 -m pip install -U virtualenv"
   except:
     - prod
   script:
-    - "deactivate"
     - "virtualenv env"
     - "source env/bin/activate"
-    - "pip install git+${CI_REPOSITORY_URL}#egg=supervisr"
-    - "cp -R ./env/lib/python*/site-packages/supervisr/mod/_seed/* ."
+    - "pip install git+${CI_REPOSITORY_URL}@${CI_COMMIT_REF_NAME}#egg=supervisr[dev]"
+    - "cp -R ./env/lib/python*/site-packages/supervisr/cli/_seed/* ."
     - "python manage.py migrate"
 isort:
   except:
     - prod
   script:
-    - "inv supervisr.isort"
+    - "inv ci.isort"
   stage: test
   cache:
     paths:
       - env/
-migrations:
+migration_mariadb:
   except:
     - prod
   script:
-    - "inv utils.migrate"
+    - "inv supervisr.migrate"
+  stage: test
+  cache:
+    paths:
+      - env/
+pyroma:
+  except:
+    - prod
+  script:
+    - "inv ci.pyroma"
   stage: test
   cache:
     paths:
@@ -61,7 +71,7 @@ prospector:
   except:
     - prod
   script:
-    - "inv supervisr.prospector"
+    - "inv ci.prospector"
   stage: test
   cache:
     paths:
@@ -70,7 +80,7 @@ pylint:
   except:
     - prod
   script:
-    - "inv supervisr.lint"
+    - "inv ci.lint"
   stage: test
   cache:
     paths:
@@ -79,46 +89,8 @@ unittest:
   except:
     - prod
   script:
-    - "inv supervisr.unittest"
+    - "inv ci.unittest"
   stage: test
-  cache:
-    paths:
-      - env/
-
-# Database tests
-unittest_mysql:
-  services:
-    - mysql:latest
-  except:
-    - prod
-  script:
-    - pip install pymysql
-    - inv migrate
-    - inv unittest
-  variables:
-    SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_mysql
-  stage: test-db
-  only:
-    - db-*
-    - release-*
-  cache:
-    paths:
-      - env/
-unittest_pgsql:
-  services:
-    - postgres:latest
-  except:
-    - prod
-  script:
-    - pip install psycopg2
-    - inv migrate
-    - inv unittest
-  variables:
-    SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_pgsql
-  stage: test-db
-  only:
-    - db-*
-    - release-*
   cache:
     paths:
       - env/
@@ -137,8 +109,8 @@ bundle_release:
 
 # Deploy
 deploy:
-  before_script:
-    - ''
+  before_script: []
+  services: []
   environment:
     name: production
     url: "https://my.beryju.org"

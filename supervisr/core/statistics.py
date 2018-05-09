@@ -1,12 +1,7 @@
-"""
-Supervisr Core Statistics Wrapper
-"""
-
-from supervisr.core.signals import SIG_SET_STAT
+"""Supervisr Core Statistics Wrapper"""
 
 
 def stat_set(key, value):
-    """
-    Wrapper to easily set a statistic
-    """
-    return SIG_SET_STAT.send(key=key, value=value, sender=stat_set)
+    """Wrapper to easily set a statistic"""
+    from supervisr.core.tasks import stat_proxy
+    return stat_proxy.delay(key, value)

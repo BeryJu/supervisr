@@ -6,7 +6,6 @@ import socket
 from glob import glob
 from importlib import import_module
 from importlib.util import module_from_spec, spec_from_file_location
-from time import time as timestamp
 from uuid import uuid4
 
 from django.apps import apps
@@ -19,7 +18,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.apps import SupervisrAppConfig, SupervisrCoreConfig
-from supervisr.core.statistics import stat_set
 
 LOGGER = logging.getLogger(__name__)
 
@@ -32,9 +30,11 @@ def get_remote_ip(request: HttpRequest) -> str:
         return request.META.get('HTTP_X_FORWARDED_FOR')
     return request.META.get('REMOTE_ADDR')
 
+
 def uuid():
     """Return a UUID as string with just alphanumeric-chars"""
     return str(uuid4()).replace('-', '').upper()
+
 
 def get_reverse_dns(dev_ip):
     """Does a reverse DNS lookup and returns the first IP"""
@@ -46,6 +46,7 @@ def get_reverse_dns(dev_ip):
         pass
     return ''
 
+
 def do_404(request, message=None):
     """Boilerplate to return a 404 message"""
     return render(request, 'common/error.html', {
@@ -53,15 +54,18 @@ def do_404(request, message=None):
         'message': _(message) if message is not None else None
     }, status=404)
 
+
 def render_from_string(tmpl: str, ctx: Context) -> str:
     """Render template from string to string"""
     template = Template(tmpl)
     return template.render(ctx)
 
+
 def render_to_string(tmpl: str, ctx: Context) -> str:
     """Render a template to string"""
     template = loader.get_template(tmpl)
     return template.render(ctx)
+
 
 def get_apps(exclude=None):
     """Get a list of all installed apps"""
@@ -78,6 +82,7 @@ def get_apps(exclude=None):
                 app_list.append(app)
     return app_list
 
+
 def get_app_labels():
     """Cache all installed apps and return the list"""
     cache_key = 'core:app_labels'
@@ -88,30 +93,13 @@ def get_app_labels():
             app_cache.append(app.label)
         cache.set(cache_key, app_cache, 1000)
         return app_cache
-    return cache.get(cache_key) # pragma: no cover
+    return cache.get(cache_key)  # pragma: no cover
 
-def time(statistic_key):
-    """Decorator to time a method call"""
-
-    def outer_wrapper(method):
-        """Decorator to time a method call"""
-
-        def timed(*args, **kw):
-            """Decorator to time a method call"""
-            time_start = timestamp()
-            result = method(*args, **kw)
-            time_end = timestamp()
-
-            stat_set(statistic_key, (time_end - time_start) * 1000)
-            return result
-
-        return timed
-
-    return outer_wrapper
 
 def class_to_path(cls):
     """Turn Class (Class or instance) into module path"""
     return '%s.%s' % (cls.__module__, cls.__name__)
+
 
 def path_to_class(path):
     """Import module and return class"""
@@ -121,6 +109,7 @@ def path_to_class(path):
     package = '.'.join(parts[:-1])
     _class = getattr(import_module(package), parts[-1])
     return _class
+
 
 def db_settings_from_dbconfig(config_path):
     """Generate Django DATABASE dict from dbconfig file"""
@@ -152,27 +141,32 @@ def db_settings_from_dbconfig(config_path):
                     db_config['ENGINE'] = 'django.db.backends.postgresql'
         return db_config
 
+
 def read_simple(path, mode='r'):
     """Simple wrapper for file reading"""
     with open(path, mode) as file:
         return file.read()
 
+
 def import_dir(directory):
     """Import every file in a direct and call callback for each"""
-    files = glob(directory+'/*.py', recursive=True)
+    files = glob(directory + '/*.py', recursive=True)
     modules = []
     for file in files:
         spec = spec_from_file_location("", file)
         modules.append(module_from_spec(spec))
     return modules
 
+
 def b64encode(*args):
     """String wrapper around b64encode to removie binary fuckery"""
     return base64.b64encode(str.encode(''.join(args))).decode()
 
+
 def b64decode(*args):
     """String wrapper around b64decode to remove binary fuckery"""
     return base64.b64decode(''.join(args)).decode()
+
 
 def check_db_connection(connection_name: str = 'default') -> bool:
     """Check if a database connection can be made
@@ -192,6 +186,7 @@ def check_db_connection(connection_name: str = 'default') -> bool:
         return False
     else:
         return True
+
 
 def messages_add_once(request, level, text, **kwargs):
     """Add text to messages, but make sure no duplicates exist"""

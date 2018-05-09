@@ -10,11 +10,12 @@ from django.conf import settings
 from django.forms import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
-from supervisr.core.forms.core import check_password
+from supervisr.core.forms.utils import check_password
 from supervisr.core.models import Setting, User
 from supervisr.core.signals import SIG_CHECK_USER_EXISTS
 
 LOGGER = logging.getLogger(__name__)
+
 
 class LoginForm(forms.Form):
     """Form to handle logins"""
@@ -31,6 +32,7 @@ class LoginForm(forms.Form):
         super(LoginForm, self).__init__(*args, **kwargs)
         if not Setting.get_bool('recaptcha:enabled'):
             self.fields.pop('captcha')
+
 
 class SignupForm(forms.Form):
     """Form to handle signups"""
@@ -79,6 +81,7 @@ class SignupForm(forms.Form):
         """Check if Password adheres to filter and if passwords matche"""
         return check_password(self)
 
+
 class ChangePasswordForm(forms.Form):
     """Form to handle password changes"""
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
@@ -88,6 +91,7 @@ class ChangePasswordForm(forms.Form):
         """Check if Password adheres to filter and if passwords matche"""
         return check_password(self)
 
+
 class PasswordResetInitForm(forms.Form):
     """Form to initiate password resets"""
 
@@ -96,6 +100,7 @@ class PasswordResetInitForm(forms.Form):
         required=(not settings.DEBUG),
         private_key=Setting.get('recaptcha:private'),
         public_key=Setting.get('recaptcha:public'))
+
 
 class PasswordResetFinishForm(forms.Form):
     """Form to finish password resets"""
@@ -107,11 +112,13 @@ class PasswordResetFinishForm(forms.Form):
         """Check if Password adheres to filter and if passwords matche"""
         return check_password(self)
 
+
 class ReauthForm(forms.Form):
     """Form to reauthenticate users"""
 
     email = forms.EmailField(disabled=True, label=_('E-Mail'), required=False)
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
+
 
 class EmailMissingForm(forms.Form):
     """Form to ask user for email address if theirs is not set"""

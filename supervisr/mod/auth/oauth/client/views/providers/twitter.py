@@ -24,7 +24,7 @@ class TwitterOAuthClient(OAuthClient):
     def get_profile_info(self, raw_token):
         "Fetch user profile information."
         try:
-            response = self.request('get', self.provider.profile_url+"?include_email=true",
+            response = self.request('get', self.provider.profile_url + "?include_email=true",
                                     token=raw_token)
             response.raise_for_status()
         except RequestException as exc:
@@ -32,6 +32,7 @@ class TwitterOAuthClient(OAuthClient):
             return None
         else:
             return response.json() or response.text
+
 
 class TwitterOAuthCallback(OAuthCallback):
     """

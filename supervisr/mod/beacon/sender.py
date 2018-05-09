@@ -13,10 +13,10 @@ from django.urls import reverse
 
 from supervisr.core.models import Domain, Setting, User
 from supervisr.core.signals import SIG_SETTING_UPDATE
-from supervisr.core.thread.background import catch_exceptions
 from supervisr.mod.beacon.models import Pulse, PulseModule
 
 LOGGER = logging.getLogger(__name__)
+
 
 class Sender(object):
     """Class that sends anonymized"""
@@ -33,7 +33,7 @@ class Sender(object):
         self._endpoint = Setting.get('endpoint')
         self._install_id = Setting.get('install_id', namespace='supervisr.core')
         SIG_SETTING_UPDATE.connect(self.on_setting_update)
-        self._smear_amount = uniform(0.5, 1.5) # Smear between 0.5 and 1.5
+        self._smear_amount = uniform(0.5, 1.5)  # Smear between 0.5 and 1.5
         self._pulse = Pulse(
             install_id=self._install_id,
         )
@@ -69,7 +69,7 @@ class Sender(object):
                         '__ui_name__': 'name',
                         '__author__': 'author',
                         '__email__': 'author_email',
-                    }.items():
+                }.items():
                     value = getattr(base, key, 'Undefined')
                     setattr(pmod, new_key, value)
                 self._modules.append(pmod)
@@ -105,8 +105,7 @@ class Sender(object):
         elif sender.key == 'endpoint':
             self._endpoint = sender.value
 
-    @catch_exceptions()
     def tick(self):
-        """This method is called by supervisr.core.thread.background.BackgroundThread."""
+        """This method is called by celer task in supervisr.mod.beacon.signals."""
         self._collect_count()
         self.send(self.bundle())

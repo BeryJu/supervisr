@@ -21,7 +21,7 @@
 
 {% block content %}
 <div class="btn-group">
-  <a href="" class="btn">
+  <a href="{% url 'products-new' %}" class="btn">
     <clr-icon shape="add"></clr-icon>
     {% trans 'Add' %}
   </a>
@@ -55,7 +55,7 @@
       </div>
       <div class="card-footer">
         <a href="{% url 'product-view' slug=product.slug %}" class="btn btn-sm btn-link">{% trans 'Details' %}</a>
-        <a href="" class="btn btn-sm btn-link">{% trans 'UPRs' %}</a>
+        <a href="" class="btn btn-sm btn-link">{% trans 'Relationships' %}</a>
         {% if product.management_url %}
         <a href="{{ product.management_url }}" class="btn btn-sm btn-link">{% trans 'Open' %}</a>
         {% endif %}

@@ -31,7 +31,7 @@
     <div class="divider"></div>
     <div class="header-nav clr-nav-level-1">
       {% if user.is_authenticated %}
-      <a class="nav-link {% is_active 'account' 'common' 'domain' 'instance' 'credential' %}" href="{% url 'common-index' %}">
+      <a class="nav-link {% is_active 'account' 'common' 'domain' 'instance' 'credential' app_name='supervisr_core' %}" href="{% url 'common-index' %}">
         <span class="nav-text">{% trans "Home" %}</span>
       </a>
       {% supervisr_dyn_navapps as installed_apps %}
@@ -115,5 +115,13 @@
     </div>
   </div>
   {% endblock %}
+  {#{% include 'core/bottom_dock.html' %}#}
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+  clrTabs();
+</script>
 {% endblock %}

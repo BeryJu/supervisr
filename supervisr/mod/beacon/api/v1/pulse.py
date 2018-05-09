@@ -1,7 +1,5 @@
 """Supervisr mod beacon Pulse API"""
 
-from django.db import IntegrityError
-
 from supervisr.core.api.models import ModelAPI
 from supervisr.mod.beacon.models import Pulse, PulseModule
 
@@ -21,24 +19,20 @@ class PulseAPI(ModelAPI):
     def send(self, request, data):
         """Create pulse with modules from data"""
         modules = data.pop('modules')
-        install_id = data.get('install_id')
-        pul = Pulse.objects.create(**data)
-        try:
-            for mod in modules:
-                root = mod.get('module_root')
-                matching = PulseModule.objects.filter(module_root=root)
-                r_pmod = None
-                if not matching.exists():
-                    r_pmod = PulseModule.objects.create(**mod)
-                else:
-                    r_pmod = matching.first()
-                pul.modules.add(r_pmod)
-            for old_pulses in Pulse.objects.filter(install_id=install_id).exclude(pk=pul.pk):
-                old_pulses.delete()
-        except IntegrityError:
-            # Ignore IntegrityError, which happen if the same install sends twice
-            # at the same time
-            pass
+        install_id = data.pop('install_id')
+        pulse = Pulse.objects.get_or_create(
+            install_id=install_id,
+            defaults=data
+        )
+        for mod in modules:
+            root = mod.get('module_root')
+            matching = PulseModule.objects.filter(module_root=root)
+            pulse_module = None
+            if not matching.exists():
+                pulse_module = PulseModule.objects.create(**mod)
+            else:
+                pulse_module = matching.first()
+            pulse.modules.add(pulse_module)
         return {'status': 'ok'}
 
     @staticmethod
