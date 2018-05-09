@@ -1,8 +1,9 @@
-"""Discord OAuth Views"""
+"""Reddit OAuth Views"""
 import json
 import logging
 
 from django.contrib.auth import get_user_model
+from requests.auth import HTTPBasicAuth
 from requests.exceptions import RequestException
 
 from supervisr.core.models import make_username
@@ -14,17 +15,25 @@ from supervisr.mod.auth.oauth.client.views.core import (OAuthCallback,
 LOGGER = logging.getLogger(__name__)
 
 
-class DiscordOAuthRedirect(OAuthRedirect):
-    """Discord OAuth2 Redirect"""
+class RedditOAuthRedirect(OAuthRedirect):
+    """Reddit OAuth2 Redirect"""
 
     def get_additional_parameters(self, provider):
         return {
-            'scope': 'email identify',
+            'scope': 'identity',
+            'duration': 'permanent',
         }
 
 
-class DiscordOAuth2Client(OAuth2Client):
-    """Discord OAuth2 Client"""
+class RedditOAuth2Client(OAuth2Client):
+    """Reddit OAuth2 Client"""
+
+    def get_access_token(self, request, callback=None, **request_kwargs):
+        "Fetch access token from callback request."
+        auth = HTTPBasicAuth(
+            self.provider.consumer_key,
+            self.provider.consumer_secret)
+        return super(RedditOAuth2Client, self).get_access_token(request, callback, auth=auth)
 
     def get_profile_info(self, raw_token):
         "Fetch user profile information."
@@ -43,20 +52,20 @@ class DiscordOAuth2Client(OAuth2Client):
             return response.json() or response.text
 
 
-class DiscordOAuth2Callback(OAuthCallback):
-    """Discord OAuth2 Callback"""
+class RedditOAuth2Callback(OAuthCallback):
+    """Reddit OAuth2 Callback"""
 
-    client_class = DiscordOAuth2Client
+    client_class = RedditOAuth2Client
 
     def get_or_create_user(self, provider, access, info):
         user = get_user_model()
         user_data = {
-            user.USERNAME_FIELD: info.get('username'),
-            'email': info.get('email', 'None'),
-            'first_name': info.get('username'),
+            user.USERNAME_FIELD: info.get('name'),
+            'email': None,
+            'first_name': info.get('name'),
             'password': None,
             'crypt6_password': '',  # Set password to empty to disable login
-            'unix_username': make_username(info.get('username'))
+            'unix_username': make_username(info.get('name'))
         }
-        discord_user = user_get_or_create(user_model=user, **user_data)
-        return discord_user
+        reddit_user = user_get_or_create(user_model=user, **user_data)
+        return reddit_user
