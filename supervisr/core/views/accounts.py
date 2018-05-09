@@ -1,6 +1,4 @@
-"""
-Supervisr Core Account Views
-"""
+"""Supervisr Core Account Views"""
 
 import logging
 import time
@@ -57,6 +55,9 @@ class LoginView(View):
             extra_links['account-reset_password_init'] = 'Reset your password'
         if Setting.get_bool('signup:enabled'):
             extra_links['account-signup'] = 'Sign up for an account'
+        # signin:enabled == False removes form
+        if not Setting.get_bool('signin:enabled'):
+            form = None
         return render(request, 'account/login.html', {
             'form': form,
             'title': _("SSO - Login"),

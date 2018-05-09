@@ -1,6 +1,4 @@
-"""
-supervisr core admin
-"""
+"""supervisr core admin"""
 
 from django.apps import apps
 from django.contrib import admin
@@ -11,9 +9,7 @@ from supervisr.core.models import User
 
 
 def admin_autoregister(app):
-    """
-    Automatically register all models from app
-    """
+    """Automatically register all models from app"""
     app_models = apps.get_app_config(app).get_models()
     for model in app_models:
         try:

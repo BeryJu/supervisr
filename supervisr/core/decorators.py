@@ -13,8 +13,8 @@ from django.db.utils import InternalError, OperationalError, ProgrammingError
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.utils.http import urlencode
 from django.utils.functional import wraps
+from django.utils.http import urlencode
 from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.statistics import stat_set

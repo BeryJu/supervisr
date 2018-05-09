@@ -39,13 +39,15 @@
         {% endfor %}
       {% endblock %}
       {% if next %}
-      <input type="hidden" name="next" value="{{ next }}" />
+        <input type="hidden" name="next" value="{{ next }}" />
       {% endif %}
-      <button type="submit" class="btn btn-primary">{% trans primary_action|default:'Login' %}</button>
+      {% if form %}
+        <button type="submit" class="btn btn-primary">{% trans primary_action|default:'Login' %}</button>
+      {% endif %}
       {% if extra_links %}
-      {% for link, name in extra_links.items %}
-      <a href="{% url link %}" class="signup">{% trans name %}</a>
-      {% endfor %}
+        {% for link, name in extra_links.items %}
+          <a href="{% url link %}" class="signup">{% trans name %}</a>
+        {% endfor %}
       {% endif %}
       {% block extra %}
       {% endblock %}
