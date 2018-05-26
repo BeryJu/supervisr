@@ -37,6 +37,20 @@
         </tr>
       </tbody>
     </table>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>{% trans 'Celery Workers' %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for worker in celery_workers %}
+        <tr>
+          <td>{{ worker }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 </div>
 {% endblock %}

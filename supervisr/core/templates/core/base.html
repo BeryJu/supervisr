@@ -1,6 +1,5 @@
 {% extends "core/skel.html" %}
 
-{% load ifapp %}
 {% load supervisr_title %}
 {% load supervisr_dyn_navapps %}
 {% load supervisr_setting %}
@@ -79,11 +78,6 @@
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="{% url 'user-send_feedback' %}">{% trans 'Send Feedback' %}</a>
           <div class="dropdown-divider"></div>
-          {% ifapp 'supervisr_static' as static_enabled %}
-          {% if static_enabled %}
-          <a class="dropdown-item" href="{% url 'supervisr_static:page-view' slug='attributions' %}">{% trans "Attributions" %}</a>
-          <div class="dropdown-divider"></div>
-          {% endif %}
           <a class="dropdown-item" href="{% url 'account-logout' %}">{% trans "Logout" %}</a>
         </div>
       </div>

@@ -1,0 +1,22 @@
+{% load i18n %}
+{% load setting %}
+{% load url_unpack %}
+{% load ifapp %}
+
+<div class="card footer-card">
+  <div class="card-block">
+    <ul>
+      <li><a href="https://supervisr.beryju.org/docs/">{% trans 'Help' %}</a></li>
+      {% ifapp 'supervisr_static' as static_enabled %}
+      {% if static_enabled %}
+        <li><a class="dropdown-item" href="{% url 'supervisr_static:page-view' slug='attributions' %}">{% trans "Attributions" %}</a></li>
+      {% endif %}
+      {% setting 'FOOTER_EXTRA_LINKS' as links %}
+      {% for link in links %}
+      <li><a href="{% if link.view %}{% url_unpack link.view link.kwargs %}{% else %}{{ link.url }}{% endif %}">{{ link.text }}</a></li>
+      {% endfor %}
+    </ul>
+    {% setting 'VERSION' as version %}
+    <small>{% blocktrans  with version=version %}Version {{ version }}{% endblocktrans %}</small>
+  </div>
+</div>

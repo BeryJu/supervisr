@@ -1,6 +1,4 @@
-"""
-supervisr core urls
-"""
+"""supervisr core urls"""
 import importlib
 import logging
 

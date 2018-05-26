@@ -1,6 +1,4 @@
-"""
-Supervisr Core Setting Templatetag
-"""
+"""Supervisr Core Setting Templatetag"""
 
 from django import template
 
@@ -11,7 +9,5 @@ register = template.Library()
 
 @register.simple_tag
 def supervisr_setting(key, namespace='supervisr.core', default=''):
-    """
-    Get a setting from the database. Returns default is setting doesn't exist.
-    """
+    """Get a setting from the database. Returns default is setting doesn't exist."""
     return Setting.get(key=key, namespace=namespace, default=default)

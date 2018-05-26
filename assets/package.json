@@ -4,20 +4,20 @@
   "description": "Static files for supervisr",
   "main": "index.js",
   "dependencies": {
-    "@clr/icons": "latest",
-    "@clr/ui": "latest",
-    "@webcomponents/custom-elements": "^1.0.0",
+    "@clr/icons": "^0.11.19",
+    "@clr/ui": "^0.11.19",
+    "@webcomponents/custom-elements": "^1.1.1",
     "font-awesome": "^4.7.0",
-    "grunt": "^1.0.1",
+    "grunt": "^1.0.2",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-cssmin": "^2.0.0",
-    "grunt-contrib-less": "^1.0.0",
+    "grunt-contrib-less": "^2.0.0",
     "grunt-contrib-uglify": "^2.3.0",
     "grunt-npm-command": "^0.1.2",
-    "jquery": "^3.2.0",
+    "jquery": "^3.3.1",
     "mutationobserver-shim": "^0.3.2",
-    "raven-js": "^3.19.1",
-    "tablesorter": "^2.29.0"
+    "raven-js": "^3.25.2",
+    "tablesorter": "^2.30.4"
   },
   "scripts": {
     "test": "grunt"

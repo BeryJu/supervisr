@@ -58,6 +58,13 @@ from django.contrib import messages
 # If you change this afterwards, it may cause serious damage!
 SYSTEM_USER_NAME = 'supervisr'
 USER_PROFILE_ID_START = 5000
+FOOTER_EXTRA_LINKS = []
+# Structure of
+# {
+# text: "",
+# view: "",
+# url: "",
+# }
 
 REMEMBER_SESSION_AGE = 60 * 60 * 24 * 30  # One Month
 
@@ -285,7 +292,7 @@ ENVIRONMENT = 'production' if DEBUG is False else 'development'
 
 # Try to get version from git, otherwise get from setup.py
 try:
-    VERSION = raven.fetch_git_sha(os.path.dirname(os.pardir))
+    VERSION = raven.fetch_git_sha(os.path.dirname(os.pardir))[:8]
 except raven.exceptions.InvalidGitRepository:
     from supervisr import __version__  # pylint: disable=no-name-in-module, useless-suppression
     VERSION = __version__
