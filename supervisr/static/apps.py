@@ -2,11 +2,29 @@
 import logging
 
 from django.db.utils import InternalError, OperationalError, ProgrammingError
-
-from supervisr.core.apps import SupervisrAppConfig
+from django.utils.text import slugify
+from supervisr.core.apps import SupervisrAppConfig, Bootstrapper
 
 LOGGER = logging.getLogger(__name__)
 
+
+class FilePageBootstrapper(Bootstrapper):
+    """Bootstrap creation of FilePage instances"""
+
+    def apply(self, invoker):
+        from supervisr.static.models import FilePage
+        from supervisr.core.models import get_system_user
+        for entry in self.rows:
+            FilePage.objects.get_or_create(
+                path=entry.get('path'),
+                title=entry.get('title'),
+                defaults={
+                    'author': get_system_user(),
+                    'slug': entry.get('slug', slugify(entry.get('title'))),
+                    'content': '',
+                    'published': True,
+                }
+            )
 
 class SupervisrStaticConfig(SupervisrAppConfig):
     """supervisr Static app config"""
@@ -24,6 +42,13 @@ class SupervisrStaticConfig(SupervisrAppConfig):
             self.ensure_product_pages()
         except (OperationalError, ProgrammingError, InternalError):
             pass
+
+    def bootstrap(self):
+        """Add README and ATTRIBUTIONS FilePage"""
+        filepages = FilePageBootstrapper()
+        filepages.add(path='README.md', title='Readme')
+        filepages.add(path='ATTRIBUTIONS.md', title='Attributions')
+        return [filepages, ]
 
     def update_filepages(self):
         """Update all FilePages from File"""
