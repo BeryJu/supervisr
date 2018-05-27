@@ -1,4 +1,5 @@
-astroid==1.5.3
+#astroid==1.5.3
+astroid
 coverage
 isort
 pylint
@@ -10,4 +11,4 @@ autopep8
 -e git+https://github.com/BeryJu/pdoc.git@ebb38ec5d2a023a31442757bba697c60d315578f#egg=pdoc
 markdown
 mkdocs-material
-pyroma<=2.0
+pyroma

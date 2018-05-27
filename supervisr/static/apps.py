@@ -3,7 +3,8 @@ import logging
 
 from django.db.utils import InternalError, OperationalError, ProgrammingError
 from django.utils.text import slugify
-from supervisr.core.apps import SupervisrAppConfig, Bootstrapper
+
+from supervisr.core.apps import Bootstrapper, SupervisrAppConfig
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,6 +19,7 @@ class FilePageBootstrapper(Bootstrapper):
             FilePage.objects.get_or_create(
                 path=entry.get('path'),
                 title=entry.get('title'),
+                language=entry.get('language', 'en'),
                 defaults={
                     'author': get_system_user(),
                     'slug': entry.get('slug', slugify(entry.get('title'))),

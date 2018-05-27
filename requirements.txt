@@ -21,20 +21,20 @@ pycryptodome
 dnspython
 requests
 # In here you can specify pip modules that should be installed
-requests
 django-two-factor-auth
+requests
 ldap3
 pyasn1<=0.3.0
 slumber
-apache-libcloud
 slumber
+apache-libcloud
 slumber
 influxdb>=4.1.1
 psutil
-requests_oauthlib>=0.4.2
-oauthlib>=2.0.6
 django-oauth-toolkit
 django-cors-middleware
+requests_oauthlib>=0.4.2
+oauthlib>=2.0.6
 beautifulsoup4>=4.6.0
 lxml>=3.8.0
 signxml

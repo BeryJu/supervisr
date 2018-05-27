@@ -2,34 +2,21 @@
 
 from supervisr.core.test.utils import TestCase, test_request
 from supervisr.static import views
-from supervisr.static.models import FilePage
 
 
 class TestViews(TestCase):
     """ Supervisr Static View Test """
 
-    def setUp(self):
-        super(TestViews, self).setUp()
-        names = ['CHANGELOG.md', 'ATTRIBUTIONS.md']
-        for name in names:
-            page_name = name.split('.')[0]
-            FilePage.objects.create(
-                title=page_name.title(),
-                slug=page_name.lower(),
-                path=name,
-                author=self.system_user,
-                published=True)
-
     def test_single_view(self):
         """Test Single View"""
         self.assertEqual(test_request(views.PageView.as_view(), url_kwargs={
-            'slug': 'changelog',
+            'slug': 'attributions',
         }).status_code, 200)
 
     def test_single_view_auth(self):
         """Test Single View (authenticated)"""
         self.assertEqual(test_request(views.PageView.as_view(), user=self.system_user, url_kwargs={
-            'slug': 'changelog',
+            'slug': 'attributions',
         }).status_code, 200)
 
     def test_single_view_not_found(self):

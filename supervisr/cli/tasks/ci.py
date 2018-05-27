@@ -1,6 +1,4 @@
-"""
-Supervisr Invoke CI tasks
-"""
+"""Supervisr Invoke CI tasks"""
 import logging
 import os
 from functools import wraps
@@ -19,9 +17,7 @@ def shell(func):
     """Fixes the Shell on Windows Systems"""
     @wraps(func)
     def wrapped(ctx, *args, **kwargs):
-        """
-        Fixes the Shell on Windows Systems
-        """
+        """Fixes the Shell on Windows Systems"""
         if WINDOWS:
             ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
         return func(ctx, *args, **kwargs)
