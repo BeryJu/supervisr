@@ -388,6 +388,7 @@ body.layout-home section.home-contact {
 }
 .footer-card {
   text-align: center;
+  margin-top: 0;
 }
 .footer-card ul li {
   display: inline;
