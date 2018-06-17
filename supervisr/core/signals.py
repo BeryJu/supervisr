@@ -5,7 +5,6 @@ import logging
 from django.db.models.signals import post_migrate, post_save, pre_delete
 from django.dispatch import Signal, receiver
 from passlib.hash import sha512_crypt
-
 from supervisr.core.apps import SupervisrAppConfig
 from supervisr.core.exceptions import SignalException
 

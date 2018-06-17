@@ -1,6 +1,5 @@
 """supervisr oauth account API wrapper"""
 from oauth2_provider.views import ProtectedResourceView
-
 from supervisr.core.api.v1.accounts import AccountAPI
 
 

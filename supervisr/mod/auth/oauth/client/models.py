@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.db import models
-
 from supervisr.core.fields import EncryptedField
 from supervisr.mod.auth.oauth.client.clients import get_client
 

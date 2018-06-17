@@ -5,7 +5,6 @@ Supervisr DNS resource views
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.utils.translation import ugettext_lazy as _
-
 from supervisr.core.models import UserAcquirableRelationship
 from supervisr.core.views.generic import GenericDeleteView, GenericUpdateView
 from supervisr.core.views.wizards import BaseWizardView

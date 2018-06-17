@@ -6,7 +6,6 @@ from django.conf import settings
 from django.dispatch import receiver
 from ldap3 import version as ldap3_version
 from ldap3.core.exceptions import LDAPCommunicationError, LDAPException
-
 from supervisr.core.signals import (SIG_CHECK_USER_EXISTS, SIG_GET_MOD_HEALTH,
                                     SIG_GET_MOD_INFO,
                                     SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED,

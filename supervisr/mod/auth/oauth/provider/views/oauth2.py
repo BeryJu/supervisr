@@ -9,7 +9,6 @@ from django.http import Http404, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from oauth2_provider.models import get_application_model
 from oauth2_provider.views.base import AuthorizationView
-
 from supervisr.core.models import Event, UserAcquirableRelationship
 
 LOGGER = logging.getLogger(__name__)

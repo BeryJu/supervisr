@@ -8,7 +8,6 @@ from django.db.models import Q
 from django.db.utils import ConnectionDoesNotExist
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
-
 from supervisr.core.utils import do_404, render_to_string
 
 

@@ -4,7 +4,6 @@ Supervisr Core ModList Templatetag
 
 from django import template
 from django.core.cache import cache
-
 from supervisr.core.apps import SupervisrAppConfig
 from supervisr.core.utils import get_apps
 

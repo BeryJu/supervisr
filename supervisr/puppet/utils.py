@@ -8,7 +8,6 @@ import shutil
 import requests
 from django.conf import settings
 from django.core.files import File
-
 from supervisr.core.models import User
 from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 

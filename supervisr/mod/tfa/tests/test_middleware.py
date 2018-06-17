@@ -7,7 +7,6 @@ import os
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
-
 from supervisr.core.views import common
 from supervisr.mod.tfa.middleware import tfa_force_verify
 

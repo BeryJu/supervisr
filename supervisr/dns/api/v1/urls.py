@@ -3,7 +3,6 @@ Supervisr Core v1 API Urls
 """
 
 from django.conf.urls import url
-
 from supervisr.core.regex import DOMAIN_REGEX
 from supervisr.dns.api.v1.record import RecordAPI, dyndns_update
 from supervisr.dns.api.v1.zone import ZoneAPI

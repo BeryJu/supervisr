@@ -1,7 +1,6 @@
 """supervisr mod beacon settings forms"""
 
 from django import forms
-
 from supervisr.core.forms.settings import SettingsForm
 
 

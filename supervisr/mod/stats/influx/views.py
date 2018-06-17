@@ -9,7 +9,6 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
-
 from supervisr.core.models import Setting
 from supervisr.mod.stats.influx.forms.settings import SettingsForm
 from supervisr.mod.stats.influx.influx_client import InfluxClient

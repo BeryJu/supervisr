@@ -5,7 +5,6 @@ Supervisr Core Account Test
 import os
 
 from django.test import TestCase
-
 from supervisr.core.models import Setting, User
 from supervisr.mod.auth.ldap.forms.settings import GeneralSettingsForm
 from supervisr.mod.auth.ldap.ldap_connector import LDAPConnector

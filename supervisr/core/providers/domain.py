@@ -1,7 +1,6 @@
 """Supervisr Core Domain Provider"""
 
 from django.utils.translation import ugettext_lazy as _
-
 from supervisr.core.providers.base import BaseProvider, ProviderMetadata
 
 

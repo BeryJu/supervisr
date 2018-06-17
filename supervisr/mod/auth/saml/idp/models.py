@@ -3,7 +3,6 @@ Supervisr Auth SAML IDP Models
 """
 
 from django.db import models
-
 from supervisr.core.models import CreatedUpdatedModel, ProductExtension
 from supervisr.core.utils import class_to_path
 from supervisr.mod.auth.saml.idp.base import Processor

@@ -1,7 +1,6 @@
 """Supervisr Core Middleware to add a banner message"""
 
 from django.contrib import messages
-
 from supervisr.core.models import Setting
 from supervisr.core.utils import messages_add_once
 

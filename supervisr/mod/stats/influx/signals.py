@@ -3,7 +3,6 @@
 
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.dispatch import receiver
-
 from supervisr.core.models import Setting
 from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_GET_MOD_HEALTH,
                                     SIG_SET_STAT,

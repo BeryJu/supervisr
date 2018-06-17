@@ -12,7 +12,6 @@ from django.http import Http404, HttpRequest, QueryDict
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-
 from supervisr.core.api.utils import api_response
 
 LOGGER = logging.getLogger(__name__)

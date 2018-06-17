@@ -12,7 +12,6 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views import View
-
 from supervisr.core.decorators import reauth_required
 from supervisr.core.forms.users import EditUserForm, FeedbackForm
 from supervisr.core.mailer import send_message

@@ -20,10 +20,6 @@
   {% if field.field.widget|fieldtype == 'RadioSelect' %}
     <label for="{{ field.name }}-{{ forloop.counter0 }}">
       {{ field.label }}
-      {% if field.help_text %}
-      <br>
-      {{ field.help_text }}
-      {% endif %}
     </label>
     {% for c in field %}
     <div class="radio">
@@ -34,10 +30,6 @@
   {% elif field.field.widget|fieldtype == 'Select' %}
   <label for="{{ field.name }}-{{ forloop.counter0 }}">
     {{ field.label }}
-    {% if field.help_text %}
-    <br>
-    {{ field.help_text }}
-    {% endif %}
   </label>
   <div class="select">
     {{ field }}
@@ -45,10 +37,6 @@
   {% elif field.field.widget|fieldtype == 'CheckboxInput' %}
   <label for="{{ field.name }}-{{ forloop.counter0 }}">
     {{ field.label }}
-    {% if field.help_text %}
-    <br>
-    {{ field.help_text }}
-    {% endif %}
   </label>
   <div class="toggle-switch">
     {{ field }}
@@ -57,12 +45,13 @@
   {% else %}
   <label for="{{ field.name }}-{{ forloop.counter0 }}">
     {{ field.label }}
-    {% if field.help_text %}
-    <br>
-    {{ field.help_text }}
-    {% endif %}
   </label>
   {{ field }}
   {% endif %}
 </div>
+{% if field.help_text %}
+<span>
+{{ field.help_text }}
+</span>
+{% endif %}
 {% endfor %}

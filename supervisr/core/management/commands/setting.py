@@ -4,7 +4,6 @@ import logging
 from argparse import ArgumentParser
 
 from django.core.management.base import BaseCommand
-
 from supervisr.core.models import Setting
 
 LOGGER = logging.getLogger(__name__)

@@ -8,7 +8,6 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import ugettext as _
-
 from supervisr.core.forms.domains import DomainForm
 from supervisr.core.models import (Domain, ProviderInstance,
                                    UserAcquirableRelationship)

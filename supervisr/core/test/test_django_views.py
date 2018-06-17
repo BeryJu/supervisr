@@ -1,7 +1,6 @@
 """Supervisr Core Django Admin Test"""
 
 from django.test import TestCase
-
 from supervisr.core.admin import admin_autoregister
 
 

@@ -5,6 +5,7 @@ from django.db import migrations
 
 
 def create_user(apps, schema_editor):
+    """Create system user"""
     User = apps.get_model('supervisr_core', 'User')
     system_user = User.objects.get_or_create(
         username=settings.SYSTEM_USER_NAME,
@@ -15,6 +16,8 @@ def create_user(apps, schema_editor):
         defaults={'email': 'root@localhost'})
 
 def create_puppet_module(apps, schema_editor):
+    """Create puppet module for core"""
+    from supervisr.core.models import get_system_user
     try:
         PuppetModule = apps.get_model('supervisr_puppet', 'PuppetModule')
         User = apps.get_model('supervisr_core', 'User')

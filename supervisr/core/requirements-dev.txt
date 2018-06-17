@@ -1,4 +1,3 @@
-#astroid==1.5.3
 astroid
 coverage
 isort

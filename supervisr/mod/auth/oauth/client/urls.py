@@ -3,7 +3,6 @@ Supervisr auth oauth client urls
 """
 
 from django.conf.urls import url
-
 from supervisr.mod.auth.oauth.client.views import core, settings
 from supervisr.mod.auth.oauth.client.views.providers import (discord, facebook,
                                                              github, google,

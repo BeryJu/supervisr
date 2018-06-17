@@ -6,7 +6,6 @@ import logging
 
 from django.contrib.auth import get_user_model
 from requests.exceptions import RequestException
-
 from supervisr.core.models import make_username
 from supervisr.mod.auth.oauth.client.clients import OAuthClient
 from supervisr.mod.auth.oauth.client.errors import OAuthClientEmailMissingError

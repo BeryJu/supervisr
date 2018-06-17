@@ -10,7 +10,8 @@ class TestProductViews(TestCase):
 
     def test_index_view(self):
         """Test Product Index"""
-        self.assertEqual(test_request(products.index, user=self.system_user).status_code, 200)
+        self.assertEqual(test_request(products.ProductIndexView.as_view(),
+                                      user=self.system_user).status_code, 200)
 
     def test_product_view(self):
         """Test Product view"""

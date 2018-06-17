@@ -3,7 +3,6 @@
 from unittest import expectedFailure
 
 from django.contrib.auth.models import Group
-
 from supervisr.core.test.utils import TestCase, call_command_ret
 from supervisr.puppet.models import PuppetModule
 

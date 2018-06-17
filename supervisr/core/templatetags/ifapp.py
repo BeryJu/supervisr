@@ -4,7 +4,6 @@ Supervisr Core navbar Templatetag
 import logging
 
 from django import template
-
 from supervisr.core.utils import get_app_labels
 
 register = template.Library()

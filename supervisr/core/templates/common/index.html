@@ -117,8 +117,9 @@
              <div class="apps">
                <ul>
                   {% for app in hosted_applications %}
+                  {% if app.primary_url %}
                   <li>
-                    <a href="{{ app.management_url }}">
+                    <a href="{{ app.primary_url }}">
                       {% if app.icon %}
                       {% cache 600 app app.uuid %}
                       <img src="{% media app.icon %}" alt="{{ app.name }} Icon">
@@ -129,6 +130,7 @@
                       {{ app.name }}
                     </a>
                   </li>
+                  {% endif %}
                   {% endfor %}
                </ul>
              </div>

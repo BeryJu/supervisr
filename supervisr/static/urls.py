@@ -1,6 +1,5 @@
 """Supervisr Static URLs"""
 from django.conf.urls import url
-
 from supervisr.static import views
 
 urlpatterns = [

@@ -4,7 +4,6 @@ import logging
 import socket
 
 from influxdb import InfluxDBClient
-
 from supervisr.core.models import Setting
 
 LOGGER = logging.getLogger(__name__)

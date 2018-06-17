@@ -1,7 +1,7 @@
 """Generic, reusable Class-based views"""
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
 from django.db.models.query import QuerySet
@@ -19,6 +19,14 @@ class LoginRequiredView(View):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(LoginRequiredView, self).dispatch(*args, **kwargs)
+
+
+class AdminRequiredView(View):
+    """Utility View class that requires superuser"""
+
+    @method_decorator(user_passes_test(lambda user: user.is_superuser))
+    def dispatch(self, *args, **kwargs):
+        return super(AdminRequiredView, self).dispatch(*args, **kwargs)
 
 
 class GenericModelView(LoginRequiredView):

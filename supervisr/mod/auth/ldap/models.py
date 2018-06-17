@@ -4,7 +4,6 @@ Supervisr mod_ldap Models
 
 from django.contrib.auth.models import Group
 from django.db import models
-
 from supervisr.core.fields import JSONField
 from supervisr.core.models import CreatedUpdatedModel, ProductExtension
 

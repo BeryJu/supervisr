@@ -8,7 +8,6 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import ugettext as _
-
 from supervisr.core.forms.providers import CredentialForm, ProviderForm
 from supervisr.core.models import (BaseCredential, ProviderInstance,
                                    UserAcquirableRelationship)

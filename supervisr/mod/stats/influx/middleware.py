@@ -10,7 +10,6 @@ from django.urls import resolve
 from django.utils.translation import ugettext_lazy as _
 from influxdb.exceptions import InfluxDBClientError, InfluxDBServerError
 from requests.exceptions import ConnectionError as reqConnectionError
-
 from supervisr.core.models import Setting
 from supervisr.core.utils import get_remote_ip, get_reverse_dns
 from supervisr.mod.stats.influx.influx_client import InfluxClient

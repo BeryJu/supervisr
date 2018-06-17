@@ -6,7 +6,6 @@ from wsgiref.util import FileWrapper
 from django.db.models import Q
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.urls import reverse
-
 from supervisr.core.models import Setting, User
 from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 

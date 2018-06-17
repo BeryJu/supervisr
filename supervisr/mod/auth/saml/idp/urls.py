@@ -2,7 +2,6 @@
 Supervisr SAML IDP URLs
 """
 from django.conf.urls import url
-
 from supervisr.mod.auth.saml.idp import views
 
 urlpatterns = [

@@ -3,7 +3,6 @@ import os
 from logging import getLogger
 
 import psutil
-
 from supervisr.core.celery import CELERY_APP
 from supervisr.core.models import Setting
 from supervisr.mod.stats.influx.influx_client import InfluxClient

@@ -7,7 +7,6 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from slumber import API
 from slumber.exceptions import HttpClientError
-
 from supervisr.core.models import APIKeyCredential
 from supervisr.core.providers.base import BaseProvider, ProviderMetadata
 from supervisr.mod.provider.onlinenet.providers.domain import \

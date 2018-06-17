@@ -3,7 +3,6 @@ Supervisr Mail URLs
 """
 
 from django.conf.urls import url
-
 from supervisr.core.regex import DOMAIN_REGEX, EMAIL_ADDRESS_REGEX
 # EMAIL_ADDRESS_REGEX, EMAIL_REGEX
 # from supervisr.mail.views import account, alias, core, domain

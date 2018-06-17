@@ -5,7 +5,6 @@ import os
 
 from django.conf import settings
 from django.db import models
-
 from supervisr.core.models import CastableModel, CreatedUpdatedModel, Product
 
 LOGGER = logging.getLogger(__name__)

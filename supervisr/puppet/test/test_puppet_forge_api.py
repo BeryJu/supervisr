@@ -3,7 +3,6 @@
 import json
 
 from django.contrib.auth.models import Group
-
 from supervisr.core.models import Setting
 from supervisr.core.test.utils import TestCase, test_request
 from supervisr.puppet.api.v1 import forge_api

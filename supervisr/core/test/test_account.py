@@ -2,7 +2,6 @@
 
 from django.http import HttpResponse
 from django.urls import reverse
-
 from supervisr.core.decorators import reauth_required
 from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
                                            SignupForm)

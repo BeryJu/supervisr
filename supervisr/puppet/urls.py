@@ -2,7 +2,6 @@
 Supervisr Puppet URLs
 """
 from django.conf.urls import url
-
 from supervisr.puppet.views import admin
 
 urlpatterns = [

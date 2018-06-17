@@ -7,7 +7,6 @@ import time
 import uuid
 
 from bs4 import BeautifulSoup
-
 from supervisr.core.models import Setting
 from supervisr.mod.auth.saml.idp import codex, exceptions, xml_render
 

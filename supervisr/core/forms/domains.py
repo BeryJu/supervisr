@@ -5,7 +5,6 @@ import re
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-
 from supervisr.core.models import Domain
 from supervisr.core.regex import DOMAIN_REGEX
 
@@ -28,8 +27,4 @@ class DomainForm(forms.ModelForm):
     class Meta:
 
         model = Domain
-        fields = ['provider_instance', 'domain_name', 'is_sub']
-        labels = {
-            'is_sub': _('Is Subdomain'),
-            'provider_instance': _('Provider (Registrar)'),
-        }
+        fields = ['provider_instance', 'domain_name', 'description']

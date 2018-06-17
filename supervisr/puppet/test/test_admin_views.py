@@ -1,7 +1,6 @@
 """Supervisr Puppet View Test"""
 
 from django.contrib.auth.models import Group
-
 from supervisr.core.test.utils import TestCase, test_request
 from supervisr.puppet.models import PuppetModule
 from supervisr.puppet.views import admin

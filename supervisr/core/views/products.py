@@ -1,25 +1,25 @@
 """Supervisr Core Product Views Views"""
-from django.contrib.auth.decorators import (login_required,
-                                            permission_required,
-                                            user_passes_test)
+from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models.query import QuerySet
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
-
 from supervisr.core.decorators import ifapp
-from supervisr.core.forms.product import ProductForm
+from supervisr.core.forms.products import ProductForm
 from supervisr.core.models import Product, UserAcquirableRelationship
+from supervisr.core.views.generic import AdminRequiredView, GenericIndexView
 from supervisr.core.views.wizards import BaseWizardView
 
 
-@login_required
-def index(request: HttpRequest) -> HttpResponse:
+class ProductIndexView(GenericIndexView):
     """Show an Index of all Products that a user can access"""
-    products = Product.objects.filter(invite_only=False)
-    return render(request, 'product/index.html', {
-        'products': products
-    })
+
+    model = Product
+    template = 'product/index.html'
+
+    def get_instance(self) -> QuerySet:
+        return self.model.filter(invite_only=False)
 
 
 @login_required
@@ -48,19 +48,17 @@ def view(request: HttpRequest, slug: str) -> HttpResponse:
     raise Http404
 
 
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def admin_index(request: HttpRequest) -> HttpResponse:
-    """Show product overview for admins"""
-    products = Product.objects.all()
-    return render(request, 'product/admin_index.html', {
-        'products': products
-    })
+class ProductAdminIndex(GenericIndexView, AdminRequiredView):
+    """Show all products for admins"""
+
+    model = Product
+    template = 'product/admin_index.html'
+
+    def get_instance(self) -> QuerySet:
+        return self.model.objects.all()
 
 
-@method_decorator(login_required, name='dispatch')
 @method_decorator(permission_required('supervisr_core.core_product_can_create'), name='dispatch')
-# pylint: disable=too-many-ancestors
 class ProductNewWizard(BaseWizardView):
     """Wizard to create a Product"""
 

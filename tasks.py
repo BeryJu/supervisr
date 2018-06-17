@@ -2,9 +2,8 @@
 import os
 from importlib import import_module
 
-from invoke import Collection
-
 import supervisr.cli.tasks
+from invoke import Collection
 
 try:
     import pymysql

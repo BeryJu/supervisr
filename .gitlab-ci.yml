@@ -67,15 +67,15 @@ pyroma:
   cache:
     paths:
       - env/
-prospector:
-  except:
-    - prod
-  script:
-    - "inv ci.prospector"
-  stage: test
-  cache:
-    paths:
-      - env/
+# prospector:
+#   except:
+#     - prod
+#   script:
+#     - "inv ci.prospector"
+#   stage: test
+#   cache:
+#     paths:
+#       - env/
 pylint:
   except:
     - prod

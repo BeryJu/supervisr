@@ -9,7 +9,6 @@ from django.contrib import admin as admin_django
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
-
 from supervisr.core.regex import (DOMAIN_REGEX, EMAIL_REGEX, MOD_REGEX,
                                   UUID_REGEX)
 from supervisr.core.utils import get_apps
@@ -50,7 +49,7 @@ urlpatterns = [
     url(r'^accounts/password/reset/(?P<uuid>%s)/$' % UUID_REGEX,
         accounts.PasswordResetFinishView.as_view(), name='account-reset_password_confirm'),
     # Product views
-    url(r'^products/$', products.index, name='product-index'),
+    url(r'^products/$', products.ProductIndexView.as_view(), name='product-index'),
     url(r'^products/new/$', products.ProductNewWizard.as_view(), name='products-new'),
     url(r'^products/(?P<slug>[a-zA-Z0-9\-]+)/$', products.view, name='product-view'),
     # Domain views
@@ -92,7 +91,7 @@ urlpatterns = [
     url(r'^admin/debug/$', admin.debug, name='admin-debug'),
     url(r'^admin/flower/$', admin.FlowerView.as_view(), name='admin-flower'),
     url(r'^proxy/flower/(?P<path>.*)$', admin.FlowerProxy.as_view(), name='admin-flower-proxy'),
-    url(r'^admin/products/$', products.admin_index, name='admin-product_index'),
+    url(r'^admin/products/$', products.ProductIndexView.as_view(), name='admin-product_index'),
     # Settings
     url(r'^admin/settings/mod/default/$', settings.mod_default, name='admin-mod_default'),
     url(r'^admin/settings/(?P<namespace>%s)/$' % MOD_REGEX,

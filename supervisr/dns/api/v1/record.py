@@ -2,7 +2,6 @@
 Supervisr DNS r1 Record API
 """
 from django.http import HttpRequest, HttpResponse
-
 from supervisr.core.api.models import UserAcquirableModelAPI
 from supervisr.core.decorators import logged_in_or_basicauth
 from supervisr.core.utils import get_remote_ip

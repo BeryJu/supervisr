@@ -7,7 +7,6 @@ from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views import View
-
 from supervisr.core.forms.settings import SettingsForm
 from supervisr.core.models import Setting
 

@@ -10,7 +10,6 @@ from django.http import Http404, HttpResponse
 from django.http.response import HttpResponseNotFound, HttpResponseServerError
 from django.test import RequestFactory
 from django.test import TestCase as DjangoTestCase
-
 from supervisr.core.models import (EmptyCredential, ProviderInstance,
                                    SVAnonymousUser, User, get_system_user)
 

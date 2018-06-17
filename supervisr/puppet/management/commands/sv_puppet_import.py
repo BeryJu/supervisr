@@ -3,7 +3,6 @@
 import logging
 
 from django.core.management.base import BaseCommand
-
 from supervisr.puppet.utils import ForgeImporter
 
 LOGGER = logging.getLogger(__name__)

@@ -1,7 +1,6 @@
 """Supervisr Debug Provider"""
 
 from django.utils.translation import ugettext_lazy as _
-
 from supervisr.core.models import EmptyCredential
 from supervisr.core.providers.base import (BaseProvider, ProviderMetadata,
                                            ProviderObjectTranslator)

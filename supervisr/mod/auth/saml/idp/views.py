@@ -18,7 +18,6 @@ from django.views.decorators.csrf import csrf_exempt
 from OpenSSL.crypto import FILETYPE_PEM
 from OpenSSL.crypto import Error as CryptoError
 from OpenSSL.crypto import load_certificate
-
 from supervisr.core.models import Event, Setting, UserAcquirableRelationship
 from supervisr.core.utils import render_to_string
 from supervisr.core.views.common import ErrorResponseView

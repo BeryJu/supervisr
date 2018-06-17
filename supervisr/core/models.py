@@ -28,7 +28,6 @@ from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
-
 from supervisr.core import fields
 from supervisr.core.decorators import database_catchall
 from supervisr.core.decorators import time as time_method
@@ -396,15 +395,25 @@ def relationship_pre_delete(sender, instance, **kwargs):
 
 
 class ProductExtension(CreatedUpdatedModel, CastableModel):
-    """
-    This class can be used by extension to associate Data with a Product
-    """
+    """This class can be used by extension to associate Data with a Product"""
 
     product_extension_id = models.AutoField(primary_key=True)
     extension_name = models.TextField(default='')
+    form = 'supervisr.core.forms.products.ProductExtensionForm'
 
     def __str__(self):
         return "ProductExtension %s" % self.extension_name
+
+
+class URLProductExtension(ProductExtension):
+    """Attach a URL to a product. URLProductExtensions with role set to 'primary' is shown
+    in the webinterface"""
+
+    url = models.URLField()
+    role = models.TextField()
+
+    def __str__(self):
+        return "URLProductExtension '%s' role: %s" % (self.url, self.role)
 
 
 class UserAcquirable(CastableModel):
@@ -497,21 +506,26 @@ class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
     Information about the Main Product itself. This instances of this classes
     are assumed to be managed services.
     """
-    product_id = models.AutoField(primary_key=True)
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     name = models.TextField()
     slug = models.SlugField(blank=True)
     description = models.TextField(blank=True)
     invite_only = models.BooleanField(default=True)
     auto_add = models.BooleanField(default=False)
     auto_all_add = models.BooleanField(default=False)
-    managed = models.BooleanField(default=True)
-    management_url = models.URLField(max_length=1000, blank=True, null=True)
     extensions = models.ManyToManyField(ProductExtension, blank=True)
     icon = models.ImageField(blank=True, default='')
 
     def __str__(self):
         return "%s '%s'" % (self.cast().__class__.__name__, self.name)
+
+    def primary_url(self):
+        """Return URL if Product has a URL that should
+        be shown in the app launcher, otherwise None"""
+        urls = URLProductExtension.objects.filter(product__in=[self], role='primary')
+        if not urls.exists():
+            return False
+        return urls.first().url
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # Auto generate slug
@@ -536,10 +550,9 @@ class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
 class Domain(ProviderAcquirableSingle, UserAcquirable, CreatedUpdatedModel):
     """
     Information about a Domain, which is used for other sub-apps.
-    This is also used for sub domains, hence the is_sub.
     """
     domain_name = models.CharField(max_length=253, unique=True)
-    is_sub = models.BooleanField(default=False)
+    description = models.TextField()
 
     def __str__(self):
         return self.domain_name

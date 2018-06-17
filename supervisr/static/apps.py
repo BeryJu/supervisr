@@ -3,7 +3,6 @@ import logging
 
 from django.db.utils import InternalError, OperationalError, ProgrammingError
 from django.utils.text import slugify
-
 from supervisr.core.apps import Bootstrapper, SupervisrAppConfig
 
 LOGGER = logging.getLogger(__name__)
@@ -64,14 +63,13 @@ class SupervisrStaticConfig(SupervisrAppConfig):
 
     def ensure_product_pages(self):
         """Make sure every Product has a ProductPage"""
-        from supervisr.core.models import User
         from supervisr.core.models import Product, get_system_user
         from supervisr.static.models import ProductPage
         products = Product.objects.all().exclude(productpage__isnull=False)
         for prod in products:
             ProductPage.objects.create(
                 title=prod.name,
-                author=User.objects.get(pk=get_system_user()),
+                author=get_system_user(),
                 slug=prod.slug,
                 published=True,
                 listed=(not prod.invite_only),

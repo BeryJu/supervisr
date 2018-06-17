@@ -21,7 +21,6 @@ class TestDomainViews(TestCase):
             provider_path='supervisr.core.providers.base.BaseProvider',
             credentials=self.provider_credentials)
         self.ddomain = Domain.objects.create(domain_name=_domain,
-                                             is_sub=True,
                                              provider_instance=self.provider)
         UserAcquirableRelationship.objects.create(user=self.system_user, model=self.ddomain)
         self.domain = MailDomain.objects.create(domain=self.ddomain)

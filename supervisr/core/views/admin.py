@@ -3,6 +3,7 @@
 import platform
 import sys
 
+import celery
 from django import get_version as django_version
 from django.conf import settings as django_settings
 from django.contrib import messages
@@ -13,12 +14,11 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
 from revproxy.views import ProxyView
-
 from supervisr.core.models import Event, Setting, User, get_system_user
 from supervisr.core.signals import SIG_GET_MOD_INFO, SIG_SETTING_UPDATE
 from supervisr.core.tasks import debug_progress_task
 from supervisr.core.utils import get_reverse_dns
-from supervisr.core.views.generic import LoginRequiredView
+from supervisr.core.views.generic import AdminRequiredView
 
 
 @login_required
@@ -27,8 +27,10 @@ def index(request: HttpRequest) -> HttpResponse:
     """Admin index"""
     # Subtract the system user
     user_count = User.objects.all().count() - 1
+    celery_ping = celery.current_app.control.inspect().ping()
     return render(request, '_admin/index.html', {
         'user_count': user_count,
+        'celery_workers': celery_ping
     })
 
 
@@ -56,26 +58,26 @@ def users(request: HttpRequest) -> HttpResponse:
 def info(request: HttpRequest) -> HttpResponse:
     """Show system information"""
     info_data = {
-        'Version': {
-            'Python Version': sys.version_info.__repr__(),
-            'Django Version': django_version(),
-            'Supervisr Commit': django_settings.VERSION,
+        _('Version'): {
+            _('Python Version'): sys.version_info.__repr__(),
+            _('Django Version'): django_version(),
+            _('Supervisr Commit'): django_settings.VERSION,
         },
-        'System': {
-            'uname': platform.uname().__repr__(),
+        _('System'): {
+            _('uname'): platform.uname().__repr__(),
         },
-        'Request': {
-            'url_name': (
+        _('Request'): {
+            _('url_name'): (
                 request.resolver_match.url_name if request.resolver_match is not None
                 else ''),
-            'REMOTE_ADDR': request.META.get('REMOTE_ADDR'),
-            'REMOTE_ADDR PTR': get_reverse_dns(request.META.get('REMOTE_ADDR')),
-            'X-Forwarded-for': request.META.get('HTTP_X_FORWARDED_FOR'),
-            'X-Forwarded-for PTR': get_reverse_dns(request.META.get('HTTP_X_FORWARDED_FOR')),
+            _('REMOTE_ADDR'): request.META.get('REMOTE_ADDR'),
+            _('REMOTE_ADDR PTR'): get_reverse_dns(request.META.get('REMOTE_ADDR')),
+            _('X-Forwarded-for'): request.META.get('HTTP_X_FORWARDED_FOR'),
+            _('X-Forwarded-for PTR'): get_reverse_dns(request.META.get('HTTP_X_FORWARDED_FOR')),
         },
-        'Settings': {
-            'Debug Enabled': django_settings.DEBUG,
-            'Authentication Backends': django_settings.AUTHENTICATION_BACKENDS,
+        _('Settings'): {
+            _('Debug Enabled'): django_settings.DEBUG,
+            _('Authentication Backends'): django_settings.AUTHENTICATION_BACKENDS,
         }
     }
     results = SIG_GET_MOD_INFO.send(sender=None)
@@ -124,7 +126,7 @@ def debug(request: HttpRequest) -> HttpResponse:
     return render(request, '_admin/debug.html')
 
 
-class FlowerView(LoginRequiredView):
+class FlowerView(AdminRequiredView):
     """View to show iframe with flower"""
 
     def get(self, request: HttpRequest) -> HttpResponse:
@@ -132,6 +134,6 @@ class FlowerView(LoginRequiredView):
         return render(request, '_admin/flower.html')
 
 
-class FlowerProxy(ProxyView, LoginRequiredView):
+class FlowerProxy(ProxyView, AdminRequiredView):
     """Flower Proxy"""
     upstream = 'http://localhost:5555'

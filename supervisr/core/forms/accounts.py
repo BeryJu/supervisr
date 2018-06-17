@@ -9,7 +9,6 @@ from django import forms
 from django.conf import settings
 from django.forms import ValidationError
 from django.utils.translation import ugettext_lazy as _
-
 from supervisr.core.forms.utils import check_password
 from supervisr.core.models import Setting, User
 from supervisr.core.signals import SIG_CHECK_USER_EXISTS

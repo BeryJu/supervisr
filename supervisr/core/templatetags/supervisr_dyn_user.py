@@ -4,7 +4,6 @@ Supervisr Core NavApps Templatetag
 
 from django import template
 from django.core.cache import cache
-
 from supervisr.core.utils import get_apps
 
 register = template.Library()

@@ -2,7 +2,6 @@
 
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
-
 from supervisr.mail.models import MailDomain
 
 

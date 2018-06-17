@@ -8,7 +8,6 @@ from django import template
 from django.core.cache import cache
 from django.urls import reverse
 from django.urls.exceptions import NoReverseMatch
-
 from supervisr.core.utils import get_apps
 
 register = template.Library()

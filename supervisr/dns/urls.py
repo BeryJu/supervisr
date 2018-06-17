@@ -1,7 +1,6 @@
 """Supervisr DNS URLs"""
 
 from django.conf.urls import url
-
 from supervisr.core.regex import DOMAIN_REGEX, UUID_REGEX
 from supervisr.dns.views import migrate, records, resource, resourcesets, zones
 

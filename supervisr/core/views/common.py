@@ -5,7 +5,6 @@ import sys
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.views import View
-
 from supervisr.core.api.utils import api_response
 from supervisr.core.models import Event, Product, ProviderInstance
 from supervisr.core.views.generic import LoginRequiredView
@@ -16,9 +15,7 @@ class IndexView(LoginRequiredView):
 
     def get(self, request: HttpRequest) -> HttpResponse:
         """Show index view with hosted_applications quicklaunch and recent events"""
-        hosted_applications = Product.objects.filter(users__in=[request.user], managed=True) \
-            .exclude(management_url__isnull=True) \
-            .exclude(management_url__exact='')
+        hosted_applications = Product.objects.filter(users__in=[request.user])
         events = Event.objects.filter(
             user=request.user, hidden=False) \
             .order_by('-create_date')[:15]
