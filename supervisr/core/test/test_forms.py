@@ -4,9 +4,8 @@
 from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
                                            PasswordResetFinishForm, SignupForm)
 from supervisr.core.forms.domains import DomainForm
-from supervisr.core.models import (EmptyCredential, ProviderInstance, Setting,
-                                   User, UserAcquirableRelationship)
-from supervisr.core.test.utils import TestCase, test_request
+from supervisr.core.models import Setting, User, UserAcquirableRelationship
+from supervisr.core.test.utils import TestCase, internal_provider, test_request
 from supervisr.core.views.common import IndexView
 
 
@@ -111,30 +110,27 @@ class TestForms(TestCase):
 
     def test_domain_form(self):
         """Test Domain Form"""
-        creds = EmptyCredential.objects.create(
-            owner=self.system_user,
-            name='internal')
-        prov_inst = ProviderInstance.objects.create(
-            credentials=creds,
-            provider_path='supervisr.mod.provider.debug.providers.core.DebugProvider')
+        provider, _creds = internal_provider(self.system_user)
         UserAcquirableRelationship.objects.create(
-            model=prov_inst,
+            model=provider,
             user=self.system_user)
+        form_request = test_request(IndexView.as_view(), user=self.system_user, just_request=True)
 
         # Test valid form
         form_a = DomainForm(data={
             'domain_name': 'test.org',
-            'provider_instance': prov_inst.pk
+            'provider_instance': provider.pk
         })
-        form_a.request = test_request(IndexView.as_view(), user=self.system_user, just_request=True)
+        form_a.request = form_request
         self.assertTrue(form_a.is_valid())
+        print(form_a.errors)
 
         # Test invalid domain
         form_b = DomainForm(data={
-            'domain_name': '1test.',
-            'provider_instance': prov_inst.pk
+            'domain_name': 'a-',
+            'provider_instance': provider.pk
         })
-        form_b.request = test_request(IndexView.as_view(), user=self.system_user, just_request=True)
+        form_b.request = form_request
         self.assertFalse(form_b.is_valid())
 
         # Test invalid provider
@@ -142,5 +138,5 @@ class TestForms(TestCase):
             'domain_name': 'test.org',
             'provider_instance': -1
         })
-        form_c.request = test_request(IndexView.as_view(), user=self.system_user, just_request=True)
+        form_c.request = form_request
         self.assertFalse(form_c.is_valid())

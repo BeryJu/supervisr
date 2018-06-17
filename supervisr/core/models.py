@@ -552,7 +552,7 @@ class Domain(ProviderAcquirableSingle, UserAcquirable, CreatedUpdatedModel):
     Information about a Domain, which is used for other sub-apps.
     """
     domain_name = models.CharField(max_length=253, unique=True)
-    description = models.TextField()
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.domain_name
