@@ -20,7 +20,8 @@ class TFAVerifyForm(forms.Form):
     """Simple Form to verify 2FA Code"""
     order = ['code']
 
-    code = forms.CharField(label=_('Code'), validators=[TFA_CODE_VALIDATOR])
+    code = forms.CharField(label=_('Code'), validators=[TFA_CODE_VALIDATOR],
+                           widget=forms.TextInput(attrs={'autocomplete': 'off'}))
 
     def __init__(self, *args, **kwargs):
         super(TFAVerifyForm, self).__init__(*args, **kwargs)
