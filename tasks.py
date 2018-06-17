@@ -2,8 +2,8 @@
 import os
 from importlib import import_module
 
-import supervisr.cli.tasks
 from invoke import Collection
+from supervisr.cli import tasks
 
 try:
     import pymysql
@@ -16,7 +16,7 @@ os.environ.setdefault("SUPERVISR_LOCAL_SETTINGS", "supervisr.local_settings")
 
 # pylint: disable=invalid-name
 namespace = Collection()
-for submod in dir(supervisr.cli.tasks):
+for submod in dir(tasks):
     if not submod.startswith('_'):
         if 'ci' in submod and os.getenv('SUPERVISR_PACKAGED', "False").title() == 'True':
             continue
