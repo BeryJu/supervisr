@@ -1,6 +1,7 @@
 """Supervisr Puppet View Test"""
 
 import json
+from shutil import rmtree
 
 from django.contrib.auth.models import Group
 from supervisr.core.models import Setting
@@ -38,6 +39,11 @@ class TestPuppetForgeAPI(TestCase):
         _builder.build()
         TestPuppetForgeAPI.is_json(b'{')
         self.key = Setting.get('url_key', namespace='supervisr.puppet')
+
+    def tearDown(self):
+        """Cleanup"""
+        _builder = ReleaseBuilder(PuppetModule.objects.filter(name='supervisr_core').first())
+        rmtree(_builder.output_base)
 
     def test_module_list(self):
         """Test module_list view"""

@@ -14,6 +14,10 @@ from supervisr.core.views import accounts, common
 class TestMiddleware(TestCase):
     """Supervisr Core Middleware Test"""
 
+    def tearDown(self):
+        """Clean up"""
+        call_command('deploy_page', 'down')
+
     def test_deploy_page_off(self):
         """Test Disabled Deploy Page"""
         call_command('deploy_page', 'down')

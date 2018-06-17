@@ -1,9 +1,11 @@
 """Supervisr Core ManagementCommands Test"""
 
+from shutil import rmtree
 from unittest import expectedFailure
 
 from django.contrib.auth.models import Group
 from supervisr.core.test.utils import TestCase, call_command_ret
+from supervisr.puppet.builder import ReleaseBuilder
 from supervisr.puppet.models import PuppetModule
 
 
@@ -19,6 +21,10 @@ class TestManagementCommands(TestCase):
             name='supervisr_core',
             owner=self.system_user,
             source_path='supervisr/core/server/config/')
+
+    def tearDown(self):
+        _builder = ReleaseBuilder(PuppetModule.objects.filter(name='supervisr_core').first())
+        rmtree(_builder.output_base)
 
     def test_sv_puppet_debug_build(self):
         """Test puppet module build"""
