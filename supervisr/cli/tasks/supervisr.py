@@ -18,11 +18,11 @@ def run_celery(ctx, debug=False):
     if debug and WINDOWS:
         # Workaround since celery is not supported on windows since version 4
         # https://github.com/celery/celery/issues/4178
-        ctx.run("celery -A supervisr.core worker -l info -Ofair -c 1 --pool=solo")
+        ctx.run("celery -A supervisr.core worker -l info -Ofair -c 1 --pool=solo", pty=True)
     elif debug:
-        ctx.run("celery -A supervisr.core worker -l debug -Ofair -c 1")
+        ctx.run("celery -A supervisr.core worker -l debug -Ofair -c 1", pty=True)
     else:
-        ctx.run("celery -A supervisr.core worker -l info -Ofair")
+        ctx.run("celery -A supervisr.core worker -l info -Ofair", pty=True)
 
 
 @task
