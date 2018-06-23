@@ -45,10 +45,11 @@ class SupervisrStaticConfig(SupervisrAppConfig):
             pass
 
     def bootstrap(self):
-        """Add README and ATTRIBUTIONS FilePage"""
+        """Add README, ATTRIBUTIONS and LICENSE FilePage"""
         filepages = FilePageBootstrapper()
         filepages.add(path='README.md', title='Readme')
         filepages.add(path='ATTRIBUTIONS.md', title='Attributions')
+        filepages.add(path='LICENSE', title='License')
         return [filepages, ]
 
     def update_filepages(self):

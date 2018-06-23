@@ -20,7 +20,10 @@ pages:
     - 'MySQL':
       - 'Index size': 'faq/mysql/index_size.md'
     - "error'str' object has no attribute 'tzinfo'": 'faq/error_str_object_has_no_attribute_tzinfo.md'
-  - 'Installation': 'installation/supervisr.md'
+  - 'Installation':
+    - 'Debian Packages': 'installation/debian_packages.md'
+    - 'From source': 'installation/source.md'
+    - 'Error reporting': 'installation/error_reporting.md'
   - 'Modules':
     - 'Bacula':
       - 'Installation': 'Modules/Bacula/installation.md'

@@ -10,6 +10,7 @@
       {% ifapp 'supervisr_static' as static_enabled %}
       {% if static_enabled %}
         <li><a class="dropdown-item" href="{% url 'supervisr_static:page-view' slug='attributions' %}">{% trans "Attributions" %}</a></li>
+        <li><a class="dropdown-item" href="{% url 'supervisr_static:page-view' slug='license' %}">{% trans "License" %}</a></li>
       {% endif %}
       {% setting 'FOOTER_EXTRA_LINKS' as links %}
       {% for link in links %}

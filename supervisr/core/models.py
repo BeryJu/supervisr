@@ -148,7 +148,7 @@ class User(AbstractUser):
         if not users:
             users = [self]
         else:
-            users = [self] + users
+            users = [self] + list(users)
         task_obj.users.add(*users)
 
 

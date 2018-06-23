@@ -1,6 +1,4 @@
-"""
-Supervisr Core Domain Views
-"""
+"""Supervisr Core Domain Views"""
 
 from django.contrib import messages
 from django.db.models import QuerySet
@@ -48,9 +46,8 @@ class DomainNewView(BaseWizardView):
             form.request = self.request
         return form
 
-    # pylint: disable=unused-argument
-    def done(self, final_forms, form_dict, **kwargs) -> HttpResponse:
-        domain = form_dict['0'].save()
+    def finish(self, form_list) -> HttpResponse:
+        domain = form_list[0].save()
         UserAcquirableRelationship.objects.create(
             model=domain,
             user=self.request.user)
