@@ -18,7 +18,7 @@ supervisr provides the following features:
  - Mail Management
     - Native Postfix and Exim Support
 
-## Find out more about installing it [here](installation/debian_package.md).
+## Find out more about installing it [here](installation/debian_packages.md).
 
 [![pipeline status](https://git.beryju.org/BeryJu.org/supervisr/badges/master/pipeline.svg)](https://git.beryju.org/BeryJu.org/supervisr/commits/master)
 
