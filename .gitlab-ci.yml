@@ -97,7 +97,6 @@ bundle_release:
 deploy-doc:
   stage: deploy-docs
   services: []
-  image: debian:stable
   environment:
     name: public_docs
     url: "https://supervisr.beryju.org/docs/master/"
@@ -109,7 +108,6 @@ deploy-doc:
 deploy-dev-docs:
   stage: deploy-docs
   services: []
-  image: debian:stable
   environment:
     name: public_docs
     url: "https://supervisr.beryju.org/dev-docs/master/"
