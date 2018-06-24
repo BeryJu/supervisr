@@ -96,14 +96,17 @@ bundle_release:
 # Deploy documentation
 deploy-doc:
   stage: deploy-docs
+  services: []
   environment:
     name: public_docs
     url: "https://supervisr.beryju.org/docs/master/"
   script:
+    - 'pip install "tornado<5.0,>=4.1"'
     - 'mkdocs build'
     - 'rsync -avh --delete site/* "beryjuorg@ory1-web-prod-1.ory1.beryju.org:supervisr.beryju.org/docs/${CI_COMMIT_REF_NAME}"'
 deploy-dev-docs:
   stage: deploy-docs
+  services: []
   environment:
     name: public_docs
     url: "https://supervisr.beryju.org/dev-docs/master/"
