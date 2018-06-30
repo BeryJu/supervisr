@@ -105,6 +105,7 @@ deploy-doc:
     - 'apt update'
     - 'apt install -y rsync'
     - 'pip install "tornado<5.0,>=4.1"'
+    - "eval $(ssh-agent -s)"
     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
     - 'mkdocs build'
     - 'rsync -avh --delete site/* "beryjuorg@ory1-web-prod-1.ory1.beryju.org:supervisr.beryju.org/docs/${CI_COMMIT_REF_NAME}"'
@@ -118,8 +119,9 @@ deploy-dev-docs:
     - 'apt update'
     - 'apt install -y rsync'
     - 'rm -rf docgen/'
-    - 'inv ci.docs'
+    - "eval $(ssh-agent -s)"
     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
+    - 'inv ci.docs'
     - 'rsync -avh --delete docgen/supervisr/* "beryjuorg@ory1-web-prod-1.ory1.beryju.org:supervisr.beryju.org/dev-docs/${CI_COMMIT_REF_NAME}"'
 
 
