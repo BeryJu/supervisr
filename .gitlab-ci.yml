@@ -5,8 +5,9 @@ before_script:
   - "virtualenv env"
   - "source env/bin/activate"
   - "pip install --no-cache-dir -U -r requirements.txt -r requirements-dev.txt"
-  - "mkdir .ssh"
-  - "echo '|1|P2xx16Gs0+6xoeE67TuPuW8Sxss=|8zGexiDNq2MZUBcjBu/CHlZCxk8= ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3uEYmUDDrmJO4Sj3Bcx4YwLFdaPz18ZRWQbULvXaXIOpOZcudCkKxnWUT4ZBB1tPpH/WphVOBxse8fkFYo0eXTkrM1H7ByoeSoUwUVS4G0AFs8QRWKm8Ssgh5kmvCOeaSWxVaFMF+1thnunqnL1g7OtB85XTpu/KOG/l+VlpAob31gkqovowcbc8Wr6/KueqDii69drwfiAaI2iJiP2gFG5i8+QsvfhY3MwNWUJlmj7u5UbTzr2Sh1UhjCZwLWC4u9he7cV+sa8HcQlvYX1YYUmHmR2RXIMtYeVlK7F2pM0dNdhPkOIrSiIAn6ouxFL+2gumV8XU1X1lfHLM7MV4/' > .ssh/known_hosts"
+  - "mkdir ~/.ssh"
+  - "cp .gitlab/known_hosts ~/.ssh/"
+
 stages:
   - test
   - test-db
@@ -115,7 +116,8 @@ deploy-dev-docs:
   script:
     - 'apt update'
     - 'apt install -y rsync'
-    - 'inv supervisr.docs'
+    - 'rm -rf docgen/'
+    - 'inv ci.docs'
     - 'rsync -avh --delete docgen/supervisr/* "beryjuorg@ory1-web-prod-1.ory1.beryju.org:supervisr.beryju.org/dev-docs/${CI_COMMIT_REF_NAME}"'
 
 
