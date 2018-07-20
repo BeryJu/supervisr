@@ -27,6 +27,7 @@ class ProviderIndexView(GenericIndexView):
     def get_instance(self) -> QuerySet:
         return self.model.objects.filter(users__in=[self.request.user]).order_by('name')
 
+
 PROVIDER_TEMPLATES = {
     '0': 'provider/instance-wizard.html',
     '1': 'core/generic_wizard.html',

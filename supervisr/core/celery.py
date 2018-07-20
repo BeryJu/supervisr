@@ -29,6 +29,7 @@ class Celery(celery.Celery):
         # hook into the Celery error handler
         register_signal(client)
 
+
 CELERY_APP = Celery('supervisr')
 
 # Using a string here means the worker doesn't have to serialize

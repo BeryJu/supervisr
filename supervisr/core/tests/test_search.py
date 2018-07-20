@@ -1,7 +1,8 @@
 """Supervisr Core SearchView Test"""
 
 from supervisr.core.models import Domain
-from supervisr.core.tests.utils import TestCase, internal_provider, test_request
+from supervisr.core.tests.utils import (TestCase, internal_provider,
+                                        test_request)
 from supervisr.core.views import search
 
 

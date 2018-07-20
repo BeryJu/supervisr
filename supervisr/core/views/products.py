@@ -19,7 +19,7 @@ class ProductIndexView(GenericIndexView):
     template = 'product/index.html'
 
     def get_instance(self) -> QuerySet:
-        return self.model.objects.filter(invite_only=False)
+        return self.model.objects.filter(invite_only=False).order_by('name')
 
 
 @login_required

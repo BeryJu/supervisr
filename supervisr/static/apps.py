@@ -27,6 +27,7 @@ class FilePageBootstrapper(Bootstrapper):
                 }
             )
 
+
 class SupervisrStaticConfig(SupervisrAppConfig):
     """supervisr Static app config"""
 

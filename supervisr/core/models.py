@@ -162,10 +162,10 @@ class SVAnonymousUser(django_auth_models.AnonymousUser):
     rows_per_page = 50
     api_key = '00000000-0000-0000-0000-000000000000'
 
+
 django_auth_models.AnonymousUser = SVAnonymousUser
 
 
-# pylint: disable=too-few-public-methods
 class GlobalPermissionManager(models.Manager):
     """GlobalPermissionManager"""
 
@@ -421,6 +421,10 @@ class UserAcquirable(CastableModel):
 
     user_acquirable_id = models.AutoField(primary_key=True)
     users = models.ManyToManyField('User', through='UserAcquirableRelationship')
+
+    def has_user(self, user: User) -> bool:
+        """Check if user has acquired this instance"""
+        return user in self.users.all()
 
     def copy_user_relationships_to(self, target: 'UserAcquirable'):
         """Copy UserAcquirableRelationship associated with `self` and copy them to `to`"""

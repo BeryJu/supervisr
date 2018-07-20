@@ -47,14 +47,13 @@ class Uncaught500View(View):
     def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """Handle an uncaught 500"""
         exc = sys.exc_info()
-        message = None
-        if exc:
-            message = exc[1]
+        message = exc[1] if exc else None
 
         if 'api' in request.path:
             # return a json/xml/yaml message if this was an api call
             return api_response(request, {'message': 'unexpected_error'})
-        return render(request, 'common/error.html', {'code': 500, 'exc_message': message})
+        return render(request, 'common/error.html',
+                      {'code': 500, 'exc_message': message}, status=500)
 
 
 class ErrorResponseView(View):
@@ -65,4 +64,4 @@ class ErrorResponseView(View):
         if 'api' in request.path:
             # return a json/xml/yaml message if this was an api call
             return api_response(request, {'message': message})
-        return render(request, 'common/error.html', {'code': 500, 'message': message})
+        return render(request, 'common/error.html', {'code': 500, 'message': message}, status=500)

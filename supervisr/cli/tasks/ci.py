@@ -56,7 +56,7 @@ def prospector(ctx):
 @shell
 def isort(ctx):
     """Run isort"""
-    ctx.run("isort -c -vb -sg env -b importlib")
+    ctx.run("isort -c -vb -sg env")
 
 
 @task()

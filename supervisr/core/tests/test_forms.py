@@ -5,7 +5,8 @@ from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
                                            PasswordResetFinishForm, SignupForm)
 from supervisr.core.forms.domains import DomainForm
 from supervisr.core.models import Setting, User, UserAcquirableRelationship
-from supervisr.core.tests.utils import TestCase, internal_provider, test_request
+from supervisr.core.tests.utils import (TestCase, internal_provider,
+                                        test_request)
 from supervisr.core.views.common import IndexView
 
 

@@ -10,10 +10,10 @@ DATABASES = {
         'HOST': 'mysql',
         'PORT': '',
         'OPTIONS': {
-            'charset': 'utf8',
+            'charset': 'UTF8MB4',
             'sql_mode': 'STRICT_TRANS_TABLES',
             'init_command': "ALTER DATABASE supervisr_test "
-                            "CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
+                            "CHARACTER SET UTF8MB4 COLLATE utf8mb4_bin;"
         }
     }
 }
