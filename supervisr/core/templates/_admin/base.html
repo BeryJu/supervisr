@@ -1,6 +1,7 @@
 {% extends "core/base.html" %}
 
 {% load i18n %}
+{% load ifapp %}
 {% load is_active %}
 {% load is_active_url %}
 {% load is_active_app %}
@@ -43,11 +44,14 @@
             {% trans "System Information" %}
           </a>
         </li>
+        {% ifapp 'supervisr_mod_web_proxy' as web_proxy_enabled %}
+        {% if web_proxy_enabled %}
         <li>
           <a href="{% url 'admin-flower' %}" class="nav-link {% is_active 'admin-flower' %}">
             {% trans "Flower" %}
           </a>
         </li>
+        {% endif %}
       </ul>
     </section>
     <section class="nav-group">

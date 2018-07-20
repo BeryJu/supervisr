@@ -95,6 +95,7 @@ INSTALLED_APPS = [
     'supervisr.mod.provider.debug.apps.SupervisrModProviderDebugConfig',
     'supervisr.mail.apps.SupervisrMailConfig',
     'supervisr.static.apps.SupervisrStaticConfig',
+    'supervisr.mod.web_proxy.apps.SupervisrModWebProxyConfig',
     'supervisr.mod.beacon.apps.SupervisrModBeaconConfig',
     'supervisr.mod.auth.ldap.apps.SupervisrModAuthLDAPConfig',
     'supervisr.mod.auth.saml.idp.apps.SupervisrModAuthSAMLProvider',
@@ -103,11 +104,11 @@ INSTALLED_APPS = [
     'supervisr.mod.tfa.apps.SupervisrModTFAConfig',
     'supervisr.mod.stats.influx.apps.SupervisrModStatInfluxConfig',
     'supervisr.mod.provider.onlinenet.apps.SupervisrModProviderOnlineNetConfig',
+    'supervisr.mod.provider.libcloud.apps.SupervisrModProviderLibcloud',
     'formtools',
     'django.contrib.admin',
     'django.contrib.admindocs',
     'raven.contrib.django.raven_compat',
-    'revproxy',
 ]
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -278,7 +279,6 @@ CACHES = {
 DJANGO_REDIS_IGNORE_EXCEPTIONS = True
 DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS = True
 
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 
 CELERY_TASK_DEFAULT_QUEUE = 'supervisr'
@@ -316,12 +316,24 @@ LOGGING = {
             'format': ('%(process)-5d %(thread)d %(name)-45s '
                        '%(levelname)-8s %(funcName)-20s %(message)s'),
         },
+        'color': {
+            '()': 'colorlog.ColoredFormatter',
+            'format': ('%(log_color)s%(process)-5d %(thread)d %(name)-45s '
+                       '%(levelname)-8s %(funcName)-20s %(message)s'),
+            'log_colors': {
+                'DEBUG': 'bold_black',
+                'INFO': 'white',
+                'WARNING': 'yellow',
+                'ERROR': 'red',
+                'CRITICAL': 'bold_red',
+            },
+        }
     },
     'handlers': {
         'console': {
             'level': LOG_LEVEL_CONSOLE,
             'class': 'logging.StreamHandler',
-            'formatter': 'default',
+            'formatter': 'color',
         },
         'sentry': {
             'level': 'ERROR',

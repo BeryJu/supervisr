@@ -38,7 +38,7 @@ class ProviderMultiplexer(object):
             invoker.task_apply_async(provider_do_save, *args, celery_kwargs={
                 'queue': provider.name
             }, users=provider.users.all())
-            LOGGER.info("Fired task provider_do_save")
+            LOGGER.debug("Fired task provider_do_save")
 
     def on_model_deleted(self, invoker: 'User', instance: Model,
                          providers: List['ProviderInstance']):
@@ -50,4 +50,4 @@ class ProviderMultiplexer(object):
             invoker.task_apply_async(provider_do_delete, *args, celery_kwargs={
                 'queue': provider.name
             }, users=provider.users.all())
-            LOGGER.info("Fired task provider_do_delete")
+            LOGGER.debug("Fired task provider_do_delete")

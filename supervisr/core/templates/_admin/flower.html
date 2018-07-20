@@ -27,11 +27,12 @@
 
 {% block content_area %}
 <div class="container">
-  <h1><clr-icon shape="flame" size="48"></clr-icon>{% trans "Flower" %}</h1>
+  <h1><clr-icon shape="flame" size="48"></clr-icon>{% trans "Flower" %} <a href="{% url 'supervisr_mod_web_proxy:proxy' slug='supervisr_flower' path='' %}" target="_blank"><clr-icon shape="pop-out"></clr-icon>
+</a></h1>
 </div>
 <div class="row">
   <div class="col-md-12">
-    <iframe src="{% url 'admin-flower-proxy' path='' %}"></iframe>
+    <iframe src="{% url 'supervisr_mod_web_proxy:proxy' slug='supervisr_flower' path='' %}"></iframe>
   </div>
 </div>
 {% endblock %}

@@ -13,7 +13,6 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
-from revproxy.views import ProxyView
 from supervisr.core.models import Event, Setting, User, get_system_user
 from supervisr.core.signals import SIG_GET_MOD_INFO, SIG_SETTING_UPDATE
 from supervisr.core.tasks import debug_progress_task
@@ -132,8 +131,3 @@ class FlowerView(AdminRequiredView):
     def get(self, request: HttpRequest) -> HttpResponse:
         """Show template with iframe for flower"""
         return render(request, '_admin/flower.html')
-
-
-class FlowerProxy(ProxyView, AdminRequiredView):
-    """Flower Proxy"""
-    upstream = 'http://localhost:5555'
