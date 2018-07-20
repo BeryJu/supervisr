@@ -1,6 +1,4 @@
-"""
-Wrapper for ldap3 to easily manage user
-"""
+"""Wrapper for ldap3 to easily manage user"""
 import logging
 import os
 import sys
@@ -21,9 +19,7 @@ LOGIN_FIELD = 'userPrincipalName'
 
 
 class LDAPConnector(object):
-    """
-    Wrapper for ldap3 to easily manage user
-    """
+    """Wrapper for ldap3 to easily manage user"""
 
     con = None
     domain = None
@@ -64,7 +60,7 @@ class LDAPConnector(object):
                                     password=Setting.get('bind:password'), **con_args)
 
         if self.mock:
-            json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock.json')
+            json_path = os.path.join(os.path.dirname(__file__), 'tests', 'ldap_mock.json')
             self.con.strategy.entries_from_json(json_path)
 
         try:
