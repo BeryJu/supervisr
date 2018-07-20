@@ -31,7 +31,7 @@ class BaseProvider(object):
     credentials = None
     _meta = None
 
-    def __init__(self, credentials=None):
+    def __init__(self, credentials):
         self._meta = self.Meta(self)
         if credentials:
             self.credentials = credentials.cast()
@@ -104,17 +104,18 @@ def get_providers(capabilities=None, path=False):
     # Filter out the sub
     valid = []
     for provider in list(set(providers)):
-        provider_instance = provider()
-        if provider_instance._meta.selectable:
+        provider_meta = provider.Meta(None)
+        if provider_meta.selectable:
+            # Optionally check for matching capabilities
             if capabilities:
                 qualified = True
                 for capability in capabilities:
-                    if capability not in provider_instance._meta.capabilities:
+                    if capability not in provider_meta.capabilities:
                         qualified = False
                 if qualified:
-                    valid.append(provider_instance)
+                    valid.append(provider)
             else:
-                valid.append(provider_instance)
+                valid.append(provider)
     # if path is True, convert classes to dotted path
     if path:
         return ['%s.%s' % (p.__module__, p.__class__.__name__) for p in valid]
