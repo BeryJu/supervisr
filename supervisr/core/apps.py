@@ -31,7 +31,7 @@ class SupervisrAppConfig(AppConfig):
 
     def ready(self):
         # self.check_requirements()
-        self._load_init()
+        self.__load_init()
         self.merge_settings()
         self.run_bootstrap()
         super(SupervisrAppConfig, self).ready()
@@ -54,7 +54,7 @@ class SupervisrAppConfig(AppConfig):
         """Bootstrap Settings or Permissions"""
         return []
 
-    def _load_init(self):
+    def __load_init(self):
         """Load initial modules for decorators"""
         LOGGER.debug("Loaded %s", self.name)
         for module in self.init_modules:
@@ -121,6 +121,9 @@ class Bootstrapper(object):
 
     rows = []
 
+    def __init__(self):
+        self.rows = []
+
     def add(self, **kwargs):
         """Add a row that should be applied"""
         self.rows.append(kwargs)
@@ -132,9 +135,6 @@ class Bootstrapper(object):
 
 class SettingBootstrapper(Bootstrapper):
     """Bootstrapper to create Settings"""
-
-    def __init__(self):
-        self.rows = []
 
     def apply(self, invoker):
         from supervisr.core.models import Setting
@@ -148,9 +148,6 @@ class SettingBootstrapper(Bootstrapper):
 
 class PermissionBootstrapper(Bootstrapper):
     """Bootstrapper to create Permissions"""
-
-    def __init__(self):
-        self.rows = []
 
     def apply(self, invoker):
         from supervisr.core.models import GlobalPermission

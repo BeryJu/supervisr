@@ -22,9 +22,4 @@
   },
   "editor.wordWrap": "on",
   "files.insertFinalNewline": true,
-  "cSpell.words": [
-    "endblock",
-    "pylint",
-    "supervisr"
-  ],
 }

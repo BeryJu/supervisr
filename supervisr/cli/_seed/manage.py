@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""
-Django Launcher
-"""
+"""Django Launcher"""
 import os
 import sys
 

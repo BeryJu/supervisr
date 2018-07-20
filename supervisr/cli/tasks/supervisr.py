@@ -34,7 +34,8 @@ def run_celery_beat(ctx):
 @task
 def run_celery_flower(ctx):
     """Run Celery flower"""
-    ctx.run("celery -A supervisr.core flower --address=127.0.0.1 --url_prefix=/proxy/flower")
+    ctx.run(("celery -A supervisr.core flower --address=127.0.0.1 "
+             "--url_prefix=/app/mod/web/proxy/supervisr_flower"))
 
 
 @task

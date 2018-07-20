@@ -10,6 +10,22 @@
             "options": {
                 "cwd": "${workspaceFolder}/assets/",
             }
+        },
+        {
+            "type": "shell",
+            "label": "supervist-ctl: CI.isort",
+            "command": "source env/bin/activate && supervisr-ctl ci.isort",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "supervist-ctl: CI.lint",
+            "command": "source env/bin/activate && supervisr-ctl ci.lint",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
         }
     ]
 }

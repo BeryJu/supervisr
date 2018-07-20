@@ -1,6 +1,4 @@
-"""
-Supervisr module _seed app admin
-"""
+"""Supervisr module _seed app admin"""
 
 from supervisr.core.admin import admin_autoregister
 
