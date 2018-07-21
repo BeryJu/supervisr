@@ -1,5 +1,6 @@
 # Global Variables
 before_script:
+  - "python3 --version"
   - "python3 -m pip install -U virtualenv"
   - "rm -rf env/"
   - "virtualenv env"
