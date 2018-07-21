@@ -11,7 +11,6 @@ class BaseDNSProvider(BaseProvider):
     name = 'BaseDNSProvider'
     selectable = False
 
-    # pylint: disable=too-few-public-methods
     class Meta(ProviderMetadata):
         """Provider Meta"""
 

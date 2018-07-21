@@ -27,7 +27,6 @@ class DomainProvider(BaseProvider):
         """
         raise NotImplementedError("This Method should be overwritten by subclasses")
 
-    # pylint: disable=too-few-public-methods
     class Meta(ProviderMetadata):
         """Domain Provider meta data"""
 

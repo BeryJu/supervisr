@@ -18,6 +18,7 @@ class SupervisrModWebProxyConfig(SupervisrAppConfig):
 
     name = 'supervisr.mod.web_proxy'
     label = 'supervisr_mod_web_proxy'
+    title_modifier = lambda self, request: 'Web Proxy'
 
     def bootstrap(self):
         """Add default flower Reverse-Proxy"""

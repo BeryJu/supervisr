@@ -4,11 +4,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
-from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
-from django.views import View
 from supervisr.core.forms.settings import SettingsForm
 from supervisr.core.models import Setting
+from supervisr.core.views.generic import AdminRequiredView, LoginRequiredView
 
 
 @login_required
@@ -51,9 +50,7 @@ def mod_default(request: HttpRequest) -> HttpResponse:
     return render(request, '_admin/mod_default.html', {'mod': request.GET.get('mod', '')})
 
 
-@method_decorator(login_required, name='dispatch')
-@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
-class GenericSettingView(View):
+class GenericSettingView(LoginRequiredView, AdminRequiredView):
     """Generic Setting View"""
 
     form = None  # type: Type[SettingsForm]

@@ -9,7 +9,6 @@ from supervisr.mod.provider.debug.providers.domain import DebugDomainProvider
 from supervisr.mod.provider.debug.providers.mail import DebugMailProvider
 
 
-# pylint: disable=too-few-public-methods
 class DebugProvider(BaseProvider):
     """Debug Provider"""
 

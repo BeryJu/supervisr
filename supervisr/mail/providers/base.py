@@ -27,7 +27,6 @@ class BaseMailProvider(BaseProvider):
         raise NotImplementedError(
             "This Method should be overwritten by subclasses")
 
-    # pylint: disable=too-few-public-methods
     class Meta(ProviderMetadata):
         """Provider Meta"""
 

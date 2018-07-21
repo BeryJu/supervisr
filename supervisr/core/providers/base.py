@@ -5,7 +5,6 @@ from supervisr.core.providers.objects import ProviderObjectTranslator
 from supervisr.core.utils import class_to_path
 
 
-# pylint: disable=too-few-public-methods
 class ProviderMetadata(object):
     """This is a class to store metadata like ui_name etc about a provider"""
 
@@ -28,7 +27,6 @@ class ProviderMetadata(object):
         """Return Provider Author"""
         return 'BeryJu.org'
 
-# pylint: disable=too-few-public-methods
 class BaseProvider(object):
     """Generic Interface as base for GenericManagedProvider and GenericUserProvider"""
 

@@ -4,7 +4,6 @@ import threading
 from wsgiref.simple_server import make_server
 from wsgiref.validate import validator
 
-from supervisr.core.models import get_system_user
 from supervisr.core.tests.utils import TestCase, test_request
 from supervisr.mod.web_proxy.models import WebApplication
 from supervisr.mod.web_proxy.views import Proxy
@@ -16,6 +15,8 @@ class TestProxy(TestCase):
     expected_result = b'test result'
 
     def setUp(self):
+        super(TestProxy, self).setUp()
+
         # pylint: disable=unused-argument
         def simple_app(environ, start_response):
             """simple HTTP Server"""
@@ -42,7 +43,7 @@ class TestProxy(TestCase):
         response = test_request(Proxy.as_view(), url_kwargs={
             'slug': 'test',
             'path': '/'
-        }, user=get_system_user())
+        }, user=self.system_user)
         self.assertEqual(list(response.streaming_content)[0], self.expected_result)
         self.assertEqual(response.status_code, 200)
 
@@ -63,7 +64,7 @@ class TestProxy(TestCase):
         self.assertEqual(test_request(Proxy.as_view(), url_kwargs={
             'slug': 'invalid',
             'path': '/'
-        }, user=get_system_user()).status_code, 500)
+        }, user=self.system_user).status_code, 500)
 
     def tearDown(self):
         self.httpd.shutdown()

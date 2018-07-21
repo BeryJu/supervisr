@@ -8,7 +8,6 @@ from supervisr.core.utils import check_db_connection
 from supervisr.mod.provider.nix_dns.providers.dns import PowerDNSDBDNSProvider
 
 
-# pylint: disable=too-few-public-methods
 class PowerDNSDBProvider(BaseProvider):
     """PowerDNS DB Provider"""
 
