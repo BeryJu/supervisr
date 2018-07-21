@@ -24,23 +24,23 @@ class ProviderForm(forms.ModelForm):
     credentials = forms.ModelChoiceField(queryset=None, required=True, label=_('Credentials'))
 
     def clean_credentials(self):
-        """
-        Import Provider and check if credentials are compatible
-        """
+        """Import Provider and check if credentials are compatible"""
         # Import provider based on form
         valid_providers = get_providers(path=True)
         if self.cleaned_data.get('provider_path') not in valid_providers:
+            LOGGER.warning('selected provider not in valid_providers list')
             raise Http404
         # also check in form if class exists and is subclass of BaseProvider
         _class = path_to_class(self.cleaned_data.get('provider_path'))
         # Get credentials
         if self.cleaned_data.get('credentials').owner != self.request.user:
+            LOGGER.warning("selected credentials owner doesn't match request user")
             raise Http404
-        r_creds = self.cleaned_data.get('credentials').cast()
+        credentials = self.cleaned_data.get('credentials').cast()
         # Check if credentials work with provider
-        prov_inst = _class(r_creds)
+        prov_inst = _class(credentials)
         LOGGER.info("About to provider.check_credentials")
-        prov_inst.check_credentials(r_creds)
+        prov_inst.check_credentials(credentials)
         return self.cleaned_data.get('credentials')
 
     class Meta:

@@ -2,6 +2,7 @@
 
 from django.utils.translation import ugettext_lazy as _
 from supervisr.core.providers.objects import ProviderObjectTranslator
+from supervisr.core.utils import class_to_path
 
 
 # pylint: disable=too-few-public-methods
@@ -23,6 +24,9 @@ class ProviderMetadata(object):
         """Return all subproviders this provider has"""
         return self.capabilities
 
+    def get_author(self):
+        """Return Provider Author"""
+        return 'BeryJu.org'
 
 # pylint: disable=too-few-public-methods
 class BaseProvider(object):
@@ -118,5 +122,5 @@ def get_providers(capabilities=None, path=False):
                 valid.append(provider)
     # if path is True, convert classes to dotted path
     if path:
-        return ['%s.%s' % (p.__module__, p.__class__.__name__) for p in valid]
-    return sorted(valid, key=lambda x: x.get_meta.ui_name)
+        return [class_to_path(p) for p in valid]
+    return sorted(valid, key=lambda el: el.Meta(None).ui_name)

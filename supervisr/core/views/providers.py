@@ -12,7 +12,7 @@ from supervisr.core.forms.providers import CredentialForm, ProviderForm
 from supervisr.core.models import (BaseCredential, ProviderInstance,
                                    UserAcquirableRelationship)
 from supervisr.core.providers.base import get_providers
-from supervisr.core.utils import path_to_class
+from supervisr.core.utils import class_to_path, path_to_class
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
                                           GenericUpdateView)
 from supervisr.core.views.wizards import BaseWizardView
@@ -33,9 +33,8 @@ PROVIDER_TEMPLATES = {
     '1': 'core/generic_wizard.html',
 }
 
+
 # pylint: disable=too-many-ancestors
-
-
 class ProviderCreateView(BaseWizardView):
     """Wizard to create a Domain"""
 
@@ -50,9 +49,8 @@ class ProviderCreateView(BaseWizardView):
         if step == '0':
             self.providers = get_providers()
             creds = BaseCredential.objects.filter(owner=self.request.user)
-            form.fields['provider_path'].choices = \
-                [('%s.%s' % (s.__module__, s.__class__.__name__), s.get_meta.ui_name)
-                 for s in self.providers]
+            form.fields['provider_path'].choices = [(class_to_path(s), s.Meta(None).ui_name)
+                                                    for s in self.providers]
             form.fields['credentials'].queryset = creds
             form.request = self.request
         return form
@@ -60,24 +58,32 @@ class ProviderCreateView(BaseWizardView):
     def get_context_data(self, form, **kwargs):
         context = super(ProviderCreateView, self).get_context_data(form=form, **kwargs)
         if self.steps.current == '0':
-            context.update({'providers': self.providers})
+            template_provider_info = {}
+            for provider in self.providers:
+                provider_meta = provider.Meta(None)
+                template_provider_info[class_to_path(provider)] = {
+                    'ui_name': provider_meta.ui_name,
+                    'ui_description': provider_meta.ui_description,
+                    'capabilities': ', '.join(provider_meta.capabilities),
+                    'author': provider_meta.get_author,
+                }
+            context.update({'providers': template_provider_info})
         return context
 
     def get_template_names(self):
         return [PROVIDER_TEMPLATES[self.steps.current]]
 
-    # pylint: disable=unused-argument
-    def done(self, final_forms, form_dict, **kwargs):
-        credentials = form_dict['0'].cleaned_data.get('credentials')
+    def finish(self, form_list):
+        credentials = form_list[0].cleaned_data.get('credentials')
         if not credentials.owner == self.request.user:
             raise Http404
 
         r_credentials = credentials.cast()
 
         prov_inst = ProviderInstance.objects.create(
-            name=form_dict['0'].cleaned_data.get('name'),
+            name=form_list[0].cleaned_data.get('name'),
             credentials=r_credentials,
-            provider_path=form_dict['0'].cleaned_data.get('provider_path'))
+            provider_path=form_list[0].cleaned_data.get('provider_path'))
 
         UserAcquirableRelationship.objects.create(
             model=prov_inst,
@@ -99,8 +105,8 @@ class ProviderUpdateView(GenericUpdateView):
     def update_form(self, form: ProviderForm) -> ProviderForm:
         providers = get_providers()
         credentials = BaseCredential.objects.filter(owner=self.request.user)
-        form_providers = [('%s.%s' % (s.__module__, s.__class__.__name__),
-                           '%s (%s)' % (s.get_meta.ui_name, s.__class__.__name__))
+        form_providers = [(class_to_path(s),
+                           '%s (%s)' % (s.Meta(None).ui_name, s.__class__.__name__))
                           for s in providers]
 
         form.request = self.request
@@ -110,20 +116,6 @@ class ProviderUpdateView(GenericUpdateView):
 
     def redirect(self, instance: ProviderInstance) -> HttpResponse:
         return redirect(reverse('instance-index'))
-
-# class ProviderDiffView(View):
-#     """Show changes for a single provider"""
-
-#     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
-#         """Show all changes"""
-#         provider = get_object_or_404(ProviderInstance, uuid=self.kwargs.get('uuid'),
-#                                      useracquirablerelationship__user__in=[request.user])
-#         change_builder = ChangeBuilder()
-#         changes = change_builder.build_diff(provider)
-#         return render(request, 'provider/diff.html', {
-#             'diff': changes,
-#             'provider': provider
-#         })
 
 
 class ProviderDeleteView(GenericDeleteView):
@@ -148,9 +140,8 @@ class CredentialIndexView(GenericIndexView):
     def get_instance(self) -> HttpResponse:
         return self.model.objects.filter(owner=self.request.user).order_by('name')
 
+
 # pylint: disable=too-many-ancestors
-
-
 class CredentialNewView(BaseWizardView):
     """Wizard to create a Domain"""
 

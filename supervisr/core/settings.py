@@ -103,7 +103,6 @@ INSTALLED_APPS = [
     'supervisr.mod.auth.oauth.client.apps.SupervisrModAuthOAuthClientConfig',
     'supervisr.mod.tfa.apps.SupervisrModTFAConfig',
     'supervisr.mod.stats.influx.apps.SupervisrModStatInfluxConfig',
-    'supervisr.mod.provider.onlinenet.apps.SupervisrModProviderOnlineNetConfig',
     'supervisr.mod.provider.libcloud.apps.SupervisrModProviderLibcloud',
     'formtools',
     'django.contrib.admin',

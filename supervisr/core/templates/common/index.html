@@ -27,6 +27,39 @@
       </div>
     </div>
   </div>
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-header">
+        {% trans "Quicklaunch" %}
+      </div>
+      <div class="card-block">
+        {% if hosted_applications %}
+        <div class="launcher">
+          <div class="app-launcher">
+            <div class="apps">
+              <ul>
+                {% for app in hosted_applications %} {% if app.primary_url %}
+                <li>
+                  <a href="{{ app.primary_url }}">
+                    {% if app.icon %} {% cache 600 app app.uuid %}
+                    <img src="{% media app.icon %}" alt="{{ app.name }} Icon"> {% endcache %} {% else %}
+                    <clr-icon shape="application" size="64"></clr-icon>
+                    {% endif %} {{ app.name }}
+                  </a>
+                </li>
+                {% endif %} {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="card-text">
+          <p>{% trans "No Hosted Applications yet!" %}</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
   <div class="col-md-7">
     <div class="card">
       <div class="card-header">
@@ -100,45 +133,6 @@
         {% else %}
         <div class="card-text">
           <p>{% trans "No Current Events!" %}</p>
-        </div>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-  <div class="col-md-3">
-    <div class="card">
-      <div class="card-header">
-        {% trans "Quicklaunch" %}
-      </div>
-      <div class="card-block">
-        {% if hosted_applications %}
-         <div class="launcher">
-           <div class="app-launcher">
-             <div class="apps">
-               <ul>
-                  {% for app in hosted_applications %}
-                  {% if app.primary_url %}
-                  <li>
-                    <a href="{{ app.primary_url }}">
-                      {% if app.icon %}
-                      {% cache 600 app app.uuid %}
-                      <img src="{% media app.icon %}" alt="{{ app.name }} Icon">
-                      {% endcache %}
-                      {% else %}
-                      <clr-icon shape="application" size="64"></clr-icon>
-                      {% endif %}
-                      {{ app.name }}
-                    </a>
-                  </li>
-                  {% endif %}
-                  {% endfor %}
-               </ul>
-             </div>
-            </div>
-        </div>
-        {% else %}
-        <div class="card-text">
-          <p>{% trans "No Hosted Applications yet!" %}</p>
         </div>
         {% endif %}
       </div>
