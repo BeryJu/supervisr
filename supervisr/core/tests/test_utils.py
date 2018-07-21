@@ -8,6 +8,7 @@ from unittest import skipUnless
 
 from django.http import HttpResponseServerError
 from django.test import RequestFactory, TestCase
+
 from supervisr.core.tests.utils import test_request
 from supervisr.core.utils import (b64decode, b64encode, check_db_connection,
                                   class_to_path, do_404, get_remote_ip,

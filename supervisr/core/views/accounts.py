@@ -18,6 +18,7 @@ from django.utils.translation import ugettext as _
 from django.views import View
 from django.views.decorators.http import require_GET
 from passlib.hash import sha512_crypt
+
 from supervisr.core.decorators import anonymous_required, require_setting
 from supervisr.core.forms.accounts import (ChangePasswordForm,
                                            EmailMissingForm, LoginForm,

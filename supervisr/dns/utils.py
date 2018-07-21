@@ -13,6 +13,7 @@ import dns.tokenizer
 import dns.zone
 from dns.rdtypes.ANY.MX import MX
 from dns.rdtypes.ANY.SOA import SOA
+
 from supervisr.dns.models import Record, Resource, Zone
 
 

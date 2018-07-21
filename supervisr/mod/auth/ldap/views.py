@@ -7,6 +7,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
+
 from supervisr.mod.auth.ldap.forms.settings import (AuthenticationBackendSettings,
                                                     ConnectionSettings,
                                                     CreateUsersSettings,

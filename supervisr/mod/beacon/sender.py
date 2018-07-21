@@ -10,6 +10,7 @@ import requests
 from django.conf import settings
 from django.forms.models import model_to_dict
 from django.urls import reverse
+
 from supervisr.core.models import Domain, Setting, User
 from supervisr.core.signals import SIG_SETTING_UPDATE
 from supervisr.mod.beacon.models import Pulse, PulseModule

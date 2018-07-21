@@ -4,6 +4,7 @@
 from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
 from django.utils.translation import ugettext as _
+
 from supervisr.core.views.settings import GenericSettingView
 from supervisr.mod.stats.influx.forms import InfluxSettingsForm
 from supervisr.mod.stats.influx.influx_client import InfluxClient

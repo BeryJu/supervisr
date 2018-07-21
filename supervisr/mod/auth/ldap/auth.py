@@ -2,6 +2,7 @@
 from logging import getLogger
 
 from django.contrib.auth.backends import ModelBackend
+
 from supervisr.mod.auth.ldap.ldap_connector import LDAPConnector
 
 LOGGER = getLogger(__name__)

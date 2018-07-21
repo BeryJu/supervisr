@@ -2,6 +2,7 @@
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from revproxy.views import ProxyView
+
 from supervisr.core.views.common import ErrorResponseView
 from supervisr.mod.web_proxy.models import WebApplication
 

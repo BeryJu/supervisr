@@ -1,6 +1,7 @@
 """Supervisr Beacon URLs"""
 
 from django.conf.urls import url
+
 from supervisr.mod.beacon import views
 
 urlpatterns = [

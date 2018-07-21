@@ -5,6 +5,7 @@ Supervisr Core Title Templatetag
 from django import template
 from django.apps import apps
 from django.utils.translation import ugettext as _
+
 from supervisr.core.models import Setting
 
 register = template.Library()

@@ -1,6 +1,7 @@
 """Supervisr Mod Stats Influx Forms"""
 
 from django import forms
+
 from supervisr.core.forms.settings import SettingsForm
 
 

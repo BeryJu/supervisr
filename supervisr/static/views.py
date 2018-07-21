@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views import View
+
 from supervisr.static.models import StaticPage
 
 

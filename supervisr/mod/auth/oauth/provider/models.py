@@ -2,6 +2,7 @@
 
 from django.db import models
 from oauth2_provider.models import Application
+
 from supervisr.core.models import ProductExtension
 
 

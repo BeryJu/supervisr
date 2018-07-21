@@ -3,6 +3,7 @@ from logging import getLogger
 
 from django.core.exceptions import MultipleObjectsReturned
 from django.db.models import Model
+
 from supervisr.core.celery import CELERY_APP
 from supervisr.core.models import ProviderInstance
 from supervisr.core.providers.exceptions import SupervisrProviderException

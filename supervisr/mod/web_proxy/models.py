@@ -1,6 +1,7 @@
 """supervisr mod web_proxy Models"""
 
 from django.db import models
+
 from supervisr.core.models import UserAcquirable
 
 

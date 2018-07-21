@@ -1,6 +1,7 @@
 """Supervisr Core V1 API Urls"""
 
 from django.conf.urls import url
+
 from supervisr.core.api.v1.accounts import AccountAPI
 from supervisr.core.api.v1.domains import DomainAPI
 from supervisr.core.api.v1.events import EventAPI

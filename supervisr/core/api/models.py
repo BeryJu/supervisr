@@ -8,6 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.db.models.fields import NOT_PROVIDED
 from django.http import Http404
+
 from supervisr.core.api.crud import CRUDAPI
 from supervisr.core.models import UserAcquirable, UserAcquirableRelationship
 

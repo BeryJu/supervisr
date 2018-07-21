@@ -16,6 +16,7 @@ from django.urls import reverse
 from django.utils.functional import wraps
 from django.utils.http import urlencode
 from django.utils.translation import ugettext_lazy as _
+
 from supervisr.core.statistics import stat_set
 from supervisr.core.utils import get_apps
 

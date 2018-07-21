@@ -3,6 +3,7 @@ Supervisr Mod 2FA Urls
 """
 
 from django.conf.urls import url
+
 from supervisr.mod.tfa.views import tfa
 
 urlpatterns = [

@@ -1,6 +1,7 @@
 """Supervisr Core Setting Templatetag"""
 
 from django import template
+
 from supervisr.core.models import Setting
 
 register = template.Library()

@@ -9,6 +9,7 @@ from django.contrib import admin as admin_django
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
+
 from supervisr.core.regex import (DOMAIN_REGEX, EMAIL_REGEX, MOD_REGEX,
                                   UUID_REGEX)
 from supervisr.core.utils import get_apps

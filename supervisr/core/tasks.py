@@ -2,6 +2,7 @@
 import time
 
 from celery import Task
+
 from supervisr.core.celery import CELERY_APP
 from supervisr.core.models import User
 from supervisr.core.progress import ProgressRecorder

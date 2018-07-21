@@ -4,6 +4,7 @@ Supervisr Core Google Analytics Templatetag
 
 from django import template
 from django.utils.safestring import mark_safe
+
 from supervisr.core.models import Setting
 
 register = template.Library()

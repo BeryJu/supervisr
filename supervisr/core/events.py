@@ -4,6 +4,7 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
+
 from supervisr.core.mailer import send_message
 from supervisr.core.models import Event
 from supervisr.core.signals import (SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED,

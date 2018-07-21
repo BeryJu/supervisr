@@ -3,6 +3,7 @@ import logging
 
 from django.db.utils import InternalError, OperationalError, ProgrammingError
 from django.utils.text import slugify
+
 from supervisr.core.apps import Bootstrapper, SupervisrAppConfig
 
 LOGGER = logging.getLogger(__name__)

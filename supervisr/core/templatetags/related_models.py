@@ -2,6 +2,7 @@
 Supervisr Core related_models
 """
 from django import template
+
 from supervisr.core.models import UserAcquirable
 from supervisr.core.utils import path_to_class
 

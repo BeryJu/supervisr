@@ -5,6 +5,7 @@ from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
+
 from supervisr.core.decorators import ifapp
 from supervisr.core.forms.products import ProductForm
 from supervisr.core.models import Product, UserAcquirableRelationship

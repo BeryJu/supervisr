@@ -3,6 +3,7 @@ Supervisr Mod LDAP urls
 """
 
 from django.conf.urls import url
+
 from supervisr.mod.auth.ldap import views
 
 urlpatterns = [

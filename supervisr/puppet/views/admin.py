@@ -10,6 +10,7 @@ from django.db.models import Sum
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+
 from supervisr.core.models import User, get_system_user
 from supervisr.puppet.builder import ReleaseBuilder
 from supervisr.puppet.models import PuppetModule, PuppetModuleRelease

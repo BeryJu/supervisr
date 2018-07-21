@@ -3,6 +3,7 @@ import os
 
 from django.core.management import call_command
 from django.test import TestCase
+
 from supervisr.core.middleware.deploy_page_middleware import DEPLOY_PAGE_PATH
 
 

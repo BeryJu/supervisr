@@ -18,6 +18,7 @@ from django.urls import reverse
 from django.utils.encoding import force_text, smart_bytes
 from django.utils.translation import ugettext as _
 from django.views.generic import RedirectView, View
+
 from supervisr.core.models import Event
 from supervisr.mod.auth.oauth.client.clients import get_client
 from supervisr.mod.auth.oauth.client.errors import (OAuthClientEmailMissingError,

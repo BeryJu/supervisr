@@ -4,6 +4,7 @@ from django.apps import apps
 from django.contrib import admin
 from django.contrib.admin.sites import AlreadyRegistered
 from django.contrib.auth.admin import UserAdmin
+
 from supervisr.core.models import User
 
 

@@ -3,6 +3,7 @@ import os
 from importlib import import_module
 
 from invoke import Collection
+
 from supervisr.cli import tasks
 
 try:

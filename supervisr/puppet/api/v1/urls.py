@@ -2,6 +2,7 @@
 Supervisr Puppet API v1 URLs
 """
 from django.conf.urls import url
+
 from supervisr.puppet.api.v1 import forge_api
 
 urlpatterns = [

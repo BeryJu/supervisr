@@ -12,6 +12,7 @@ from django import conf
 from django.contrib.auth.models import Group
 from django.core.files import File
 from django.template import loader
+
 from supervisr.core.decorators import time
 from supervisr.core.models import User
 from supervisr.puppet.models import PuppetModuleRelease

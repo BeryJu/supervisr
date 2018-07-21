@@ -3,6 +3,7 @@ Supervisr Core Event Test
 """
 
 from django.test import TestCase
+
 from supervisr.core.models import Event, User
 
 

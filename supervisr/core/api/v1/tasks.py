@@ -1,6 +1,7 @@
 """Supervisr Core Task APIv1"""
 
 from django.http import HttpRequest
+
 from supervisr.core.api.base import API
 from supervisr.core.progress import Progress
 

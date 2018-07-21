@@ -2,6 +2,7 @@
 
 from django.http import HttpRequest, HttpResponse
 from formtools.wizard.views import SessionWizardView
+
 from supervisr.core.views.generic import LoginRequiredView
 
 

@@ -1,6 +1,7 @@
 """Supervisr Core Generic Provider"""
 
 from django.utils.translation import ugettext_lazy as _
+
 from supervisr.core.providers.objects import ProviderObjectTranslator
 from supervisr.core.utils import class_to_path
 

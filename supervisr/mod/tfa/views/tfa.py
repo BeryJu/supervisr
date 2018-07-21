@@ -18,6 +18,7 @@ from django_otp.plugins.otp_static.models import StaticDevice, StaticToken
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from qrcode import make as qr_make
 from qrcode.image.svg import SvgPathImage
+
 from supervisr.core.decorators import reauth_required
 from supervisr.core.models import Event
 from supervisr.core.views.wizards import BaseWizardView

@@ -16,6 +16,7 @@ from django.shortcuts import render
 from django.template import Context, Template, loader
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+
 from supervisr.core.apps import SupervisrAppConfig, SupervisrCoreConfig
 
 LOGGER = logging.getLogger(__name__)

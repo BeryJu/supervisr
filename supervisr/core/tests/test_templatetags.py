@@ -4,6 +4,7 @@ Supervisr Core Templatetags Test
 
 from django.template import Context
 from django.test import TestCase
+
 from supervisr.core.utils import render_from_string
 
 

@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
+
 from supervisr.mod.auth.oauth.client.models import AccountAccess, Provider
 
 
