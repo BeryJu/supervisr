@@ -24,7 +24,7 @@
     <th>{% trans "Remote IP" %}</th>
   </thead>
   <tbody>
-    {% for event in events %}
+    {% for event in instances %}
     <tr>
       <td>{{ event.user }}</td>
       <td>{{ event.invoker }}</td>
@@ -42,19 +42,5 @@
     {% endfor %}
   </tbody>
 </table>
-<div>
-  <span class="step-links">
-  {% if events.has_previous %}
-    <a class="btn" href="?page={{ events.previous_page_number }}">{% trans 'Previous' %}</a>
-  {% endif %}
-  {% if events.has_next %}
-    <a class="btn" href="?page={{ events.next_page_number }}">{% trans 'Next' %}</a>
-  {% endif %}
-  </span>
-  <span class="current">
-    {% blocktrans with total=events.paginator.num_pages current=events.number %}
-    Page {{ current }} of {{ total }}
-    {% endblocktrans %}
-  </span>
-</div>
+{% include 'blocks/block_pagination.html' with pages=instances %}
 {% endblock %}

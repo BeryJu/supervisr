@@ -80,16 +80,16 @@ urlpatterns = [
     url(r'^providers/credentials/(?P<name>[a-zA-Z0-9\-\.\_\s]+)/delete/$',
         providers.CredentialDeleteView.as_view(), name='credential-delete'),
     # User views
-    url(r'^user/$', users.index, name='user-index'),
+    url(r'^user/$', users.User, name='user-index'),
     url(r'^user/events/$', users.events, name='user-events'),
     url(r'^user/delete/$', users.UserDeleteView.as_view(), name='user-delete'),
     url(r'^user/feedback/send/$', users.send_feedback, name='user-send_feedback'),
     # Admin views
-    url(r'^admin/$', admin.index, name='admin-index'),
-    url(r'^admin/users/$', admin.users, name='admin-users'),
-    url(r'^admin/info/$', admin.info, name='admin-info'),
-    url(r'^admin/events/$', admin.events, name='admin-events'),
-    url(r'^admin/debug/$', admin.debug, name='admin-debug'),
+    url(r'^admin/$', admin.IndexView.as_view(), name='admin-index'),
+    url(r'^admin/users/$', admin.UserIndexView.as_view(), name='admin-users'),
+    url(r'^admin/info/$', admin.InfoView.as_view(), name='admin-info'),
+    url(r'^admin/events/$', admin.EventView.as_view(), name='admin-events'),
+    url(r'^admin/debug/$', admin.DebugView.as_view(), name='admin-debug'),
     url(r'^admin/flower/$', admin.FlowerView.as_view(), name='admin-flower'),
     url(r'^admin/products/$', products.ProductIndexView.as_view(), name='admin-product_index'),
     # Settings

@@ -2,9 +2,9 @@
 import os
 
 from django.core.management import call_command
-from django.test import TestCase
 
 from supervisr.core.middleware.deploy_page_middleware import DEPLOY_PAGE_PATH
+from supervisr.core.tests.utils import TestCase, call_command_ret
 
 
 class TestManagementCommands(TestCase):
@@ -16,6 +16,12 @@ class TestManagementCommands(TestCase):
         self.assertTrue(os.path.exists(DEPLOY_PAGE_PATH))
         call_command('deploy_page', 'down')
         self.assertFalse(os.path.exists(DEPLOY_PAGE_PATH))
+
+    def test_settings(self):
+        """Test Setting command"""
+        call_command_ret('setting', 'getall')
+        call_command_ret('setting', 'list')
+        call_command_ret('setting', 'get', 'supervisr.core/install_id')
 
     def tearDown(self):
         """Set page down in cleaup"""

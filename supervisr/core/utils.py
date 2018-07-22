@@ -135,7 +135,9 @@ def db_settings_from_dbconfig(config_path):
                 if value == 'mysql':
                     db_config['ENGINE'] = 'django.db.backends.mysql'
                     db_config['OPTIONS'] = {
-                        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+                        'charset': 'UTF8MB4',
+                        'sql_mode': ('STRICT_TRANS_TABLES,NO_ZERO_DATE,'
+                                     'NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO'),
                     }
                 elif value == 'pgsql':
                     db_config['ENGINE'] = 'django.db.backends.postgresql'

@@ -1,6 +1,6 @@
 """Supervisr Core Account Test"""
 
-from django.http import HttpResponse
+from django.http import HttpRequest
 from django.urls import reverse
 
 from supervisr.core.decorators import reauth_required
@@ -209,8 +209,8 @@ class TestAccount(TestCase):
         """Test reauth_required decorator"""
         @reauth_required
         # pylint: disable=unused-argument
-        def test_view(request):
+        def test_view(request: HttpRequest):
             """Test view"""
-            return HttpResponse('ok')
+            pass
 
         self.assertEqual(test_request(test_view, ).status_code, 302)

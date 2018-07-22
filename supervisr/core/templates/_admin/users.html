@@ -21,7 +21,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for usr in users %}
+    {% for usr in instances %}
     <tr>
       <td>{{ usr.email }}</td>
       <td>{{ usr.first_name }}</td>
@@ -38,5 +38,5 @@
     {% endfor %}
   </tbody>
 </table>
-{% include 'blocks/block_pagination.html' with pages=users %}
+{% include 'blocks/block_pagination.html' with pages=instances %}
 {% endblock %}

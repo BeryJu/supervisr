@@ -142,6 +142,8 @@ class User(AbstractUser):
         # Add ourselves to task_kwargs
         task_kwargs['invoker'] = self.pk
         async_result = task.apply_async(args=task_args, kwargs=task_kwargs, **celery_kwargs)
+        # Apply invoker to task
+        setattr(async_result, 'invoker', self)
         task_obj = Task.objects.create(
             task_uuid=async_result.id,
             invoker=self,
@@ -151,6 +153,7 @@ class User(AbstractUser):
         else:
             users = [self] + list(users)
         task_obj.users.add(*users)
+        return async_result
 
 
 # pylint: disable=abstract-method

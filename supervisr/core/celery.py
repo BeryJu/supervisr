@@ -1,5 +1,6 @@
 """supervisr core celery"""
 
+import logging
 import os
 
 import celery
@@ -14,6 +15,7 @@ pymysql.install_as_MySQLdb()
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
 os.environ.setdefault("SUPERVISR_LOCAL_SETTINGS", "supervisr.local_settings")
 
+LOGGER = logging.getLogger(__name__)
 
 class Celery(celery.Celery):
     """Custom Celery class with Raven configured"""
@@ -28,6 +30,35 @@ class Celery(celery.Celery):
 
         # hook into the Celery error handler
         register_signal(client)
+
+
+# pylint: disable=unused-argument
+@celery.signals.setup_logging.connect
+def config_loggers(*args, **kwags):
+    """Apply logging settings from settings.py to celery"""
+    logging.config.dictConfig(settings.LOGGING)
+
+
+# pylint: disable=unused-argument
+@celery.signals.after_task_publish.connect
+def after_task_publish_handler(sender=None, headers=None, body=None, **kwargs):
+    """Log task_id after it was published"""
+    info = headers if 'task' in headers else body
+    LOGGER.debug('after_task_publish for task id %s', info.get('id'))
+
+
+# pylint: disable=unused-argument
+@celery.signals.task_prerun.connect
+def task_prerun_handler(task_id, task, *args, **kwargs):
+    """Log task_id on worker"""
+    LOGGER.debug('task_prerun for task id %s', task_id)
+
+
+# pylint: disable=unused-argument
+@celery.signals.task_postrun.connect
+def task_postrun_handler(task_id, task, *args, retval=None, state=None, **kwargs):
+    """Log task_id on worker"""
+    LOGGER.debug('task_postrun for task id %s (state=%s)', task_id, state)
 
 
 CELERY_APP = Celery('supervisr')
