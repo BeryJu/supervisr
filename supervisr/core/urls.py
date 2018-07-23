@@ -91,7 +91,7 @@ urlpatterns = [
     url(r'^admin/events/$', admin.EventView.as_view(), name='admin-events'),
     url(r'^admin/debug/$', admin.DebugView.as_view(), name='admin-debug'),
     url(r'^admin/flower/$', admin.FlowerView.as_view(), name='admin-flower'),
-    url(r'^admin/products/$', products.ProductIndexView.as_view(), name='admin-product_index'),
+    url(r'^admin/products/$', products.ProductAdminIndex.as_view(), name='admin-product_index'),
     # Settings
     url(r'^admin/settings/mod/default/$', settings.mod_default, name='admin-mod_default'),
     url(r'^admin/settings/(?P<namespace>%s)/$' % MOD_REGEX,
