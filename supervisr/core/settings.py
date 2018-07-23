@@ -134,6 +134,7 @@ REDIS = 'localhost'
 CELERY_TASK_SOFT_TIME_LIMIT = 600
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULE = {}
+CELERY_CREATE_MISSING_QUEUES = True
 
 # Settings are taken from DB, these are dev keys as per
 # https://developers.google.com/recaptcha/docs/faq
@@ -377,7 +378,7 @@ LOGGING = {
         },
         'celery': {
             'handlers': LOG_HANDLERS,
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True,
         },
     }

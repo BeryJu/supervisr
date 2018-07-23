@@ -1,7 +1,18 @@
 """supervisr core provider ObjectMarshall"""
+from enum import Enum
 from typing import Generic, List, TypeVar
 
 T = TypeVar('T')
+
+
+class ProviderrResult(Enum):
+    """All Possible provider results"""
+
+    SUCCESS = 0
+    EXISTS_ALREADY = 1
+    NOT_SUPPORTED = 2
+    NOT_IMPLEMENTED = 4
+    OTHER_ERROR = 1024
 
 
 class ProviderObject(object):
@@ -18,14 +29,14 @@ class ProviderObject(object):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def save(self) -> bool:
+    def save(self) -> ProviderrResult:
         """Save this instance to provider. Should return True if a new object was saved
         and False if an existing object was modified"""
-        raise NotImplementedError()
+        return ProviderrResult.NOT_IMPLEMENTED
 
-    def delete(self):
+    def delete(self) -> ProviderrResult:
         """Delete this instance from provider"""
-        raise NotImplementedError()
+        return ProviderrResult.NOT_IMPLEMENTED
 
 
 class ProviderObjectTranslator(Generic[T]):

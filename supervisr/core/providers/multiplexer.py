@@ -4,6 +4,7 @@ from typing import List
 
 from django.db.models import Model
 
+from supervisr.core.celery import CELERY_APP
 from supervisr.core.providers.base import BaseProvider
 from supervisr.core.providers.objects import ProviderObjectTranslator
 from supervisr.core.utils import class_to_path
@@ -36,8 +37,10 @@ class ProviderMultiplexer(object):
         LOGGER.debug("instance %r, providers %r", instance, providers)
         for provider in providers:
             args = (provider.pk, class_to_path(instance.__class__), instance.pk)
+            queue = provider.provider.__class__.__name__
+            CELERY_APP.control.add_consumer(queue)
             invoker.task_apply_async(provider_do_save, *args, celery_kwargs={
-                'queue': provider.name
+                'queue': queue
             }, users=provider.users.all())
             LOGGER.debug("Fired task provider_do_save")
 
@@ -48,7 +51,9 @@ class ProviderMultiplexer(object):
         LOGGER.debug("instance %r, providers %r", instance, providers)
         for provider in providers:
             args = (provider.pk, class_to_path(instance.__class__), instance.pk)
+            queue = provider.provider.__class__.__name__
+            CELERY_APP.control.add_consumer(queue)
             invoker.task_apply_async(provider_do_delete, *args, celery_kwargs={
-                'queue': provider.name
+                'queue': queue
             }, users=provider.users.all())
             LOGGER.debug("Fired task provider_do_delete")

@@ -6,7 +6,7 @@ from django.db.models import Model
 
 from supervisr.core.celery import CELERY_APP
 from supervisr.core.models import ProviderInstance
-from supervisr.core.providers.exceptions import SupervisrProviderException
+from supervisr.core.providers.exceptions import SupervisrProviderException, ProviderRetryException
 from supervisr.core.providers.multiplexer import ProviderMultiplexer
 from supervisr.core.tasks import SupervisrTask
 from supervisr.core.utils import path_to_class
@@ -30,7 +30,7 @@ def provider_resolve_helper(provider_pk: int, model_path: str, model_pk: int):
     # so we don't have to use pickle serialization
     model_class = path_to_class(model_path)
     # Get root provider to get translator from
-    root_provider = get_instance(ProviderInstance, provider_pk)
+    root_provider = get_instance(ProviderInstance, provider_pk).provider
     # Lookup model instance from DB
     model_instance = get_instance(model_class, model_pk)
     # Do the actual translator lookup
@@ -49,13 +49,16 @@ def provider_do_save(self, provider_pk: int, model: str, model_pk: int, **kwargs
     """Run the actual saving procedure and keep trying on failure"""
     self.prepare(**kwargs)
     self.progress.total = 2
+    LOGGER.debug("Starting provider_do_save")
     try:
         self.progress.set(1)
         provider_object = provider_resolve_helper(provider_pk, model, model_pk)
-        provider_object.save()
+        result = provider_object.save()
         self.progress.set(2)
         LOGGER.debug("Saved instance.")
-    except SupervisrProviderException:
+        return result
+    except ProviderRetryException as exc:
+        LOGGER.warning(exc)
         self.retry(args=[provider_pk, model, model_pk], countdown=2 ** self.request.retries)
 
 
@@ -67,8 +70,10 @@ def provider_do_delete(self, provider_pk: int, model: str, model_pk: int, **kwar
     try:
         self.progress.set(1)
         provider_object = provider_resolve_helper(provider_pk, model, model_pk)
-        provider_object.delete()
+        result = provider_object.delete()
         self.progress.set(2)()
         LOGGER.debug("Deleted instance.")
-    except SupervisrProviderException:
+        return result
+    except ProviderRetryException as exc:
+        LOGGER.warning(exc)
         self.retry(args=[provider_pk, model, model_pk], countdown=2 ** self.request.retries)
