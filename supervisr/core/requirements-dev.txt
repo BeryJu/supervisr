@@ -3,7 +3,7 @@ isort
 pylint<2.0.0
 astroid<2.0,>=1.6
 pylint-django<=0.9.4
-prospector
+prospector<1.0
 django-debug-toolbar
 recommonmark
 autopep8

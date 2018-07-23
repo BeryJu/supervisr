@@ -1,14 +1,10 @@
-"""
-Supervisr Core CRUD API
-"""
+"""Supervisr Core CRUD API"""
 
 from supervisr.core.api.base import API
 
 
 class CRUDAPI(API):
-    """
-    Basic API for Models
-    """
+    """Basic API for Models"""
 
     ALLOWED_VERBS = {
         'GET': ['read'],
@@ -16,25 +12,17 @@ class CRUDAPI(API):
     }
 
     def create(self, request, data):
-        """
-        Create instance based on request data
-        """
+        """Create instance based on request data"""
         raise NotImplementedError()
 
     def read(self, request, data):
-        """
-        Show list of models
-        """
+        """Show list of models"""
         raise NotImplementedError()
 
     def update(self, request, data):
-        """
-        Update model based on pk parameter
-        """
+        """Update model based on pk parameter"""
         raise NotImplementedError()
 
     def delete(self, request, data):
-        """
-        Delete model instance
-        """
+        """Delete model instance"""
         raise NotImplementedError()

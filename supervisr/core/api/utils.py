@@ -1,6 +1,4 @@
-"""
-Supervisr Core API Utils
-"""
+"""Supervisr Core API Utils"""
 
 from datetime import date, datetime, timezone
 

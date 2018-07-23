@@ -26,7 +26,6 @@ django-revproxy
 requests
 ldap3
 slumber
-slumber
 apache-libcloud
 slumber
 influxdb>=4.1.1

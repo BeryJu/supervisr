@@ -1,6 +1,4 @@
-"""
-Supervisr API Urls
-"""
+"""Supervisr API Urls"""
 
 import importlib
 import inspect

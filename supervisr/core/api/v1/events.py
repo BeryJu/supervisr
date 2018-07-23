@@ -1,6 +1,4 @@
-"""
-Supervisr Core Event APIv1
-"""
+"""Supervisr Core Event APIv1"""
 
 from supervisr.core.api.models import ModelAPI
 from supervisr.core.models import Event

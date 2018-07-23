@@ -6,7 +6,8 @@ from django.db.models import Model
 
 from supervisr.core.celery import CELERY_APP
 from supervisr.core.models import ProviderInstance
-from supervisr.core.providers.exceptions import SupervisrProviderException, ProviderRetryException
+from supervisr.core.providers.exceptions import (ProviderRetryException,
+                                                 SupervisrProviderException)
 from supervisr.core.providers.multiplexer import ProviderMultiplexer
 from supervisr.core.tasks import SupervisrTask
 from supervisr.core.utils import path_to_class

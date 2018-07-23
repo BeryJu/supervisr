@@ -1,6 +1,4 @@
-"""
-Supervisr Core Provider APIv1
-"""
+"""Supervisr Core Provider APIv1"""
 
 from supervisr.core.api.models import UserAcquirableModelAPI
 from supervisr.core.forms.providers import ProviderForm
@@ -9,9 +7,7 @@ from supervisr.core.providers.base import get_providers
 
 
 class ProviderAPI(UserAcquirableModelAPI):
-    """
-    Provider API
-    """
+    """Provider API"""
     model = ProviderInstance
     form = ProviderForm
 

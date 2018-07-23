@@ -1,6 +1,4 @@
-"""
-Supervisr Core r1 Model API
-"""
+"""Supervisr Core Model API"""
 import collections
 
 from django import forms

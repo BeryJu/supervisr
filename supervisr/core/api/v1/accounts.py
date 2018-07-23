@@ -1,6 +1,4 @@
-"""
-Supervisr Core Account APIv1
-"""
+"""Supervisr Core Account APIv1"""
 
 from supervisr.core.api.models import ModelAPI
 from supervisr.core.models import Product, User

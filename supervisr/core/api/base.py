@@ -1,6 +1,4 @@
-"""
-Supervisr Core Base API
-"""
+"""Supervisr Core Base API"""
 import json
 import logging
 
@@ -19,9 +17,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class API(View):
-    """
-    Basic API
-    """
+    """Basic API"""
 
     ALLOWED_VERBS = {
         'GET': [],
