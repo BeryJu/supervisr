@@ -275,8 +275,13 @@ class ChangePasswordView(View):
     def post(self, request: HttpRequest) -> HttpResponse:
         """Validate data and set password if valid"""
         form = ChangePasswordForm(request.POST)
+        form.request = request
         if form.is_valid():
             try:
+                # Check current password
+                user = authenticate(email=request.user.email,
+                                    password=form.cleaned_data.get('password_old'))
+                assert user == request.user
                 ChangePasswordView.set_password(
                     request, form.cleaned_data.get('password'))
                 messages.success(request, _("Successfully changed password!"))

@@ -1,12 +1,11 @@
-"""
-Supervisr Core Account Forms
-"""
+"""Supervisr Core Account Forms"""
 
 import logging
 
 from captcha.fields import ReCaptchaField
 from django import forms
 from django.conf import settings
+from django.contrib.auth import authenticate
 from django.forms import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
@@ -84,8 +83,17 @@ class SignupForm(forms.Form):
 
 class ChangePasswordForm(forms.Form):
     """Form to handle password changes"""
+
+    password_old = forms.CharField(widget=forms.PasswordInput, label=_('Current Password'))
     password = forms.CharField(widget=forms.PasswordInput, label=_('Password'))
     password_rep = forms.CharField(widget=forms.PasswordInput, label=_('Repeat Password'))
+
+    def clean_password_old(self):
+        """Check if old password can authenticate user"""
+        user = authenticate(email=self.request.user.email,
+                            password=self.cleaned_data.get('password_old'))
+        if user is not self.request.user:
+            raise ValidationError(_('Invalid Current Password'))
 
     def clean_password_rep(self):
         """Check if Password adheres to filter and if passwords matche"""
