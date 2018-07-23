@@ -1,6 +1,4 @@
-"""
-Supervisr Puppet Admin views
-"""
+"""Supervisr Puppet Admin views"""
 
 import traceback
 
@@ -50,9 +48,10 @@ def debug_build(request: HttpRequest, user: str, module: str) -> HttpResponse:
     if not p_modules.exists():
         raise Http404
     p_module = p_modules.first()
-    rel_builder = ReleaseBuilder(p_module)
-    rel_builder.build()
-    messages.success(request, 'Successfully built %s-%s' % (user, module))
+    rel_builder = ReleaseBuilder()
+    rel_builder.set_module(p_module)
+    task = rel_builder.delay()
+    messages.success(request, 'Successfully started build: %s' % task.id)
     return redirect(reverse('supervisr_puppet:index'))
 
 
@@ -64,7 +63,8 @@ def debug_render(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
 
         module = PuppetModule.objects.get(name='supervisr_core')
-        builder = ReleaseBuilder(module)
+        builder = ReleaseBuilder()
+        builder.set_module(module)
         try:
             rendered = builder.render_template(request.POST.get('templatepath'))
         except Exception:  # pylint: disable=broad-except

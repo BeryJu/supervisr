@@ -32,8 +32,9 @@ class Command(BaseCommand):
             if p_user.exists():
                 p_module = PuppetModule.objects.filter(name=n_module, owner=p_user.first())
                 if p_module.exists():
-                    i = ReleaseBuilder(p_module.first())
-                    i.build()
+                    builder = ReleaseBuilder()
+                    builder.set_module(p_module.first())
+                    builder.run()
                     LOGGER.debug("Built Module %s!", n_module)
                     return "Built Module %s!" % n_module
                 LOGGER.warning("Module %s-%s doesn't exist!", n_user, n_module)

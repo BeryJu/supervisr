@@ -24,7 +24,8 @@ class TestManagementCommands(TestCase):
             source_path='supervisr/core/server/config/')
 
     def tearDown(self):
-        _builder = ReleaseBuilder(PuppetModule.objects.filter(name='supervisr_core').first())
+        _builder = ReleaseBuilder()
+        _builder.set_module(PuppetModule.objects.filter(name='supervisr_core').first())
         rmtree(_builder.output_base)
 
     def test_sv_puppet_debug_build(self):

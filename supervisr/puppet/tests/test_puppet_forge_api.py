@@ -36,14 +36,16 @@ class TestPuppetForgeAPI(TestCase):
             name='supervisr_core',
             owner=self.system_user,
             source_path='supervisr/core/server/config/')
-        _builder = ReleaseBuilder(PuppetModule.objects.filter(name='supervisr_core').first())
-        _builder.build()
+        _builder = ReleaseBuilder()
+        _builder.set_module(PuppetModule.objects.filter(name='supervisr_core').first())
+        _builder.run()
         TestPuppetForgeAPI.is_json(b'{')
         self.key = Setting.get('url_key', namespace='supervisr.puppet')
 
     def tearDown(self):
         """Cleanup"""
-        _builder = ReleaseBuilder(PuppetModule.objects.filter(name='supervisr_core').first())
+        _builder = ReleaseBuilder()
+        _builder.set_module(PuppetModule.objects.filter(name='supervisr_core').first())
         rmtree(_builder.output_base)
 
     def test_module_list(self):

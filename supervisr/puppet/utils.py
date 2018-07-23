@@ -9,45 +9,47 @@ import requests
 from django.conf import settings
 from django.core.files import File
 
+from supervisr.core.celery import CELERY_APP
 from supervisr.core.models import User
+from supervisr.core.tasks import SupervisrTask
 from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 
 LOGGER = logging.getLogger(__name__)
 
 
-class ForgeImporter(object):
+class ForgeImporter(SupervisrTask):
     """Helper class to import users, modules and releases from PuppetForge"""
 
+    name = 'supervisr_puppet:ForgeImporter'
     BASE_URL = 'https://forgeapi.puppetlabs.com'
     output_base = os.path.join(settings.MEDIA_ROOT, 'puppet', 'modules')
 
     def __init__(self):
+        super(ForgeImporter, self).__init__()
         if settings.TEST:
             self.output_base = os.path.join(self.output_base, 'test')
         os.makedirs(self.output_base, exist_ok=True)
 
+    def run(self, *args, **kwargs):
+        """Wrapper for import_module"""
+        return self.import_module(*args, **kwargs)
+
     def import_module(self, name):
-        """
-        Import user, module and all releases of that module
-        """
+        """Import user, module and all releases of that module"""
         user, module = name.split('-')
         p_user = self.get_user_info(user)
         p_module = self.get_module_info(p_user, module)
         self.import_releases(p_user, p_module)
 
-    def _get_helper(self, url):
-        """
-        Shortcut to get json data
-        """
+    def __get_helper(self, url):
+        """Shortcut to get json data"""
         f_url = '%s/%s' % (self.BASE_URL, url)
         LOGGER.debug("About to GET %s", f_url)
         return requests.get(f_url).json()
 
     def get_user_info(self, username):
-        """
-        Get user information and create in DB if non existant
-        """
-        result = self._get_helper('/v3/users/' + username)
+        """Get user information and create in DB if non existant"""
+        result = self.__get_helper('/v3/users/' + username)
 
         existing_user = User.objects.filter(
             username=result['username'],
@@ -63,10 +65,8 @@ class ForgeImporter(object):
         return existing_user.first()
 
     def get_module_info(self, user, modulename):
-        """
-        Get module information and create in DB if non existant
-        """
-        result = self._get_helper('/v3/modules/%s-%s' % (user.username, modulename))
+        """Get module information and create in DB if non existant"""
+        result = self.__get_helper('/v3/modules/%s-%s' % (user.username, modulename))
 
         existing_module = PuppetModule.objects.filter(
             owner=user,
@@ -84,10 +84,8 @@ class ForgeImporter(object):
         return existing_module.first()
 
     def import_releases(self, user, module):
-        """
-        Get release information and create in DB if non existant
-        """
-        result = self._get_helper('/v3/releases?module=%s-%s' % (user.username, module.name))
+        """Get release information and create in DB if non existant"""
+        result = self.__get_helper('/v3/releases?module=%s-%s' % (user.username, module.name))
 
         for release in result['results']:
             existing_module = PuppetModuleRelease.objects.filter(
@@ -119,3 +117,5 @@ class ForgeImporter(object):
             else:
                 LOGGER.debug("Release %s-%s@%s exists already", user.username,
                              module.name, release['version'])
+
+CELERY_APP.tasks.register(ForgeImporter())

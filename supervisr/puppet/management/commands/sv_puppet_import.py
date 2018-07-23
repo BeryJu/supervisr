@@ -20,6 +20,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         i = ForgeImporter()
         for mod in options['module']:
-            i.import_module(mod)
+            i.delay(mod)
         LOGGER.debug("Done!")
         return "Done!"
