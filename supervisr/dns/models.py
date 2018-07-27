@@ -1,6 +1,4 @@
-"""
-Supervisr DNS Models
-"""
+"""Supervisr DNS Models"""
 
 from uuid import uuid4
 
@@ -40,7 +38,6 @@ RECORD_TYPES = (
     ('RRSIG', 'RRSIG'),
     ('RP', 'RP'),
     ('SIG', 'SIG'),
-    ('SOA', 'SOA'),
     ('SRV', 'SRV'),
     ('SSHFP', 'SSHFP'),
     ('TA', 'TA'),
@@ -57,7 +54,13 @@ class Zone(ProviderAcquirable, UserAcquirable):
 
     domain = models.ForeignKey(Domain, on_delete=models.CASCADE)
     enabled = models.BooleanField(default=True)
-    soa = models.ForeignKey('Resource', on_delete=models.CASCADE)
+    soa_mname = models.TextField()
+    soa_rname = models.TextField()
+    soa_serial = models.IntegerField()
+    soa_refresh = models.IntegerField(default=86400)
+    soa_retry = models.IntegerField(default=7200)
+    soa_expire = models.IntegerField(default=3600000)
+    soa_ttl = models.IntegerField(default=172800)
 
     def __str__(self):
         return "Zone %s" % self.domain.domain_name

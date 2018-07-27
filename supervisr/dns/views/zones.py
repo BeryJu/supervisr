@@ -1,6 +1,4 @@
-"""
-Supervisr DNS Views
-"""
+"""Supervisr DNS Views"""
 
 from django.contrib import messages
 from django.db.models import QuerySet
@@ -15,8 +13,7 @@ from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
                                           GenericUpdateView)
 from supervisr.core.views.wizards import BaseWizardView
 from supervisr.dns.forms.zones import ZoneForm
-from supervisr.dns.models import Resource, Zone
-from supervisr.dns.utils import date_to_soa
+from supervisr.dns.models import Zone
 
 
 class ZoneIndexView(GenericIndexView):
@@ -29,13 +26,10 @@ class ZoneIndexView(GenericIndexView):
         return self.model.objects.filter(users__in=[self.request.user]) \
                                  .order_by('domain__domain_name')
 
+
 # pylint: disable=too-many-ancestors
-
-
 class ZoneNewView(BaseWizardView):
-    """
-    Wizard to create a blank Zone
-    """
+    """Wizard to create a blank Zone"""
 
     title = _('New Zone')
     form_list = [ZoneForm]
@@ -61,24 +55,11 @@ class ZoneNewView(BaseWizardView):
 
     def finish(self, form_list):
         zone = form_list[0].save(commit=False)
-        # Zone requires an SOA record
-        soa_record = Resource.objects.create(
-            name='@',
-            type='SOA',
-            content='placeholder %s. %d 1800 180 2419200 86400' % (
-                self.request.user.email.replace('@', '.'),
-                date_to_soa()
-            )
-        )
-        zone.soa = soa_record
         zone.save()
         zone.update_provider_m2m(form_list[0].cleaned_data.get('providers'))
         zone.save(force_update=True)
         UserAcquirableRelationship.objects.create(
             model=zone,
-            user=self.request.user)
-        UserAcquirableRelationship.objects.create(
-            model=soa_record,
             user=self.request.user)
         messages.success(self.request, _('DNS Zone successfully created'))
         return redirect(reverse('supervisr_dns:index'))

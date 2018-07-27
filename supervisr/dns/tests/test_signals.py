@@ -4,7 +4,6 @@ from datetime import datetime
 from supervisr.core.models import Domain, UserAcquirableRelationship
 from supervisr.core.tests.utils import TestCase, internal_provider
 from supervisr.dns.models import Record, Resource, ResourceSet, Zone
-from supervisr.dns.utils import record_to_rdata
 
 
 class TestSignals(TestCase):
@@ -38,18 +37,13 @@ class TestSignals(TestCase):
         t_domain = Domain.objects.create(
             domain_name='test.beryju.org',
             provider_instance=self.provider)
-        t_zone = Zone(
-            domain=t_domain)
-        t_soa = Resource.objects.create(
-            name='test SOA',
-            type='SOA',
-            content='ns1.s.beryju.org. support.beryju.org. 2017110401 1800 180 2419200 86400')
-        t_zone.soa = t_soa
-        t_zone.save()
+        t_zone = Zone.objects.create(
+            domain=t_domain,
+            soa_serial=2017110401)
         UserAcquirableRelationship.objects.create(
             model=t_zone,
             user=self.system_user)
-        self.assertEqual(record_to_rdata(t_zone.soa, t_zone).serial, 2017110401)
+        self.assertEqual(t_zone.soa_serial, 2017110401)
         t_record_a = self.create_single_record(
             record_zone=t_zone,
             type='A',
@@ -57,11 +51,7 @@ class TestSignals(TestCase):
         now = datetime.now()
         correct_serial_a = int("%04d%02d%02d01" % (now.year, now.month, now.day))
         correct_serial_b = int("%04d%02d%02d02" % (now.year, now.month, now.day))
-        self.assertEqual(record_to_rdata(t_zone.soa, t_zone).serial, correct_serial_a)
+        self.assertEqual(t_zone.soa_serial, correct_serial_a)
         t_record_a.content = '127.0.0.2'
         t_record_a.save()
-        self.assertEqual(record_to_rdata(t_zone.soa, t_zone).serial, correct_serial_b)
-        t_soa.content = 'ns1.s.beryju.org. support.beryju.org. ' \
-            '2aa017110401 1800 180 2419200 86400'
-        t_soa.save()
-        self.assertIn('2aa017110401', t_zone.soa.content)
+        self.assertEqual(t_zone.soa_serial, correct_serial_b)
