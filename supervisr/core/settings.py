@@ -107,6 +107,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.admindocs',
     'raven.contrib.django.raven_compat',
+    'django_celery_results',
 ]
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -282,7 +283,7 @@ SESSION_CACHE_ALIAS = "default"
 
 CELERY_TASK_DEFAULT_QUEUE = 'supervisr'
 CELERY_BROKER_URL = 'redis://%s' % REDIS
-CELERY_RESULT_BACKEND = 'redis://%s' % REDIS
+CELERY_RESULT_BACKEND = 'django-db'
 
 SERVER_EMAIL = EMAIL_FROM
 ENVIRONMENT = 'production' if DEBUG is False else 'development'

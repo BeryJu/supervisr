@@ -5,7 +5,7 @@ from datetime import date, datetime, timezone
 from django.http import HttpResponse, JsonResponse
 
 
-def api_response(request, data):
+def api_response(request, data, code=200):
     """Parse data in correct format extracted from request"""
     selected_format = 'json'
     # Check if format is set as a GET Param
@@ -17,8 +17,9 @@ def api_response(request, data):
     _globals = globals()
     handler_name = 'api_response_%s' % selected_format
     if not isinstance(data, dict) or 'data' not in data:
-        data = {'data': data}
-    code = data.get('code', 200)
+        data = {'data': data, 'code': code}
+    elif 'code' not in data:
+        data['code'] = code
     handler = _globals.get(handler_name, None)
     if handler is not None:
         return handler(data=data, code=code)

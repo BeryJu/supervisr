@@ -32,9 +32,6 @@
     <a href="{% url 'admin-product_index' %}" class="nav-link {% is_active 'admin-product_index' %}">
       {% trans 'Products' %}
     </a>
-    <a href="{% url 'admin-events' %}" class="nav-link {% is_active 'admin-events' %}">
-      {% trans "Events" %}
-    </a>
     <section class="nav-group">
       <input id="admin_modules" type="checkbox">
       <label for="admin_modules">{% trans "Monitoring" %}</label>
@@ -42,6 +39,16 @@
         <li>
           <a href="{% url 'admin-info' %}" class="nav-link {% is_active 'admin-info' %}">
             {% trans "System Information" %}
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'admin-events' %}" class="nav-link {% is_active 'admin-events' %}">
+            {% trans "Events" %}
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'admin-tasks' %}" class="nav-link {% is_active 'admin-tasks' %}">
+            {% trans "Tasks" %}
           </a>
         </li>
         {% ifapp 'supervisr_mod_web_proxy' as web_proxy_enabled %}

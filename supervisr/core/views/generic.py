@@ -1,4 +1,5 @@
 """Generic, reusable Class-based views"""
+import warnings
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -35,10 +36,15 @@ class GenericModelView(LoginRequiredView):
     model = None
     model_verbose_name = ''
     template = None
+    template_name = None
 
     def __init__(self, *args, **kwargs):
         super(GenericModelView, self).__init__(*args, **kwargs)
-        assert self.template is not None, "`template` Property has to be overwritten"
+        if self.template is not None:
+            warnings.warn("self.template is deprected in favor of self.template_name",
+                          DeprecationWarning)
+            self.template_name = self.template
+        assert self.template_name is not None, "`template_name` Property has to be overwritten"
         assert self.model is not None, "`model` Property has to be overwritten"
         if self.model_verbose_name == '':
             self.model_verbose_name = self.model._meta.verbose_name.title()
@@ -67,7 +73,7 @@ class GenericIndexView(GenericModelView):
 
     def render(self, kwargs: dict) -> HttpResponse:
         """Render template with kwargs"""
-        return render(self.request, self.template, kwargs)
+        return render(self.request, self.template_name, kwargs)
 
     def update_kwargs(self, kwargs: dict) -> dict:
         """Add additional data to render kwargs"""
@@ -99,7 +105,7 @@ class GenericReadView(GenericModelView):
 
     def render(self, kwargs) -> HttpResponse:
         """Render template with kwargs"""
-        return render(self.request, self.template, kwargs)
+        return render(self.request, self.template_name, kwargs)
 
     def update_kwargs(self, kwargs) -> dict:
         """Add additional data to render kwargs"""
@@ -125,7 +131,7 @@ class GenericUpdateView(GenericModelView):
     """Generic view to edit an object instance"""
 
     form = None
-    template = 'core/generic_form_modal.html'
+    template_name = 'core/generic_form_modal.html'
 
     def __init__(self, *args, **kwargs):
         super(GenericUpdateView, self).__init__(*args, **kwargs)
@@ -135,7 +141,7 @@ class GenericUpdateView(GenericModelView):
 
     def render(self, form) -> HttpResponse:
         """Render the template and return a HttpResponse"""
-        return render(self.request, self.template, {
+        return render(self.request, self.template_name, {
             'form': form,
             'primary_action': 'Save',
             'title': 'Edit %s' % self.model_verbose_name,
@@ -181,11 +187,11 @@ class GenericUpdateView(GenericModelView):
 class GenericDeleteView(GenericModelView):
     """Generic View to delete model instances"""
 
-    template = 'core/generic_delete.html'
+    template_name = 'core/generic_delete.html'
 
     def render(self, instance) -> HttpResponse:
         """Render the template and return a HttpResponse"""
-        return render(self.request, self.template, {
+        return render(self.request, self.template_name, {
             'verbose_name': self.model_verbose_name,
             'instance_name': instance.name if getattr(instance, 'name', None) else str(instance)
         })

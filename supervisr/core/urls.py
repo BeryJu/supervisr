@@ -87,10 +87,11 @@ urlpatterns = [
     # Admin views
     url(r'^admin/$', admin.IndexView.as_view(), name='admin-index'),
     url(r'^admin/users/$', admin.UserIndexView.as_view(), name='admin-users'),
-    url(r'^admin/info/$', admin.InfoView.as_view(), name='admin-info'),
-    url(r'^admin/events/$', admin.EventView.as_view(), name='admin-events'),
     url(r'^admin/debug/$', admin.DebugView.as_view(), name='admin-debug'),
-    url(r'^admin/flower/$', admin.FlowerView.as_view(), name='admin-flower'),
+    url(r'^admin/monitoring/flower/$', admin.FlowerView.as_view(), name='admin-flower'),
+    url(r'^admin/monitoring/info/$', admin.InfoView.as_view(), name='admin-info'),
+    url(r'^admin/monitoring/tasks/$', admin.TasksView.as_view(), name='admin-tasks'),
+    url(r'^admin/monitoring/events/$', admin.EventView.as_view(), name='admin-events'),
     url(r'^admin/products/$', products.ProductAdminIndex.as_view(), name='admin-product_index'),
     # Settings
     url(r'^admin/settings/mod/default/$', settings.mod_default, name='admin-mod_default'),

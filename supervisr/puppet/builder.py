@@ -27,7 +27,7 @@ LOGGER = logging.getLogger(__name__)
 class ReleaseBuilder(SupervisrTask):
     """Class to build PuppetModuleRelease's in Memory from files and templates"""
 
-    name = 'supervisr_puppet:ReleaseBuilder'
+    name = 'supervisr.puppet.builder.ReleaseBuilder'
     module = None
     base_dir = None
     version = None
@@ -162,5 +162,6 @@ class ReleaseBuilder(SupervisrTask):
             with open(prefix + '.tgz', mode='w+b') as file:
                 file.write(gzipped)
                 LOGGER.debug("Wrote module to %s", prefix + '.tgz')
+
 
 CELERY_APP.tasks.register(ReleaseBuilder())

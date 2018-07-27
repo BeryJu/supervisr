@@ -13,7 +13,7 @@ from django.http import HttpRequest, HttpResponse
 from django.utils.translation import ugettext as _
 from django.views.generic.base import TemplateView
 
-from supervisr.core.models import Event, Setting, User, get_system_user
+from supervisr.core.models import Event, Setting, Task, User, get_system_user
 from supervisr.core.signals import SIG_GET_MOD_INFO, SIG_SETTING_UPDATE
 from supervisr.core.tasks import debug_progress_task
 from supervisr.core.utils import get_reverse_dns
@@ -119,3 +119,13 @@ class FlowerView(TemplateView, AdminRequiredView):
     """View to show iframe with flower"""
 
     template_name = '_admin/flower.html'
+
+
+class TasksView(GenericIndexView, AdminRequiredView):
+    """Show list of all tasks and their current status"""
+
+    template_name = '_admin/tasks.html'
+    model = Task
+
+    def get_instance(self) -> QuerySet:
+        return self.model.objects.all().order_by('-created')

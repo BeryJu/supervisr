@@ -12,6 +12,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from supervisr.core.api.utils import api_response
+from supervisr.core.exceptions import UnauthorizedExcception
 
 LOGGER = logging.getLogger(__name__)
 
@@ -24,12 +25,13 @@ class API(View):
         'POST': [],
     }
 
+    # pylint: disable=too-many-return-statements
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         my_allowed = self.ALLOWED_VERBS[request.method]
         verb = kwargs['verb']
         if verb not in my_allowed:
-            return api_response(request, {'error': 'verb not allowed in HTTP VERB', 'code': 400})
+            return api_response(request, {'error': 'verb not allowed in HTTP VERB'}, code=400)
 
         # Check if API Key in request, if so try to authenticate with it
         self.authenticate_with_key(request)
@@ -53,14 +55,16 @@ class API(View):
             if handler:
                 result = handler(request, data)
                 return api_response(request, {'code': 200, 'data': result})
+        except UnauthorizedExcception:
+            return api_response(request, {'data': {'error': 'unauthorized'}}, code=401)
         except PermissionDenied:
-            return api_response(request, {'data': {'error': 'permission denied'}, 'code': 403})
+            return api_response(request, {'data': {'error': 'permission denied'}}, code=403)
         except KeyError as exc:
-            return api_response(request, {'data': {'error': exc.args[0]}, 'code': 404})
+            return api_response(request, {'data': {'error': exc.args[0]}}, code=404)
         except Http404:
-            return api_response(request, {'data': {'error': 'not found'}, 'code': 404})
+            return api_response(request, {'data': {'error': 'not found'}}, code=404)
         else:
-            return api_response(request, {'data': {'error': 'unknown error'}, 'code': 500})
+            return api_response(request, {'data': {'error': 'unknown error'}}, code=500)
 
     def pre_handler(self, handler, request):
         """Optional Handler, which is run before the chosen handler is run"""
@@ -70,7 +74,7 @@ class API(View):
     def init_user_filter(user):
         """This method is used to check if the user has access"""
         if not user.is_authenticated:
-            raise PermissionDenied
+            raise UnauthorizedExcception
         return True
 
     def authenticate_with_key(self, request: HttpRequest):

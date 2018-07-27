@@ -20,7 +20,7 @@ LOGGER = logging.getLogger(__name__)
 class ForgeImporter(SupervisrTask):
     """Helper class to import users, modules and releases from PuppetForge"""
 
-    name = 'supervisr_puppet:ForgeImporter'
+    name = 'supervisr.puppet.utils.ForgeImporter'
     BASE_URL = 'https://forgeapi.puppetlabs.com'
     output_base = os.path.join(settings.MEDIA_ROOT, 'puppet', 'modules')
 
@@ -117,5 +117,6 @@ class ForgeImporter(SupervisrTask):
             else:
                 LOGGER.debug("Release %s-%s@%s exists already", user.username,
                              module.name, release['version'])
+
 
 CELERY_APP.tasks.register(ForgeImporter())

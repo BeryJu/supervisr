@@ -18,3 +18,4 @@ urllib3<1.23,>=1.21.1
 pip>=10
 pycryptodome
 colorlog
+django-celery-results
