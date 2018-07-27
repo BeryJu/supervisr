@@ -276,6 +276,7 @@ class ChangePasswordView(View):
         """Validate data and set password if valid"""
         form = ChangePasswordForm(request.POST)
         form.request = request
+        form.is_valid()
         if form.is_valid():
             try:
                 # Check current password

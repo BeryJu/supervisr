@@ -34,6 +34,7 @@ class TestAccount(TestCase):
             'captcha': 'PASSED',
         }
         self.change_data = {
+            'password_old': 'B3ryju0rg!',
             'password': 'B4ryju0rg!',
             'password_rep': 'B4ryju0rg!',
         }
@@ -117,7 +118,11 @@ class TestAccount(TestCase):
         user.is_active = True
         user.save()
 
+        # ChangePasswordForm requires a request to verify the current password
+        form_request = test_request(accounts.ChangePasswordView.as_view(),
+                                    user=user, just_request=True)
         form = ChangePasswordForm(self.change_data)
+        form.request = form_request
         self.assertTrue(form.is_valid())
 
         res = test_request(accounts.ChangePasswordView.as_view(),
