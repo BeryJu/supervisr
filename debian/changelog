@@ -1,3 +1,47 @@
+supervisr (0.02) stable; urgency=medium
+
+  * [docs] fix path typo
+  * [ci] automatically build and upload docs in CI
+  * [ci] create ssh dir before adding known_host
+  * [ci] disable services for docs, fix requirements
+  * [ci] install rsync for doc uploading
+  * [ci] switch doc images back to python:3.6
+  * [ci] run apt update before installing rsync
+  * [ci] fix host_key verification issue
+  * [ci] import SSH key before running rsync
+  * [ci] initialise SSH-Agent before importing key...
+  * [core] [cli] cleanup
+  * [core] fix Provider Base Class declaration
+  * [*] unify test and tests module into tests for every app
+  * [*] finish cleanup
+  * [core] more style cleanup
+  * [mod/web_proxy] add web_proxy as a module, using django-revproxy
+  * [core] add missing dependency on colorlog
+  * [core] cleanup provider creation, enable isort and prospector in CI again
+  * [mod/stats/influx] migrate settings to GenericSettingsView
+  * [ci] show python version
+  * [*] fix import order, again
+  * [core] rewrite Admin views to CBV
+  * [assets] fix sidebar nav-link highlight
+  * [core] better handle Provider Results and exceptions
+  * [core] set dependency on prospector to <1.0 for pylint-django
+  * [puppet] rewrote ReleaseBuilder and ForgeImporter to Celery tasks
+  * [core] fix wrong view for admin product index
+  * [mod/provider/libcloud] add basic libcloud provider for DNS
+  * [mod/provider/libcloud] add missing provider files
+  * [core] ask for current password change_password view
+  * [core] show red asterisk on forms when field is required
+  * [core] add view to list all tasks
+  * [core] API now returns 401 if user is not authenticated
+  * [core] apply red asterik to every label on forms
+  * [core] change template to template_name on GenericViews to match Django (template still works but throws deprecation warning)
+  * [puppet] fix linting errors
+  * [core] fix validation in ChangePassword Form
+  * [dns] rewrite DNS Zone Model with SOA Data integrated
+  * [core] add http_basic_auth API endpoint
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Fri, 27 Jul 2018 10:54:52 +0000
+
 supervisr (0.01) stable; urgency=medium
 
   * [pack] add basic packer template and debian preseed
