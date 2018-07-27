@@ -61,6 +61,12 @@ pyroma:
   script:
     - "inv ci.pyroma"
   stage: test
+safety:
+  except:
+    - prod
+  script:
+    - safety check --full-report
+  stage: test
 prospector:
   except:
     - prod

@@ -14,3 +14,4 @@ mkdocs
 mkdocs-material
 tornado<5.0,>=4.1
 pyroma
+safety
