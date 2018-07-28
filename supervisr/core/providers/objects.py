@@ -1,11 +1,11 @@
 """supervisr core provider ObjectMarshall"""
-from enum import Enum
+from enum import IntEnum
 from typing import Generic, List, TypeVar
 
 T = TypeVar('T')
 
 
-class ProviderrResult(Enum):
+class ProviderrResult(IntEnum):
     """All Possible provider results"""
 
     SUCCESS = 0

@@ -22,7 +22,7 @@ def run_celery(ctx, debug=False):
     elif debug:
         ctx.run("celery -A supervisr.core worker -l debug -Ofair -c 1", pty=True)
     else:
-        ctx.run("celery -A supervisr.core worker -l info -Ofair -E", pty=True)
+        ctx.run("celery -A supervisr.core worker -l info -Ofair", pty=True)
 
 
 @task
