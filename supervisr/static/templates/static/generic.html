@@ -1,14 +1,13 @@
 {% extends "core/base.html" %}
 
-{% load media %}
 {% load cache %}
 {% load i18n %}
 {% load markdown %}
 {% load static %}
-{% load supervisr_title %}
+{% load supervisr_utils %}
 
 {% block title %}
-  {% supervisr_title page.title %}
+  {% title page.title %}
 {% endblock %}
 
 {% block header %}

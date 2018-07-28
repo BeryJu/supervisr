@@ -1,11 +1,10 @@
 {% extends "_admin/base.html" %}
 
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load i18n %}
-{% load setting %}
 
 {% block title %}
-{% supervisr_title "Users - Administrator" %}
+{% title "Users - Administrator" %}
 {% endblock %}
 
 {% block content %}
@@ -38,5 +37,5 @@
     {% endfor %}
   </tbody>
 </table>
-{% include 'blocks/block_pagination.html' with pages=instances %}
+{% include 'blocks/pagination.html' with pages=instances %}
 {% endblock %}

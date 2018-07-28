@@ -19,7 +19,7 @@ class SupervisrAppConfig(AppConfig):
     """Base AppConfig Class that logs when it's loaded"""
 
     init_modules = ['signals', 'models']
-    admin_url_name = 'admin-mod_default'
+    admin_url_name = 'admin-module_default'
     view_user_settings = None
     navbar_enabled = lambda self, request: False
     title_modifier = lambda self, request: self.verbose_name.title()

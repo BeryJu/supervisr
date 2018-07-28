@@ -1,9 +1,8 @@
 {% extends "core/base.html" %}
 
 {% load i18n %}
-{% load related_models %}
-{% load is_active %}
-{% load is_active_url %}
+{% load supervisr_utils %}
+{% load supervisr_is_active %}
 
 {% block sidenav %}
 <nav class="sidenav clr-nav-level-2">
@@ -29,6 +28,6 @@
       </ul>
     </section>
   </section>
-  {% include 'blocks/block_sidebar_footer.html' %}
+  {% include 'blocks/sidebar_footer.html' %}
 </nav>
 {% endblock %}

@@ -1,13 +1,10 @@
 {% extends "user/base.html" %}
 
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load i18n %}
-{% load hostname %}
-{% load setting %}
-{% load fieldtype %}
 
 {% block title %}
-{% supervisr_title "Overview" %}
+{% title "Overview" %}
 {% endblock %}
 
 {% block content %}

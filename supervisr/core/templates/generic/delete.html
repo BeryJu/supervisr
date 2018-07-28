@@ -1,11 +1,10 @@
 {% extends "core/base.html" %}
 
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load i18n %}
-{% load back %}
 
 {% block title %}
-  {% supervisr_title title %}
+  {% title title %}
 {% endblock %}
 
 {% block content %}

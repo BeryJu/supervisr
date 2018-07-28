@@ -131,7 +131,7 @@ class GenericUpdateView(GenericModelView):
     """Generic view to edit an object instance"""
 
     form = None
-    template_name = 'core/generic_form_modal.html'
+    template_name = 'generic/form_modal.html'
 
     def __init__(self, *args, **kwargs):
         super(GenericUpdateView, self).__init__(*args, **kwargs)
@@ -187,7 +187,7 @@ class GenericUpdateView(GenericModelView):
 class GenericDeleteView(GenericModelView):
     """Generic View to delete model instances"""
 
-    template_name = 'core/generic_delete.html'
+    template_name = 'generic/delete.html'
 
     def render(self, instance) -> HttpResponse:
         """Render the template and return a HttpResponse"""

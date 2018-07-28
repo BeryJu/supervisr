@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
+from django.views.generic import TemplateView
 
 from supervisr.core.forms.settings import SettingsForm
 from supervisr.core.models import Setting
@@ -44,18 +45,22 @@ def settings(request: HttpRequest, namespace: str) -> HttpResponse:
     })
 
 
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def mod_default(request: HttpRequest) -> HttpResponse:
+class ModuleDefaultView(TemplateView, AdminRequiredView):
     """Default view for modules without admin view"""
-    return render(request, '_admin/mod_default.html', {'mod': request.GET.get('mod', '')})
+
+    template_name = '_admin/module_default.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['module'] = self.request.GET.get('module', '')
+        return context
 
 
 class GenericSettingView(LoginRequiredView, AdminRequiredView):
     """Generic Setting View"""
 
     form = None  # type: Type[SettingsForm]
-    template_name = 'core/generic_form.html'  # type: str
+    template_name = 'generic/form.html'  # type: str
     extra_data = {}
 
     def render(self, request: HttpRequest, form: SettingsForm) -> HttpResponse:

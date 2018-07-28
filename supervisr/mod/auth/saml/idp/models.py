@@ -1,6 +1,4 @@
-"""
-Supervisr Auth SAML IDP Models
-"""
+"""Supervisr Auth SAML IDP Models"""
 
 from django.db import models
 
@@ -10,9 +8,7 @@ from supervisr.mod.auth.saml.idp.base import Processor
 
 
 class SAMLRemote(CreatedUpdatedModel):
-    """
-    Model to save information about a Remote SAML Endpoint
-    """
+    """Model to save information about a Remote SAML Endpoint"""
 
     name = models.CharField(max_length=255, unique=True)
     acs_url = models.URLField()
@@ -29,9 +25,7 @@ class SAMLRemote(CreatedUpdatedModel):
 
 
 class ProductExtensionSAML2(ProductExtension):
-    """
-    Associate a SAML2 Remote with a Product
-    """
+    """Associate a SAML2 Remote with a Product"""
 
     saml_remote = models.ForeignKey(SAMLRemote, on_delete=models.CASCADE)
 

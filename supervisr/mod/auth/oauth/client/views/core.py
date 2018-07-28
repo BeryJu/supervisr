@@ -247,7 +247,7 @@ def disconnect(request: HttpRequest, provider: str) -> HttpResponse:
         messages.success(request, _('Connection successfully deleted'))
         return redirect(reverse('supervisr_mod_auth_oauth_client:user_settings'))
 
-    return render(request, 'core/generic_delete.html', {
+    return render(request, 'generic/delete.html', {
         'object': 'OAuth Connection with %s' % r_provider.ui_name,
         'delete_url': reverse('supervisr_mod_auth_oauth_client:oauth-client-disconnect', kwargs={
             'provider': r_provider.name,

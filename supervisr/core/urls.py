@@ -94,7 +94,8 @@ urlpatterns = [
     url(r'^admin/monitoring/events/$', admin.EventView.as_view(), name='admin-events'),
     url(r'^admin/products/$', products.ProductAdminIndex.as_view(), name='admin-product_index'),
     # Settings
-    url(r'^admin/settings/mod/default/$', settings.mod_default, name='admin-mod_default'),
+    url(r'^admin/settings/module/default/$', settings.ModuleDefaultView.as_view(),
+        name='admin-module_default'),
     url(r'^admin/settings/(?P<namespace>%s)/$' % MOD_REGEX,
         settings.settings, name='admin-settings'),
     # Include django-admin

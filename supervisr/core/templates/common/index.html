@@ -1,13 +1,12 @@
 {% extends "common/base.html" %}
 
-{% load media %}
+{% load supervisr_utils %}
 {% load cache %}
-{% load supervisr_title %}
 {% load i18n %}
 {% load gravatar %}
 
 {% block title %}
-{% supervisr_title "Overview" %}
+{% title "Overview" %}
 {% endblock %}
 
 {% block content_area %}

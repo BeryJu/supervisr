@@ -1,6 +1,4 @@
-"""
-Supervisr Core navbar Templatetag
-"""
+"""Supervisr Core navbar Templatetag"""
 import logging
 
 from django import template
@@ -14,9 +12,7 @@ LOGGER = logging.getLogger(__name__)
 
 @register.simple_tag()
 def ifapp(*args):
-    """
-    Return whether a navbar link is active or not.
-    """
+    """Return whether a navbar link is active or not."""
 
     app_cache = get_app_labels()
     for app_label in args:

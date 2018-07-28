@@ -1,6 +1,5 @@
-"""
-Supervisr Core Gravatar Templatetag
-"""
+"""Supervisr Core Gravatar Templatetag"""
+
 from hashlib import md5
 from urllib.parse import urlencode
 

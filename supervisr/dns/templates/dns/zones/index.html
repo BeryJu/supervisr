@@ -1,5 +1,13 @@
-{% extends "dns/base.html" %} {% load supervisr_title %} {% load i18n %} {% block title %} {% supervisr_title 'Zones' %}
-{% endblock %} {% block content %}
+{% extends "dns/base.html" %}
+
+{% load supervisr_utils %}{
+{% load i18n %}
+
+{% block title %}
+{% title 'Zones' %}
+{% endblock %}
+
+{% block content %}
 <h1>
   <clr-icon shape="router" size="48"></clr-icon>{% trans 'DNS Zones' %}</h1>
 <div class="btn-group btn-link btn-icon-link">
@@ -44,7 +52,7 @@
     {% endfor %}
   </tbody>
 </table>
-{% include 'blocks/block_pagination.html' with pages=instances %}
+{% include 'blocks/pagination.html' with pages=instances %}
 {% endblock %}
 
 {% block scripts %}

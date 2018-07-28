@@ -30,7 +30,7 @@ coverage:
   except:
     - prod
   script:
-    - "inv ci.coverage"
+    - inv ci.coverage
   stage: test
 pip_install:
   before_script:
@@ -47,19 +47,13 @@ isort:
   except:
     - prod
   script:
-    - "inv ci.isort"
-  stage: test
-migration_mariadb:
-  except:
-    - prod
-  script:
-    - "inv supervisr.migrate"
+    - inv ci.isort
   stage: test
 pyroma:
   except:
     - prod
   script:
-    - "inv ci.pyroma"
+    - inv ci.pyroma
   stage: test
 safety:
   except:
@@ -71,20 +65,34 @@ prospector:
   except:
     - prod
   script:
-    - "inv ci.prospector"
+    - inv ci.prospector
+  stage: test
+check_template_syntax:
+  except:
+    - prod
+  script:
+    - manage.py check_template_syntax
   stage: test
 pylint:
   except:
     - prod
   script:
-    - "inv ci.lint"
+    - inv ci.lint
   stage: test
 unittest:
   except:
     - prod
   script:
-    - "inv ci.unittest"
+    - inv ci.unittest
   stage: test
+
+# Test Database migrations
+migration_mariadb:
+  except:
+    - prod
+  script:
+    - inv supervisr.migrate
+  stage: test-db
 
 # Release test
 bundle_release:

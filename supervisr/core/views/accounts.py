@@ -176,7 +176,7 @@ class SignupView(View):
         Returns:
             Login template
         """
-        return render(request, 'core/generic_form_login.html', {
+        return render(request, 'generic/form_login.html', {
             'form': form,
             'title': _("SSO - Signup"),
             'primary_action': _("Signup")
@@ -266,7 +266,7 @@ class ChangePasswordView(View):
 
     def render(self, request: HttpRequest, form: ChangePasswordForm) -> HttpResponse:
         """Render Form"""
-        return render(request, 'core/generic_form_login.html', {
+        return render(request, 'generic/form_login.html', {
             'form': form,
             'title': _("SSO - Change Password"),
             'primary_action': _("Change Password")
@@ -372,7 +372,7 @@ class PasswordResetInitView(View):
 
     def render(self, request: HttpRequest, form: PasswordResetInitForm) -> HttpResponse:
         """render Form"""
-        return render(request, 'core/generic_form_login.html', {
+        return render(request, 'generic/form_login.html', {
             'form': form,
             'title': _("SSO - Reset your password - Step 1/3"),
             'primary_action': _("Send confirmation Email")
@@ -407,7 +407,7 @@ class PasswordResetFinishView(View):
 
     def render(self, request: HttpRequest, form: PasswordResetFinishForm) -> HttpResponse:
         """Render form"""
-        return render(request, 'core/generic_form_login.html', {
+        return render(request, 'generic/form_login.html', {
             'form': form,
             'title': _("SSO - Reset your Password - Step 3/3"),
             'primary_action': _("Reset your Password")
@@ -482,7 +482,7 @@ class ReauthView(View):
 
     def render(self, request: HttpRequest, form: ReauthForm) -> HttpResponse:
         """Render form"""
-        return render(request, 'core/generic_form_login.html', {
+        return render(request, 'generic/form_login.html', {
             'form': form,
             'title': _("SSO - Re-Authenticate"),
             'primary_action': _("Login"),
@@ -526,7 +526,7 @@ class EmailMissingView(View):
         Returns:
             Login template
         """
-        return render(request, 'core/generic_form_login.html', {
+        return render(request, 'generic/form_login.html', {
             'form': form,
             'title': _("SSO - Add missing E-Mail"),
             'primary_action': _("Add"),

@@ -31,7 +31,7 @@ class ProviderIndexView(GenericIndexView):
 
 PROVIDER_TEMPLATES = {
     '0': 'provider/instance-wizard.html',
-    '1': 'core/generic_wizard.html',
+    '1': 'generic/wizard.html',
 }
 
 

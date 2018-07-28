@@ -1,8 +1,7 @@
 {% load static %}
 {% load google_analytics %}
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load raven %}
-{% load setting %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -22,7 +21,7 @@
     <link rel="shortcut icon" type="image/png" href="{% static 'img/icon.png' %}"/>
     <title>
       {% block title %}
-      {% supervisr_title title %}
+      {% title title %}
       {% endblock %}
     </title>
     {% block header %}

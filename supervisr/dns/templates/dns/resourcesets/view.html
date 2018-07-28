@@ -1,10 +1,10 @@
 {% extends "dns/base.html" %}
 
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load i18n %}
 
 {% block title %}
-{% supervisr_title 'Resource Set' %}
+{% title 'Resource Set' %}
 {% endblock %}
 
 {% block content %}
@@ -52,7 +52,7 @@
     {% endfor %}
   </tbody>
 </table>
-{% include 'blocks/block_pagination.html' with pages=zones %}
+{% include 'blocks/pagination.html' with pages=zones %}
 {% endblock %}
 
 {% block scripts %}

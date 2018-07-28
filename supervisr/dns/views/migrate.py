@@ -16,8 +16,8 @@ from supervisr.dns.models import Zone
 from supervisr.dns.utils import zone_to_rec
 
 TEMPLATES = {
-    '0': 'core/generic_wizard.html',
-    '1': 'core/generic_wizard.html',
+    '0': 'generic/wizard.html',
+    '1': 'generic/wizard.html',
     '2': 'dns/migrate/preview.html',
 }
 

@@ -1,6 +1,4 @@
-"""
-Supervisr Oauth Provider Exists Templatetag
-"""
+"""Supervisr Oauth Provider Exists Templatetag"""
 
 from django import template
 from django.db.models import Q
@@ -12,15 +10,11 @@ register = template.Library()
 
 @register.simple_tag
 def provider_exists(name):
-    """
-    Return True if Provider exists
-    """
+    """Return True if Provider exists"""
     return Provider.objects.filter(Q(name=name) | Q(ui_name=name)).exists()
 
 
 @register.simple_tag
 def any_provider():
-    """
-    Return true if any provider exists
-    """
+    """Return true if any provider exists"""
     return Provider.objects.all().count() > 0

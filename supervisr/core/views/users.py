@@ -101,7 +101,7 @@ class UserDeleteView(View):
         Returns:
             Rendered HTML
         """
-        return render(request, 'core/generic_delete.html', {
+        return render(request, 'generic/delete.html', {
             'object': 'Account %s' % request.user.username,
             'title': 'Delete %s' % request.user.username,
             'delete_url': reverse('user-delete'),

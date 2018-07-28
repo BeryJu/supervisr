@@ -1,11 +1,10 @@
 {% extends extends_base|default:'core/base.html' %}
 
-{% load supervisr_title %}
-{% load fieldtype %}
+{% load supervisr_utils %}
 {% load i18n %}
 
 {% block title %}
-{% supervisr_title title %}
+{% title title %}
 {% endblock %}
 
 {% block content %}
@@ -51,7 +50,7 @@
                         {{ wizard.management_form }}
                         {% block before_form %}{% endblock %}
                         {% block form %}
-                        {% include 'blocks/block_form.html' with form=wizard.form %}
+                        {% include 'blocks/form.html' with form=wizard.form %}
                         {% endblock %}
                         {% block after_form %}{% endblock %}
                       </section>

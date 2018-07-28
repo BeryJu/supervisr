@@ -1,11 +1,9 @@
 {% extends "core/base.html" %}
 
 {% load i18n %}
-{% load ifapp %}
-{% load is_active %}
-{% load is_active_url %}
-{% load is_active_app %}
-{% load supervisr_dyn_modlist %}
+{% load supervisr_ifapp %}
+{% load supervisr_is_active %}
+{% load supervisr_reflection %}
 
 {% block sidenav %}
 <nav class="sidenav clr-nav-level-2">
@@ -23,9 +21,9 @@
       <input id="admin_modules" type="checkbox">
       <label for="admin_modules">{% trans "Module Settings" %}</label>
       <ul class="nav-list">
-        {% supervisr_dyn_modlist as apps %}
+        {% sv_reflection_admin_modules as apps %}
         {% for app in apps %}
-        <li><a href="{% url app.url %}{% if app.default %}?mod={{ app.name }}{% endif %}" class="nav-link {% if app.default %}{% if request.GET.mod == app.name %}active{% endif %}{% else %}{% is_active_url app.url %}{% endif %}">{{ app.name }}</a></li>
+        <li><a href="{% url app.url %}{% if app.default %}?module={{ app.name }}{% endif %}" class="nav-link {% if app.default %}{% if request.GET.module == app.name %}active{% endif %}{% else %}{% is_active_url app.url %}{% endif %}">{{ app.name }}</a></li>
         {% endfor %}
       </ul>
     </section>
@@ -81,6 +79,6 @@
       {% trans "Debug" %}
     </a>
   </section>
-  {% include 'blocks/block_sidebar_footer.html' %}
+  {% include 'blocks/sidebar_footer.html' %}
 </nav>
 {% endblock %}

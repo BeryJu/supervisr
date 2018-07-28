@@ -1,11 +1,10 @@
 {% extends "core/skel.html" %}
 
-{% load supervisr_title %}
-{% load supervisr_setting %}
+{% load supervisr_utils %}
 {% load i18n %}
 
 {% block header %}
-<title>{% supervisr_title title %}</title>
+<title>{% title title %}</title>
 {% endblock %}
 
 {% block body %}
@@ -19,7 +18,7 @@
       {% trans title %}
     </label>
     <div class="login-group">
-      {% include 'blocks/block_form_login.html' with form=form %}
+      {% include 'blocks/form_login.html' with form=form %}
       {% block messages %}
         {% if messages %}
           {% for msg in messages %}

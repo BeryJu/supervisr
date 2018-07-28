@@ -6,6 +6,7 @@ import socket
 from glob import glob
 from importlib import import_module
 from importlib.util import module_from_spec, spec_from_file_location
+from urllib.parse import urlparse
 from uuid import uuid4
 
 from django.apps import apps
@@ -201,3 +202,8 @@ def messages_add_once(request, level, text, **kwargs):
     if not exists:
         return messages.add_message(request, level, mark_safe(text), **kwargs)
     return False
+
+
+def is_url_absolute(url):
+    """Check if domain is absolute to prevent user from being redirect somehwere else"""
+    return bool(urlparse(url).netloc)

@@ -1,10 +1,10 @@
 {% extends "mail/base.html" %}
 
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load i18n %}
 
 {% block title %}
-{% supervisr_title instance.domain.domain_name %}
+{% title instance.domain.domain_name %}
 {% endblock %}
 
 {% block content %}
@@ -65,7 +65,7 @@
     {% endfor %}
   </tbody>
 </table>
-{% include 'blocks/block_pagination.html' with pages=address get_param='accountPage' %}
+{% include 'blocks/pagination.html' with pages=address get_param='accountPage' %}
 {% endblock %}
 
 {% block scripts %}

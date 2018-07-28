@@ -10,7 +10,7 @@ from supervisr.core.views.generic import LoginRequiredView
 class BaseWizardView(SessionWizardView, LoginRequiredView):
     """Base Wizard view, sets a template and adds a title"""
 
-    template_name = 'core/generic_wizard.html'
+    template_name = 'generic/wizard.html'
     _handle_request_res = None
     _referer = ''
     _request = None

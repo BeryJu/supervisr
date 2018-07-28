@@ -70,7 +70,7 @@ class ForgeImporter(SupervisrTask):
 
         existing_module = PuppetModule.objects.filter(
             owner=user,
-            name=result['name'])
+            name=result.get('name', ''))
 
         if not existing_module:
             LOGGER.debug("Created module '%s-%s' from PuppetForge...",

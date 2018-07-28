@@ -1,10 +1,9 @@
-{% extends "core/generic_wizard.html" %}
+{% extends "generic/wizard.html" %}
 
-{% load fieldtype %}
-{% load supervisr_title %}
+{% load supervisr_utils %}
 
 {% block title %}
-{% supervisr_title "Setup" %}
+{% title "Setup" %}
 {% endblock %}
 
 {% block form %}

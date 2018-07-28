@@ -1,9 +1,8 @@
 {% extends '_admin/base.html' %}
 
-{% load media %}
+{% load supervisr_utils %}
 {% load i18n %}
 {% load cache %}
-{% load supervisr_title %}
 
 {% block header %}
 <style>
@@ -16,10 +15,11 @@
 {% endblock %}
 
 {% block title %}
-  {% supervisr_title 'Products' %}
+  {% title 'Products' %}
 {% endblock %}
 
 {% block content %}
+<h1><clr-icon shape="objects" size="48"></clr-icon>{% trans "Products" %}</h1>
 <div class="btn-group">
   <a href="{% url 'products-new' %}" class="btn">
     <clr-icon shape="add"></clr-icon>

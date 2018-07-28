@@ -1,11 +1,10 @@
 {% extends "core/base.html" %}
 
-{% load back %}
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load i18n %}
 
 {% block title %}
-  {% supervisr_title title %}
+  {% title title %}
 {% endblock %}
 
 {% block content %}
@@ -20,7 +19,7 @@
       </div>
       <form role="form" method="POST">
         <div class="modal-body">
-          {% include 'blocks/block_form.html' with form=form %}
+          {% include 'blocks/form.html' with form=form %}
         </div>
         <div class="modal-footer">
           <a class="btn btn-outline" href="{% back %}">{% trans 'Cancel' %}</a>

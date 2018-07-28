@@ -1,12 +1,11 @@
 {% extends "core/skel.html" %}
 
-{% load supervisr_title %}
-{% load supervisr_setting %}
+{% load supervisr_utils %}
 {% load i18n %}
 {% load raven %}
 
 {% block header %}
-<title>{% supervisr_title code %}</title>
+<title>{% title code %}</title>
 {% endblock %}
 
 {% block body %}

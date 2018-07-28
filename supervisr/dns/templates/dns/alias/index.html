@@ -1,10 +1,10 @@
 {% extends "mail/base.html" %}
 
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load i18n %}
 
 {% block title %}
-{% supervisr_title "Aliases" %}
+{% title "Aliases" %}
 {% endblock %}
 
 {% block content %}
@@ -46,7 +46,7 @@
     {% endfor %}
   </tbody>
 </table>
-{% include 'blocks/block_pagination.html' with pages=fwd_accounts %}
+{% include 'blocks/pagination.html' with pages=fwd_accounts %}
 {% endblock %}
 
 {% block scripts %}

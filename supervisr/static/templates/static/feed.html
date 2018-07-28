@@ -2,10 +2,10 @@
 
 {% load i18n %}
 {% load markdown %}
-{% load supervisr_title %}
+{% load supervisr_utils %}
 
 {% block title %}
-  {% supervisr_title 'Feed' %}
+  {% title 'Feed' %}
 {% endblock %}
 
 {% block content %}
@@ -30,7 +30,7 @@
       </div>
     </div>
   {% endfor %}
-  {% include 'blocks/block_pagination.html' %}
+  {% include 'blocks/pagination.html' %}
 </div>
 {% endblock %}
 

@@ -60,7 +60,7 @@ def verify(request: HttpRequest) -> HttpResponse:
     else:
         form = TFAVerifyForm()
 
-    return render(request, 'core/generic_form_login.html', {
+    return render(request, 'generic/form_login.html', {
         'form': form,
         'title': _("SSO - Two-factor verification"),
         'primary_action': _("Verify"),

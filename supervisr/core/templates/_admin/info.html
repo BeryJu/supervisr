@@ -1,13 +1,10 @@
 {% extends "_admin/base.html" %}
 
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load i18n %}
-{% load hostname %}
-{% load setting %}
-{% load fieldtype %}
 
 {% block title %}
-{% supervisr_title "System Info" %}
+{% title "System Info" %}
 {% endblock %}
 
 {% block content %}

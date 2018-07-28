@@ -1,10 +1,10 @@
-{% extends "_admin/mod_default.html" %}
+{% extends "_admin/module_default.html" %}
 
 {% load i18n %}
-{% load supervisr_title %}
+{% load supervisr_utils %}
 
 {% block title %}
-{% supervisr_title "Overview" %}
+{% title "Overview" %}
 {% endblock %}
 
 {% block module_content %}
@@ -17,7 +17,7 @@
       </div>
       <form role="form" method="POST">
         <div class="card-block">
-          {% include 'blocks/block_form.html' with form=form %}
+          {% include 'blocks/form.html' with form=form %}
         </div>
         <div class="card-footer">
           <button type="submit" class="btn btn-primary">{% trans 'Update' %}</button>
