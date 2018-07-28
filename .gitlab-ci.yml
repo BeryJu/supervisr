@@ -71,7 +71,7 @@ check_template_syntax:
   except:
     - prod
   script:
-    - manage.py check_template_syntax
+    - ./manage.py check_template_syntax
   stage: test
 pylint:
   except:
