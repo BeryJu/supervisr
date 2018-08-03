@@ -91,7 +91,8 @@ class ChangePasswordForm(forms.Form):
     def clean_password_old(self):
         """Check if old password can authenticate user"""
         user = authenticate(email=self.request.user.email,
-                            password=self.cleaned_data.get('password_old'))
+                            password=self.cleaned_data.get('password_old'),
+                            request=self.request)
         if user != self.request.user:
             raise ValidationError(_('Invalid Current Password'))
         return self.cleaned_data.get('password_old')

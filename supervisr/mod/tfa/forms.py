@@ -13,7 +13,7 @@ class PictureWidget(forms.widgets.Widget):
     """Widget to render value as img-tag"""
 
     def render(self, name, value, attrs=None, renderer=None):
-        return mark_safe("<img src=\"%s\" />" % value)
+        return mark_safe("<img src=\"%s\" />" % value) # nosec
 
 
 class TFAVerifyForm(forms.Form):

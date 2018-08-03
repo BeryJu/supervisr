@@ -11,7 +11,8 @@ class FieldsTest(TestCase):
 
     def test_signed_aes_encryption(self):
         """Test SignedAESEncryption"""
-        input_string = ''.join(random.choice(string.ascii_uppercase + string.digits)
+        cryptogen = random.SystemRandom()
+        input_string = ''.join(cryptogen.choice(string.ascii_uppercase + string.digits)
                                for _ in range(10))
         aes = SignedAESEncryption()
         encrypted = aes.encrypt(input_string)

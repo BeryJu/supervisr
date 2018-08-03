@@ -4,21 +4,21 @@ import logging
 import socket
 
 from influxdb import InfluxDBClient
+from influxdb.exceptions import InfluxDBClientError
 
 from supervisr.core.models import Setting
 
 LOGGER = logging.getLogger(__name__)
 
+
 # pylint: disable=too-many-instance-attributes
-
-
 class InfluxClient(object):
     """Simple Write-only Influx CLient"""
 
     host = ''
     port = 8086
     username = 'root'
-    password = 'root'
+    password = '' # nosec
     database = 'supervisr'
 
     _fqdn = None
@@ -62,8 +62,7 @@ class InfluxClient(object):
                     'fields': fields
                 }
             ])
-        # pylint: disable=broad-except
-        except Exception:
+        except InfluxDBClientError:
             return False
 
     def close(self):
@@ -73,8 +72,7 @@ class InfluxClient(object):
     def __enter__(self):
         try:
             self.connect()
-        # pylint: disable=broad-except
-        except Exception:
+        except InfluxDBClientError:
             pass
         return self
 

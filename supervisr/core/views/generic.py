@@ -7,8 +7,8 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
 from django.db.models.query import QuerySet
 from django.forms import ModelForm
-from django.http import Http404, HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views import View
@@ -44,8 +44,10 @@ class GenericModelView(LoginRequiredView):
             warnings.warn("self.template is deprected in favor of self.template_name",
                           DeprecationWarning)
             self.template_name = self.template
-        assert self.template_name is not None, "`template_name` Property has to be overwritten"
-        assert self.model is not None, "`model` Property has to be overwritten"
+        if self.template_name is None:
+            raise ValueError("`template_name` Property has to be overwritten")
+        if self.model is None:
+            raise ValueError("`model` Property has to be overwritten")
         if self.model_verbose_name == '':
             self.model_verbose_name = self.model._meta.verbose_name.title()
 
@@ -117,11 +119,7 @@ class GenericReadView(GenericModelView):
 
     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle get request"""
-        instances = self.get_instance()
-        if not instances.exists():
-            raise Http404
-        assert len(instances) == 1, "More than 1 Result found."
-        instance = instances.first()
+        instance = get_object_or_404(self.get_instance())
         render_kwargs = self.update_kwargs({'instance': instance})
         return self.render(render_kwargs)
 
@@ -135,9 +133,10 @@ class GenericUpdateView(GenericModelView):
 
     def __init__(self, *args, **kwargs):
         super(GenericUpdateView, self).__init__(*args, **kwargs)
-        assert self.form is not None, "`form` Property has to be overwritten"
-        assert issubclass(
-            self.form, ModelForm), "`form` Property should be a ModelForm"
+        if self.form is None:
+            raise ValueError("`form` Property has to be overwritten")
+        if not issubclass(self.form, ModelForm):
+            raise ValueError("`form` Property should be a ModelForm")
 
     def render(self, form) -> HttpResponse:
         """Render the template and return a HttpResponse"""
@@ -157,22 +156,14 @@ class GenericUpdateView(GenericModelView):
 
     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle Get request"""
-        instances = self.get_instance()
-        if not instances.exists():
-            raise Http404
-        assert len(instances) == 1, "More than 1 Result found."
-        instance = instances.first()
+        instance = get_object_or_404(self.get_instance())
         # pylint: disable=not-callable
         form = self.update_form(self.form(instance=instance))
         return self.render(form)
 
     def post(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle Post request"""
-        instances = self.get_instance()
-        if not instances.exists():
-            raise Http404
-        assert len(instances) == 1, "More than 1 Result found."
-        instance = instances.first()
+        instance = get_object_or_404(self.get_instance())
         # pylint: disable=not-callable
         form = self.update_form(self.form(request.POST, instance=instance))
         if form.is_valid():
@@ -198,20 +189,12 @@ class GenericDeleteView(GenericModelView):
 
     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle Get request"""
-        instances = self.get_instance()
-        if not instances.exists():
-            raise Http404
-        assert len(instances) == 1, "More than 1 Result found."
-        instance = instances.first()
+        instance = get_object_or_404(self.get_instance())
         return self.render(instance)
 
     def post(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle Post request"""
-        instances = self.get_instance()
-        if not instances.exists():
-            raise Http404
-        assert len(instances) == 1, "More than 1 Result found."
-        instance = instances.first()
+        instance = get_object_or_404(self.get_instance())
         if 'confirmdelete' in request.POST:
             instance.delete()
             messages.success(self.request, _('Successfully deleted %(verbose_name)s'

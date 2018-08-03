@@ -15,7 +15,6 @@ from django.core.cache import cache
 from django.http import HttpRequest
 from django.shortcuts import render
 from django.template import Context, Template, loader
-from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.apps import SupervisrAppConfig, SupervisrCoreConfig
@@ -26,7 +25,7 @@ LOGGER = logging.getLogger(__name__)
 def get_remote_ip(request: HttpRequest) -> str:
     """Return the remote's IP"""
     if not request:
-        return '0.0.0.0'
+        return '0.0.0.0' # nosec
     if request.META.get('HTTP_X_FORWARDED_FOR'):
         return request.META.get('HTTP_X_FORWARDED_FOR')
     return request.META.get('REMOTE_ADDR')
@@ -200,7 +199,7 @@ def messages_add_once(request, level, text, **kwargs):
             exists = True
     storage.used = False
     if not exists:
-        return messages.add_message(request, level, mark_safe(text), **kwargs)
+        return messages.add_message(request, level, text, **kwargs)
     return False
 
 

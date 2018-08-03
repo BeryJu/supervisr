@@ -4,7 +4,7 @@ import logging
 import platform
 import sys
 from json.decoder import JSONDecodeError
-from random import uniform
+from random import SystemRandom
 
 import requests
 from django.conf import settings
@@ -33,7 +33,8 @@ class Sender(object):
         self._endpoint = Setting.get('endpoint')
         self._install_id = Setting.get('install_id', namespace='supervisr.core')
         SIG_SETTING_UPDATE.connect(self.on_setting_update)
-        self._smear_amount = uniform(0.5, 1.5)  # Smear between 0.5 and 1.5
+        cryptogen = SystemRandom()
+        self._smear_amount = cryptogen.uniform(0.5, 1.5)  # Smear between 0.5 and 1.5
         self._pulse = Pulse(
             install_id=self._install_id,
         )

@@ -14,17 +14,19 @@ LOGGER = getLogger(__name__)
 class EmailBackend(ModelBackend):
     """Authenticate user by E-Mail"""
 
-    def authenticate(self, email=None, password=None, **kwargs):
+    def authenticate(self, request, email=None, password=None, **kwargs):
         """Same as default authenticate, except user is searched by E-Mail"""
         user_model = get_user_model()
         try:
             LOGGER.debug("attempting to authenticate %s", email)
             user = user_model.objects.get(email=email)
         except user_model.DoesNotExist:
+            LOGGER.debug("User does not exist")
             return None
         else:
             if user.check_password(password) and self.user_can_authenticate(user):
                 return user
+        LOGGER.debug("User password dont match or cant auth")
         return None
 
 

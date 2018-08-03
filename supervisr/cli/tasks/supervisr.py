@@ -40,7 +40,7 @@ def run_celery_flower(ctx):
 
 @task
 # pylint: disable=unused-argument
-def run(ctx, pidfile='', listen='0.0.0.0', port=8000):
+def run(ctx, pidfile='', listen=None, port=None):
     """Run CherryPY-based application server"""
     from django.conf import settings
     from supervisr.core.wsgi import application
@@ -68,11 +68,13 @@ def run(ctx, pidfile='', listen='0.0.0.0', port=8000):
     # pylint: disable=protected-access
     server = cherrypy._cpserver.Server()
 
-    server.socket_host = listen
-    server.socket_port = port
     server.thread_pool = 30
     for key, value in settings.CHERRYPY_SERVER.items():
         setattr(server, key, value)
+    if listen:
+        server.socket_host = listen
+    if port:
+        server.socket_port = port
     server.subscribe()
 
     if pidfile != '':

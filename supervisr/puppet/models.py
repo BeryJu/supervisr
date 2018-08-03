@@ -33,7 +33,8 @@ class PuppetModuleRelease(models.Model):
     @property
     def get_md5(self):
         """Return MD5 hash of release"""
-        return hashlib.md5(self.release.read()).hexdigest()
+        # MD5 specified in puppet forge api spec
+        return hashlib.md5(self.release.read()).hexdigest() # nosec
 
     @property
     def get_downloads(self):

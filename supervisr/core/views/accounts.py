@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth.decorators import login_required
+from django.forms import ValidationError
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -110,7 +111,8 @@ class LoginView(View):
         Returns:
             Either redirect to ?next or if not present to common-index
         """
-        assert user is not None
+        if user is None:
+            raise ValueError("User cannot be None")
         django_login(request, user)
         # Set updated password in user profile for PAM
         user.crypt6_password = \
@@ -282,7 +284,8 @@ class ChangePasswordView(View):
                 # Check current password
                 user = authenticate(email=request.user.email,
                                     password=form.cleaned_data.get('password_old'))
-                assert user == request.user
+                if user != request.user:
+                    raise ValidationError("Users don't match.")
                 ChangePasswordView.set_password(
                     request, form.cleaned_data.get('password'))
                 messages.success(request, _("Successfully changed password!"))

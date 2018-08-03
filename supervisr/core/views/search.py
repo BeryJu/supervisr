@@ -1,6 +1,4 @@
-"""
-Supervisr Core Common Views
-"""
+"""Supervisr Core Search Views"""
 
 from django.apps import apps
 from django.contrib.auth.decorators import login_required
@@ -51,7 +49,7 @@ def search(request):
                 if matching.exists():
                     results[model._meta.verbose_name] = matching
         if results != {}:
-            return mark_safe(render_to_string('search/search_section.html', {
+            return mark_safe(render_to_string('search/search_section.html', { # nosec
                 'results': results,
                 'request': request,
             }))

@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.db.models.fields import NOT_PROVIDED
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 
 from supervisr.core.api.crud import CRUDAPI
 from supervisr.core.models import UserAcquirable, UserAcquirableRelationship
@@ -106,11 +107,7 @@ class ModelAPI(CRUDAPI):
         for field in model._meta.get_fields():
             # pylint: disable=unidiomatic-typecheck
             if type(field) == models.fields.related.ForeignKey:
-                rev_match = field.target_field.model.objects.filter(pk=data[field.name])
-                if not rev_match.exists():
-                    raise Http404
-                assert len(rev_match) == 1
-                data[field.name] = rev_match.first()
+                data[field.name] = get_object_or_404(field.target_field.model, pk=data[field.name])
         return data
 
     def create(self, request, data):
@@ -141,11 +138,7 @@ class ModelAPI(CRUDAPI):
         if 'pk' not in data:
             raise Http404
         # Filter after user
-        inst = ModelAPI.user_filter(self.model.objects.filter(pk=data['pk']), request.user)
-        if not inst.exists():
-            raise Http404
-        assert len(inst) == 1
-        r_inst = inst.first()
+        instance = ModelAPI.user_filter(get_object_or_404(self.model, pk=data['pk']), request.user)
         # Make sure only allowed fields are present
         update_data = ModelAPI.sanitize_data(data, self.editable_fields)
         # Resolve foreign keys
@@ -153,9 +146,9 @@ class ModelAPI(CRUDAPI):
         # # Check if all necessary keys are existent
         # self.check_keys(update_data, self.editable_fields)
         for key, value in update_data.items():
-            setattr(r_inst, key, value)
-        r_inst.save()
-        return self.model_to_dict([r_inst, ])
+            setattr(instance, key, value)
+        instance.save()
+        return self.model_to_dict([instance, ])
 
     def delete(self, request, data):
         """Delete model instance"""
@@ -163,12 +156,8 @@ class ModelAPI(CRUDAPI):
         if 'pk' not in data:
             raise Http404
         # Filter after user
-        inst = ModelAPI.user_filter(self.model.objects.filter(pk=data['pk']), request.user)
-        if not inst.exists():
-            raise Http404
-        assert len(inst) == 1
-        r_inst = inst.first()
-        r_inst.delete()
+        instance = ModelAPI.user_filter(get_object_or_404(self.model, pk=data['pk']), request.user)
+        instance.delete()
         return {'success': True}
 
 

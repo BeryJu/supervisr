@@ -22,8 +22,9 @@ def gravatar(email, size=None, rating=None):
 
         {% gravatar someone@example.com 48 pg %}
     """
+    # gravatar uses md5 for their URLs, so md5 can't be avoided
     gravatar_url = "%savatar/%s" % ('https://secure.gravatar.com/',
-                                    md5(email.encode('utf-8')).hexdigest())
+                                    md5(email.encode('utf-8')).hexdigest()) # nosec
 
     parameters = [p for p in (
         ('s', size or '158'),

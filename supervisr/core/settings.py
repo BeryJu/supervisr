@@ -76,7 +76,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 REQUEST_APPROVAL_PROMPT = 'auto'
 
 CHERRYPY_SERVER = {
-    'socket_host': '0.0.0.0',
+    'socket_host': '0.0.0.0', # nosec
     'socket_port': 8000,
     'thread_pool': 30
 }

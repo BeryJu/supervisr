@@ -1,6 +1,4 @@
-"""
-Supervisr 2FA Views
-"""
+"""Supervisr 2FA Views"""
 from base64 import b32encode
 from binascii import unhexlify
 
@@ -22,8 +20,8 @@ from qrcode.image.svg import SvgPathImage
 from supervisr.core.decorators import reauth_required
 from supervisr.core.models import Event
 from supervisr.core.views.wizards import BaseWizardView
-from supervisr.mod.tfa.forms.tfa import (TFASetupInitForm, TFASetupStaticForm,
-                                         TFAVerifyForm)
+from supervisr.mod.tfa.forms import (TFASetupInitForm, TFASetupStaticForm,
+                                     TFAVerifyForm)
 from supervisr.mod.tfa.utils import otpauth_url
 
 TFA_SESSION_KEY = 'supervisr_mod_2fa_key'

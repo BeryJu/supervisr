@@ -1,7 +1,7 @@
 """Supervisr Core celery worker ManagementCommand"""
 import logging
 import shlex
-import subprocess
+import subprocess  # nosec
 
 from django.core.management.base import BaseCommand
 from django.utils import autoreload
@@ -22,6 +22,6 @@ class Command(BaseCommand):
 
         def restart_celery():
             """Starter function"""
-            subprocess.call(shlex.split(self.KILL_COMMAND))
-            subprocess.call(shlex.split(self.START_COMMAND))
+            subprocess.call(shlex.split(self.KILL_COMMAND)) # nosec
+            subprocess.call(shlex.split(self.START_COMMAND)) # nosec
         autoreload.main(restart_celery)

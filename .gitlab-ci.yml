@@ -73,6 +73,12 @@ check_template_syntax:
   script:
     - ./manage.py check_template_syntax
   stage: test
+bandit:
+  except:
+    - prod
+  script:
+    - bandit -x migrations/ -r supervisr/
+  stage: test
 pylint:
   except:
     - prod

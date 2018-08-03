@@ -8,7 +8,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.mod.beacon.forms.settings import BeaconSettingsForm
+from supervisr.mod.beacon.forms import BeaconSettingsForm
 from supervisr.mod.beacon.models import Pulse, PulseModule
 from supervisr.mod.beacon.sender import Sender
 
