@@ -1,6 +1,4 @@
-"""
-Supervisr Invoke Tasks
-"""
+"""Supervisr Invoke Tasks"""
 import logging
 import random
 from glob import glob

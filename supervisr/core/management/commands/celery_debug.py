@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
     help = 'Run celery worker with auto-reload'
 
-    KILL_COMMAND = 'pkill celery'
+    KILL_COMMAND = 'pkill -f "python manage.py celery_debug"'
     START_COMMAND = 'celery -A supervisr.core worker -l debug -Ofair -E'
 
     def handle(self, *args, **options):

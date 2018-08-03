@@ -326,6 +326,7 @@ LOGGING = {
                 'WARNING': 'yellow',
                 'ERROR': 'red',
                 'CRITICAL': 'bold_red',
+                'SUCCESS': 'green',
             },
         }
     },

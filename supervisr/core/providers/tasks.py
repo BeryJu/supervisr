@@ -72,7 +72,7 @@ def provider_do_delete(self, provider_pk: int, model: str, model_pk: int, **kwar
         self.progress.set(1)
         provider_object = provider_resolve_helper(provider_pk, model, model_pk)
         result = provider_object.delete()
-        self.progress.set(2)()
+        self.progress.set(2)
         LOGGER.debug("Deleted instance.")
         return result
     except ProviderRetryException as exc:

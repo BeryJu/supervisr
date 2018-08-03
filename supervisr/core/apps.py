@@ -165,6 +165,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
     name = 'supervisr.core'
     label = 'supervisr_core'
     init_modules = [
+        'logger',
         'signals',
         'events',
         'mailer',
