@@ -28,7 +28,7 @@ class LCloudZoneObject(ProviderObject):
         """Save this instance"""
         try:
             extra = TYPE_FIXES.get(self.translator.provider_instance.driver.type, {})
-            return self.translator.provider_instance.driver.create_zone(
+            self.translator.provider_instance.driver.create_zone(
                 domain=self.name,
                 type=self.type,
                 ttl=self.ttl,
@@ -47,10 +47,11 @@ class LCloudZoneObject(ProviderObject):
         try:
             _zone = None
             for zone in self.translator.provider_instance.driver.list_zones():
-                if zone.domain == self.name:
+                if zone.domain == '%s.' % self.name:
                     _zone = zone
-            if self.translator.provider_instance.driver.delete_zone(_zone):
-                return ProviderrResult.SUCCESS
+            if _zone:
+                if self.translator.provider_instance.driver.delete_zone(_zone):
+                    return ProviderrResult.SUCCESS
             return ProviderrResult.OTHER_ERROR
         except BaseHTTPError as exc:
             raise ProviderRetryException from exc
@@ -78,5 +79,4 @@ class LCloudZoneTranslator(ProviderObjectTranslator[Zone]):
         zones = Zone.objects.filter(domain__domain_name=query_result.name)
         if not zones.exists():
             raise ProviderObjectNotFoundException()
-        assert len(zones) == 1
         return zones.first()
