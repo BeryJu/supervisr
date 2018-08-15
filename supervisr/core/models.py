@@ -609,23 +609,17 @@ class Event(CreatedUpdatedModel):
 
     @property
     def action_parmas(self):
-        """
-        Return action's params as dict
-        """
+        """Return action's params as dict"""
         return json.loads(self.action_parmas_json)
 
     @action_parmas.setter
     def action_params(self, value):
-        """
-        Set action's params from a dict and saves it as json
-        """
+        """Set action's params from a dict and saves it as json"""
         self.action_parmas_json = json.dumps(value)
 
     @property
     def get_url(self):
-        """
-        Returns relative url for action with params
-        """
+        """Returns relative url for action with params"""
         return reverse(self.action_view, kwargs=self.action_parmas)
 
     @property
@@ -635,9 +629,7 @@ class Event(CreatedUpdatedModel):
 
     @property
     def get_localized_age(self):
-        """
-        Return age as a localized String
-        """
+        """Return age as a localized String"""
         now = timezone.now()
         diff = now - self.create_date
         hours = int(diff.seconds / 3600)

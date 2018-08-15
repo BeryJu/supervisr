@@ -19,7 +19,7 @@ class LCloudRecordObject(ProviderObject):
     type = None
     ttl = None
 
-    def save(self):
+    def save(self, created: bool):
         """Save this instance"""
         try:
             print('test')

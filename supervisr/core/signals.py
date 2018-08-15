@@ -96,12 +96,15 @@ def change_on_save(sender, instance, created, **kwargs):
 
     system_user = get_system_user()
     multiplexer = ProviderMultiplexer()
+    providers = []
     if issubclass(instance.__class__, ProviderAcquirable) and \
             instance.__class__ is not ProviderAcquirable:
-        multiplexer.on_model_saved(system_user, instance, instance.providers.all())
+        providers = instance.providers.all()
     elif issubclass(instance.__class__, ProviderAcquirableSingle) and \
             instance.__class__ is not ProviderAcquirableSingle:
-        multiplexer.on_model_saved(system_user, instance, [instance.provider_instance, ])
+        providers = [instance.provider_instance, ]
+    if providers:
+        multiplexer.on_model_saved(system_user, instance, providers, created)
 
 
 @receiver(pre_delete)
@@ -113,9 +116,12 @@ def change_on_delete(sender, instance, *args, **kwargs):
 
     system_user = get_system_user()
     multiplexer = ProviderMultiplexer()
+    providers = []
     if issubclass(instance.__class__, ProviderAcquirable) and \
             instance.__class__ is not ProviderAcquirable:
-        multiplexer.on_model_deleted(system_user, instance, instance.providers.all())
+        providers = instance.providers.all()
     elif issubclass(instance.__class__, ProviderAcquirableSingle) and \
             instance.__class__ is not ProviderAcquirableSingle:
-        multiplexer.on_model_deleted(system_user, instance, [instance.provider_instance, ])
+        providers = [instance.provider_instance, ]
+    if providers:
+        multiplexer.on_model_deleted(system_user, instance, providers)

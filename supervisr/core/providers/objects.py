@@ -29,7 +29,8 @@ class ProviderObject(object):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def save(self) -> ProviderrResult:
+    # pylint: disable=unused-argument
+    def save(self, created: bool) -> ProviderrResult:
         """Save this instance to provider. Should return True if a new object was saved
         and False if an existing object was modified"""
         return ProviderrResult.NOT_IMPLEMENTED
