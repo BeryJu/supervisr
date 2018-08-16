@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-15 19:30+0200\n"
+"POT-Creation-Date: 2018-08-16 18:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,35 +17,35 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .\forms\tfa.py:13
+#: forms.py:9
 msgid "Only alpha-numeric characters are allowed."
 msgstr ""
 
-#: .\forms\tfa.py:30 .\forms\tfa.py:46
+#: forms.py:23 forms.py:39
 msgid "Code"
 msgstr ""
 
-#: .\forms\tfa.py:41 .\views\tfa.py:122
+#: forms.py:34 views.py:115
 msgid "Set up 2FA"
 msgstr ""
 
-#: .\forms\tfa.py:45
+#: forms.py:38
 msgid "Scan this Code with your 2FA App."
 msgstr ""
 
-#: .\forms\tfa.py:55
+#: forms.py:46
 msgid "2FA Code does not match"
 msgstr ""
 
-#: .\templates\tfa\user_settings.html:14
+#: templates/tfa/user_settings.html:14
 msgid "2-Factor Authentication"
 msgstr ""
 
-#: .\templates\tfa\user_settings.html:19
+#: templates/tfa/user_settings.html:19
 msgid "Status"
 msgstr ""
 
-#: .\templates\tfa\user_settings.html:23
+#: templates/tfa/user_settings.html:23
 #, python-format
 msgid ""
 "\n"
@@ -53,46 +53,46 @@ msgid ""
 "          "
 msgstr ""
 
-#: .\templates\tfa\user_settings.html:34
+#: templates/tfa/user_settings.html:34
 msgid "Enable 2FA"
 msgstr ""
 
-#: .\templates\tfa\user_settings.html:36
+#: templates/tfa/user_settings.html:36
 msgid "Disable 2FA"
 msgstr ""
 
-#: .\templates\tfa\user_settings.html:45
+#: templates/tfa/user_settings.html:45
 msgid "Your Backup tokens:"
 msgstr ""
 
-#: .\views\tfa.py:48
+#: views.py:43
 msgid "You don't have 2-Factor Authentication set up."
 msgstr ""
 
-#: .\views\tfa.py:55
+#: views.py:50
 msgid "Successfully validated 2FA Token."
 msgstr ""
 
-#: .\views\tfa.py:62
+#: views.py:57
 msgid "Invalid 2-Factor Token."
 msgstr ""
 
-#: .\views\tfa.py:68
+#: views.py:63
 msgid "SSO - Two-factor verification"
 msgstr ""
 
-#: .\views\tfa.py:69
+#: views.py:64
 msgid "Verify"
 msgstr ""
 
-#: .\views\tfa.py:109
+#: views.py:102
 msgid "You disabled 2FA."
 msgstr ""
 
-#: .\views\tfa.py:139
+#: views.py:132
 msgid "You already have 2FA enabled!"
 msgstr ""
 
-#: .\views\tfa.py:196
+#: views.py:190
 msgid "You activated 2FA."
 msgstr ""

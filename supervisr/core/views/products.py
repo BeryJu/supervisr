@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
 from supervisr.core.decorators import ifapp
 from supervisr.core.forms.products import ProductForm
 from supervisr.core.models import Product, UserAcquirableRelationship
-from supervisr.core.views.generic import AdminRequiredView, GenericIndexView
+from supervisr.core.views.generic import AdminRequiredMixin, GenericIndexView
 from supervisr.core.views.wizards import BaseWizardView
 
 
@@ -49,7 +49,7 @@ def view(request: HttpRequest, slug: str) -> HttpResponse:
     raise Http404
 
 
-class ProductAdminIndex(GenericIndexView, AdminRequiredView):
+class ProductAdminIndex(GenericIndexView, AdminRequiredMixin):
     """Show all products for admins"""
 
     model = Product

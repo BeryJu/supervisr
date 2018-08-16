@@ -12,12 +12,16 @@ from uuid import uuid4
 from django.apps import apps
 from django.contrib import messages
 from django.core.cache import cache
+from django.core.management.base import OutputWrapper
+from django.db import DEFAULT_DB_ALIAS
+from django.db.migrations.executor import MigrationExecutor
 from django.http import HttpRequest
 from django.shortcuts import render
 from django.template import Context, Template, loader
 from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.apps import SupervisrAppConfig, SupervisrCoreConfig
+from supervisr.core.logger import SUCCESS
 
 LOGGER = logging.getLogger(__name__)
 
@@ -206,3 +210,32 @@ def messages_add_once(request, level, text, **kwargs):
 def is_url_absolute(url):
     """Check if domain is absolute to prevent user from being redirect somehwere else"""
     return bool(urlparse(url).netloc)
+
+
+def is_database_synchronized(database=DEFAULT_DB_ALIAS):
+    """Check if database has migrations pending"""
+    from django.db import connections
+    connection = connections[database]
+    connection.prepare_database()
+    executor = MigrationExecutor(connection)
+    targets = executor.loader.graph.leaf_nodes()
+    return False if executor.migration_plan(targets) else True
+
+
+class LogOutputWrapper(OutputWrapper):
+    """Output wrapper for django management commands to use LOGGER instead of direct print"""
+
+    level = SUCCESS
+
+    def __init__(self):
+        super().__init__(out=None)
+
+    def write(self, msg, style_func=None, ending=None):
+        ending = self.ending if ending is None else ending
+        if ending and not msg.endswith(ending):
+            msg += ending
+        style_func = style_func or self.style_func
+        # Trim trailing \n off
+        if msg.endswith('\n'):
+            msg = msg[:-1]
+        LOGGER.log(self.level, style_func(msg))

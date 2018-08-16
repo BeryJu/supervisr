@@ -1,0 +1,99 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-08-16 18:05+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: forms.py:9
+msgid "Only alpha-numeric characters are allowed."
+msgstr ""
+
+#: forms.py:23 forms.py:39
+msgid "Code"
+msgstr ""
+
+#: forms.py:34 views.py:115
+msgid "Set up 2FA"
+msgstr ""
+
+#: forms.py:38
+msgid "Scan this Code with your 2FA App."
+msgstr ""
+
+#: forms.py:46
+msgid "2FA Code does not match"
+msgstr ""
+
+#: templates/tfa/user_settings.html:14
+msgid "2-Factor Authentication"
+msgstr ""
+
+#: templates/tfa/user_settings.html:19
+msgid "Status"
+msgstr ""
+
+#: templates/tfa/user_settings.html:23
+#, python-format
+msgid ""
+"\n"
+"          Status: %(state)s\n"
+"          "
+msgstr ""
+
+#: templates/tfa/user_settings.html:34
+msgid "Enable 2FA"
+msgstr ""
+
+#: templates/tfa/user_settings.html:36
+msgid "Disable 2FA"
+msgstr ""
+
+#: templates/tfa/user_settings.html:45
+msgid "Your Backup tokens:"
+msgstr ""
+
+#: views.py:43
+msgid "You don't have 2-Factor Authentication set up."
+msgstr ""
+
+#: views.py:50
+msgid "Successfully validated 2FA Token."
+msgstr ""
+
+#: views.py:57
+msgid "Invalid 2-Factor Token."
+msgstr ""
+
+#: views.py:63
+msgid "SSO - Two-factor verification"
+msgstr ""
+
+#: views.py:64
+msgid "Verify"
+msgstr ""
+
+#: views.py:102
+msgid "You disabled 2FA."
+msgstr ""
+
+#: views.py:132
+msgid "You already have 2FA enabled!"
+msgstr ""
+
+#: views.py:190
+msgid "You activated 2FA."
+msgstr ""

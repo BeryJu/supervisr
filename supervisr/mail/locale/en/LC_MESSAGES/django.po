@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-15 19:27+0200\n"
+"POT-Creation-Date: 2018-08-16 18:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,197 +17,119 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .\fields.py:15
+#: fields.py:12
 msgid "Enter valid email addresses."
 msgstr ""
 
-#: .\forms\account.py:20 .\forms\domain.py:16
-#: .\templates\mail\account\index.html:35 .\templates\mail\index.html:18
-msgid "Domain"
+#: forms/addresses.py:12 forms/domains.py:12
+msgid "General Information"
 msgstr ""
 
-#: .\forms\account.py:21 .\templates\mail\alias\index.html:26
-msgid "Address"
-msgstr ""
-
-#: .\forms\account.py:23
-msgid "Can Send Emails"
-msgstr ""
-
-#: .\forms\account.py:25
-msgid "Can Receive Emails"
-msgstr ""
-
-#: .\forms\account.py:27
-msgid "Mark as Catch-all Account"
-msgstr ""
-
-#: .\forms\account.py:50
-msgid "Password"
-msgstr ""
-
-#: .\forms\account.py:52
-msgid "Repeat Password"
-msgstr ""
-
-#: .\forms\account.py:67
-msgid "Forwarder destination (optional)"
-msgstr ""
-
-#: .\forms\account.py:71 .\forms\alias.py:24
-msgid "One destination per line"
-msgstr ""
-
-#: .\forms\alias.py:19
-msgid "Source Account"
-msgstr ""
-
-#: .\forms\alias.py:20
-msgid "Alias destination"
-msgstr ""
-
-#: .\forms\domain.py:18 .\templates\mail\index.html:19
-msgid "Provider"
-msgstr ""
-
-#: .\forms\domain.py:19
-msgid "Enabled"
-msgstr ""
-
-#: .\models.py:23 .\models.py:58 .\models.py:60
-msgid "This field is automatically generatedby Django to make queries easier."
-msgstr ""
-
-#: .\models.py:78
+#: models.py:87
 #, python-format
 msgid "Changed Password for Mail Account %(account)s"
 msgstr ""
 
-#: .\templates\mail\account\index.html:11 .\templates\mail\base.html:15
-#: .\templates\mail\index.html:44
-msgid "Accounts"
+#: providers/base.py:37
+msgid "BaseMailProvider"
 msgstr ""
 
-#: .\templates\mail\account\index.html:27
+#: providers/internal.py:38
+msgid "InternalMailProvider"
+msgstr ""
+
+#: templates/mail/account/index.html:11
+msgid "All Accounts"
+msgstr ""
+
+#: templates/mail/account/index.html:27 templates/mail/domains/view.html:27
 msgid "Set Password"
 msgstr ""
 
-#: .\templates\mail\account\index.html:34
+#: templates/mail/account/index.html:34 templates/mail/domains/view.html:34
 msgid "Full Address"
 msgstr ""
 
-#: .\templates\mail\account\index.html:36 .\templates\mail\alias\index.html:28
+#: templates/mail/account/index.html:35 templates/mail/domains/view.html:35
+#: templates/mail/index.html:18 templates/mail/index.html:49
+msgid "Domain"
+msgstr ""
+
+#: templates/mail/account/index.html:36 templates/mail/alias/index.html:28
+#: templates/mail/domains/view.html:36 templates/mail/index.html:50
 msgid "Owner"
 msgstr ""
 
-#: .\templates\mail\account\index.html:37
+#: templates/mail/account/index.html:37 templates/mail/domains/view.html:37
 msgid "Usage"
 msgstr ""
 
-#: .\templates\mail\account\index.html:38 .\templates\mail\alias\index.html:29
+#: templates/mail/account/index.html:38 templates/mail/alias/index.html:29
+#: templates/mail/domains/view.html:38
 msgid "Is Catchall?"
 msgstr ""
 
-#: .\templates\mail\alias\index.html:11 .\templates\mail\base.html:18
-#: .\templates\mail\index.html:50
-msgid "Aliases"
+#: templates/mail/alias/index.html:11
+msgid "All Aliases"
 msgstr ""
 
-#: .\templates\mail\alias\index.html:27
+#: templates/mail/alias/index.html:26
+msgid "Address"
+msgstr ""
+
+#: templates/mail/alias/index.html:27
 msgid "Forwarder Destination"
 msgstr ""
 
-#: .\templates\mail\base.html:12
-msgid "Overview"
-msgstr ""
-
-#: .\templates\mail\base.html:22
-msgid "Domain Settings"
-msgstr ""
-
-#: .\templates\mail\domain\view.html:18
-msgid "Details "
-msgstr ""
-
-#: .\templates\mail\domain\view.html:22
-msgid "General Settings"
-msgstr ""
-
-#: .\templates\mail\domain\view.html:26
-msgid "Spam Settings"
-msgstr ""
-
-#: .\templates\mail\domain\view.html:30
-msgid "DKIM Settings"
-msgstr ""
-
-#: .\templates\mail\domain\view.html:37
-msgid "Created"
-msgstr ""
-
-#: .\templates\mail\domain\view.html:41
-msgid "Domain Provider"
-msgstr ""
-
-#: .\templates\mail\index.html:11
-msgid "Mail"
-msgstr ""
-
-#: .\templates\mail\index.html:13
-msgid "Unclaimed Domains"
-msgstr ""
-
-#: .\templates\mail\index.html:28
-msgid "Pursue"
-msgstr ""
-
-#: .\templates\mail\index.html:38
+#: templates/mail/base.html:11
 msgid "Domains"
 msgstr ""
 
-#: .\views\account.py:62
-msgid "New Mail Account"
-msgstr ""
-
-#: .\views\account.py:98
-msgid "Mail Account successfully created"
-msgstr ""
-
-#: .\views\account.py:126
+#: templates/mail/domains/view.html:11
 #, python-format
-msgid "Successfully set password for %(account)s"
+msgid "%(domain)s - Addresses "
 msgstr ""
 
-#: .\views\account.py:130
-#, python-format
-msgid "You reset the password for %(account)s"
+#: templates/mail/index.html:11
+msgid "Mail"
 msgstr ""
 
-#: .\views\account.py:144
-#, python-format
-msgid "Change password for %(account)s"
+#: templates/mail/index.html:13
+msgid "Unclaimed Domains"
 msgstr ""
 
-#: .\views\account.py:174
-msgid "Account successfully deleted"
+#: templates/mail/index.html:19 templates/mail/index.html:53
+msgid "Provider"
 msgstr ""
 
-#: .\views\alias.py:46
-msgid "New Mail Alias"
+#: templates/mail/index.html:28
+msgid "Setup mail..."
 msgstr ""
 
-#: .\views\alias.py:70
-msgid "Mail Aliases successfully created"
+#: templates/mail/index.html:51
+msgid "Accounts"
 msgstr ""
 
-#: .\views\alias.py:92
-msgid "Alias successfully deleted"
+#: templates/mail/index.html:52
+msgid "Aliases"
 msgstr ""
 
-#: .\views\domain.py:41
+#: templates/mail/index.html:54
+msgid "Enabled"
+msgstr ""
+
+#: views/addresses.py:32
+msgid "New Mail address"
+msgstr ""
+
+#: views/addresses.py:58
+msgid "Mail address successfully created"
+msgstr ""
+
+#: views/domains.py:35
 msgid "New Mail Domain"
 msgstr ""
 
-#: .\views\domain.py:72
+#: views/domains.py:64
 msgid "Mail Domain successfully created"
 msgstr ""

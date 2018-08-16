@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-15 19:28+0200\n"
+"POT-Creation-Date: 2018-08-16 18:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,48 +17,53 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .\templates\oauth2_provider\authorize.html:26
+#: templates/oauth2_provider/authorize.html:18
 msgid "SSO - Authorize External Source"
 msgstr ""
 
-#: .\templates\oauth2_provider\authorize.html:30
+#: templates/oauth2_provider/authorize.html:29
 #, python-format
 msgid ""
 "\n"
-"          You're about to sign into %(remote)s\n"
-"        "
+"                You're about to sign into %(remote)s\n"
+"                "
 msgstr ""
 
-#: .\templates\oauth2_provider\authorize.html:34
+#: templates/oauth2_provider/authorize.html:33
 msgid "Application requires following permissions"
 msgstr ""
 
-#: .\templates\oauth2_provider\authorize.html:45
+#: templates/oauth2_provider/authorize.html:42
 #, python-format
 msgid ""
 "\n"
-"          You are logged in as %(user)s. Not you?\n"
-"        "
+"                You are logged in as %(user)s. Not you?\n"
+"                "
 msgstr ""
 
-#: .\templates\oauth2_provider\authorize.html:48
+#: templates/oauth2_provider/authorize.html:45
 msgid "Logout"
 msgstr ""
 
-#: .\templates\oauth2_provider\authorize.html:52
+#: templates/oauth2_provider/authorize.html:49
 msgid "Continue"
 msgstr ""
 
-#: .\templates\oauth2_provider\authorize.html:55
+#: templates/oauth2_provider/authorize.html:52
 msgid "Cancel"
 msgstr ""
 
-#: .\views\oauth2.py:44
+#: templates/oauth2_provider/authorize.html:59
+#, python-format
+msgid "Error: %(err)s"
+msgstr ""
+
+#: views/oauth2.py:49
 #, python-format
 msgid "You authenticated %s (via OAuth) (skipped Authz)"
 msgstr ""
 
-#: .\views\oauth2.py:57
+#: views/oauth2.py:62
 #, python-format
 msgid "You authenticated %s (via OAuth)"
 msgstr ""

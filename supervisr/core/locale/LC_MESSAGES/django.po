@@ -1,0 +1,1087 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-08-16 18:04+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: decorators.py:124
+msgid "This function has been administratively disabled."
+msgstr ""
+
+#: events.py:22
+msgid "You Signed up"
+msgstr ""
+
+#: events.py:34
+msgid "non-reset"
+msgstr ""
+
+#: events.py:34
+msgid "reset"
+msgstr ""
+
+#: events.py:33
+#, python-format
+msgid "You changed your Password (%(kind)s)"
+msgstr ""
+
+#: events.py:49
+#, python-format
+msgid "You gained access to %(class)s %(name)s"
+msgstr ""
+
+#: events.py:65
+#, python-format
+msgid "You lost access to %(name)s"
+msgstr ""
+
+#: events.py:77
+#, python-format
+msgid "You logged in with backend %s"
+msgstr ""
+
+#: events.py:89
+msgid "You logged out"
+msgstr ""
+
+#: forms/accounts.py:22 forms/accounts.py:108
+msgid "Mail"
+msgstr ""
+
+#: forms/accounts.py:23 forms/accounts.py:42 forms/accounts.py:88
+#: forms/accounts.py:118 forms/accounts.py:130
+msgid "Password"
+msgstr ""
+
+#: forms/accounts.py:24
+msgid "Remember"
+msgstr ""
+
+#: forms/accounts.py:39 forms/users.py:15 templates/_admin/users.html:16
+#: templates/provider/credentials-index.html:26
+#: templates/provider/instance-index.html:29
+msgid "Name"
+msgstr ""
+
+#: forms/accounts.py:40 forms/users.py:17 templates/_admin/users.html:17
+msgid "Username"
+msgstr ""
+
+#: forms/accounts.py:41 forms/accounts.py:129 forms/accounts.py:136
+msgid "E-Mail"
+msgstr ""
+
+#: forms/accounts.py:43 forms/accounts.py:89 forms/accounts.py:119
+msgid "Repeat Password"
+msgstr ""
+
+#: forms/accounts.py:48
+msgid "I accept the Terms of service"
+msgstr ""
+
+#: forms/accounts.py:60
+msgid "Username already exists"
+msgstr ""
+
+#: forms/accounts.py:69 forms/accounts.py:76
+msgid "Email already exists"
+msgstr ""
+
+#: forms/accounts.py:87
+msgid "Current Password"
+msgstr ""
+
+#: forms/accounts.py:97
+msgid "Invalid Current Password"
+msgstr ""
+
+#: forms/domains.py:18 forms/products.py:12
+msgid "General Information"
+msgstr ""
+
+#: forms/domains.py:25
+msgid "Domain name is not valid"
+msgstr ""
+
+#: forms/initial_setup.py:8
+msgid "Welcome"
+msgstr ""
+
+#: forms/products.py:22
+msgid "Automatically add Product to new users."
+msgstr ""
+
+#: forms/products.py:23
+msgid "Automatically add Product to all users."
+msgstr ""
+
+#: forms/products.py:30
+msgid "Assign Extensions"
+msgstr ""
+
+#: forms/products.py:37
+msgid "Product Extension"
+msgstr ""
+
+#: forms/providers.py:23
+msgid "Instance Name"
+msgstr ""
+
+#: forms/providers.py:24 templates/common/base.html:17
+#: templates/common/index.html:72 templates/domain/index.html:27
+#: templates/provider/instance-index.html:30
+msgid "Provider"
+msgstr ""
+
+#: forms/providers.py:25 templates/common/base.html:26
+#: templates/provider/credentials-index.html:11
+#: templates/provider/instance-index.html:31
+msgid "Credentials"
+msgstr ""
+
+#: forms/providers.py:59
+msgid "Credential Type"
+msgstr ""
+
+#: forms/providers.py:82
+msgid "Empty"
+msgstr ""
+
+#: forms/users.py:16 forms/users.py:38 templates/_admin/users.html:15
+msgid "Email"
+msgstr ""
+
+#: forms/users.py:18
+msgid "Unix Username"
+msgstr ""
+
+#: forms/users.py:19
+msgid "Unix ID"
+msgstr ""
+
+#: forms/users.py:20
+msgid "Theme"
+msgstr ""
+
+#: forms/users.py:21
+msgid "Rows per page"
+msgstr ""
+
+#: forms/users.py:22 models.py:700
+msgid "API Key"
+msgstr ""
+
+#: forms/users.py:39
+msgid "Message"
+msgstr ""
+
+#: forms/users.py:40
+msgid "Send System Information?"
+msgstr ""
+
+#: forms/utils.py:19
+msgid "Your passwords do not match"
+msgstr ""
+
+#: forms/utils.py:24
+#, python-format
+msgid "Password has to contain %(desc)s"
+msgstr ""
+
+#: mailer.py:98
+#, python-format
+msgid "Confirm your account on %(branding)s"
+msgstr ""
+
+#: mailer.py:132
+#, python-format
+msgid "Step 2/3 - Reset your Password on %(branding)s"
+msgstr ""
+
+#: models.py:367
+msgid "Sign up"
+msgstr ""
+
+#: models.py:368
+msgid "Password Reset"
+msgstr ""
+
+#: models.py:585
+msgid "Urgent"
+msgstr ""
+
+#: models.py:586
+msgid "Important"
+msgstr ""
+
+#: models.py:587
+msgid "Medium"
+msgstr ""
+
+#: models.py:588
+msgid "Notice"
+msgstr ""
+
+#: models.py:589
+msgid "Information"
+msgstr ""
+
+#: models.py:638
+#, python-format
+msgid "%(days)d day(s) ago"
+msgstr ""
+
+#: models.py:640
+#, python-format
+msgid "%(hours)d hour(s) ago"
+msgstr ""
+
+#: models.py:641
+#, python-format
+msgid "%(minutes)d minute(s) ago"
+msgstr ""
+
+#: models.py:688
+msgid "Empty Credential"
+msgstr ""
+
+#: models.py:713
+msgid "Username and Password"
+msgstr ""
+
+#: models.py:727
+msgid "Username, Password and Server"
+msgstr ""
+
+#: providers/base.py:88
+msgid "BaseProvider"
+msgstr ""
+
+#: providers/domain.py:37
+msgid "Base Domain Provider"
+msgstr ""
+
+#: templates/_admin/base.html:13
+msgid "General Settings"
+msgstr ""
+
+#: templates/_admin/base.html:15 templates/account/base.html:10
+#: templates/common/base.html:10 templates/common/index.html:14
+#: templates/user/base.html:11
+msgid "Overview"
+msgstr ""
+
+#: templates/_admin/base.html:16 templates/_admin/index.html:16
+#: templates/_admin/users.html:11 templates/account/index.html:15
+msgid "Users"
+msgstr ""
+
+#: templates/_admin/base.html:17 templates/_admin/settings.html:26
+#: templates/account/base.html:13 views/admin.py:72
+msgid "Settings"
+msgstr ""
+
+#: templates/_admin/base.html:22 templates/_admin/module_default.html:11
+msgid "Module Settings"
+msgstr ""
+
+#: templates/_admin/base.html:31 templates/common/base.html:32
+#: templates/product/admin_index.html:22
+msgid "Products"
+msgstr ""
+
+#: templates/_admin/base.html:35
+msgid "Monitoring"
+msgstr ""
+
+#: templates/_admin/base.html:39 templates/_admin/info.html:11
+msgid "System Information"
+msgstr ""
+
+#: templates/_admin/base.html:44 templates/user/base.html:14
+#: templates/user/events.html:12
+msgid "Events"
+msgstr ""
+
+#: templates/_admin/base.html:49 templates/_admin/tasks.html:12
+msgid "Tasks"
+msgstr ""
+
+#: templates/_admin/base.html:56 templates/_admin/flower.html:29
+msgid "Flower"
+msgstr ""
+
+#: templates/_admin/base.html:64
+msgid "Django Builtins"
+msgstr ""
+
+#: templates/_admin/base.html:68 templates/account/base.html:16
+msgid "Admin Interface"
+msgstr ""
+
+#: templates/_admin/base.html:73 templates/account/base.html:19
+msgid "Admin Docs"
+msgstr ""
+
+#: templates/_admin/base.html:79 templates/_admin/debug.html:11
+msgid "Debug"
+msgstr ""
+
+#: templates/_admin/events.html:12
+msgid "Global Events"
+msgstr ""
+
+#: templates/_admin/events.html:16 templates/_admin/tasks.html:16
+#: templates/user/events.html:16
+msgid "User"
+msgstr ""
+
+#: templates/_admin/events.html:17 templates/_admin/tasks.html:17
+#: templates/user/events.html:17
+msgid "Invoker"
+msgstr ""
+
+#: templates/_admin/events.html:18 templates/common/index.html:111
+#: templates/domain/index.html:28 templates/user/events.html:18
+msgid "Description"
+msgstr ""
+
+#: templates/_admin/events.html:19 templates/common/index.html:112
+#: templates/user/events.html:19
+msgid "Age"
+msgstr ""
+
+#: templates/_admin/events.html:20 templates/common/index.html:113
+#: templates/user/events.html:20
+msgid "Action"
+msgstr ""
+
+#: templates/_admin/events.html:21 templates/user/events.html:21
+msgid "Remote IP"
+msgstr ""
+
+#: templates/_admin/index.html:11
+msgid "Administrator Dashboard"
+msgstr ""
+
+#: templates/_admin/index.html:29 templates/account/index.html:27
+#: views/admin.py:55
+msgid "Version"
+msgstr ""
+
+#: templates/_admin/index.html:33
+msgid "Install ID"
+msgstr ""
+
+#: templates/_admin/index.html:41
+msgid "Celery Workers"
+msgstr ""
+
+#: templates/_admin/info.html:15
+msgid "Key"
+msgstr ""
+
+#: templates/_admin/info.html:16
+msgid "Value"
+msgstr ""
+
+#: templates/_admin/initial_setup/welcome.html:6
+msgid ""
+"\n"
+"<p>\n"
+"  qwer\n"
+"</p>\n"
+msgstr ""
+
+#: templates/_admin/module_default.html:14
+msgid "This Module does not have a settings Page."
+msgstr ""
+
+#: templates/_admin/settings.html:38 templates/admin/submit_line.html:14
+msgid "Save"
+msgstr ""
+
+#: templates/_admin/settings.html:46
+msgid "Namespaces"
+msgstr ""
+
+#: templates/_admin/users.html:18
+msgid "Signup Date"
+msgstr ""
+
+#: templates/_admin/users.html:19 templates/_admin/users.html:31
+msgid "Impersonate"
+msgstr ""
+
+#: templates/admin/base.html:15 templates/admin/change_form.html:18
+#: templates/admin/change_list.html:31 templates/core/base.html:30
+msgid "Home"
+msgstr ""
+
+#: templates/admin/change_form.html:21 templates/admin/change_list.html:50
+#, python-format
+msgid "Add %(name)s"
+msgstr ""
+
+#: templates/admin/change_form.html:33
+msgid "History"
+msgstr ""
+
+#: templates/admin/change_form.html:34
+msgid "View on site"
+msgstr ""
+
+#: templates/admin/change_form.html:47 templates/admin/change_list.html:59
+msgid "Please correct the error below."
+msgstr ""
+
+#: templates/admin/change_form.html:47 templates/admin/change_list.html:59
+msgid "Please correct the errors below."
+msgstr ""
+
+#: templates/admin/change_list.html:70
+msgid "Filter"
+msgstr ""
+
+#: templates/admin/search_form.html:11 templates/search/search.html:11
+msgid "Search"
+msgstr ""
+
+#: templates/admin/search_form.html:16
+#, python-format
+msgid "%(counter)s result"
+msgid_plural "%(counter)s results"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/admin/search_form.html:16
+#, python-format
+msgid "%(full_result_count)s total"
+msgstr ""
+
+#: templates/admin/search_form.html:16
+msgid "Show all"
+msgstr ""
+
+#: templates/admin/submit_line.html:6 templates/product/admin_index.html:34
+msgid "Delete"
+msgstr ""
+
+#: templates/admin/submit_line.html:11
+msgid "Save as new"
+msgstr ""
+
+#: templates/admin/submit_line.html:12
+msgid "Save and add another"
+msgstr ""
+
+#: templates/admin/submit_line.html:13
+msgid "Save and continue editing"
+msgstr ""
+
+#: templates/blocks/pagination.html:11
+#, python-format
+msgid ""
+"\n"
+"    Page %(current)s of %(total)s\n"
+"    "
+msgstr ""
+
+#: templates/blocks/sidebar_footer.html:8
+msgid "Help"
+msgstr ""
+
+#: templates/blocks/sidebar_footer.html:11
+msgid "Attributions"
+msgstr ""
+
+#: templates/blocks/sidebar_footer.html:12
+msgid "License"
+msgstr ""
+
+#: templates/blocks/sidebar_footer.html:20
+#, python-format
+msgid "Version %(version)s"
+msgstr ""
+
+#: templates/common/base.html:13 templates/domain/index.html:11
+msgid "Domains"
+msgstr ""
+
+#: templates/common/base.html:21
+msgid "Instances"
+msgstr ""
+
+#: templates/common/error.html:18
+msgid "Whops"
+msgstr ""
+
+#: templates/common/error.html:25
+msgid "Not found."
+msgstr ""
+
+#: templates/common/error.html:27
+msgid "An unexpected Error occurred. The Admin team has been notified."
+msgstr ""
+
+#: templates/common/error.html:30
+msgid "Additional Information:"
+msgstr ""
+
+#: templates/common/index.html:24
+#, python-format
+msgid "Hey, %(name)s"
+msgstr ""
+
+#: templates/common/index.html:32
+msgid "Quicklaunch"
+msgstr ""
+
+#: templates/common/index.html:56
+msgid "No Hosted Applications yet!"
+msgstr ""
+
+#: templates/common/index.html:65
+msgid "Provider Instance Status"
+msgstr ""
+
+#: templates/common/index.html:71
+msgid "Instance"
+msgstr ""
+
+#: templates/common/index.html:73 templates/core/bottom_dock.html:29
+msgid "Status"
+msgstr ""
+
+#: templates/common/index.html:83 templates/provider/instance-index.html:46
+msgid "OK"
+msgstr ""
+
+#: templates/common/index.html:85
+msgid "Error"
+msgstr ""
+
+#: templates/common/index.html:97
+msgid "No Provders"
+msgstr ""
+
+#: templates/common/index.html:104
+msgid "Recent Events"
+msgstr ""
+
+#: templates/common/index.html:134
+msgid "No Current Events!"
+msgstr ""
+
+#: templates/common/maintenance.html:17
+msgid "Maintenance Mode"
+msgstr ""
+
+#: templates/common/maintenance.html:20
+msgid ""
+"We're currently upgrading supervisr. Try again in a few minutes or shoot us "
+"an email at <a href=\"mailto:support@beryju.org\">support@beryju.org</a>."
+msgstr ""
+
+#: templates/core/autosubmit_form.html:24
+msgid "Redirecting..."
+msgstr ""
+
+#: templates/core/autosubmit_form.html:25
+msgid "Continue"
+msgstr ""
+
+#: templates/core/base.html:40
+msgid "Admin"
+msgstr ""
+
+#: templates/core/base.html:49
+msgid "Search for keywords..."
+msgstr ""
+
+#: templates/core/base.html:69
+msgid "Stop impersonation"
+msgstr ""
+
+#: templates/core/base.html:72
+msgid "Profile"
+msgstr ""
+
+#: templates/core/base.html:73 views/accounts.py:274
+msgid "Change Password"
+msgstr ""
+
+#: templates/core/base.html:75 templates/user/base.html:23
+msgid "Send Feedback"
+msgstr ""
+
+#: templates/core/base.html:77
+msgid "Logout"
+msgstr ""
+
+#: templates/core/base.html:82 views/accounts.py:65 views/accounts.py:491
+msgid "Login"
+msgstr ""
+
+#: templates/core/bottom_dock.html:17
+msgid "Recent Tasks"
+msgstr ""
+
+#: templates/core/bottom_dock.html:20
+msgid "Alerts"
+msgstr ""
+
+#: templates/core/bottom_dock.html:27
+msgid "Task Name"
+msgstr ""
+
+#: templates/core/bottom_dock.html:28
+msgid "Target"
+msgstr ""
+
+#: templates/core/bottom_dock.html:30
+msgid "Initiator"
+msgstr ""
+
+#: templates/core/bottom_dock.html:31
+msgid "Queued For"
+msgstr ""
+
+#: templates/core/bottom_dock.html:32
+msgid "Start Time"
+msgstr ""
+
+#: templates/core/bottom_dock.html:33
+msgid "Completion Time"
+msgstr ""
+
+#: templates/domain/index.html:26
+msgid "Domain"
+msgstr ""
+
+#: templates/email/account_confirm.html:9
+#: templates/email/account_password_reset.html:11
+#, python-format
+msgid "Welcome to %(branding)s."
+msgstr ""
+
+#: templates/email/account_confirm.html:10
+msgid ""
+"supervisr aims to be a single pane of glass solution for most of your needs."
+msgstr ""
+
+#: templates/email/account_confirm.html:21
+#: templates/email/account_password_reset.html:24
+msgid "Confirm E-Mail"
+msgstr ""
+
+#: templates/email/account_password_reset.html:12
+#, python-format
+msgid "You requested this link on %(domain)s."
+msgstr ""
+
+#: templates/email/account_password_reset.html:13
+msgid "Click on the link below to reset your password."
+msgstr ""
+
+#: templates/generic/delete.html:18
+msgid "Attention"
+msgstr ""
+
+#: templates/generic/delete.html:21
+#, python-format
+msgid "Are you sure you want to delete %(verbose_name)s '%(instance_name)s'?"
+msgstr ""
+
+#: templates/generic/delete.html:27 templates/generic/form_modal.html:25
+#: templates/generic/wizard.html:71
+msgid "Cancel"
+msgstr ""
+
+#: templates/generic/wizard.html:25
+#, python-format
+msgid "Step %(curr_step)s"
+msgstr ""
+
+#: templates/generic/wizard.html:76
+msgid "Back"
+msgstr ""
+
+#: templates/generic/wizard.html:81
+msgid "Finish"
+msgstr ""
+
+#: templates/generic/wizard.html:83
+msgid "Next"
+msgstr ""
+
+#: templates/product/admin_index.html:26 views/accounts.py:535
+msgid "Add"
+msgstr ""
+
+#: templates/product/admin_index.html:30
+msgid "Edit"
+msgstr ""
+
+#: templates/product/admin_index.html:57 templates/product/index.html:42
+msgid "Details"
+msgstr ""
+
+#: templates/product/admin_index.html:58
+msgid "Relationships"
+msgstr ""
+
+#: templates/product/admin_index.html:60 templates/product/index.html:44
+msgid "Open"
+msgstr ""
+
+#: templates/provider/credentials-index.html:27
+msgid "Used by"
+msgstr ""
+
+#: templates/provider/credentials-index.html:28
+msgid "Type"
+msgstr ""
+
+#: templates/provider/instance-index.html:11
+msgid "Provider Instances"
+msgstr ""
+
+#: templates/provider/instance-index.html:32
+msgid "Capabilities"
+msgstr ""
+
+#: templates/provider/instance-index.html:33
+msgid "Authentication Status"
+msgstr ""
+
+#: templates/provider/instance-wizard.html:11
+msgid "Description:"
+msgstr ""
+
+#: templates/provider/instance-wizard.html:12
+msgid "Capabilities:"
+msgstr ""
+
+#: templates/search/search.html:25
+msgid "Nothing"
+msgstr ""
+
+#: templates/search/search.html:29
+msgid "Nothing found"
+msgstr ""
+
+#: templates/user/feedback.html:12
+msgid "Feedback"
+msgstr ""
+
+#: templates/user/feedback.html:22
+msgid "Additional Links"
+msgstr ""
+
+#: templates/user/feedback.html:27
+msgid "See open issues"
+msgstr ""
+
+#: templates/user/feedback.html:27 templates/user/feedback.html:28
+msgid "here"
+msgstr ""
+
+#: templates/user/feedback.html:28
+msgid "Experiencing slowness? Check status"
+msgstr ""
+
+#: templates/user/index.html:12
+msgid "User Profile"
+msgstr ""
+
+#: templates/user/index.html:22
+msgid "Actions"
+msgstr ""
+
+#: templates/user/index.html:26
+msgid "Delete Account"
+msgstr ""
+
+#: templatetags/supervisr_utils.py:87
+#, python-format
+msgid "%(title)s - %(app)s %(branding)s"
+msgstr ""
+
+#: urls.py:26
+msgid "Supervisr Admin"
+msgstr ""
+
+#: urls.py:27
+msgid "supervisr"
+msgstr ""
+
+#: views/accounts.py:64
+msgid "SSO - Login"
+msgstr ""
+
+#: views/accounts.py:126
+msgid "Successfully logged in!"
+msgstr ""
+
+#: views/accounts.py:162
+msgid "Invalid Login"
+msgstr ""
+
+#: views/accounts.py:183
+msgid "SSO - Signup"
+msgstr ""
+
+#: views/accounts.py:184
+msgid "Signup"
+msgstr ""
+
+#: views/accounts.py:244
+msgid "Successfully signed up!"
+msgstr ""
+
+#: views/accounts.py:249
+msgid "Failed to sign up."
+msgstr ""
+
+#: views/accounts.py:273
+msgid "SSO - Change Password"
+msgstr ""
+
+#: views/accounts.py:291
+msgid "Successfully changed password!"
+msgstr ""
+
+#: views/accounts.py:293
+msgid "Failed to change password"
+msgstr ""
+
+#: views/accounts.py:332
+msgid "Successfully logged out!"
+msgstr ""
+
+#: views/accounts.py:348
+msgid "Account already confirmed!"
+msgstr ""
+
+#: views/accounts.py:351
+msgid "Confirmation expired"
+msgstr ""
+
+#: views/accounts.py:364
+msgid "Account successfully activated!"
+msgstr ""
+
+#: views/accounts.py:380
+msgid "SSO - Reset your password - Step 1/3"
+msgstr ""
+
+#: views/accounts.py:381
+msgid "Send confirmation Email"
+msgstr ""
+
+#: views/accounts.py:396
+msgid "Reset link sent successfully if user exists."
+msgstr ""
+
+#: views/accounts.py:415
+msgid "SSO - Reset your Password - Step 3/3"
+msgstr ""
+
+#: views/accounts.py:416
+msgid "Reset your Password"
+msgstr ""
+
+#: views/accounts.py:429
+msgid "Link already used!"
+msgstr ""
+
+#: views/accounts.py:432
+msgid "Link expired!"
+msgstr ""
+
+#: views/accounts.py:438
+msgid "Account successfully reset!"
+msgstr ""
+
+#: views/accounts.py:444
+msgid "Failed to reset Password. Please try again later."
+msgstr ""
+
+#: views/accounts.py:477
+msgid "Successfully resent confirmation email"
+msgstr ""
+
+#: views/accounts.py:490
+msgid "SSO - Re-Authenticate"
+msgstr ""
+
+#: views/accounts.py:503
+msgid "Successfully Re-Authenticated"
+msgstr ""
+
+#: views/accounts.py:510
+msgid "Failed to Re-Authenticate"
+msgstr ""
+
+#: views/accounts.py:534
+msgid "SSO - Add missing E-Mail"
+msgstr ""
+
+#: views/accounts.py:571
+msgid "Successfully sent confirmation E-Mail"
+msgstr ""
+
+#: views/admin.py:56
+msgid "Python Version"
+msgstr ""
+
+#: views/admin.py:57
+msgid "Django Version"
+msgstr ""
+
+#: views/admin.py:58
+msgid "Supervisr Commit"
+msgstr ""
+
+#: views/admin.py:60
+msgid "System"
+msgstr ""
+
+#: views/admin.py:61
+msgid "uname"
+msgstr ""
+
+#: views/admin.py:63
+msgid "Request"
+msgstr ""
+
+#: views/admin.py:64
+msgid "url_name"
+msgstr ""
+
+#: views/admin.py:67
+msgid "REMOTE_ADDR"
+msgstr ""
+
+#: views/admin.py:68
+msgid "REMOTE_ADDR PTR"
+msgstr ""
+
+#: views/admin.py:69
+msgid "X-Forwarded-for"
+msgstr ""
+
+#: views/admin.py:70
+msgid "X-Forwarded-for PTR"
+msgstr ""
+
+#: views/admin.py:73
+msgid "Debug Enabled"
+msgstr ""
+
+#: views/admin.py:74
+msgid "Authentication Backends"
+msgstr ""
+
+#: views/admin.py:106
+msgid "Successfully cleared Cache"
+msgstr ""
+
+#: views/admin.py:110
+msgid "Successfully updated settings."
+msgstr ""
+
+#: views/admin.py:114
+#, python-format
+msgid "Started Task, ID: %(id)s"
+msgstr ""
+
+#: views/domains.py:33
+msgid "New Domain"
+msgstr ""
+
+#: views/domains.py:55
+msgid "Domain successfully created"
+msgstr ""
+
+#: views/generic.py:181
+#, python-format
+msgid "Successfully edited %(verbose_name)s"
+msgstr ""
+
+#: views/generic.py:210
+#, python-format
+msgid "Successfully deleted %(verbose_name)s"
+msgstr ""
+
+#: views/initial_setup.py:23
+msgid "Welcome to supervisr!"
+msgstr ""
+
+#: views/products.py:66
+msgid "New Product"
+msgstr ""
+
+#: views/providers.py:42
+msgid "New Provider"
+msgstr ""
+
+#: views/providers.py:92
+msgid "Provider Instance successfully created"
+msgstr ""
+
+#: views/providers.py:149
+msgid "New Credentials"
+msgstr ""
+
+#: views/providers.py:179
+msgid "No type selected"
+msgstr ""
+
+#: views/providers.py:183
+msgid "Credentials successfully created"
+msgstr ""
+
+#: views/settings.py:40
+#, python-format
+msgid "Updated %d settings"
+msgstr ""
+
+#: views/settings.py:102
+msgid "Settings successfully updated."
+msgstr ""
+
+#: views/users.py:44
+msgid "User updated successfully"
+msgstr ""
+
+#: views/users.py:80
+msgid "Successfully sent feedback."
+msgstr ""
+
+#: views/users.py:108
+msgid "This action cannot be reversed!"
+msgstr ""
+
+#: views/users.py:122
+msgid "Successfully deleted account"
+msgstr ""
+
+#: views/users.py:124
+msgid "Failed to delete account"
+msgstr ""

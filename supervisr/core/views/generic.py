@@ -13,24 +13,34 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views import View
 
+from supervisr.core.decorators import anonymous_required
 
-class LoginRequiredView(View):
+
+class LoginRequiredMixin(View):
     """Utility View class that always requires login"""
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(LoginRequiredView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
 
-class AdminRequiredView(View):
+class AnonymousRequiredMixin(View):
+    """Utility View class that always requires user to not be authenticated"""
+
+    @method_decorator(anonymous_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+
+class AdminRequiredMixin(View):
     """Utility View class that requires superuser"""
 
     @method_decorator(user_passes_test(lambda user: user.is_superuser))
     def dispatch(self, *args, **kwargs):
-        return super(AdminRequiredView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
 
-class GenericModelView(LoginRequiredView):
+class GenericModelView(LoginRequiredMixin):
     """Generic View to interact with a model"""
 
     model = None

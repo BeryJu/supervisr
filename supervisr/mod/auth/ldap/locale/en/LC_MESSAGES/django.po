@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-15 19:28+0200\n"
+"POT-Creation-Date: 2018-08-16 18:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,42 +17,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .\forms\settings.py:17
-msgid "Enabled"
+#: forms/settings.py:16
+msgid "Authentication Backend"
 msgstr ""
 
-#: .\forms\settings.py:18
-msgid "Hostname"
+#: forms/settings.py:17
+msgid "Create Users"
 msgstr ""
 
-#: .\forms\settings.py:21
-msgid "Base DN"
+#: forms/settings.py:42
+msgid "Server TLS"
 msgstr ""
 
-#: .\forms\settings.py:24
-msgid "Create Base DN"
+#: templates/ldap/settings.html:11
+msgid "LDAP connection"
 msgstr ""
 
-#: .\forms\settings.py:27
-msgid "Bind User"
+#: templates/ldap/settings.html:17
+msgid "General settings"
 msgstr ""
 
-#: .\forms\settings.py:30
-msgid "Bind Password"
+#: templates/ldap/settings.html:19
+msgid "Connection settings"
 msgstr ""
 
-#: .\forms\settings.py:31
-msgid "Domain"
+#: templates/ldap/settings.html:21
+msgid "Authentication backend "
 msgstr ""
 
-#: .\templates\ldap\settings.html:15
-msgid "LDAP Connection Settings"
+#: templates/ldap/settings.html:23
+msgid "Create users settings"
 msgstr ""
 
-#: .\templates\ldap\settings.html:24
+#: templates/ldap/settings.html:28
 msgid "Update"
 msgstr ""
 
-#: .\views.py:42
-msgid "Settings successfully updated"
+#: views.py:36
+#, python-format
+msgid "Successfully updated %d settings."
 msgstr ""

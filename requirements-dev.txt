@@ -13,6 +13,6 @@ markdown
 mkdocs
 mkdocs-material
 tornado<5.0,>=4.1
-pyroma
+pyroma<2.4
 safety
 bandit

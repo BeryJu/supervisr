@@ -9,7 +9,7 @@ from django.views.generic import TemplateView
 
 from supervisr.core.forms.settings import SettingsForm
 from supervisr.core.models import Setting
-from supervisr.core.views.generic import AdminRequiredView, LoginRequiredView
+from supervisr.core.views.generic import AdminRequiredMixin, LoginRequiredMixin
 
 
 @login_required
@@ -45,7 +45,7 @@ def settings(request: HttpRequest, namespace: str) -> HttpResponse:
     })
 
 
-class ModuleDefaultView(TemplateView, AdminRequiredView):
+class ModuleDefaultView(TemplateView, AdminRequiredMixin):
     """Default view for modules without admin view"""
 
     template_name = '_admin/module_default.html'
@@ -56,7 +56,7 @@ class ModuleDefaultView(TemplateView, AdminRequiredView):
         return context
 
 
-class GenericSettingView(LoginRequiredView, AdminRequiredView):
+class GenericSettingView(LoginRequiredMixin, AdminRequiredMixin):
     """Generic Setting View"""
 
     form = None  # type: Type[SettingsForm]

@@ -10,7 +10,7 @@
 {% block content %}
 <div class="clr-wizard">
   <div class="modal static">
-    <div class="modal-dialog modal-lg" role="dialog">
+    <div class="modal-dialog modal-{{ size|default:'lg' }}" role="dialog">
       <div class="modal-outer-wrapper">
         <div class="modal-content-wrapper">
           <nav class="modal-nav clr-wizard-stepnav-wrapper">
@@ -21,7 +21,11 @@
                 <li class="clr-wizard-stepnav-item clr-nav-link nav-item {% if step < wizard.steps.current %} complete {% endif %} {% if step == wizard.steps.current %} active {% endif %}" role="presentation">
                   <button type="submit" value="{{ step }}" class="btn btn-link clr-wizard-stepnav-link" type="button" {% if step < wizard.steps.current %} formnovalidate {% endif %}>
                     {% with curr_step=step|add:1 %}
-                    {% blocktrans %}Step {{ curr_step }}{% endblocktrans %}
+                      {% if curr_step %}
+                        {% blocktrans %}Step {{ curr_step }}{% endblocktrans %}
+                      {% else %}
+                        {% trans step|capfirst %}
+                      {% endif %}
                     {% endwith %}
                   </button>
                 </li>
