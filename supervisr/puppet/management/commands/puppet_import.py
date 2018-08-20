@@ -18,8 +18,7 @@ class Command(BaseCommand):
         parser.add_argument('--module', type=str, action='append', required=True)
 
     def handle(self, *args, **options):
-        i = ForgeImporter()
-        for mod in options['module']:
-            i.delay(mod)
-        LOGGER.debug("Done!")
-        return "Done!"
+        importer = ForgeImporter()
+        for module in options.get('module'):
+            importer.import_module(module)
+        LOGGER.success("Done!")

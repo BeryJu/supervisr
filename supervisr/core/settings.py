@@ -399,9 +399,6 @@ if DEBUG is True:
     INSTALLED_APPS.append('debug_toolbar')
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
 
-if TEST is True:
-    # Run celery tasks locally in unit tests
-    CELERY_ALWAYS_EAGER = True
 
 # Load subapps's INSTALLED_APPS
 for _app in INSTALLED_APPS:

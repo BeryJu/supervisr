@@ -27,7 +27,9 @@ class TestProduct(TestCase):
         SIG_USER_POST_SIGN_UP.send(
             sender=None,
             user=self.user,
-            request=None)
+            request=None,
+            needs_confirmation=False,
+            )
         rel = UserAcquirableRelationship.objects.filter(
             model=self.product_a,
             user=self.user)

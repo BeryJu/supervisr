@@ -28,13 +28,17 @@ class Command(BaseCommand):
     def getall(self, **kwargs):
         """print all namespace keys with values"""
         for setting in Setting.objects.all().order_by('namespace', 'key'):
-            print("%-50s: %s" % ("%s/%s" % (setting.namespace, setting.key), setting.value))
+            self.stdout.write("%-50s: %s\n" % ("%s/%s" %
+                                               (setting.namespace, setting.key), setting.value))
+        self.stdout.flush()
 
     # pylint: disable=unused-argument
     def list(self, **kwargs):
         """List namespace keys"""
         for setting in Setting.objects.all().order_by('namespace', 'key'):
-            print("%-50s: %s" % ("%s/%s" % (setting.namespace, setting.key), setting.value))
+            self.stdout.write("%-50s: %s" % ("%s/%s" %
+                                             (setting.namespace, setting.key), setting.value))
+        self.stdout.flush()
 
     def get(self, **kwargs):
         """Show single setting"""
@@ -43,9 +47,11 @@ class Command(BaseCommand):
         namespace, key = kwargs.get('keypath').split('/')
         setting = Setting.objects.get(namespace=namespace, key=key)
         if kwargs.get('value_only'):
-            print(setting.value)
+            self.stdout.write(setting.value)
         else:
-            print("%-50s: %s" % ("%s/%s" % (setting.namespace, setting.key), setting.value))
+            self.stdout.write("%-50s: %s" % ("%s/%s" %
+                                             (setting.namespace, setting.key), setting.value))
+        self.stdout.flush()
 
     def set(self, **kwargs):
         """Set a single setting"""

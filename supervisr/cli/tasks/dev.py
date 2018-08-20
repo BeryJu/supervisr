@@ -20,7 +20,7 @@ def init(ctx, name):
 
 @task
 # pylint: disable=unused-argument
-def makemessages(ctx, locale=''):
+def makemessages(ctx, locale='en'):
     """Create .po files for every supervisr app"""
     setup()
     from django.core.management.commands.makemessages import Command

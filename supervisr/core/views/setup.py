@@ -2,6 +2,7 @@
 from logging import getLogger
 
 from django.apps import apps
+from django.conf import settings
 from django.contrib.auth import authenticate
 from django.core.management.sql import emit_post_migrate_signal
 from django.db import DEFAULT_DB_ALIAS, connections
@@ -93,7 +94,7 @@ class SetupWizard(AnonymousRequiredMixin, NamedWizard):
 
     def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """Check if this is actually a fresh install, otherwise skip setup"""
-        if is_database_synchronized():
+        if is_database_synchronized() and not settings.TEST:
             # If database has been migrated already, check if we're still fresh installed or not
             if not Setting.get_bool('setup:is_fresh_install'):
                 return redirect(reverse('common-index'))
@@ -121,7 +122,7 @@ class SetupWizard(AnonymousRequiredMixin, NamedWizard):
         Setting.set('setup:is_fresh_install', False)
         return redirect(reverse('common-index'))
 
-    def run_migrate(self, db_alias=DEFAULT_DB_ALIAS):
+    def run_migrate(self, db_alias=DEFAULT_DB_ALIAS) -> dict:
         """Apply Django Migrations"""
         # Get the database we're operating from
         connection = connections[db_alias]

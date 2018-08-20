@@ -109,7 +109,8 @@ def mail_handle_user_signed_up(sender, signal, user, request, needs_confirmation
 @receiver(SIG_USER_RESEND_CONFIRM)
 def mail_handle_user_resend_confirm(sender, signal, user, request, **kwargs):
     """Resend the user a confirmation email"""
-    return mail_handle_user_signed_up(sender, signal, user, request, **kwargs)
+    return mail_handle_user_signed_up(sender, signal, user,
+                                      request, needs_confirmation=True, **kwargs)
 
 
 @receiver(SIG_USER_PASS_RESET_INIT)
