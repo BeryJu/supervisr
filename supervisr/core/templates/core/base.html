@@ -20,7 +20,7 @@
     <div class="branding">
       <a class="logo-and-title" href="{% url 'common-index' %}">
         <clr-icon shape="supervisr" class="clr-icon clarity-logo is-info"></clr-icon>
-        <span class="title">{% supervisr_setting 'branding' %}</span>
+        <span class="title">{% supervisr_setting 'branding' default='supervisr' %}</span>
       </a>
     </div>
     <div class="divider"></div>

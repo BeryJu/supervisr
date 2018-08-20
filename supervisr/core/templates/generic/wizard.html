@@ -18,13 +18,13 @@
             <div class="clr-wizard-stepnav">
               <ol class="clr-wizard-stepnav-list" role="tablist">
                 {% for step in wizard.steps.all %}
-                <li class="clr-wizard-stepnav-item clr-nav-link nav-item {% if step < wizard.steps.current %} complete {% endif %} {% if step == wizard.steps.current %} active {% endif %}" role="presentation">
+                <li class="clr-wizard-stepnav-item clr-nav-link nav-item {% if forloop.counter0 < wizard.steps.step0 %} complete {% endif %} {% if forloop.counter0 == wizard.steps.step0 %} active {% endif %}" role="presentation">
                   <button type="submit" value="{{ step }}" class="btn btn-link clr-wizard-stepnav-link" type="button" {% if step < wizard.steps.current %} formnovalidate {% endif %}>
                     {% with curr_step=step|add:1 %}
                       {% if curr_step %}
                         {% blocktrans %}Step {{ curr_step }}{% endblocktrans %}
                       {% else %}
-                        {% trans step|capfirst %}
+                        {% trans step|unslug|title %}
                       {% endif %}
                     {% endwith %}
                   </button>

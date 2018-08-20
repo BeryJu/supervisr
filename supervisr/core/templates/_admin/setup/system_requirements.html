@@ -1,0 +1,46 @@
+{% extends 'generic/wizard.html' %}
+
+{% load i18n %}
+
+{% block form %}
+<p>
+  {% blocktrans %}
+  supervisr will now check your Server to confirm all requirements are fulfilled.
+  {% endblocktrans %}
+</p>
+
+<p>
+  {% blocktrans %}
+  Items marked with a check mark match our recommendations. Items marked with an exclamation mark in a triangle don't match our recommendations but still fulfill our minimum requirements. Items with an exclamation mark in a circle don't fulfill our requirements and will prevent the wizard from continuing.
+  {% endblocktrans %}
+</p>
+<div class="row">
+  {% for name, field in form.fields.items %}
+    <div class="col-md-5">
+      <div class="card">
+        <div class="card-block">
+          <div class="card-title">
+            {% trans field.help_text %}
+          </div>
+          <div class="card-block">
+            <div class="card-media-block">
+              <clr-icon size="64" class="center is-{{ field.clean }}" shape="{{ field.clean }}-standard"></clr-icon>
+              <div class="card-media-description">
+                <span class="card-media-text">
+                  {% blocktrans with minimum=field.minimum %}Minimum: {{ minimum }}{% endblocktrans %}
+                </span>
+                <span class="card-media-text">
+                  {% blocktrans with recommended=field.recommended %}Recommended: {{ recommended }}{% endblocktrans %}
+                </span>
+                <span class="card-media-text">
+                  {% blocktrans with current=field.current %}Currently: {{ current }}{% endblocktrans %}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

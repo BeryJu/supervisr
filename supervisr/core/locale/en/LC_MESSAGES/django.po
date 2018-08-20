@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-16 18:05+0000\n"
+"POT-Creation-Date: 2018-08-20 10:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,12 +57,12 @@ msgstr ""
 msgid "You logged out"
 msgstr ""
 
-#: forms/accounts.py:22 forms/accounts.py:108
+#: forms/accounts.py:22 forms/accounts.py:107
 msgid "Mail"
 msgstr ""
 
-#: forms/accounts.py:23 forms/accounts.py:42 forms/accounts.py:88
-#: forms/accounts.py:118 forms/accounts.py:130
+#: forms/accounts.py:23 forms/accounts.py:42 forms/accounts.py:87
+#: forms/accounts.py:117 forms/accounts.py:129
 msgid "Password"
 msgstr ""
 
@@ -80,31 +80,27 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
-#: forms/accounts.py:41 forms/accounts.py:129 forms/accounts.py:136
+#: forms/accounts.py:41 forms/accounts.py:128 forms/accounts.py:135
 msgid "E-Mail"
 msgstr ""
 
-#: forms/accounts.py:43 forms/accounts.py:89 forms/accounts.py:119
+#: forms/accounts.py:43 forms/accounts.py:88 forms/accounts.py:118
 msgid "Repeat Password"
 msgstr ""
 
-#: forms/accounts.py:48
-msgid "I accept the Terms of service"
-msgstr ""
-
-#: forms/accounts.py:60
+#: forms/accounts.py:59
 msgid "Username already exists"
 msgstr ""
 
-#: forms/accounts.py:69 forms/accounts.py:76
+#: forms/accounts.py:68 forms/accounts.py:75
 msgid "Email already exists"
 msgstr ""
 
-#: forms/accounts.py:87
+#: forms/accounts.py:86
 msgid "Current Password"
 msgstr ""
 
-#: forms/accounts.py:97
+#: forms/accounts.py:96
 msgid "Invalid Current Password"
 msgstr ""
 
@@ -114,10 +110,6 @@ msgstr ""
 
 #: forms/domains.py:25
 msgid "Domain name is not valid"
-msgstr ""
-
-#: forms/initial_setup.py:8
-msgid "Welcome"
 msgstr ""
 
 #: forms/products.py:22
@@ -158,6 +150,54 @@ msgstr ""
 
 #: forms/providers.py:82
 msgid "Empty"
+msgstr ""
+
+#: forms/setup.py:18
+msgid "Welcome"
+msgstr ""
+
+#: forms/setup.py:25
+msgid "System requirements"
+msgstr ""
+
+#: forms/setup.py:29
+msgid "CPU Requirements"
+msgstr ""
+
+#: forms/setup.py:32
+msgid "RAM Requirements"
+msgstr ""
+
+#: forms/setup.py:36
+msgid "Python Version Requirements"
+msgstr ""
+
+#: forms/setup.py:40
+msgid "MySQL Version Requirement"
+msgstr ""
+
+#: forms/setup.py:46 forms/setup.py:50 templates/_admin/setup/welcome.html:13
+msgid "Redis Connectivity"
+msgstr ""
+
+#: forms/setup.py:56
+msgid "Updates"
+msgstr ""
+
+#: forms/setup.py:62
+msgid "Pre-install Summary"
+msgstr ""
+
+#: forms/setup.py:68
+msgid "Post-install Summary"
+msgstr ""
+
+#: forms/setup.py:74
+msgid "User Setup"
+msgstr ""
+
+#: forms/setup.py:80
+msgid "Installation completed!"
 msgstr ""
 
 #: forms/users.py:16 forms/users.py:38 templates/_admin/users.html:15
@@ -201,12 +241,12 @@ msgstr ""
 msgid "Password has to contain %(desc)s"
 msgstr ""
 
-#: mailer.py:98
+#: mailer.py:100
 #, python-format
 msgid "Confirm your account on %(branding)s"
 msgstr ""
 
-#: mailer.py:132
+#: mailer.py:134
 #, python-format
 msgid "Step 2/3 - Reset your Password on %(branding)s"
 msgstr ""
@@ -398,14 +438,6 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
-#: templates/_admin/initial_setup/welcome.html:6
-msgid ""
-"\n"
-"<p>\n"
-"  qwer\n"
-"</p>\n"
-msgstr ""
-
 #: templates/_admin/module_default.html:14
 msgid "This Module does not have a settings Page."
 msgstr ""
@@ -416,6 +448,122 @@ msgstr ""
 
 #: templates/_admin/settings.html:46
 msgid "Namespaces"
+msgstr ""
+
+#: templates/_admin/setup/admin_user.html:7
+msgid ""
+"\n"
+"    Here you can create your first user. This user will have administrative "
+"rights, so be sure to choose a secure password.\n"
+"  "
+msgstr ""
+
+#: templates/_admin/setup/post_install.html:7
+msgid ""
+"\n"
+"    We've successfully installed all database schemas. In the next step we "
+"will create an admin user.\n"
+"  "
+msgstr ""
+
+#: templates/_admin/setup/post_install.html:14
+msgid "Migration"
+msgstr ""
+
+#: templates/_admin/setup/post_install.html:15 templates/common/index.html:73
+#: templates/core/bottom_dock.html:29
+msgid "Status"
+msgstr ""
+
+#: templates/_admin/setup/post_setup.html:6
+msgid "Success!"
+msgstr ""
+
+#: templates/_admin/setup/post_setup.html:8
+msgid ""
+"\n"
+"    Congratulations! You've successfully installed supervisr.\n"
+"  "
+msgstr ""
+
+#: templates/_admin/setup/pre_install.html:7
+msgid ""
+"\n"
+"    We've collected all needed information to start the Installation. Click "
+"the 'Next' button to start the installation.\n"
+"  "
+msgstr ""
+
+#: templates/_admin/setup/redis_connectivity.html:7
+msgid ""
+"\n"
+"    supervisr will now check your Server to confirm all requirements are "
+"fulfilled.\n"
+"  "
+msgstr ""
+
+#: templates/_admin/setup/system_requirements.html:7
+msgid ""
+"\n"
+"  supervisr will now check your Server to confirm all requirements are "
+"fulfilled.\n"
+"  "
+msgstr ""
+
+#: templates/_admin/setup/system_requirements.html:13
+msgid ""
+"\n"
+"  Items marked with a check mark match our recommendations. Items marked "
+"with an exclamation mark in a triangle don't match our recommendations but "
+"still fulfill our minimum requirements. Items with an exclamation mark in a "
+"circle don't fulfill our requirements and will prevent the wizard from "
+"continuing.\n"
+"  "
+msgstr ""
+
+#: templates/_admin/setup/system_requirements.html:30
+#, python-format
+msgid "Minimum: %(minimum)s"
+msgstr ""
+
+#: templates/_admin/setup/system_requirements.html:33
+#, python-format
+msgid "Recommended: %(recommended)s"
+msgstr ""
+
+#: templates/_admin/setup/system_requirements.html:36
+#, python-format
+msgid "Currently: %(current)s"
+msgstr ""
+
+#: templates/_admin/setup/updates.html:6
+msgid ""
+"\n"
+"hmmm\n"
+msgstr ""
+
+#: templates/_admin/setup/welcome.html:9
+msgid ""
+"Welcome to your new supervisr install. This wizard will guide you through "
+"the initial setup."
+msgstr ""
+
+#: templates/_admin/setup/welcome.html:10
+msgid "The following prerequisites are going to be checked:"
+msgstr ""
+
+#: templates/_admin/setup/welcome.html:12
+msgid "General System Requirements"
+msgstr ""
+
+#: templates/_admin/setup/welcome.html:14
+msgid "Available Updates"
+msgstr ""
+
+#: templates/_admin/setup/welcome.html:16
+msgid ""
+"After all checks succeed we're going to prepare the database and create an "
+"Admin User."
 msgstr ""
 
 #: templates/_admin/users.html:18
@@ -562,10 +710,6 @@ msgstr ""
 msgid "Instance"
 msgstr ""
 
-#: templates/common/index.html:73 templates/core/bottom_dock.html:29
-msgid "Status"
-msgstr ""
-
 #: templates/common/index.html:83 templates/provider/instance-index.html:46
 msgid "OK"
 msgstr ""
@@ -575,7 +719,7 @@ msgid "Error"
 msgstr ""
 
 #: templates/common/index.html:97
-msgid "No Provders"
+msgid "No Provders yet!"
 msgstr ""
 
 #: templates/common/index.html:104
@@ -620,7 +764,7 @@ msgstr ""
 msgid "Profile"
 msgstr ""
 
-#: templates/core/base.html:73 views/accounts.py:274
+#: templates/core/base.html:73 views/accounts.py:282
 msgid "Change Password"
 msgstr ""
 
@@ -632,7 +776,7 @@ msgstr ""
 msgid "Logout"
 msgstr ""
 
-#: templates/core/base.html:82 views/accounts.py:65 views/accounts.py:491
+#: templates/core/base.html:82 views/accounts.py:65 views/accounts.py:499
 msgid "Login"
 msgstr ""
 
@@ -728,7 +872,7 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: templates/product/admin_index.html:26 views/accounts.py:535
+#: templates/product/admin_index.html:26 views/accounts.py:543
 msgid "Add"
 msgstr ""
 
@@ -821,11 +965,11 @@ msgstr ""
 msgid "%(title)s - %(app)s %(branding)s"
 msgstr ""
 
-#: urls.py:26
+#: urls.py:25
 msgid "Supervisr Admin"
 msgstr ""
 
-#: urls.py:27
+#: urls.py:26
 msgid "supervisr"
 msgstr ""
 
@@ -833,115 +977,115 @@ msgstr ""
 msgid "SSO - Login"
 msgstr ""
 
-#: views/accounts.py:126
+#: views/accounts.py:127
 msgid "Successfully logged in!"
 msgstr ""
 
-#: views/accounts.py:162
+#: views/accounts.py:164
 msgid "Invalid Login"
 msgstr ""
 
-#: views/accounts.py:183
+#: views/accounts.py:185
 msgid "SSO - Signup"
 msgstr ""
 
-#: views/accounts.py:184
+#: views/accounts.py:186
 msgid "Signup"
 msgstr ""
 
-#: views/accounts.py:244
+#: views/accounts.py:252
 msgid "Successfully signed up!"
 msgstr ""
 
-#: views/accounts.py:249
+#: views/accounts.py:257
 msgid "Failed to sign up."
 msgstr ""
 
-#: views/accounts.py:273
+#: views/accounts.py:281
 msgid "SSO - Change Password"
 msgstr ""
 
-#: views/accounts.py:291
+#: views/accounts.py:299
 msgid "Successfully changed password!"
 msgstr ""
 
-#: views/accounts.py:293
+#: views/accounts.py:301
 msgid "Failed to change password"
 msgstr ""
 
-#: views/accounts.py:332
+#: views/accounts.py:340
 msgid "Successfully logged out!"
 msgstr ""
 
-#: views/accounts.py:348
+#: views/accounts.py:356
 msgid "Account already confirmed!"
 msgstr ""
 
-#: views/accounts.py:351
+#: views/accounts.py:359
 msgid "Confirmation expired"
 msgstr ""
 
-#: views/accounts.py:364
+#: views/accounts.py:372
 msgid "Account successfully activated!"
 msgstr ""
 
-#: views/accounts.py:380
+#: views/accounts.py:388
 msgid "SSO - Reset your password - Step 1/3"
 msgstr ""
 
-#: views/accounts.py:381
+#: views/accounts.py:389
 msgid "Send confirmation Email"
 msgstr ""
 
-#: views/accounts.py:396
+#: views/accounts.py:404
 msgid "Reset link sent successfully if user exists."
 msgstr ""
 
-#: views/accounts.py:415
+#: views/accounts.py:423
 msgid "SSO - Reset your Password - Step 3/3"
 msgstr ""
 
-#: views/accounts.py:416
+#: views/accounts.py:424
 msgid "Reset your Password"
 msgstr ""
 
-#: views/accounts.py:429
+#: views/accounts.py:437
 msgid "Link already used!"
 msgstr ""
 
-#: views/accounts.py:432
+#: views/accounts.py:440
 msgid "Link expired!"
 msgstr ""
 
-#: views/accounts.py:438
+#: views/accounts.py:446
 msgid "Account successfully reset!"
 msgstr ""
 
-#: views/accounts.py:444
+#: views/accounts.py:452
 msgid "Failed to reset Password. Please try again later."
 msgstr ""
 
-#: views/accounts.py:477
+#: views/accounts.py:485
 msgid "Successfully resent confirmation email"
 msgstr ""
 
-#: views/accounts.py:490
+#: views/accounts.py:498
 msgid "SSO - Re-Authenticate"
 msgstr ""
 
-#: views/accounts.py:503
+#: views/accounts.py:511
 msgid "Successfully Re-Authenticated"
 msgstr ""
 
-#: views/accounts.py:510
+#: views/accounts.py:518
 msgid "Failed to Re-Authenticate"
 msgstr ""
 
-#: views/accounts.py:534
+#: views/accounts.py:542
 msgid "SSO - Add missing E-Mail"
 msgstr ""
 
-#: views/accounts.py:571
+#: views/accounts.py:579
 msgid "Successfully sent confirmation E-Mail"
 msgstr ""
 
@@ -1028,10 +1172,6 @@ msgstr ""
 msgid "Successfully deleted %(verbose_name)s"
 msgstr ""
 
-#: views/initial_setup.py:23
-msgid "Welcome to supervisr!"
-msgstr ""
-
 #: views/products.py:66
 msgid "New Product"
 msgstr ""
@@ -1063,6 +1203,10 @@ msgstr ""
 
 #: views/settings.py:102
 msgid "Settings successfully updated."
+msgstr ""
+
+#: views/setup.py:63
+msgid "Welcome to supervisr!"
 msgstr ""
 
 #: views/users.py:44

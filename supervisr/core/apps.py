@@ -207,6 +207,7 @@ class SupervisrCoreConfig(SupervisrAppConfig):
         settings.add(key='recaptcha:private', value='')
         settings.add(key='recaptcha:public', value='')
         settings.add(key='install_id', value=uuid.uuid4())
+        settings.add(key='setup:is_fresh_install', value=True)
         settings.add(key='password:filter', value=r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)'
                                                   r'(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}')
         settings.add(key='password:filter:description', value='Minimum 8 characters at least 1 '

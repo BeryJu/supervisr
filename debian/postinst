@@ -27,8 +27,6 @@ chown -R supervisr: /var/log/supervisr/
 chown -R supervisr: /usr/share/supervisr/
 chown -R supervisr: /etc/supervisr/
 chmod 440 /etc/supervisr/secret_key
-echo " * Running Database Migration"
-supervisr-ctl supervisr.migrate
 echo " * Starting Services..."
 for service in "${services[@]}"
 do

@@ -94,12 +94,13 @@ class LoginView(View):
                 password=form.cleaned_data.get('password'),
                 request=request)
             if user:
-                return self.handle_login(request, user, form.cleaned_data)
-            return self.handle_disabled_login(request, email=form.cleaned_data.get('email'))
+                return LoginView.handle_login(request, user, form.cleaned_data)
+            return LoginView.handle_disabled_login(request, email=form.cleaned_data.get('email'))
         LOGGER.debug("LoginForm invalid")
         return self.render(request, form=form)
 
-    def handle_login(self, request: HttpRequest, user: User, cleaned_data: Dict) -> HttpResponse:
+    @staticmethod
+    def handle_login(request: HttpRequest, user: User, cleaned_data: Dict) -> HttpResponse:
         """Handle actual login
 
         Actually logs user in, sets session expiry and redirects to ?next parameter
@@ -131,7 +132,8 @@ class LoginView(View):
         # Otherwise just index
         return redirect(reverse('common-index'))
 
-    def handle_disabled_login(self, request: HttpRequest, email: str) -> HttpResponse:
+    @staticmethod
+    def handle_disabled_login(request: HttpRequest, email: str) -> HttpResponse:
         """Handle login for disabled users
 
         This informs users that their email is not confirmed yet
@@ -184,7 +186,9 @@ class SignupView(View):
             'primary_action': _("Signup")
         })
 
-    def create_user(self, data: Dict, request: HttpRequest = None) -> User:
+    @staticmethod
+    def create_user(data: Dict, request: HttpRequest = None,
+                    needs_confirmation: bool = True) -> User:
         """Create user from data
 
         Args:
@@ -205,7 +209,8 @@ class SignupView(View):
             crypt6_password=sha512_crypt.hash(data.get('password')),
             unix_username=make_username(data.get('username'))
         )
-        new_user.is_active = False
+        if needs_confirmation:
+            new_user.is_active = False
         new_user.set_password(data.get('password'))
         new_user.save()
         # Send signal for other auth sources
@@ -214,14 +219,17 @@ class SignupView(View):
                 sender=None,
                 user=new_user,
                 request=request,
-                password=data.get('password'))
-            # Create Account Confirmation UUID
-            AccountConfirmation.objects.create(user=new_user)
+                password=data.get('password'),
+                needs_confirmation=needs_confirmation)
+            if needs_confirmation:
+                # Create Account Confirmation UUID
+                AccountConfirmation.objects.create(user=new_user)
             # Send event for user creation
             SIG_USER_POST_SIGN_UP.send(
                 sender=None,
                 user=new_user,
-                request=request)
+                request=request,
+                needs_confirmation=needs_confirmation)
         except SignalException as exception:
             LOGGER.warning("Failed to sign up user %s", exception)
             new_user.delete()
@@ -240,7 +248,7 @@ class SignupView(View):
         form = SignupForm(request.POST)
         if form.is_valid():
             try:
-                self.create_user(form.cleaned_data, request)
+                SignupView.create_user(form.cleaned_data, request)
                 messages.success(request, _("Successfully signed up!"))
                 LOGGER.debug("Successfully signed up %s",
                              form.cleaned_data.get('email'))

@@ -157,7 +157,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-    'supervisr.core.middleware.email_missing_middleware.check_email',
+    'supervisr.core.middleware.redirect_middleware.redirect_middleware',
     'supervisr.core.middleware.impersonate_middleware.impersonate',
     'supervisr.core.middleware.permanent_message_middleware.permanent_message',
     'htmlmin.middleware.HtmlMinifyMiddleware',

@@ -9,12 +9,15 @@ from importlib.util import module_from_spec, spec_from_file_location
 from urllib.parse import urlparse
 from uuid import uuid4
 
+import redis
 from django.apps import apps
+from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
 from django.core.management.base import OutputWrapper
 from django.db import DEFAULT_DB_ALIAS
 from django.db.migrations.executor import MigrationExecutor
+from django.db.utils import ConnectionDoesNotExist, OperationalError
 from django.http import HttpRequest
 from django.shortcuts import render
 from django.template import Context, Template, loader
@@ -174,7 +177,7 @@ def b64decode(*args):
     return base64.b64decode(''.join(args)).decode()
 
 
-def check_db_connection(connection_name: str = 'default') -> bool:
+def check_db_connection(connection_name: str = DEFAULT_DB_ALIAS) -> bool:
     """Check if a database connection can be made
 
     Args:
@@ -184,7 +187,6 @@ def check_db_connection(connection_name: str = 'default') -> bool:
         bool: True if connection could be made, otherwise False.
     """
     from django.db import connections
-    from django.db.utils import OperationalError, ConnectionDoesNotExist
     try:
         db_conn = connections[connection_name]
         db_conn.cursor()
@@ -192,6 +194,30 @@ def check_db_connection(connection_name: str = 'default') -> bool:
         return False
     else:
         return True
+
+
+def check_redis_connection() -> bool:
+    """Check if redis server can be reached"""
+    client = redis.Redis.from_url(settings.CELERY_BROKER_URL)
+    try:
+        return client.ping()
+    except (redis.exceptions.ConnectionError,
+            redis.exceptions.BusyLoadingError):
+        return False
+
+
+def get_db_server_version(connection_name: str = DEFAULT_DB_ALIAS, default: str = '') -> str:
+    """Return the Version of the Database server"""
+    from django.db import connections
+    db_conn = connections[connection_name]
+    cursor = db_conn.cursor()
+    try:
+        cursor.execute('SELECT VERSION();')
+        return cursor.fetchone()[0]
+    except OperationalError:
+        return default
+    finally:
+        cursor.close()
 
 
 def messages_add_once(request, level, text, **kwargs):

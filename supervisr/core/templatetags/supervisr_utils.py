@@ -70,7 +70,7 @@ def pick(cont, arg, fallback=''):
 @register.simple_tag(takes_context=True)
 def title(context, title=None):
     """Return either just branding or title - branding"""
-    branding = Setting.get('branding')
+    branding = Setting.get('branding', default='supervisr')
     if title is None or title == '':
         return branding
     # Include App Title in title
@@ -145,3 +145,9 @@ def related_models(context, model_path):
         return []
 
     return model.objects.filter(users__in=[user])
+
+
+@register.filter('unslug')
+def unslug(_input):
+    """Convert slugs back into normal strings"""
+    return _input.replace('-', ' ').replace('_', ' ')

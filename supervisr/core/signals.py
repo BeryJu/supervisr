@@ -27,9 +27,10 @@ class RobustSignal(Signal):
 SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED = RobustSignal(providing_args=['relationship'])
 SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED = RobustSignal(providing_args=['relationship'])
 
-SIG_USER_SIGN_UP = RobustSignal(providing_args=['user', 'request', 'password'])
+SIG_USER_SIGN_UP = RobustSignal(
+    providing_args=['user', 'request', 'password', 'needs_confirmation'])
 SIG_USER_CHANGE_PASS = RobustSignal(providing_args=['user', 'request', 'password'])
-SIG_USER_POST_SIGN_UP = RobustSignal(providing_args=['user', 'request'])
+SIG_USER_POST_SIGN_UP = RobustSignal(providing_args=['user', 'request', 'needs_confirmation'])
 SIG_USER_POST_CHANGE_PASS = RobustSignal(providing_args=['user', 'request', 'was_reset'])
 SIG_USER_PASS_RESET_INIT = RobustSignal(providing_args=['user'])
 SIG_USER_PASS_RESET_FIN = RobustSignal(providing_args=['user'])

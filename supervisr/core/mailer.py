@@ -78,8 +78,10 @@ def send_message(
 
 @receiver(SIG_USER_POST_SIGN_UP)
 # pylint: disable=unused-argument
-def mail_handle_user_signed_up(sender, signal, user, request, **kwargs):
+def mail_handle_user_signed_up(sender, signal, user, request, needs_confirmation, **kwargs):
     """Send the user a confirmation email"""
+    if not needs_confirmation:
+        return False
     account_confirmations = AccountConfirmation.objects.filter(
         user=user,
         kind=AccountConfirmation.KIND_SIGN_UP)

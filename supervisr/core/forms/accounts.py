@@ -45,7 +45,6 @@ class SignupForm(forms.Form):
         required=(not settings.DEBUG and not settings.TEST),
         private_key=Setting.get('recaptcha:private'),
         public_key=Setting.get('recaptcha:public'))
-    tos_accept = forms.BooleanField(required=True, label=_('I accept the Terms of service'))
 
     def __init__(self, *args, **kwargs):
         super(SignupForm, self).__init__(*args, **kwargs)
