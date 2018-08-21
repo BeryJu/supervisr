@@ -12,7 +12,7 @@ pycodestyle<2.4.0,>=2.0.0
 markdown
 mkdocs
 mkdocs-material
-tornado<5.0,>=4.1
+tornado>=5.0
 pyroma<2.4
 safety
-bandit
+bandit<1.5.0
