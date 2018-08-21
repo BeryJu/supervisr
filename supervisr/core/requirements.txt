@@ -2,6 +2,7 @@ django>=2.0
 invoke
 cherrypy<=11.0.0
 pymysql
+packaging
 django-formtools
 django-recaptcha
 docutils
@@ -19,3 +20,4 @@ pip>=10
 pycryptodome
 colorlog
 django-celery-results
+markdown

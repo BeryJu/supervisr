@@ -2,6 +2,7 @@ django>=2.0
 invoke
 cherrypy<=11.0.0
 pymysql
+packaging
 django-formtools
 django-recaptcha
 docutils
@@ -19,6 +20,7 @@ pip>=10
 pycryptodome
 colorlog
 django-celery-results
+markdown
 dnspython
 requests
 # In here you can specify pip modules that should be installed

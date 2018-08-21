@@ -1,6 +1,5 @@
 """supervisr dev tasks"""
 import inspect
-import logging
 import os
 import os.path
 
@@ -8,7 +7,9 @@ from django import setup
 from django.core.management import execute_from_command_line
 from invoke import task
 
-LOGGER = logging.getLogger(__name__)
+from supervisr.core.logger import SupervisrLogger
+
+LOGGER = SupervisrLogger(__name__)
 
 
 @task

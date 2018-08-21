@@ -140,7 +140,7 @@ for app in get_apps():
     urlpatterns += get_patterns(r"^app/%s/" % mount_path, "%s.urls" % app.name, app.label)
     urlpatterns += get_patterns(r"^api/app/%s/" % mount_path, "%s.api.urls" % app.name)
 
-if django_settings.DEBUG or django_settings.TEST:
+if django_settings.DEBUG:
     import debug_toolbar
     urlpatterns += [
         url(r'^__debug__/', include(debug_toolbar.urls)),
