@@ -15,7 +15,6 @@ except ImportError:
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
 os.environ.setdefault("SUPERVISR_LOCAL_SETTINGS", "supervisr.local_settings")
 
-# pylint: disable=invalid-name
 namespace = Collection()
 for submod in dir(tasks):
     if not submod.startswith('_'):

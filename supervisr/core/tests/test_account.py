@@ -7,7 +7,7 @@ from supervisr.core.decorators import reauth_required
 from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
                                            SignupForm)
 from supervisr.core.models import AccountConfirmation, User
-from supervisr.core.signals import SIG_USER_RESEND_CONFIRM
+from supervisr.core.signals import on_user_confirm_resend
 from supervisr.core.tests.utils import TestCase, test_request
 from supervisr.core.views import accounts
 
@@ -172,7 +172,7 @@ class TestAccount(TestCase):
         # Create Account Confirmation UUID
         new_ac = AccountConfirmation.objects.create(user=user)
         self.assertFalse(new_ac.is_expired)
-        SIG_USER_RESEND_CONFIRM.send(
+        on_user_confirm_resend.send(
             sender=None,
             user=user,
             request=None)

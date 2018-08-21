@@ -3,7 +3,7 @@
 from django.core.cache import cache
 
 from supervisr.core.api.base import API
-from supervisr.core.signals import SIG_GET_MOD_HEALTH
+from supervisr.core.signals import get_module_health
 from supervisr.core.utils import check_db_connection
 
 
@@ -33,7 +33,7 @@ class SystemAPI(API):
             'database': check_db_connection(),
             'cache': self._cache_status(),
         }
-        results = SIG_GET_MOD_HEALTH.send(sender=self.health)
+        results = get_module_health.send(sender=self.health)
         for handler, mod_info in results:
             # Get the handler's root module
             data[handler.__module__] = mod_info

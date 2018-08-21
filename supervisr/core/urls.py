@@ -18,7 +18,6 @@ from supervisr.core.views import (accounts, admin, common, domains, products,
 
 LOGGER = logging.getLogger(__name__)
 
-# pylint: disable=invalid-name
 handler404 = common.Uncaught404View.as_view()
 handler500 = common.Uncaught500View.as_view()
 

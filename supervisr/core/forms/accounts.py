@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.forms.utils import check_password
 from supervisr.core.models import Setting, User
-from supervisr.core.signals import SIG_CHECK_USER_EXISTS
+from supervisr.core.signals import on_check_user_exists
 
 LOGGER = logging.getLogger(__name__)
 
@@ -66,7 +66,7 @@ class SignupForm(forms.Form):
         if User.objects.filter(email=email).exists():
             LOGGER.debug("email %s exists in django", email)
             raise ValidationError(_("Email already exists"))
-        results = SIG_CHECK_USER_EXISTS.send(
+        results = on_check_user_exists.send(
             sender=SignupForm,
             email=email)
         for handler, result in results:

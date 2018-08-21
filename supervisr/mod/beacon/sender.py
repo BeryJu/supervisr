@@ -12,7 +12,7 @@ from django.forms.models import model_to_dict
 from django.urls import reverse
 
 from supervisr.core.models import Domain, Setting, User
-from supervisr.core.signals import SIG_SETTING_UPDATE
+from supervisr.core.signals import on_setting_update
 from supervisr.mod.beacon.models import Pulse, PulseModule
 
 LOGGER = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ class Sender(object):
         self._enabled = Setting.get_bool('enabled')
         self._endpoint = Setting.get('endpoint')
         self._install_id = Setting.get('install_id', namespace='supervisr.core')
-        SIG_SETTING_UPDATE.connect(self.on_setting_update)
+        on_setting_update.connect(self.on_setting_update)
         cryptogen = SystemRandom()
         self._smear_amount = cryptogen.uniform(0.5, 1.5)  # Smear between 0.5 and 1.5
         self._pulse = Pulse(

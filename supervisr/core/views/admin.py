@@ -14,7 +14,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic.base import TemplateView
 
 from supervisr.core.models import Event, Setting, Task, User, get_system_user
-from supervisr.core.signals import SIG_GET_MOD_INFO, SIG_SETTING_UPDATE
+from supervisr.core.signals import get_module_info, on_setting_update
 from supervisr.core.tasks import debug_progress_task
 from supervisr.core.utils import get_reverse_dns
 from supervisr.core.views.generic import AdminRequiredMixin, GenericIndexView
@@ -74,7 +74,7 @@ class InfoView(TemplateView, AdminRequiredMixin):
                 _('Authentication Backends'): django_settings.AUTHENTICATION_BACKENDS,
             }
         }
-        results = SIG_GET_MOD_INFO.send(sender=None)
+        results = get_module_info.send(sender=None)
         for handler, mod_info in results:
             # Get the handler's root module
             info_data[handler.__module__] = mod_info
@@ -106,7 +106,7 @@ class DebugView(TemplateView, AdminRequiredMixin):
             messages.success(request, _('Successfully cleared Cache'))
         elif 'update_settings' in request.POST:
             setting = Setting.get('domain')
-            SIG_SETTING_UPDATE.send(sender=setting)
+            on_setting_update.send(sender=setting)
             messages.success(request, _('Successfully updated settings.'))
         elif 'start_task' in request.POST:
             seconds = int(request.POST.get('start_task_sec'))

@@ -13,9 +13,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.celery import CELERY_APP
 from supervisr.core.models import AccountConfirmation, Setting, User
-from supervisr.core.signals import (SIG_USER_PASS_RESET_INIT,
-                                    SIG_USER_POST_SIGN_UP,
-                                    SIG_USER_RESEND_CONFIRM)
+from supervisr.core.signals import (on_user_confirm_resend,
+                                    on_user_password_reset_init,
+                                    on_user_sign_up_post)
 from supervisr.core.tasks import SupervisrTask
 
 LOGGER = logging.getLogger(__name__)
@@ -76,7 +76,7 @@ def send_message(
             raise
 
 
-@receiver(SIG_USER_POST_SIGN_UP)
+@receiver(on_user_sign_up_post)
 # pylint: disable=unused-argument
 def mail_handle_user_signed_up(sender, signal, user, request, needs_confirmation, **kwargs):
     """Send the user a confirmation email"""
@@ -106,14 +106,14 @@ def mail_handle_user_signed_up(sender, signal, user, request, needs_confirmation
     )
 
 
-@receiver(SIG_USER_RESEND_CONFIRM)
+@receiver(on_user_confirm_resend)
 def mail_handle_user_resend_confirm(sender, signal, user, request, **kwargs):
     """Resend the user a confirmation email"""
     return mail_handle_user_signed_up(sender, signal, user,
                                       request, needs_confirmation=True, **kwargs)
 
 
-@receiver(SIG_USER_PASS_RESET_INIT)
+@receiver(on_user_password_reset_init)
 # pylint: disable=unused-argument
 def mail_handle_pass_reset_init(sender, signal, user, **kwargs):
     """Send Email when password is to be reset"""

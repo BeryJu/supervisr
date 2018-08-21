@@ -34,10 +34,10 @@ from supervisr.core.decorators import database_catchall
 from supervisr.core.decorators import time as time_method
 from supervisr.core.progress import Progress
 from supervisr.core.providers.base import BaseProvider
-from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_SETTING_UPDATE,
-                                    SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED,
-                                    SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED,
-                                    SIG_USER_POST_SIGN_UP)
+from supervisr.core.signals import (on_domain_created, on_setting_update,
+                                    on_user_acquirable_relationship_created,
+                                    on_user_acquirable_relationship_deleted,
+                                    on_user_sign_up_post)
 from supervisr.core.utils import get_remote_ip, get_reverse_dns
 
 options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('sv_search_url', 'sv_search_fields',)
@@ -327,7 +327,7 @@ class Setting(CreatedUpdatedModel):
 
     def save(self, *args, **kwargs):
         res = super(Setting, self).save(*args, **kwargs)
-        SIG_SETTING_UPDATE.send(sender=self, setting=self)
+        on_setting_update.send(sender=self, setting=self)
         return res
 
     class Meta:
@@ -392,7 +392,7 @@ def relationship_pre_delete(sender, instance, **kwargs):
     """Send signal when relationship is deleted"""
     if sender == UserAcquirableRelationship:
         # Send signal to we are going to be deleted
-        SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED.send(
+        on_user_acquirable_relationship_deleted.send(
             sender=UserAcquirableRelationship,
             relationship=instance)
 
@@ -452,7 +452,7 @@ class UserAcquirableRelationship(models.Model):
         super(UserAcquirableRelationship, self).save(*args, **kwargs)
         if first_save:
             # Trigger event that we were saved
-            SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED.send(
+            on_user_acquirable_relationship_created.send(
                 sender=UserAcquirableRelationship,
                 relationship=self)
 
@@ -749,7 +749,7 @@ class ProviderInstance(CreatedUpdatedModel, UserAcquirable):
         return self.name
 
 
-@receiver(SIG_USER_POST_SIGN_UP)
+@receiver(on_user_sign_up_post)
 # pylint: disable=unused-argument
 def product_handle_post_signup(sender, signal, user, **kwargs):
     """
@@ -768,6 +768,6 @@ def product_handle_post_signup(sender, signal, user, **kwargs):
 def send_domain_create(sender, signal, instance, created, **kwargs):
     """Send Domain creation signal"""
     if created:
-        SIG_DOMAIN_CREATED.send(
+        on_domain_created.send(
             sender=Domain,
             domain=instance)

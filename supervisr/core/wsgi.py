@@ -18,5 +18,4 @@ pymysql.install_as_MySQLdb()
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
 os.environ.setdefault("DJANGO_MODE_WSGI", "true")
 
-# pylint: disable=invalid-name
 application = Sentry(get_wsgi_application())

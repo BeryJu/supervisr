@@ -6,7 +6,7 @@ from celery import Task
 from supervisr.core.celery import CELERY_APP
 from supervisr.core.models import User
 from supervisr.core.progress import ProgressRecorder
-from supervisr.core.signals import SIG_SET_STAT
+from supervisr.core.signals import on_set_statistic
 
 
 class SupervisrTask(Task):
@@ -46,7 +46,7 @@ class SupervisrTask(Task):
 @CELERY_APP.task(bind=True)
 def stat_proxy(self, key, value):
     """Handle statistic sending in a task"""
-    SIG_SET_STAT.send(key=key, value=value, sender=self)
+    on_set_statistic.send(key=key, value=value, sender=self)
 
 
 @CELERY_APP.task(bind=True, base=SupervisrTask)
