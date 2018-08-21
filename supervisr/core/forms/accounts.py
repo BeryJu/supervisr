@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.forms.utils import check_password
 from supervisr.core.models import Setting, User
-from supervisr.core.signals import SIG_CHECK_USER_EXISTS
+from supervisr.core.signals import on_check_user_exists
 
 LOGGER = logging.getLogger(__name__)
 
@@ -45,7 +45,6 @@ class SignupForm(forms.Form):
         required=(not settings.DEBUG and not settings.TEST),
         private_key=Setting.get('recaptcha:private'),
         public_key=Setting.get('recaptcha:public'))
-    tos_accept = forms.BooleanField(required=True, label=_('I accept the Terms of service'))
 
     def __init__(self, *args, **kwargs):
         super(SignupForm, self).__init__(*args, **kwargs)
@@ -67,7 +66,7 @@ class SignupForm(forms.Form):
         if User.objects.filter(email=email).exists():
             LOGGER.debug("email %s exists in django", email)
             raise ValidationError(_("Email already exists"))
-        results = SIG_CHECK_USER_EXISTS.send(
+        results = on_check_user_exists.send(
             sender=SignupForm,
             email=email)
         for handler, result in results:
@@ -91,7 +90,8 @@ class ChangePasswordForm(forms.Form):
     def clean_password_old(self):
         """Check if old password can authenticate user"""
         user = authenticate(email=self.request.user.email,
-                            password=self.cleaned_data.get('password_old'))
+                            password=self.cleaned_data.get('password_old'),
+                            request=self.request)
         if user != self.request.user:
             raise ValidationError(_('Invalid Current Password'))
         return self.cleaned_data.get('password_old')

@@ -31,12 +31,13 @@ class ProviderMultiplexer(object):
             return translator(provider_instance=root_provider)
         return None
 
-    def on_model_saved(self, invoker: 'User', instance: Model, providers: List['ProviderInstance']):
+    def on_model_saved(self, invoker: 'User', instance: Model,
+                       providers: List['ProviderInstance'], created: bool):
         """Notify providers that model was saved so translation can start"""
         from supervisr.core.providers.tasks import provider_do_save
         LOGGER.debug("instance %r, providers %r", instance, providers)
         for provider in providers:
-            args = (provider.pk, class_to_path(instance.__class__), instance.pk)
+            args = (provider.pk, class_to_path(instance.__class__), instance.pk, created)
             queue = provider.provider.__class__.__name__
             CELERY_APP.control.add_consumer(queue)
             invoker.task_apply_async(provider_do_save, *args, celery_kwargs={

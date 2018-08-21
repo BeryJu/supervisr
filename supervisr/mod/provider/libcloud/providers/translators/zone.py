@@ -1,4 +1,5 @@
 """supervisr mod provider libcloud Zone Translator"""
+from logging import getLogger
 from typing import List
 
 from libcloud.common.exceptions import BaseHTTPError
@@ -16,6 +17,7 @@ TYPE_FIXES = {
         'serverip': '127.0.0.1',
     }
 }
+LOGGER = getLogger(__name__)
 
 class LCloudZoneObject(ProviderObject):
     """LCloud intermediate Zone object"""
@@ -24,16 +26,20 @@ class LCloudZoneObject(ProviderObject):
     type = None
     ttl = None
 
-    def save(self):
+    def save(self, created: bool):
         """Save this instance"""
         try:
-            extra = TYPE_FIXES.get(self.translator.provider_instance.driver.type, {})
-            return self.translator.provider_instance.driver.create_zone(
-                domain=self.name,
-                type=self.type,
-                ttl=self.ttl,
-                extra=extra
-            )
+            if created:
+                extra = TYPE_FIXES.get(self.translator.provider_instance.driver.type, {})
+                self.translator.provider_instance.driver.create_zone(
+                    domain=self.name,
+                    type=self.type,
+                    ttl=self.ttl,
+                    extra=extra
+                )
+            else:
+                LOGGER.warning("libcloud Zone updating not implemented")
+                return ProviderrResult.NOT_IMPLEMENTED
         except NotImplementedError:
             return ProviderrResult.NOT_IMPLEMENTED
         except ZoneAlreadyExistsError:
@@ -47,10 +53,11 @@ class LCloudZoneObject(ProviderObject):
         try:
             _zone = None
             for zone in self.translator.provider_instance.driver.list_zones():
-                if zone.domain == self.name:
+                if zone.domain == '%s.' % self.name:
                     _zone = zone
-            if self.translator.provider_instance.driver.delete_zone(_zone):
-                return ProviderrResult.SUCCESS
+            if _zone:
+                if self.translator.provider_instance.driver.delete_zone(_zone):
+                    return ProviderrResult.SUCCESS
             return ProviderrResult.OTHER_ERROR
         except BaseHTTPError as exc:
             raise ProviderRetryException from exc
@@ -78,5 +85,4 @@ class LCloudZoneTranslator(ProviderObjectTranslator[Zone]):
         zones = Zone.objects.filter(domain__domain_name=query_result.name)
         if not zones.exists():
             raise ProviderObjectNotFoundException()
-        assert len(zones) == 1
         return zones.first()

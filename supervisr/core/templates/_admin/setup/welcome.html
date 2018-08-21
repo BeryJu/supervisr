@@ -1,0 +1,18 @@
+{% extends 'generic/wizard.html' %}
+
+{% load i18n %}
+
+{% block form %}
+{% if is_upgrade %}
+this is an upgrade
+{% else %}
+  <p>{% trans 'Welcome to your new supervisr install. This wizard will guide you through the initial setup.' %}</p>
+  <p>{% trans 'The following prerequisites are going to be checked:' %}</p>
+  <ul>
+    <li>{% trans 'General System Requirements' %}</li>
+    <li>{% trans 'Redis Connectivity' %}</li>
+    <li>{% trans 'Available Updates' %}</li>
+  </ul>
+  <p>{% trans "After all checks succeed we're going to prepare the database and create an Admin User." %}</p>
+{% endif %}
+{% endblock %}

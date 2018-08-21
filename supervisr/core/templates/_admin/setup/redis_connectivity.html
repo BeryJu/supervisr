@@ -1,0 +1,29 @@
+{% extends 'generic/wizard.html' %}
+
+{% load i18n %}
+
+{% block form %}
+<p>
+  {% blocktrans %}
+    supervisr will now check your Server to confirm all requirements are fulfilled.
+  {% endblocktrans %}
+</p>
+<div class="row">
+  {% for name, field in form.fields.items %}
+    <div class="col-md-5">
+      <div class="card">
+        <div class="card-block">
+          <div class="card-title">
+            {% trans field.help_text %}
+          </div>
+          <div class="card-block">
+            <div class="card-media-block">
+              <clr-icon size="64" class="center is-{{ field.clean }}" shape="{{ field.clean }}-standard"></clr-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

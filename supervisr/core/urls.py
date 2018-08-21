@@ -14,11 +14,10 @@ from supervisr.core.regex import (DOMAIN_REGEX, EMAIL_REGEX, MOD_REGEX,
                                   UUID_REGEX)
 from supervisr.core.utils import get_apps
 from supervisr.core.views import (accounts, admin, common, domains, products,
-                                  providers, search, settings, users)
+                                  providers, search, settings, setup, users)
 
 LOGGER = logging.getLogger(__name__)
 
-# pylint: disable=invalid-name
 handler404 = common.Uncaught404View.as_view()
 handler500 = common.Uncaught500View.as_view()
 
@@ -64,8 +63,6 @@ urlpatterns = [
     url(r'^providers/instances/$', providers.ProviderIndexView.as_view(), name='instance-index'),
     url(r'^providers/instances/new/$', providers.ProviderCreateView.as_view(),
         name='instance-new'),
-    # url(r'^providers/instances/(?P<uuid>%s)/diff/$' % UUID_REGEX,
-    #     providers.ProviderDiffView.as_view(), name='instance-diff'),
     url(r'^providers/instances/(?P<uuid>%s)/edit/$' % UUID_REGEX,
         providers.ProviderUpdateView.as_view(), name='instance-edit'),
     url(r'^providers/instances/(?P<uuid>%s)/delete/$' % UUID_REGEX,
@@ -93,6 +90,8 @@ urlpatterns = [
     url(r'^admin/monitoring/tasks/$', admin.TasksView.as_view(), name='admin-tasks'),
     url(r'^admin/monitoring/events/$', admin.EventView.as_view(), name='admin-events'),
     url(r'^admin/products/$', products.ProductAdminIndex.as_view(), name='admin-product_index'),
+    # Setup
+    url(r'^setup/(?P<step>.+)/$', setup.SetupWizard.as_view(url_name='setup'), name='setup'),
     # Settings
     url(r'^admin/settings/module/default/$', settings.ModuleDefaultView.as_view(),
         name='admin-module_default'),

@@ -17,6 +17,9 @@ deb https://supervisr.beryju.org/deb/ stable supervisr
 
 ```
 apt update
-apt install supervisr
+apt install mysql-server supervisr
 ```
+
+!!! info
+    If you already have MySQL setup, or plan on using a separate MySQL Server, install supervisr using `apt install supervisr`
 

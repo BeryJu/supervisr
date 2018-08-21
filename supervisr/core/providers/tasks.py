@@ -46,7 +46,7 @@ def provider_resolve_helper(provider_pk: int, model_path: str, model_pk: int):
 
 
 @CELERY_APP.task(bind=True, max_retries=10, base=SupervisrTask)
-def provider_do_save(self, provider_pk: int, model: str, model_pk: int, **kwargs):
+def provider_do_save(self, provider_pk: int, model: str, model_pk: int, created: bool, **kwargs):
     """Run the actual saving procedure and keep trying on failure"""
     self.prepare(**kwargs)
     self.progress.total = 2
@@ -54,7 +54,7 @@ def provider_do_save(self, provider_pk: int, model: str, model_pk: int, **kwargs
     try:
         self.progress.set(1)
         provider_object = provider_resolve_helper(provider_pk, model, model_pk)
-        result = provider_object.save()
+        result = provider_object.save(created)
         self.progress.set(2)
         LOGGER.debug("Saved instance.")
         return result
@@ -72,7 +72,7 @@ def provider_do_delete(self, provider_pk: int, model: str, model_pk: int, **kwar
         self.progress.set(1)
         provider_object = provider_resolve_helper(provider_pk, model, model_pk)
         result = provider_object.delete()
-        self.progress.set(2)()
+        self.progress.set(2)
         LOGGER.debug("Deleted instance.")
         return result
     except ProviderRetryException as exc:

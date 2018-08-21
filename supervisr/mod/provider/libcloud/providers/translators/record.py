@@ -19,7 +19,7 @@ class LCloudRecordObject(ProviderObject):
     type = None
     ttl = None
 
-    def save(self):
+    def save(self, created: bool):
         """Save this instance"""
         try:
             print('test')
@@ -73,5 +73,4 @@ class LCloudRecordTranslator(ProviderObjectTranslator[Record]):
         records = Record.objects.filter(domain__domain_name=query_result.name)
         if not records.exists():
             raise ProviderObjectNotFoundException()
-        assert len(records) == 1
         return records.first()

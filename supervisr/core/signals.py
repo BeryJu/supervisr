@@ -1,6 +1,5 @@
 """Supervisr Core Signal definitions"""
 
-import logging
 
 from django.db.models.signals import post_migrate, post_save, pre_delete
 from django.dispatch import Signal, receiver
@@ -8,8 +7,9 @@ from passlib.hash import sha512_crypt
 
 from supervisr.core.apps import SupervisrAppConfig
 from supervisr.core.exceptions import SignalException
+from supervisr.core.logger import SupervisrLogger
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = SupervisrLogger(__name__)
 
 
 class RobustSignal(Signal):
@@ -24,41 +24,41 @@ class RobustSignal(Signal):
         return results
 
 
-SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED = RobustSignal(providing_args=['relationship'])
-SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED = RobustSignal(providing_args=['relationship'])
+on_user_acquirable_relationship_created = RobustSignal(providing_args=['relationship'])
+on_user_acquirable_relationship_deleted = RobustSignal(providing_args=['relationship'])
 
-SIG_USER_SIGN_UP = RobustSignal(providing_args=['user', 'request', 'password'])
-SIG_USER_CHANGE_PASS = RobustSignal(providing_args=['user', 'request', 'password'])
-SIG_USER_POST_SIGN_UP = RobustSignal(providing_args=['user', 'request'])
-SIG_USER_POST_CHANGE_PASS = RobustSignal(providing_args=['user', 'request', 'was_reset'])
-SIG_USER_PASS_RESET_INIT = RobustSignal(providing_args=['user'])
-SIG_USER_PASS_RESET_FIN = RobustSignal(providing_args=['user'])
-SIG_USER_CONFIRM = RobustSignal(providing_args=['user', 'request'])
-SIG_USER_RESEND_CONFIRM = RobustSignal(providing_args=['user', 'request'])
-SIG_CELERY_SCHEDULER = RobustSignal(providing_args=[])
+on_user_sign_up = RobustSignal(
+    providing_args=['user', 'request', 'password', 'needs_confirmation'])
+on_user_change_password = RobustSignal(providing_args=['user', 'request', 'password'])
+on_user_sign_up_post = RobustSignal(providing_args=['user', 'request', 'needs_confirmation'])
+on_user_change_password_post = RobustSignal(providing_args=['user', 'request', 'was_reset'])
+on_user_password_reset_init = RobustSignal(providing_args=['user'])
+on_user_password_reset_finish = RobustSignal(providing_args=['user'])
+on_user_confirmed = RobustSignal(providing_args=['user', 'request'])
+on_user_confirm_resend = RobustSignal(providing_args=['user', 'request'])
 
-SIG_DOMAIN_CREATED = RobustSignal(providing_args=['domain'])
+on_domain_created = RobustSignal(providing_args=['domain'])
 
 # Signal which can be subscribed to initialize things that take longer
 # and should not be run up on reboot of the app
-SIG_DO_SETUP = RobustSignal(providing_args=['app_name'])
-SIG_SETTING_UPDATE = RobustSignal(providing_args=[])
+on_migration_post = RobustSignal(providing_args=['app_name'])
+on_setting_update = RobustSignal(providing_args=[])
 
 # SIG_CHECK_* Signals return a boolean
 
 # Return wether user with `email` exists
-SIG_CHECK_USER_EXISTS = RobustSignal(providing_args=['email'])
+on_check_user_exists = RobustSignal(providing_args=['email'])
 
 # SIG_GET_* Signals return something other than a boolean
 
 # Return a hash for the /about/info page
-SIG_GET_MOD_INFO = RobustSignal(providing_args=[])
+get_module_info = RobustSignal(providing_args=[])
 # Get information for health status
-SIG_GET_MOD_HEALTH = RobustSignal(providing_args=[])
+get_module_health = RobustSignal(providing_args=[])
 
 
 # Set a statistic
-SIG_SET_STAT = RobustSignal(providing_args=['key', 'value'])
+on_set_statistic = RobustSignal(providing_args=['key', 'value'])
 
 
 @receiver(post_migrate)
@@ -68,10 +68,10 @@ def core_handle_post_migrate(sender, *args, **kwargs):
     if isinstance(sender, SupervisrAppConfig):
         LOGGER.debug("Running Post-Migrate for '%s'...", sender.name)
         sender.run_bootstrap()
-        SIG_DO_SETUP.send(sender.name)
+        on_migration_post.send(sender.name)
 
 
-@receiver(SIG_USER_CHANGE_PASS)
+@receiver(on_user_change_password)
 # pylint: disable=unused-argument
 def crypt6_handle_user_change_pass(signal, user, password, **kwargs):
     """Update crypt6_password"""
@@ -80,7 +80,7 @@ def crypt6_handle_user_change_pass(signal, user, password, **kwargs):
     user.save()
 
 
-@receiver(SIG_SET_STAT)
+@receiver(on_set_statistic)
 # pylint: disable=unused-argument
 def stat_output_verbose(signal, key, value, **kwargs):
     """Output stats to LOGGER"""
@@ -96,12 +96,15 @@ def change_on_save(sender, instance, created, **kwargs):
 
     system_user = get_system_user()
     multiplexer = ProviderMultiplexer()
+    providers = []
     if issubclass(instance.__class__, ProviderAcquirable) and \
             instance.__class__ is not ProviderAcquirable:
-        multiplexer.on_model_saved(system_user, instance, instance.providers.all())
+        providers = instance.providers.all()
     elif issubclass(instance.__class__, ProviderAcquirableSingle) and \
             instance.__class__ is not ProviderAcquirableSingle:
-        multiplexer.on_model_saved(system_user, instance, [instance.provider_instance, ])
+        providers = [instance.provider_instance, ]
+    if providers:
+        multiplexer.on_model_saved(system_user, instance, providers, created)
 
 
 @receiver(pre_delete)
@@ -113,9 +116,12 @@ def change_on_delete(sender, instance, *args, **kwargs):
 
     system_user = get_system_user()
     multiplexer = ProviderMultiplexer()
+    providers = []
     if issubclass(instance.__class__, ProviderAcquirable) and \
             instance.__class__ is not ProviderAcquirable:
-        multiplexer.on_model_deleted(system_user, instance, instance.providers.all())
+        providers = instance.providers.all()
     elif issubclass(instance.__class__, ProviderAcquirableSingle) and \
             instance.__class__ is not ProviderAcquirableSingle:
-        multiplexer.on_model_deleted(system_user, instance, [instance.provider_instance, ])
+        providers = [instance.provider_instance, ]
+    if providers:
+        multiplexer.on_model_deleted(system_user, instance, providers)

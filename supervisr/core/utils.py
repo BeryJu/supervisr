@@ -9,16 +9,22 @@ from importlib.util import module_from_spec, spec_from_file_location
 from urllib.parse import urlparse
 from uuid import uuid4
 
+import redis
 from django.apps import apps
+from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
+from django.core.management.base import OutputWrapper
+from django.db import DEFAULT_DB_ALIAS
+from django.db.migrations.executor import MigrationExecutor
+from django.db.utils import ConnectionDoesNotExist, OperationalError
 from django.http import HttpRequest
 from django.shortcuts import render
 from django.template import Context, Template, loader
-from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.apps import SupervisrAppConfig, SupervisrCoreConfig
+from supervisr.core.logger import SUCCESS
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,7 +32,7 @@ LOGGER = logging.getLogger(__name__)
 def get_remote_ip(request: HttpRequest) -> str:
     """Return the remote's IP"""
     if not request:
-        return '0.0.0.0'
+        return '0.0.0.0' # nosec
     if request.META.get('HTTP_X_FORWARDED_FOR'):
         return request.META.get('HTTP_X_FORWARDED_FOR')
     return request.META.get('REMOTE_ADDR')
@@ -171,7 +177,7 @@ def b64decode(*args):
     return base64.b64decode(''.join(args)).decode()
 
 
-def check_db_connection(connection_name: str = 'default') -> bool:
+def check_db_connection(connection_name: str = DEFAULT_DB_ALIAS) -> bool:
     """Check if a database connection can be made
 
     Args:
@@ -181,7 +187,6 @@ def check_db_connection(connection_name: str = 'default') -> bool:
         bool: True if connection could be made, otherwise False.
     """
     from django.db import connections
-    from django.db.utils import OperationalError, ConnectionDoesNotExist
     try:
         db_conn = connections[connection_name]
         db_conn.cursor()
@@ -189,6 +194,30 @@ def check_db_connection(connection_name: str = 'default') -> bool:
         return False
     else:
         return True
+
+
+def check_redis_connection() -> bool:
+    """Check if redis server can be reached"""
+    client = redis.Redis.from_url(settings.CELERY_BROKER_URL)
+    try:
+        return client.ping()
+    except (redis.exceptions.ConnectionError,
+            redis.exceptions.BusyLoadingError):
+        return False
+
+
+def get_db_server_version(connection_name: str = DEFAULT_DB_ALIAS, default: str = '') -> str:
+    """Return the Version of the Database server"""
+    from django.db import connections
+    db_conn = connections[connection_name]
+    cursor = db_conn.cursor()
+    try:
+        cursor.execute('SELECT VERSION();')
+        return cursor.fetchone()[0]
+    except OperationalError:
+        return default
+    finally:
+        cursor.close()
 
 
 def messages_add_once(request, level, text, **kwargs):
@@ -200,10 +229,39 @@ def messages_add_once(request, level, text, **kwargs):
             exists = True
     storage.used = False
     if not exists:
-        return messages.add_message(request, level, mark_safe(text), **kwargs)
+        return messages.add_message(request, level, text, **kwargs)
     return False
 
 
 def is_url_absolute(url):
     """Check if domain is absolute to prevent user from being redirect somehwere else"""
     return bool(urlparse(url).netloc)
+
+
+def is_database_synchronized(database=DEFAULT_DB_ALIAS):
+    """Check if database has migrations pending"""
+    from django.db import connections
+    connection = connections[database]
+    connection.prepare_database()
+    executor = MigrationExecutor(connection)
+    targets = executor.loader.graph.leaf_nodes()
+    return False if executor.migration_plan(targets) else True
+
+
+class LogOutputWrapper(OutputWrapper):
+    """Output wrapper for django management commands to use LOGGER instead of direct print"""
+
+    level = SUCCESS
+
+    def __init__(self):
+        super().__init__(out=None)
+
+    def write(self, msg, style_func=None, ending=None):
+        ending = self.ending if ending is None else ending
+        if ending and not msg.endswith(ending):
+            msg += ending
+        style_func = style_func or self.style_func
+        # Trim trailing \n off
+        if msg.endswith('\n'):
+            msg = msg[:-1]
+        LOGGER.log(self.level, style_func(msg))

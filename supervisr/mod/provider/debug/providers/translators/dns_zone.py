@@ -43,5 +43,4 @@ class DebugZoneTranslator(ProviderObjectTranslator[Zone]):
         zones = Zone.objects.filter(domain__domain_name=query_result.name)
         if not zones.exists():
             raise ProviderObjectNotFoundException()
-        assert len(zones) == 1
         return zones.first()

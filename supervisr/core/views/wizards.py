@@ -1,19 +1,30 @@
 """Supervisr Core Base Wizard Views"""
+import warnings
 
+from django.forms import Form
 from django.http import HttpRequest, HttpResponse
-from formtools.wizard.views import SessionWizardView
-
-from supervisr.core.views.generic import LoginRequiredView
+from django.utils.decorators import classonlymethod
+from formtools.wizard.views import NamedUrlSessionWizardView, SessionWizardView
 
 
 # pylint: disable=too-many-ancestors
-class BaseWizardView(SessionWizardView, LoginRequiredView):
+class BaseWizardView(SessionWizardView):
     """Base Wizard view, sets a template and adds a title"""
 
     template_name = 'generic/wizard.html'
+    wizard_size = 'lg'
     _handle_request_res = None
     _referer = ''
     _request = None
+
+    def __init__(self, *args, **kwargs):
+        warnings.warn("BaseWizardView no longer inherits LoginRequiredView", DeprecationWarning)
+        super().__init__(*args, **kwargs)
+
+    @classonlymethod
+    def as_view(cls, *args, **kwargs) -> HttpResponse:
+        warnings.warn("BaseWizardView no longer inherits LoginRequiredView", DeprecationWarning)
+        return super(BaseWizardView, cls).as_view(*args, **kwargs)
 
     def handle_request(self, request: HttpRequest):
         """Do things with data from request and save to self"""
@@ -29,22 +40,23 @@ class BaseWizardView(SessionWizardView, LoginRequiredView):
 
     def get(self, request: HttpRequest, *args, **kwargs):
         self._handle_request_res = self.handle_request(request)
-        return super(BaseWizardView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def post(self, request: HttpRequest, *args, **kwargs):
         self._handle_request_res = self.handle_request(request)
-        return super(BaseWizardView, self).post(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
-    def get_context_data(self, form, **kwargs):
-        context = super(BaseWizardView, self).get_context_data(form=form, **kwargs)
+    def get_context_data(self, form: Form, **kwargs):
+        context = super().get_context_data(form=form, **kwargs)
         context['title'] = self.title
         context['back'] = self._referer
+        context['size'] = self.wizard_size
         return context
 
-    def render(self, form=None, **kwargs):
+    def render(self, form: Form = None, **kwargs):
         if isinstance(self._handle_request_res, HttpResponse):
             return self._handle_request_res
-        return super(BaseWizardView, self).render(form, **kwargs)
+        return super().render(form, **kwargs)
 
     def finish(self, form_list):
         """Wrapper for done with an actual list as param"""
@@ -60,3 +72,8 @@ class BaseWizardView(SessionWizardView, LoginRequiredView):
         for form in form_list:
             _form_list.append(form)
         return self.finish(_form_list)
+
+
+class NamedWizard(BaseWizardView, NamedUrlSessionWizardView):
+    """Same as BaseWizardView except with named steps"""
+    pass

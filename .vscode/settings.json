@@ -22,4 +22,7 @@
   },
   "editor.wordWrap": "on",
   "files.insertFinalNewline": true,
+  "cSpell.words": [
+    "supervisr"
+  ],
 }

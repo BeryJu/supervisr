@@ -43,5 +43,4 @@ class DebugDomainTranslator(ProviderObjectTranslator[MailDomain]):
         domains = MailDomain.objects.filter(domain__domain_name=query_result.name)
         if not domains.exists():
             raise ProviderObjectNotFoundException()
-        assert len(domains) == 1
         return domains.first()

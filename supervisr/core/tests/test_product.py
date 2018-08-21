@@ -2,7 +2,7 @@
 
 from supervisr.core.models import (Event, Product, User,
                                    UserAcquirableRelationship)
-from supervisr.core.signals import SIG_USER_POST_SIGN_UP
+from supervisr.core.signals import on_user_sign_up_post
 from supervisr.core.tests.utils import TestCase
 
 
@@ -24,10 +24,12 @@ class TestProduct(TestCase):
 
     def test_auto_add(self):
         """Test Product's auto_add"""
-        SIG_USER_POST_SIGN_UP.send(
+        on_user_sign_up_post.send(
             sender=None,
             user=self.user,
-            request=None)
+            request=None,
+            needs_confirmation=False,
+            )
         rel = UserAcquirableRelationship.objects.filter(
             model=self.product_a,
             user=self.user)

@@ -17,9 +17,7 @@ class TestSignals(TestCase):
 
         # pylint: disable=unused-argument
         def handler(*args, **kwargs):
-            """
-            Throw an exception
-            """
+            """Throw an exception"""
             return 0 / 0
 
         self.sig_test.connect(handler)

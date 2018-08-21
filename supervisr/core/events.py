@@ -7,13 +7,13 @@ from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.mailer import send_message
 from supervisr.core.models import Event
-from supervisr.core.signals import (SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED,
-                                    SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED,
-                                    SIG_USER_POST_CHANGE_PASS,
-                                    SIG_USER_POST_SIGN_UP)
+from supervisr.core.signals import (on_user_acquirable_relationship_created,
+                                    on_user_acquirable_relationship_deleted,
+                                    on_user_change_password_post,
+                                    on_user_sign_up_post)
 
 
-@receiver(SIG_USER_POST_SIGN_UP)
+@receiver(on_user_sign_up_post)
 # pylint: disable=unused-argument
 def event_handle_user_signed_up(sender, signal, user, request, **kwargs):
     """Create an Event when a user signed up"""
@@ -24,7 +24,7 @@ def event_handle_user_signed_up(sender, signal, user, request, **kwargs):
         request=request)
 
 
-@receiver(SIG_USER_POST_CHANGE_PASS)
+@receiver(on_user_change_password_post)
 # pylint: disable=unused-argument
 def event_handle_user_changed_pass(signal, user, request, was_reset, **kwargs):
     """Create an Event when a user changes their password"""
@@ -37,7 +37,7 @@ def event_handle_user_changed_pass(signal, user, request, was_reset, **kwargs):
         request=request)
 
 
-@receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED)
+@receiver(on_user_acquirable_relationship_created)
 # pylint: disable=unused-argument, invalid-name
 def event_handle_relationship_created(sender, signal, relationship, **kwargs):
     """Create an Event when a User was created"""
@@ -53,7 +53,7 @@ def event_handle_relationship_created(sender, signal, relationship, **kwargs):
         current=True)
 
 
-@receiver(SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED)
+@receiver(on_user_acquirable_relationship_deleted)
 # pylint: disable=unused-argument, invalid-name
 def event_handle_relationship_deleted(sender, signal, relationship, **kwargs):
     """Create an Event to let users know that they lost access to a Model"""

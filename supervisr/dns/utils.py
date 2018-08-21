@@ -1,6 +1,4 @@
-"""
-Supervisr DNS Utils
-"""
+"""Supervisr DNS Utils"""
 
 from datetime import date
 

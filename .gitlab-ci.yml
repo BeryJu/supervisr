@@ -73,6 +73,12 @@ check_template_syntax:
   script:
     - ./manage.py check_template_syntax
   stage: test
+bandit:
+ except:
+   - prod
+ script:
+   - bandit -x migrations/ -r supervisr/
+ stage: test
 pylint:
   except:
     - prod
@@ -116,7 +122,6 @@ deploy-doc:
   script:
     - 'apt update'
     - 'apt install -y rsync'
-    - 'pip install "tornado<5.0,>=4.1"'
     - "eval $(ssh-agent -s)"
     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
     - 'mkdocs build'

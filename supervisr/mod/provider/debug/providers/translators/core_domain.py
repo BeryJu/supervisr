@@ -43,5 +43,4 @@ class DebugDomainTranslator(ProviderObjectTranslator[Domain]):
         domains = Domain.objects.filter(domain_name=query_result.name)
         if not domains.exists():
             raise ProviderObjectNotFoundException()
-        assert len(domains) == 1
         return domains.first()

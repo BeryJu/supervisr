@@ -168,9 +168,9 @@ class CredentialNewView(BaseWizardView):
             # Import provider based on form
             # also check in form if class exists and is subclass of BaseProvider
             _form_class = path_to_class(form.cleaned_data.get('credential_type'))
-            assert issubclass(_form_class, ModelForm)
-            # pylint: disable=no-member
-            self.form_list.update({str(int(self.steps.current) + 1): _form_class})
+            if issubclass(_form_class, ModelForm):
+                # pylint: disable=no-member
+                self.form_list.update({str(int(self.steps.current) + 1): _form_class})
         return self.get_form_step_data(form)
 
     # pylint: disable=unused-argument

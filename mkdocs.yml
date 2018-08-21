@@ -8,7 +8,7 @@ repo_url: 'https://git.beryju.org/BeryJu.org/supervisr'
 
 copyright: 'Copyright &copy; 2017-2018 BeryJu.org'
 
-pages:
+nav:
   - Home: 'index.md'
   - 'API':
     - 'OAuth 2': 'API/OAuth 2.md'
@@ -28,16 +28,16 @@ pages:
     - 'Bacula':
       - 'Installation': 'Modules/Bacula/installation.md'
   - 'SSO':
-    - 'External source': 'SSO/external_sources.md'
+    - 'External source': 'sso/external_sources.md'
     - 'LDAP':
-      - 'Authenticating aginst Active Directory': 'SSO/ldap/authenticating_against_ad.md'
+      - 'Authenticating aginst Active Directory': 'sso/ldap/authenticating_against_ad.md'
     - 'OAuth':
-      - 'Sentry': 'SSO/oauth/sentry.md'
-      - 'Grafana': 'SSO/oauth/grafana.md'
-      - 'Chronograf': 'SSO/oauth/chronograf.md'
+      - 'Sentry': 'sso/oauth/sentry.md'
+      - 'Grafana': 'sso/oauth/grafana.md'
+      - 'Chronograf': 'sso/oauth/chronograf.md'
     - 'SAML':
-      - 'GitLab': 'SSO/saml/gitlab/gitlab.md'
-      - 'Nextcloud': 'SSO/saml/nextcloud/nextcloud.md'
+      - 'GitLab': 'sso/saml/gitlab/gitlab.md'
+      - 'Nextcloud': 'sso/saml/nextcloud/nextcloud.md'
 
 extra:
   social:

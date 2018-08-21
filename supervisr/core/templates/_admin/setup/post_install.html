@@ -1,0 +1,27 @@
+{% extends 'generic/wizard.html' %}
+
+{% load i18n %}
+
+{% block form %}
+<p>
+  {% blocktrans %}
+    We've successfully installed all database schemas. In the next step we will create an admin user.
+  {% endblocktrans %}
+</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th>{% trans 'Migration' %}</th>
+      <th>{% trans 'Status' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for name, status in migration_status.items %}
+      <tr>
+        <td>{{ name }}</td>
+        <td><clr-icon class="is-{{ status }}" shape="{{ status }}-standard"></clr-icon></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

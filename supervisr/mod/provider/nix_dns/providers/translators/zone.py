@@ -22,7 +22,6 @@ class PowerDNSZoneObject(ProviderObject):
             existing = Domain.objects.filter(name=self.name, pk=self.id)
             if existing.exists():
                 # Domain has been updated
-                assert len(existing) == 1
                 domain = existing.first()
                 domain.name = self.name
                 domain.account = self.account
@@ -43,7 +42,6 @@ class PowerDNSZoneObject(ProviderObject):
             existing = Domain.objects.filter(name=self.name, pk=self.id)
             if not existing.exists():
                 raise ProviderObjectNotFoundException()
-            assert len(existing) == 1
             existing.first().delete()
         except OperationalError as exc:
             raise SupervisrProviderException from exc
@@ -79,5 +77,4 @@ class PowerDNSZoneTranslator(ProviderObjectTranslator[Zone]):
         zones = Zone.objects.filter(domain__domain_name=query_result.name)
         if not zones.exists():
             raise ProviderObjectNotFoundException()
-        assert len(zones) == 1
         return zones.first()

@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth.decorators import login_required
+from django.forms import ValidationError
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -27,12 +28,11 @@ from supervisr.core.forms.accounts import (ChangePasswordForm,
                                            SignupForm)
 from supervisr.core.models import (AccountConfirmation, Setting, User,
                                    make_username)
-from supervisr.core.signals import (SIG_USER_CHANGE_PASS, SIG_USER_CONFIRM,
-                                    SIG_USER_PASS_RESET_INIT,
-                                    SIG_USER_POST_CHANGE_PASS,
-                                    SIG_USER_POST_SIGN_UP,
-                                    SIG_USER_RESEND_CONFIRM, SIG_USER_SIGN_UP,
-                                    SignalException)
+from supervisr.core.signals import (SignalException, on_user_change_password,
+                                    on_user_change_password_post,
+                                    on_user_confirm_resend, on_user_confirmed,
+                                    on_user_password_reset_init,
+                                    on_user_sign_up, on_user_sign_up_post)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -93,12 +93,13 @@ class LoginView(View):
                 password=form.cleaned_data.get('password'),
                 request=request)
             if user:
-                return self.handle_login(request, user, form.cleaned_data)
-            return self.handle_disabled_login(request, email=form.cleaned_data.get('email'))
+                return LoginView.handle_login(request, user, form.cleaned_data)
+            return LoginView.handle_disabled_login(request, email=form.cleaned_data.get('email'))
         LOGGER.debug("LoginForm invalid")
         return self.render(request, form=form)
 
-    def handle_login(self, request: HttpRequest, user: User, cleaned_data: Dict) -> HttpResponse:
+    @staticmethod
+    def handle_login(request: HttpRequest, user: User, cleaned_data: Dict) -> HttpResponse:
         """Handle actual login
 
         Actually logs user in, sets session expiry and redirects to ?next parameter
@@ -110,7 +111,8 @@ class LoginView(View):
         Returns:
             Either redirect to ?next or if not present to common-index
         """
-        assert user is not None
+        if user is None:
+            raise ValueError("User cannot be None")
         django_login(request, user)
         # Set updated password in user profile for PAM
         user.crypt6_password = \
@@ -129,7 +131,8 @@ class LoginView(View):
         # Otherwise just index
         return redirect(reverse('common-index'))
 
-    def handle_disabled_login(self, request: HttpRequest, email: str) -> HttpResponse:
+    @staticmethod
+    def handle_disabled_login(request: HttpRequest, email: str) -> HttpResponse:
         """Handle login for disabled users
 
         This informs users that their email is not confirmed yet
@@ -182,7 +185,9 @@ class SignupView(View):
             'primary_action': _("Signup")
         })
 
-    def create_user(self, data: Dict, request: HttpRequest = None) -> User:
+    @staticmethod
+    def create_user(data: Dict, request: HttpRequest = None,
+                    needs_confirmation: bool = True) -> User:
         """Create user from data
 
         Args:
@@ -203,23 +208,27 @@ class SignupView(View):
             crypt6_password=sha512_crypt.hash(data.get('password')),
             unix_username=make_username(data.get('username'))
         )
-        new_user.is_active = False
+        if needs_confirmation:
+            new_user.is_active = False
         new_user.set_password(data.get('password'))
         new_user.save()
         # Send signal for other auth sources
         try:
-            SIG_USER_SIGN_UP.send(
+            on_user_sign_up.send(
                 sender=None,
                 user=new_user,
                 request=request,
-                password=data.get('password'))
-            # Create Account Confirmation UUID
-            AccountConfirmation.objects.create(user=new_user)
+                password=data.get('password'),
+                needs_confirmation=needs_confirmation)
+            if needs_confirmation:
+                # Create Account Confirmation UUID
+                AccountConfirmation.objects.create(user=new_user)
             # Send event for user creation
-            SIG_USER_POST_SIGN_UP.send(
+            on_user_sign_up_post.send(
                 sender=None,
                 user=new_user,
-                request=request)
+                request=request,
+                needs_confirmation=needs_confirmation)
         except SignalException as exception:
             LOGGER.warning("Failed to sign up user %s", exception)
             new_user.delete()
@@ -238,7 +247,7 @@ class SignupView(View):
         form = SignupForm(request.POST)
         if form.is_valid():
             try:
-                self.create_user(form.cleaned_data, request)
+                SignupView.create_user(form.cleaned_data, request)
                 messages.success(request, _("Successfully signed up!"))
                 LOGGER.debug("Successfully signed up %s",
                              form.cleaned_data.get('email'))
@@ -282,7 +291,8 @@ class ChangePasswordView(View):
                 # Check current password
                 user = authenticate(email=request.user.email,
                                     password=form.cleaned_data.get('password_old'))
-                assert user == request.user
+                if user != request.user:
+                    raise ValidationError("Users don't match.")
                 ChangePasswordView.set_password(
                     request, form.cleaned_data.get('password'))
                 messages.success(request, _("Successfully changed password!"))
@@ -299,13 +309,13 @@ class ChangePasswordView(View):
         request.user.set_password(password)
         request.user.save()
         # Send signal for other auth sources
-        SIG_USER_CHANGE_PASS.send(
+        on_user_change_password.send(
             sender=None,
             user=request.user,
             request=request,
             password=password)
         # Trigger Event
-        SIG_USER_POST_CHANGE_PASS.send(
+        on_user_change_password_post.send(
             sender=None,
             user=request.user,
             was_reset=was_reset,
@@ -351,7 +361,7 @@ class AccountConfirmationView(View):
             acc_conf.user.is_active = True
             acc_conf.user.save()
             # Send signal to other auth sources
-            SIG_USER_CONFIRM.send(
+            on_user_confirmed.send(
                 sender=None,
                 user=acc_conf.user,
                 request=request)
@@ -388,7 +398,7 @@ class PasswordResetInitView(View):
                 AccountConfirmation.objects.create(
                     user=r_user,
                     kind=AccountConfirmation.KIND_PASSWORD_RESET)
-                SIG_USER_PASS_RESET_INIT.send(
+                on_user_password_reset_init.send(
                     sender=self, user=r_user)
             messages.success(request, _('Reset link sent successfully if user exists.'))
         return self.render(request, form)
@@ -467,7 +477,7 @@ class ConfirmationResendView(View):
                 old_ac.save()
             # Create Account Confirmation UUID
             AccountConfirmation.objects.create(user=users.first())
-            SIG_USER_RESEND_CONFIRM.send(
+            on_user_confirm_resend.send(
                 sender=None,
                 user=users.first(),
                 request=request)
@@ -560,7 +570,7 @@ class EmailMissingView(View):
             request.user.save()
             # Create new AccountConfirmation UUID set
             AccountConfirmation.objects.create(user=request.user)
-            SIG_USER_RESEND_CONFIRM.send(
+            on_user_confirm_resend.send(
                 sender=self,
                 user=request.user,
                 request=request

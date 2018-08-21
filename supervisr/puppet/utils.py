@@ -17,6 +17,9 @@ from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 LOGGER = logging.getLogger(__name__)
 
 
+class ForgeNotFound(requests.exceptions.HTTPError):
+    """PuppetForge returned a 404 error"""
+
 class ForgeImporter(SupervisrTask):
     """Helper class to import users, modules and releases from PuppetForge"""
 
@@ -45,21 +48,23 @@ class ForgeImporter(SupervisrTask):
         """Shortcut to get json data"""
         f_url = '%s/%s' % (self.BASE_URL, url)
         LOGGER.debug("About to GET %s", f_url)
-        return requests.get(f_url).json()
+        response = requests.get(f_url).json()
+        if 'errors' in response:
+            raise ForgeNotFound()
+        return response
 
     def get_user_info(self, username):
         """Get user information and create in DB if non existant"""
         result = self.__get_helper('/v3/users/' + username)
-
         existing_user = User.objects.filter(
-            username=result['username'],
-            first_name=result['display_name'])
+            username=result.get('username'),
+            first_name=result.get('display_name'))
 
         if not existing_user:
-            LOGGER.debug("Created user '%s' from PuppetForge...", result['username'])
+            LOGGER.debug("Created user '%s' from PuppetForge...", result.get('username'))
             return User.objects.create(
-                username=result['username'],
-                first_name=result['display_name'])
+                username=result.get('username'),
+                first_name=result.get('display_name'))
 
         LOGGER.debug("User '%s' exists already", result['username'])
         return existing_user.first()
@@ -74,11 +79,11 @@ class ForgeImporter(SupervisrTask):
 
         if not existing_module:
             LOGGER.debug("Created module '%s-%s' from PuppetForge...",
-                         user.username, result['name'])
+                         user.username, result.get('name'))
             return PuppetModule.objects.create(
                 owner=user,
-                name=result['name'],
-                supported=result['supported'])
+                name=result.get('name'),
+                supported=result.get('supported'))
 
         LOGGER.debug("Module '%s-%s' exists already", user.username, result['name'])
         return existing_module.first()

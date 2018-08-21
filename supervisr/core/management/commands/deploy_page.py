@@ -92,7 +92,7 @@ class Command(BaseCommand):
         if value:
             with open(deploy_page_path, 'w') as _file:
                 _file.write(DEPLOY_PAGE_HTML)
-            LOGGER.info("Enabled Deploy Page")
+            LOGGER.success("Enabled Deploy Page")
         else:
             try:
                 os.unlink(deploy_page_path)

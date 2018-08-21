@@ -14,13 +14,13 @@ from django.utils.translation import ugettext as _
 from django.views.generic.base import TemplateView
 
 from supervisr.core.models import Event, Setting, Task, User, get_system_user
-from supervisr.core.signals import SIG_GET_MOD_INFO, SIG_SETTING_UPDATE
+from supervisr.core.signals import get_module_info, on_setting_update
 from supervisr.core.tasks import debug_progress_task
 from supervisr.core.utils import get_reverse_dns
-from supervisr.core.views.generic import AdminRequiredView, GenericIndexView
+from supervisr.core.views.generic import AdminRequiredMixin, GenericIndexView
 
 
-class IndexView(TemplateView, AdminRequiredView):
+class IndexView(TemplateView, AdminRequiredMixin):
     """Admin index"""
 
     template_name = '_admin/index.html'
@@ -32,7 +32,7 @@ class IndexView(TemplateView, AdminRequiredView):
         return context
 
 
-class UserIndexView(GenericIndexView, AdminRequiredView):
+class UserIndexView(GenericIndexView, AdminRequiredMixin):
     """show list of all users"""
 
     template = '_admin/users.html'
@@ -42,7 +42,7 @@ class UserIndexView(GenericIndexView, AdminRequiredView):
         return self.model.objects.all().order_by('date_joined').exclude(pk=get_system_user().pk)
 
 
-class InfoView(TemplateView, AdminRequiredView):
+class InfoView(TemplateView, AdminRequiredMixin):
     """Admin Info view"""
 
     template_name = '_admin/info.html'
@@ -74,7 +74,7 @@ class InfoView(TemplateView, AdminRequiredView):
                 _('Authentication Backends'): django_settings.AUTHENTICATION_BACKENDS,
             }
         }
-        results = SIG_GET_MOD_INFO.send(sender=None)
+        results = get_module_info.send(sender=None)
         for handler, mod_info in results:
             # Get the handler's root module
             info_data[handler.__module__] = mod_info
@@ -82,7 +82,7 @@ class InfoView(TemplateView, AdminRequiredView):
         return context
 
 
-class EventView(GenericIndexView, AdminRequiredView):
+class EventView(GenericIndexView, AdminRequiredMixin):
     """show list of all events"""
 
     template = '_admin/events.html'
@@ -92,7 +92,7 @@ class EventView(GenericIndexView, AdminRequiredView):
         return self.model.objects.all().order_by('-create_date')
 
 
-class DebugView(TemplateView, AdminRequiredView):
+class DebugView(TemplateView, AdminRequiredMixin):
     """Show misc debug buttons"""
 
     template_name = '_admin/debug.html'
@@ -106,7 +106,7 @@ class DebugView(TemplateView, AdminRequiredView):
             messages.success(request, _('Successfully cleared Cache'))
         elif 'update_settings' in request.POST:
             setting = Setting.get('domain')
-            SIG_SETTING_UPDATE.send(sender=setting)
+            on_setting_update.send(sender=setting)
             messages.success(request, _('Successfully updated settings.'))
         elif 'start_task' in request.POST:
             seconds = int(request.POST.get('start_task_sec'))
@@ -115,13 +115,13 @@ class DebugView(TemplateView, AdminRequiredView):
         return super(DebugView, self).get(request)
 
 
-class FlowerView(TemplateView, AdminRequiredView):
+class FlowerView(TemplateView, AdminRequiredMixin):
     """View to show iframe with flower"""
 
     template_name = '_admin/flower.html'
 
 
-class TasksView(GenericIndexView, AdminRequiredView):
+class TasksView(GenericIndexView, AdminRequiredMixin):
     """Show list of all tasks and their current status"""
 
     template_name = '_admin/tasks.html'

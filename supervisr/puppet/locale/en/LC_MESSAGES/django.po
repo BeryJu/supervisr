@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-15 19:30+0200\n"
+"POT-Creation-Date: 2018-08-20 10:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,42 +17,54 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .\templates\puppet\base.html:10
+#: templates/puppet/base.html:10
 msgid "Overview"
 msgstr ""
 
-#: .\templates\puppet\base.html:13 .\templates\puppet\debug_render.html:12
+#: templates/puppet/base.html:13 templates/puppet/debug_render.html:11
 msgid "Debug Renderer"
 msgstr ""
 
-#: .\templates\puppet\debug_render.html:17
+#: templates/puppet/debug_render.html:16
 msgid "Template"
 msgstr ""
 
-#: .\templates\puppet\debug_render.html:24
+#: templates/puppet/debug_render.html:23
 msgid "Template Path"
 msgstr ""
 
-#: .\templates\puppet\debug_render.html:27
+#: templates/puppet/debug_render.html:26
 msgid "Render"
 msgstr ""
 
-#: .\templates\puppet\debug_render.html:37
+#: templates/puppet/debug_render.html:36
 msgid "Result"
 msgstr ""
 
-#: .\templates\puppet\index.html:12
+#: templates/puppet/index.html:11
 msgid "Puppet Overview"
 msgstr ""
 
-#: .\templates\puppet\index.html:17
+#: templates/puppet/index.html:16
 msgid "Modules"
 msgstr ""
 
-#: .\templates\puppet\index.html:29
+#: templates/puppet/index.html:28
 msgid "Downloads"
 msgstr ""
 
-#: .\templates\puppet\index.html:41
-msgid "Debug"
+#: templates/puppet/index.html:40
+msgid "Debug: Puppet Build"
+msgstr ""
+
+#: templates/puppet/index.html:60
+msgid "Versions"
+msgstr ""
+
+#: templates/puppet/index.html:66
+msgid "Module"
+msgstr ""
+
+#: templates/puppet/index.html:67
+msgid "Latest Version"
 msgstr ""

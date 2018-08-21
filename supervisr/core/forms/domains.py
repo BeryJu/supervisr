@@ -15,7 +15,7 @@ LOGGER = logging.getLogger(__name__)
 class DomainForm(forms.ModelForm):
     """Form create a new Domain"""
 
-    title = 'General Information'
+    title = _('General Information')
 
     def clean_domain_name(self):
         """Import Provider and check if domain can be created"""

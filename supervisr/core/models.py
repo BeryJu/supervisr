@@ -34,10 +34,10 @@ from supervisr.core.decorators import database_catchall
 from supervisr.core.decorators import time as time_method
 from supervisr.core.progress import Progress
 from supervisr.core.providers.base import BaseProvider
-from supervisr.core.signals import (SIG_DOMAIN_CREATED, SIG_SETTING_UPDATE,
-                                    SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED,
-                                    SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED,
-                                    SIG_USER_POST_SIGN_UP)
+from supervisr.core.signals import (on_domain_created, on_setting_update,
+                                    on_user_acquirable_relationship_created,
+                                    on_user_acquirable_relationship_deleted,
+                                    on_user_sign_up_post)
 from supervisr.core.utils import get_remote_ip, get_reverse_dns
 
 options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('sv_search_url', 'sv_search_fields',)
@@ -58,7 +58,8 @@ def get_random_string(length=10):
     # Generate a normal UUID, convert it to base64 and take the 10 first chars
     uid = uuid.uuid4()
     # UUID in base64 is 25 chars, we want *length* char length
-    offset = random.randint(0, 25 - length - 1)
+    cryptogen = random.SystemRandom()
+    offset = cryptogen.randint(0, 25 - length - 1)
     # Python3 changed the way we need to encode
     res = base64.b64encode(uid.bytes, altchars=b'_-')
     return res[offset:offset + length].decode("utf-8")
@@ -76,10 +77,8 @@ def get_userid():
 
 @database_catchall(None)
 def get_system_user() -> 'User':
-    """
-    Return supervisr's System User. This is created with the initial Migration,
-    but might not be ID 1
-    """
+    """Return supervisr's System User. This is created with the initial Migration,
+    but might not be ID 1"""
     system_users = User.objects.filter(username=settings.SYSTEM_USER_NAME)
     if system_users.exists():
         return system_users.first()
@@ -328,7 +327,7 @@ class Setting(CreatedUpdatedModel):
 
     def save(self, *args, **kwargs):
         res = super(Setting, self).save(*args, **kwargs)
-        SIG_SETTING_UPDATE.send(sender=self, setting=self)
+        on_setting_update.send(sender=self, setting=self)
         return res
 
     class Meta:
@@ -393,7 +392,7 @@ def relationship_pre_delete(sender, instance, **kwargs):
     """Send signal when relationship is deleted"""
     if sender == UserAcquirableRelationship:
         # Send signal to we are going to be deleted
-        SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED.send(
+        on_user_acquirable_relationship_deleted.send(
             sender=UserAcquirableRelationship,
             relationship=instance)
 
@@ -453,7 +452,7 @@ class UserAcquirableRelationship(models.Model):
         super(UserAcquirableRelationship, self).save(*args, **kwargs)
         if first_save:
             # Trigger event that we were saved
-            SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED.send(
+            on_user_acquirable_relationship_created.send(
                 sender=UserAcquirableRelationship,
                 relationship=self)
 
@@ -605,28 +604,22 @@ class Event(CreatedUpdatedModel):
                                 on_delete=models.CASCADE)
     hidden = models.BooleanField(default=False)
     send_notification = models.BooleanField(default=False)
-    remote_ip = models.GenericIPAddressField(default='0.0.0.0')
+    remote_ip = models.GenericIPAddressField(default='0.0.0.0') # nosec
     remote_ip_rdns = models.TextField(default='')
 
     @property
     def action_parmas(self):
-        """
-        Return action's params as dict
-        """
+        """Return action's params as dict"""
         return json.loads(self.action_parmas_json)
 
     @action_parmas.setter
     def action_params(self, value):
-        """
-        Set action's params from a dict and saves it as json
-        """
+        """Set action's params from a dict and saves it as json"""
         self.action_parmas_json = json.dumps(value)
 
     @property
     def get_url(self):
-        """
-        Returns relative url for action with params
-        """
+        """Returns relative url for action with params"""
         return reverse(self.action_view, kwargs=self.action_parmas)
 
     @property
@@ -636,9 +629,7 @@ class Event(CreatedUpdatedModel):
 
     @property
     def get_localized_age(self):
-        """
-        Return age as a localized String
-        """
+        """Return age as a localized String"""
         now = timezone.now()
         diff = now - self.create_date
         hours = int(diff.seconds / 3600)
@@ -758,7 +749,7 @@ class ProviderInstance(CreatedUpdatedModel, UserAcquirable):
         return self.name
 
 
-@receiver(SIG_USER_POST_SIGN_UP)
+@receiver(on_user_sign_up_post)
 # pylint: disable=unused-argument
 def product_handle_post_signup(sender, signal, user, **kwargs):
     """
@@ -777,6 +768,6 @@ def product_handle_post_signup(sender, signal, user, **kwargs):
 def send_domain_create(sender, signal, instance, created, **kwargs):
     """Send Domain creation signal"""
     if created:
-        SIG_DOMAIN_CREATED.send(
+        on_domain_created.send(
             sender=Domain,
             domain=instance)

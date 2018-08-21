@@ -13,4 +13,5 @@ LOGGER = logging.getLogger(__name__)
 @register.simple_tag
 def markdown(source):
     """Simple tag to render markdown from a variable"""
-    return mark_safe(markdown_render(source, extensions=['markdown.extensions.tables']))
+    # markdown_render returns HTML so we have to mark_safe
+    return mark_safe(markdown_render(source, extensions=['markdown.extensions.tables'])) # nosec

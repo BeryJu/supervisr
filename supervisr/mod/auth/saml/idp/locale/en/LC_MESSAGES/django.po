@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-15 19:28+0200\n"
+"POT-Creation-Date: 2018-08-20 10:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,39 +17,31 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .\forms\settings.py:17
-msgid "Issuer"
-msgstr ""
-
-#: .\forms\settings.py:18
+#: forms/settings.py:18
 msgid "Signing"
 msgstr ""
 
-#: .\forms\settings.py:19
-msgid "Auto-Submit"
-msgstr ""
-
-#: .\forms\settings.py:20
+#: forms/settings.py:19
 msgid "Certificate"
 msgstr ""
 
-#: .\forms\settings.py:21
+#: forms/settings.py:20
 msgid "Private Key"
 msgstr ""
 
-#: .\templates\saml\idp\invalid_user.html:4
+#: templates/saml/idp/invalid_user.html:4
 msgid "You have logged in, but your user account is not enabled for SAML 2.0."
 msgstr ""
 
-#: .\templates\saml\idp\logged_out.html:4
+#: templates/saml/idp/logged_out.html:4
 msgid "You have successfully logged out of the Identity Provider."
 msgstr ""
 
-#: .\templates\saml\idp\login.html:24
+#: templates/saml/idp/login.html:22
 msgid "SSO - Authorize External Source"
 msgstr ""
 
-#: .\templates\saml\idp\login.html:28
+#: templates/saml/idp/login.html:26
 #, python-format
 msgid ""
 "\n"
@@ -57,7 +49,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: .\templates\saml\idp\login.html:33
+#: templates/saml/idp/login.html:31
 #, python-format
 msgid ""
 "\n"
@@ -65,52 +57,52 @@ msgid ""
 "        "
 msgstr ""
 
-#: .\templates\saml\idp\login.html:36
+#: templates/saml/idp/login.html:34
 msgid "Logout"
 msgstr ""
 
-#: .\templates\saml\idp\login.html:40
+#: templates/saml/idp/login.html:38
 msgid "Continue"
 msgstr ""
 
-#: .\templates\saml\idp\login.html:43
+#: templates/saml/idp/login.html:41
 msgid "Cancel"
 msgstr ""
 
-#: .\templates\saml\idp\settings.html:11
+#: templates/saml/idp/settings.html:11
 msgid "SAML2 IDP"
 msgstr ""
 
-#: .\templates\saml\idp\settings.html:16
+#: templates/saml/idp/settings.html:16
 msgid "Settings"
 msgstr ""
 
-#: .\templates\saml\idp\settings.html:23
+#: templates/saml/idp/settings.html:23
 msgid "Update"
 msgstr ""
 
-#: .\templates\saml\idp\settings.html:33
+#: templates/saml/idp/settings.html:33
 msgid "Metadata"
 msgstr ""
 
-#: .\templates\saml\idp\settings.html:41
+#: templates/saml/idp/settings.html:36
+msgid "Cert Fingerprint (SHA1):"
+msgstr ""
+
+#: templates/saml/idp/settings.html:42
 msgid "Download Metadata"
 msgstr ""
 
-#: .\views.py:114
+#: views.py:121
 #, python-format
 msgid "You authenticated %s (via SAML) (skipped Authz)"
 msgstr ""
 
-#: .\views.py:127
+#: views.py:134
 #, python-format
 msgid "You authenticated %s (via SAML)"
 msgstr ""
 
-#: .\views.py:223
-msgid "Settings successfully updated"
-msgstr ""
-
-#: .\views.py:225
-msgid "Failed to update settings"
+#: views.py:224
+msgid "<failed to parse certificate>"
 msgstr ""

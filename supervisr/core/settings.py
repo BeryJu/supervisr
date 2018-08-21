@@ -76,7 +76,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 REQUEST_APPROVAL_PROMPT = 'auto'
 
 CHERRYPY_SERVER = {
-    'socket_host': '0.0.0.0',
+    'socket_host': '0.0.0.0', # nosec
     'socket_port': 8000,
     'thread_pool': 30
 }
@@ -157,7 +157,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-    'supervisr.core.middleware.email_missing_middleware.check_email',
+    'supervisr.core.middleware.redirect_middleware.redirect_middleware',
     'supervisr.core.middleware.impersonate_middleware.impersonate',
     'supervisr.core.middleware.permanent_message_middleware.permanent_message',
     'htmlmin.middleware.HtmlMinifyMiddleware',
@@ -326,6 +326,7 @@ LOGGING = {
                 'WARNING': 'yellow',
                 'ERROR': 'red',
                 'CRITICAL': 'bold_red',
+                'SUCCESS': 'green',
             },
         }
     },
@@ -398,9 +399,6 @@ if DEBUG is True:
     INSTALLED_APPS.append('debug_toolbar')
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
 
-if TEST is True:
-    # Run celery tasks locally in unit tests
-    CELERY_ALWAYS_EAGER = True
 
 # Load subapps's INSTALLED_APPS
 for _app in INSTALLED_APPS:
