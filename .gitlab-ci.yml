@@ -122,7 +122,6 @@ deploy-doc:
   script:
     - 'apt update'
     - 'apt install -y rsync'
-    - 'pip install "tornado<5.0,>=4.1"'
     - "eval $(ssh-agent -s)"
     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
     - 'mkdocs build'
