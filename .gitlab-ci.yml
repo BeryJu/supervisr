@@ -10,6 +10,7 @@ before_script:
   - "cp .gitlab/known_hosts ~/.ssh/"
 
 stages:
+  - test-static
   - test
   - test-db
   - build-release
@@ -25,13 +26,51 @@ services:
   - redis:latest
   - mariadb:latest
 
-# All normal tests
+# Static code analysis
 coverage:
   except:
     - prod
   script:
     - inv ci.coverage
-  stage: test
+  stage: test-static
+isort:
+  except:
+    - prod
+  script:
+    - inv ci.isort
+  stage: test-static
+pyroma:
+  except:
+    - prod
+  script:
+    - inv ci.pyroma
+  stage: test-static
+safety:
+  except:
+    - prod
+  script:
+    - safety check --full-report
+  stage: test-static
+prospector:
+  except:
+    - prod
+  script:
+    - inv ci.prospector
+  stage: test-static
+bandit:
+ except:
+   - prod
+ script:
+   - bandit -x migrations/ -r supervisr/
+ stage: test-static
+pylint:
+  except:
+    - prod
+  script:
+    - inv ci.lint
+  stage: test-static
+
+# Tests
 pip_install:
   before_script:
     - "python3 -m pip install -U virtualenv"
@@ -43,47 +82,11 @@ pip_install:
     - "pip install git+${CI_REPOSITORY_URL}@${CI_COMMIT_REF_NAME}#egg=supervisr[dev]"
     - "cp -R ./env/lib/python*/site-packages/supervisr/cli/_seed/* ."
     - "python manage.py migrate"
-isort:
-  except:
-    - prod
-  script:
-    - inv ci.isort
-  stage: test
-pyroma:
-  except:
-    - prod
-  script:
-    - inv ci.pyroma
-  stage: test
-safety:
-  except:
-    - prod
-  script:
-    - safety check --full-report
-  stage: test
-prospector:
-  except:
-    - prod
-  script:
-    - inv ci.prospector
-  stage: test
 check_template_syntax:
   except:
     - prod
   script:
     - ./manage.py check_template_syntax
-  stage: test
-bandit:
- except:
-   - prod
- script:
-   - bandit -x migrations/ -r supervisr/
- stage: test
-pylint:
-  except:
-    - prod
-  script:
-    - inv ci.lint
   stage: test
 unittest:
   except:
@@ -100,16 +103,26 @@ migration_mariadb:
     - inv supervisr.migrate
   stage: test-db
 
-# Release test
+# Build releases
 bundle_release:
-  before_script:
-    - ''
-  image: debian:stable
   script:
     - apt install -y libncurses5-dev libglib2.0-dev libgeoip-dev libtokyocabinet-dev zlib1g-dev libncursesw5-dev build-essential libbz2-dev dh-autoreconf dh-python dh-systemd dh-virtualenv dpkg-dev debhelper dh-exec
-    - dpkg-buildpackage -us -uc
+    - inv build.debian
   only:
     - tags
+    - 229-appliance-packaging
+  stage: build-release
+bundle_release:
+  script:
+    - apt install -y packer
+    - inv build.appliance
+  artifacts:
+    paths:
+      - build/packer/output-supervisr-debian/packer-supervisr-debian.ova
+    expire_in: 1 day
+  only:
+    - tags
+    - 229-appliance-packaging
   stage: build-release
 
 # Deploy documentation

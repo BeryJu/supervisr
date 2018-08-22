@@ -21,7 +21,8 @@ nav:
       - 'Index size': 'faq/mysql/index_size.md'
     - "error'str' object has no attribute 'tzinfo'": 'faq/error_str_object_has_no_attribute_tzinfo.md'
   - 'Installation':
-    - 'Debian Packages': 'installation/debian_packages.md'
+    - 'Debian Packages': 'installation/debian_package.md'
+    - 'Docker': 'installation/docker.md'
     - 'From source': 'installation/source.md'
     - 'Error reporting': 'installation/error_reporting.md'
   - 'Modules':

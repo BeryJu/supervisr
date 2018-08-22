@@ -28,7 +28,7 @@ def debian(ctx, signed=False, cleanup=True):
         ctx.run('rm -rf debian/')
 
 @task
-def docker(ctx, push=False):
+def docker(ctx):
     """Build debian package"""
     ctx.run('docker-compose --file build/docker/docker-compose.yml build supervisr')
     ctx.run('docker-compose --file build/docker/docker-compose.debug.yml up')

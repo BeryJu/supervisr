@@ -1,5 +1,4 @@
-# Installation of Supervisr
-
+# Debian installation of supervisr
 
 #### Add the repo Key
 

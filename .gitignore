@@ -99,7 +99,6 @@ ENV/
 
 # Local settings
 local_settings.py
-build/
 
 # Compiled HTML files
 *.html.py
