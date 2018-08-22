@@ -10,7 +10,7 @@ LOGGER = SupervisrLogger(__name__)
 def appliance(ctx):
     """Build supervisr appliance using packer"""
     modules = ['puppetlabs-mysql', 'puppetlabs-apt', 'arioch-redis']
-    with ctx.cd('packer'):
+    with ctx.cd('build/packer'):
         for module in modules:
             ctx.run('puppet module install -i puppet/ %s' % module)
         LOGGER.success('Successfully prepared puppet modules.')
@@ -31,4 +31,5 @@ def debian(ctx, signed=False, cleanup=True):
 def docker(ctx):
     """Build debian package"""
     ctx.run('docker-compose --file build/docker/docker-compose.yml build supervisr')
-    ctx.run('docker-compose --file build/docker/docker-compose.debug.yml up')
+    ctx.run(('docker-compose --file build/docker/docker-compose.debug.yml run supervisr '
+             'build/docker/start_wrapper.sh "inv ci.unittest"'))
