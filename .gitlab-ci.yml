@@ -27,12 +27,6 @@ services:
   - mariadb:latest
 
 # Static code analysis
-coverage:
-  except:
-    - prod
-  script:
-    - inv ci.coverage
-  stage: test-static
 isort:
   except:
     - prod
@@ -94,6 +88,12 @@ unittest:
   script:
     - inv ci.unittest
   stage: test
+coverage:
+  except:
+    - prod
+  script:
+    - inv ci.coverage
+  stage: test
 
 # Test Database migrations
 migration_mariadb:
@@ -104,17 +104,17 @@ migration_mariadb:
   stage: test-db
 
 # Build releases
-bundle_release:
+build-debian:
   script:
-    - apt install -y libncurses5-dev libglib2.0-dev libgeoip-dev libtokyocabinet-dev zlib1g-dev libncursesw5-dev build-essential libbz2-dev dh-autoreconf dh-python dh-systemd dh-virtualenv dpkg-dev debhelper dh-exec
+    - apt-get update && apt-get install -y libncurses5-dev libglib2.0-dev libgeoip-dev libtokyocabinet-dev zlib1g-dev libncursesw5-dev build-essential libbz2-dev dh-autoreconf dh-python dh-systemd dh-virtualenv dpkg-dev debhelper dh-exec
     - inv build.debian
   only:
     - tags
     - 229-appliance-packaging
   stage: build-release
-bundle_release:
+build-appliance:
   script:
-    - apt install -y packer
+    - apt-get update && apt-get install -y packer
     - inv build.appliance
   artifacts:
     paths:
