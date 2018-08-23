@@ -112,6 +112,8 @@ build-docker:
   before_script: []
   script:
     - docker info
+    - sudo curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+    - sudo chmod +x /usr/local/bin/docker-compose
     - docker-compose --file build/docker/docker-compose.yml build supervisr
     - docker-compose --file build/docker/docker-compose.yml run supervisr build/docker/start_wrapper.sh "inv ci.unittest"
   only:
@@ -130,7 +132,9 @@ build-appliance:
   script:
     - wget https://apt.puppetlabs.com/puppet5-release-stretch.deb
     - dpkg -i puppet5-release-stretch.deb
-    - apt-get update && apt-get install -y packer puppet-agent
+    - apt-get update && apt-get install -y puppet-agent
+    - wget https://releases.hashicorp.com/packer/1.2.5/packer_1.2.5_linux_amd64.zip
+    - unzip packer_1.2.5_linux_amd64.zip -d /bin
     - inv build.appliance
   artifacts:
     paths:
