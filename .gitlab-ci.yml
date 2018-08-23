@@ -109,6 +109,7 @@ migration_mariadb:
 # Build releases
 build-docker:
   image: docker:stable
+  before_script: []
   script:
     - docker info
     - docker-compose --file build/docker/docker-compose.yml build supervisr
@@ -127,7 +128,9 @@ build-debian:
   stage: build-release
 build-appliance:
   script:
-    - apt-get update && apt-get install -y packer
+    - wget https://apt.puppetlabs.com/puppet5-release-stretch.deb
+    - dpkg -i puppet5-release-stretch.deb
+    - apt-get update && apt-get install -y packer puppet-agent
     - inv build.appliance
   artifacts:
     paths:

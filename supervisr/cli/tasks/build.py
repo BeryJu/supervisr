@@ -12,7 +12,7 @@ def appliance(ctx):
     modules = ['puppetlabs-mysql', 'puppetlabs-apt', 'arioch-redis']
     with ctx.cd('build/packer'):
         for module in modules:
-            ctx.run('puppet module install -i puppet/ %s' % module)
+            ctx.run('/opt/puppetlabs/bin/puppet module install -i puppet/ %s' % module)
         LOGGER.success('Successfully prepared puppet modules.')
         ctx.run('packer build packer.json')
 
