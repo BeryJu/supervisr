@@ -8,7 +8,6 @@ before_script:
   - "pip install --no-cache-dir -U -r requirements.txt -r requirements-dev.txt"
   - "mkdir ~/.ssh"
   - "cp .gitlab/known_hosts ~/.ssh/"
-  - docker info
 
 stages:
   - test-static
@@ -111,6 +110,7 @@ migration_mariadb:
 build-docker:
   image: docker:stable
   script:
+    - docker info
     - docker-compose --file build/docker/docker-compose.yml build supervisr
     - docker-compose --file build/docker/docker-compose.yml run supervisr build/docker/start_wrapper.sh "inv ci.unittest"
   only:
