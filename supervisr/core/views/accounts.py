@@ -167,7 +167,7 @@ class LoginView(View):
 
 @method_decorator(anonymous_required, name='dispatch')
 @method_decorator(require_setting('supervisr.core/signup:enabled', True), name='dispatch')
-class SignupView(View):
+class SignUpView(View):
     """View to handle Signup requests"""
 
     def render(self, request: HttpRequest, form: LoginForm) -> HttpResponse:
@@ -247,7 +247,7 @@ class SignupView(View):
         form = SignupForm(request.POST)
         if form.is_valid():
             try:
-                SignupView.create_user(form.cleaned_data, request)
+                SignUpView.create_user(form.cleaned_data, request)
                 messages.success(request, _("Successfully signed up!"))
                 LOGGER.debug("Successfully signed up %s",
                              form.cleaned_data.get('email'))

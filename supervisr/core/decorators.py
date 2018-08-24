@@ -1,6 +1,4 @@
-"""
-supervisr view decorators
-"""
+"""supervisr view decorators"""
 
 import base64
 from time import time as timestamp

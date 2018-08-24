@@ -19,7 +19,7 @@ from supervisr.core.forms.setup import (AdminUserForm, PostInstallForm,
                                         SystemRequirementsForm, WelcomeForm)
 from supervisr.core.models import Setting, User
 from supervisr.core.utils import is_database_synchronized
-from supervisr.core.views.accounts import LoginView, SignupView
+from supervisr.core.views.accounts import LoginView, SignUpView
 from supervisr.core.views.generic import AnonymousRequiredMixin
 from supervisr.core.views.wizards import NamedWizard
 
@@ -65,6 +65,7 @@ class SetupWizard(AnonymousRequiredMixin, NamedWizard):
     wizard_size = 'xl'
     migration_progress = {}
     __should_create_user = False
+    __is_upgrade = False
 
     def get_form(self, step=None, data=None, files=None):
         if step is None:
@@ -89,11 +90,14 @@ class SetupWizard(AnonymousRequiredMixin, NamedWizard):
             context['migration_status'] = self.migration_progress
         # Store state of install for template so we can show different texts for fresh installs
         # vs upgrades
-        context['is_upgrade'] = not user_step_condition(self)
+        context['is_upgrade'] = self.__is_upgrade
         return context
 
     def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """Check if this is actually a fresh install, otherwise skip setup"""
+        if not is_database_synchronized() or not user_step_condition(self):
+            self.__is_upgrade = True
+            self.title = _('supervisr Upgrade')
         if is_database_synchronized() and not settings.TEST:
             # If database has been migrated already, check if we're still fresh installed or not
             if not Setting.get_bool('setup:is_fresh_install'):
@@ -106,7 +110,7 @@ class SetupWizard(AnonymousRequiredMixin, NamedWizard):
                          None)
         if user_form:
             # re-use SignupView's create_user
-            user = SignupView.create_user(user_form.cleaned_data, request=self.request,
+            user = SignUpView.create_user(user_form.cleaned_data, request=self.request,
                                           needs_confirmation=False)
             user.is_staff = True
             user.is_superuser = True

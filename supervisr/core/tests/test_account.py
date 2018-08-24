@@ -41,7 +41,7 @@ class TestAccount(TestCase):
 
     def test_signup_view(self):
         """Test account.signup view (Anonymous)"""
-        res = test_request(accounts.SignupView.as_view())
+        res = test_request(accounts.SignUpView.as_view())
         self.assertEqual(res.status_code, 200)
 
     def test_login_view(self):
@@ -64,7 +64,7 @@ class TestAccount(TestCase):
 
     def test_signup_view_auth(self):
         """Test account.signup view (Authenticated)"""
-        res = test_request(accounts.SignupView.as_view(), user=self.system_user)
+        res = test_request(accounts.SignUpView.as_view(), user=self.system_user)
         self.assertEqual(res.status_code, 302)
 
     def test_login_view_auth(self):
@@ -77,7 +77,7 @@ class TestAccount(TestCase):
         signup_form = SignupForm(self.signup_data)
         self.assertTrue(signup_form.is_valid())
 
-        signup_res = test_request(accounts.SignupView.as_view(),
+        signup_res = test_request(accounts.SignUpView.as_view(),
                                   method='POST',
                                   req_kwargs=signup_form.cleaned_data)
         self.assertEqual(signup_res.status_code, 302)
@@ -98,7 +98,7 @@ class TestAccount(TestCase):
         form = SignupForm(self.signup_data)
         self.assertTrue(form.is_valid())
 
-        res = test_request(accounts.SignupView.as_view(),
+        res = test_request(accounts.SignUpView.as_view(),
                            method='POST',
                            req_kwargs=form.cleaned_data)
         self.assertEqual(res.status_code, 302)
@@ -108,7 +108,7 @@ class TestAccount(TestCase):
         signup_form = SignupForm(self.signup_data)
         self.assertTrue(signup_form.is_valid())
 
-        signup_res = test_request(accounts.SignupView.as_view(),
+        signup_res = test_request(accounts.SignUpView.as_view(),
                                   method='POST',
                                   req_kwargs=signup_form.cleaned_data)
         self.assertEqual(signup_res.status_code, 302)
@@ -143,7 +143,7 @@ class TestAccount(TestCase):
         form = SignupForm(self.signup_data)
         self.assertTrue(form.is_valid())
 
-        res = test_request(accounts.SignupView.as_view(),
+        res = test_request(accounts.SignUpView.as_view(),
                            method='POST',
                            req_kwargs=form.cleaned_data)
         self.assertEqual(res.status_code, 302)
@@ -158,7 +158,7 @@ class TestAccount(TestCase):
         form = SignupForm(self.signup_data)
         self.assertTrue(form.is_valid())
 
-        res = test_request(accounts.SignupView.as_view(),
+        res = test_request(accounts.SignUpView.as_view(),
                            method='POST',
                            req_kwargs=form.cleaned_data)
         self.assertEqual(res.status_code, 302)
@@ -185,7 +185,7 @@ class TestAccount(TestCase):
         signup_form = SignupForm(self.signup_data)
         self.assertTrue(signup_form.is_valid())
 
-        signup_res = test_request(accounts.SignupView.as_view(),
+        signup_res = test_request(accounts.SignUpView.as_view(),
                                   method='POST',
                                   req_kwargs=signup_form.cleaned_data)
         self.assertEqual(signup_res.status_code, 302)
