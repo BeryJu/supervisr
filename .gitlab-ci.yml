@@ -22,12 +22,9 @@ variables:
   MYSQL_DATABASE: supervisr_test
   MYSQL_ROOT_PASSWORD: 'EK-5jnKfjrGRm<77'
   SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_ci
-  DOCKER_HOST: tcp://docker:2375/
-  DOCKER_DRIVER: overlay2
 services:
   - redis:latest
   - mariadb:latest
-  - docker:dind
 
 # Static code analysis
 isort:
@@ -91,6 +88,9 @@ unittest:
   script:
     - inv ci.unittest
   stage: test
+  artifacts:
+    reports:
+      junit: unittest.xml
 coverage:
   except:
     - prod
@@ -107,43 +107,44 @@ migration_mariadb:
   stage: test-db
 
 # Build releases
-build-docker:
-  image: docker:stable
-  before_script: []
-  script:
-    - docker info
-    - curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-    - chmod +x /usr/local/bin/docker-compose
-    - docker-compose --file build/docker/docker-compose.yml build supervisr
-    - docker-compose --file build/docker/docker-compose.yml run supervisr build/docker/start_wrapper.sh "inv ci.unittest"
-  only:
-    - tags
-    - 229-appliance-packaging
-  stage: build-release
-build-debian:
-  script:
-    - apt-get update && apt-get install -y libncurses5-dev libglib2.0-dev libgeoip-dev libtokyocabinet-dev zlib1g-dev libncursesw5-dev build-essential libbz2-dev dh-autoreconf dh-python dh-systemd dh-virtualenv dpkg-dev debhelper dh-exec
-    - inv build.debian
-  only:
-    - tags
-    - 229-appliance-packaging
-  stage: build-release
-build-appliance:
-  script:
-    - wget https://apt.puppetlabs.com/puppet5-release-stretch.deb
-    - dpkg -i puppet5-release-stretch.deb
-    - apt-get update && apt-get install -y puppet-agent unzip
-    - wget https://releases.hashicorp.com/packer/1.2.5/packer_1.2.5_linux_amd64.zip
-    - unzip packer_1.2.5_linux_amd64.zip -d /bin
-    - inv build.appliance
-  artifacts:
-    paths:
-      - build/packer/output-supervisr-debian/packer-supervisr-debian.ova
-    expire_in: 1 day
-  only:
-    - tags
-    - 229-appliance-packaging
-  stage: build-release
+# build-docker:
+#   image: docker:stable
+#   before_script: []
+#   script:
+#     - docker info
+#     - apt-get update && apt-get install -y curl
+#     - curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+#     - chmod +x /usr/local/bin/docker-compose
+#     - docker-compose --file build/docker/docker-compose.yml build supervisr
+#     - docker-compose --file build/docker/docker-compose.yml run supervisr build/docker/start_wrapper.sh "inv ci.unittest"
+#   only:
+#     - tags
+#     - 229-appliance-packaging
+#   stage: build-release
+# build-debian:
+#   script:
+#     - apt-get update && apt-get install -y libncurses5-dev libglib2.0-dev libgeoip-dev libtokyocabinet-dev zlib1g-dev libncursesw5-dev build-essential libbz2-dev dh-autoreconf dh-python dh-systemd dh-virtualenv dpkg-dev debhelper dh-exec
+#     - inv build.debian
+#   only:
+#     - tags
+#     - 229-appliance-packaging
+#   stage: build-release
+# build-appliance:
+#   script:
+#     - wget https://apt.puppetlabs.com/puppet5-release-stretch.deb
+#     - dpkg -i puppet5-release-stretch.deb
+#     - apt-get update && apt-get install -y puppet-agent unzip
+#     - wget https://releases.hashicorp.com/packer/1.2.5/packer_1.2.5_linux_amd64.zip
+#     - unzip packer_1.2.5_linux_amd64.zip -d /bin
+#     - inv build.appliance
+#   artifacts:
+#     paths:
+#       - build/packer/output-supervisr-debian/packer-supervisr-debian.ova
+#     expire_in: 1 day
+#   only:
+#     - tags
+#     - 229-appliance-packaging
+#   stage: build-release
 
 # Deploy documentation
 deploy-doc:

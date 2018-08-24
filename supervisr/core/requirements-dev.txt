@@ -16,3 +16,4 @@ tornado>=5.0
 pyroma<2.4
 safety
 bandit<1.5.0
+unittest-xml-reporting

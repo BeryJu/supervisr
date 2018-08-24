@@ -390,6 +390,9 @@ LOGGER.warning("Running with database '%s' (backend=%s)", DATABASES['default']['
                DATABASES['default']['ENGINE'])
 
 TEST = False
+TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
+TEST_OUTPUT_FILE_NAME = 'unittest.xml'
+
 if 'test' in sys.argv:
     # LOGGING = None
     TEST = True
