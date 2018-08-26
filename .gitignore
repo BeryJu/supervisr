@@ -181,3 +181,5 @@ site/
 debian/files
 debian/supervisr.substvars
 debian/supervisr/
+
+unittest.xml

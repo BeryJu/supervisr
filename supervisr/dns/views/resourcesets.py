@@ -66,7 +66,7 @@ class ResourceSetDeleteView(GenericDeleteView):
     model = ResourceSet
 
     def redirect(self, instance):
-        return redirect(reverse('supervisr_dns:dns-index'))
+        return redirect(reverse('supervisr_dns:index'))
 
     def get_instance(self):
         return ResourceSet.objects.filter(uuid=self.kwargs.get('rset_uuid'),

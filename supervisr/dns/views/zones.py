@@ -35,7 +35,7 @@ class ZoneNewView(BaseWizardView):
     form_list = [ZoneForm]
 
     def get_form(self, step=None, data=None, files=None):
-        form = super(ZoneNewView, self).get_form(step, data, files)
+        form = super().get_form(step, data, files)
         if step is None:
             step = self.steps.current
         if step == '0':

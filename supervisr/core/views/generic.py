@@ -76,7 +76,7 @@ class GenericModelView(LoginRequiredMixin):
             return self.model.filter(pk=self.kwargs.get('pk'))
         raise NotImplementedError()
 
-    def __redirect_helper(self, *args, **kwargs) -> HttpResponse:
+    def _redirect_helper(self, *args, **kwargs) -> HttpResponse:
         """self.redirect may return a string. In this case, reverse
         string into a HttpRedirectResponse."""
         if 'back' in self.request.GET:
@@ -191,7 +191,7 @@ class GenericUpdateView(GenericModelView):
             self.save(form)
             messages.success(self.request, _('Successfully edited %(verbose_name)s'
                                              % {'verbose_name': self.model_verbose_name}))
-            return self.__redirect_helper(instance)
+            return self._redirect_helper(instance)
         return self.render(form)
 
 
@@ -220,5 +220,5 @@ class GenericDeleteView(GenericModelView):
             instance.delete()
             messages.success(self.request, _('Successfully deleted %(verbose_name)s'
                                              % {'verbose_name': self.model_verbose_name}))
-            return self.__redirect_helper(instance)
+            return self._redirect_helper(instance)
         return self.render(instance)

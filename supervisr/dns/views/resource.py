@@ -1,6 +1,4 @@
-"""
-Supervisr DNS resource views
-"""
+"""Supervisr DNS resource views"""
 
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, reverse
@@ -29,7 +27,7 @@ class ResourceCreateView(BaseWizardView):
             model=resource,
             user=self.request.user)
         messages.success(self.request, _('Record Resource successfully created'))
-        return redirect(reverse('supervisr_dns:rset-read', kwargs={'rset_uuid': rset.uuid}))
+        return redirect(reverse('supervisr_dns:rset-view', kwargs={'rset_uuid': rset.uuid}))
 
 
 class ResourceUpdateView(GenericUpdateView):
@@ -40,9 +38,7 @@ class ResourceUpdateView(GenericUpdateView):
     form = ResourceForm
 
     def redirect(self, instance):
-        if 'back' in self.request.GET:
-            return redirect(self.request.GET.get('back'))
-        return redirect(reverse('supervisr_dns:index'))
+        return 'supervisr_dns:index'
 
     def get_instance(self):
         return Resource.objects.filter(uuid=self.kwargs.get('resource_uuid'),
@@ -55,9 +51,7 @@ class ResourceDeleteView(GenericDeleteView):
     model = Resource
 
     def redirect(self, instance):
-        if 'back' in self.request.GET:
-            return redirect(self.request.GET.get('back'))
-        return redirect(reverse('supervisr_dns:index'))
+        return 'supervisr_dns:index'
 
     def get_instance(self):
         return Resource.objects.filter(uuid=self.kwargs.get('resource_uuid'),

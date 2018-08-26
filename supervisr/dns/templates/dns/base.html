@@ -20,9 +20,10 @@
     <section class="nav-group">
       <a href="{% url 'supervisr_dns:rset-create' %}" class="nav-link {% is_active 'rset-create' %}">{% trans "Resource Sets" %}</a>
       <ul class="nav-list">
-        {% related_models 'supervisr.dns.models.ResourceSet' as rsets %} {% for r in rsets %}
+        {% related_models 'supervisr.dns.models.ResourceSet' as rsets %}
+        {% for r in rsets %}
         <li>
-          <a href="{% url 'supervisr_dns:rset-read' rset_uuid=r.uuid %}" class="nav-link {% is_active_url 'supervisr_dns:rset-read' rset_uuid=r.uuid %}">{{ r.name }}</a>
+          <a href="{% url 'supervisr_dns:rset-view' rset_uuid=r.uuid %}" class="nav-link {% is_active_url 'supervisr_dns:rset-view' rset_uuid=r.uuid %}">{{ r.name }}</a>
         </li>
         {% endfor %}
       </ul>

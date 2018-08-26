@@ -36,6 +36,8 @@ def provider_resolve_helper(provider_pk: int, model_path: str, model_pk: int):
     model_instance = get_instance(model_class, model_pk)
     # Do the actual translator lookup
     translator = multiplexer.get_translator(model_instance, root_provider)
+    if not translator:
+        return None
     # Convert to provider_object, this fuction wraps the errors
     # and converts them to SupervisrProviderException
     try:

@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^resource_set/create/$',
         resourcesets.ResourceSetCreateView.as_view(), name='rset-create'),
     url(r'^resource_set/(?P<rset_uuid>%s)/$' % UUID_REGEX,
-        resourcesets.ResourceSetReadView.as_view(), name='rset-read'),
+        resourcesets.ResourceSetReadView.as_view(), name='rset-view'),
     url(r'^resource_set/(?P<rset_uuid>%s)/update/$' % UUID_REGEX,
         resourcesets.ResourceSetUpdateView.as_view(), name='rset-update'),
     url(r'^resource_set/(?P<rset_uuid>%s)/delete/$' % UUID_REGEX,
