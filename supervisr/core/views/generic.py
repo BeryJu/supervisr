@@ -1,5 +1,6 @@
 """Generic, reusable Class-based views"""
 import warnings
+from typing import Union
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -8,7 +9,7 @@ from django.db import models
 from django.db.models.query import QuerySet
 from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views import View
@@ -51,7 +52,7 @@ class GenericModelView(LoginRequiredMixin):
     def __init__(self, *args, **kwargs):
         super(GenericModelView, self).__init__(*args, **kwargs)
         if self.template is not None:
-            warnings.warn("self.template is deprected in favor of self.template_name",
+            warnings.warn("self.template is deprecated in favor of self.template_name",
                           DeprecationWarning)
             self.template_name = self.template
         if self.template_name is None:
@@ -75,7 +76,17 @@ class GenericModelView(LoginRequiredMixin):
             return self.model.filter(pk=self.kwargs.get('pk'))
         raise NotImplementedError()
 
-    def redirect(self, instance) -> HttpResponse:
+    def __redirect_helper(self, *args, **kwargs) -> HttpResponse:
+        """self.redirect may return a string. In this case, reverse
+        string into a HttpRedirectResponse."""
+        if 'back' in self.request.GET:
+            return redirect(self.request.GET.get('back'))
+        response = self.redirect(*args, **kwargs)
+        if isinstance(response, str):
+            return redirect(reverse(response))
+        return response
+
+    def redirect(self, instance) -> Union[HttpResponse, str]:
         """Redirect after a successful write operation"""
         raise NotImplementedError()
 
@@ -91,8 +102,8 @@ class GenericIndexView(GenericModelView):
         """Add additional data to render kwargs"""
         return kwargs
 
-    def redirect(self, instance) -> HttpResponse:
-        """This method isnt used by GenericIndexView"""
+    def redirect(self, instance) -> Union[HttpResponse, str]:
+        """This method isn't used by GenericIndexView"""
         pass
 
     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
@@ -123,7 +134,7 @@ class GenericReadView(GenericModelView):
         """Add additional data to render kwargs"""
         return kwargs
 
-    def redirect(self, instance) -> HttpResponse:
+    def redirect(self, instance) -> Union[HttpResponse, str]:
         """Since this a read-only view we don't need this method"""
         pass
 
@@ -180,7 +191,7 @@ class GenericUpdateView(GenericModelView):
             self.save(form)
             messages.success(self.request, _('Successfully edited %(verbose_name)s'
                                              % {'verbose_name': self.model_verbose_name}))
-            return self.redirect(instance)
+            return self.__redirect_helper(instance)
         return self.render(form)
 
 
@@ -209,5 +220,5 @@ class GenericDeleteView(GenericModelView):
             instance.delete()
             messages.success(self.request, _('Successfully deleted %(verbose_name)s'
                                              % {'verbose_name': self.model_verbose_name}))
-            return self.redirect(instance)
+            return self.__redirect_helper(instance)
         return self.render(instance)
