@@ -88,16 +88,16 @@ class BaseProvider(object):
             self.ui_name = _('BaseProvider')
 
 
-def get_providers(capabilities=None, path=False):
+def get_providers(capabilities=None, path=False) -> list:
     """Get all providers, and filter their sub providers"""
 
     def walk(root):
         """Recursively walk subclasses of <root>"""
-        sub = root.__subclasses__()
+        subclasses = root.__subclasses__()
         result = []
-        if sub != []:
-            for _sub in sub:
-                result += walk(_sub)
+        if subclasses != []:
+            for subclass in subclasses:
+                result += walk(subclass)
         # else:
         if root != BaseProvider:
             result += [root]
@@ -121,5 +121,5 @@ def get_providers(capabilities=None, path=False):
                 valid.append(provider)
     # if path is True, convert classes to dotted path
     if path:
-        return [class_to_path(p) for p in valid]
-    return sorted(valid, key=lambda el: el.Meta(None).ui_name)
+        return [class_to_path(provider) for provider in valid]
+    return sorted(valid, key=lambda provider: provider.Meta(None).ui_name)

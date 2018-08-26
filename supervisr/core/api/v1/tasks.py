@@ -3,7 +3,7 @@
 from django.http import HttpRequest
 
 from supervisr.core.api.base import API
-from supervisr.core.progress import Progress
+from supervisr.core.tasks import Progress
 
 
 class TaskAPI(API):

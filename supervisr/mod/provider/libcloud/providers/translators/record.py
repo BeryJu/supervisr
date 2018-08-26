@@ -8,7 +8,7 @@ from supervisr.core.providers.exceptions import (ProviderObjectNotFoundException
                                                  ProviderRetryException)
 from supervisr.core.providers.objects import (ProviderObject,
                                               ProviderObjectTranslator,
-                                              ProviderrResult)
+                                              ProviderResult)
 from supervisr.dns.models import Record
 
 
@@ -30,12 +30,12 @@ class LCloudRecordObject(ProviderObject):
             #     extra=extra
             # )
         except NotImplementedError:
-            return ProviderrResult.NOT_IMPLEMENTED
+            return ProviderResult.NOT_IMPLEMENTED
         except RecordAlreadyExistsError:
-            return ProviderrResult.EXISTS_ALREADY
+            return ProviderResult.EXISTS_ALREADY
         except BaseHTTPError as exc:
             raise ProviderRetryException from exc
-        return ProviderrResult.SUCCESS
+        return ProviderResult.SUCCESS
 
     def delete(self):
         """Delete this instance"""
@@ -46,7 +46,7 @@ class LCloudRecordObject(ProviderObject):
             #         _zone = zone
             # if self.translator.provider_instance.driver.delete_zone(_zone):
             #     return ProviderrResult.SUCCESS
-            return ProviderrResult.OTHER_ERROR
+            return ProviderResult.OTHER_ERROR
         except BaseHTTPError as exc:
             raise ProviderRetryException from exc
 

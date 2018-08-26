@@ -5,7 +5,7 @@ from typing import List
 from django.db.models import Model
 
 from supervisr.core.celery import CELERY_APP
-from supervisr.core.providers.base import BaseProvider
+from supervisr.core.providers.base import BaseProvider, get_providers
 from supervisr.core.providers.objects import ProviderObjectTranslator
 from supervisr.core.utils import class_to_path
 
@@ -14,6 +14,11 @@ LOGGER = getLogger(__name__)
 
 class ProviderMultiplexer(object):
     """Multiplex signals to all relevent providers"""
+
+    def create_queues(self):
+        """Walk through all providers and create all needed queues"""
+        for provider in get_providers(path=True):
+            CELERY_APP.control.add_consumer(provider)
 
     def get_translator(self, instance: Model, root_provider: BaseProvider, iteration=0)\
             -> ProviderObjectTranslator:
@@ -38,7 +43,7 @@ class ProviderMultiplexer(object):
         LOGGER.debug("instance %r, providers %r", instance, providers)
         for provider in providers:
             args = (provider.pk, class_to_path(instance.__class__), instance.pk, created)
-            queue = provider.provider.__class__.__name__
+            queue = class_to_path(provider.provider.__class__)
             CELERY_APP.control.add_consumer(queue)
             invoker.task_apply_async(provider_do_save, *args, celery_kwargs={
                 'queue': queue
@@ -52,7 +57,7 @@ class ProviderMultiplexer(object):
         LOGGER.debug("instance %r, providers %r", instance, providers)
         for provider in providers:
             args = (provider.pk, class_to_path(instance.__class__), instance.pk)
-            queue = provider.provider.__class__.__name__
+            queue = class_to_path(provider.provider.__class__)
             CELERY_APP.control.add_consumer(queue)
             invoker.task_apply_async(provider_do_delete, *args, celery_kwargs={
                 'queue': queue

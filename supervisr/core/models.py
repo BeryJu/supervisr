@@ -32,12 +32,12 @@ from django.utils.translation import ugettext as _
 from supervisr.core import fields
 from supervisr.core.decorators import database_catchall
 from supervisr.core.decorators import time as time_method
-from supervisr.core.progress import Progress
 from supervisr.core.providers.base import BaseProvider
 from supervisr.core.signals import (on_domain_created, on_setting_update,
                                     on_user_acquirable_relationship_created,
                                     on_user_acquirable_relationship_deleted,
                                     on_user_sign_up_post)
+from supervisr.core.tasks import Progress
 from supervisr.core.utils import get_remote_ip, get_reverse_dns
 
 options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('sv_search_url', 'sv_search_fields',)

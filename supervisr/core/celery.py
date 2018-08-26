@@ -24,12 +24,13 @@ class Celery(celery.Celery):
     def on_configure(self):
         """Update raven client"""
         client = Client(settings.SENTRY_DSN)
-
         # register a custom filter to filter out duplicate logs
         register_logger_signal(client)
-
         # hook into the Celery error handler
         register_signal(client)
+        # Create all needed queues
+        from supervisr.core.providers.multiplexer import ProviderMultiplexer
+        ProviderMultiplexer().create_queues()
 
 
 # pylint: disable=unused-argument

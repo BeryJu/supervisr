@@ -5,7 +5,7 @@ from typing import Generic, List, TypeVar
 T = TypeVar('T')
 
 
-class ProviderrResult(IntEnum):
+class ProviderResult(IntEnum):
     """All Possible provider results"""
 
     SUCCESS = 0
@@ -30,14 +30,14 @@ class ProviderObject(object):
             setattr(self, key, value)
 
     # pylint: disable=unused-argument
-    def save(self, created: bool) -> ProviderrResult:
+    def save(self, created: bool) -> ProviderResult:
         """Save this instance to provider. Should return True if a new object was saved
         and False if an existing object was modified"""
-        return ProviderrResult.NOT_IMPLEMENTED
+        return ProviderResult.NOT_IMPLEMENTED
 
-    def delete(self) -> ProviderrResult:
+    def delete(self) -> ProviderResult:
         """Delete this instance from provider"""
-        return ProviderrResult.NOT_IMPLEMENTED
+        return ProviderResult.NOT_IMPLEMENTED
 
 
 class ProviderObjectTranslator(Generic[T]):

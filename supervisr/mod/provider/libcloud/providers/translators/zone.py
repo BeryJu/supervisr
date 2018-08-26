@@ -9,7 +9,7 @@ from supervisr.core.providers.exceptions import (ProviderObjectNotFoundException
                                                  ProviderRetryException)
 from supervisr.core.providers.objects import (ProviderObject,
                                               ProviderObjectTranslator,
-                                              ProviderrResult)
+                                              ProviderResult)
 from supervisr.dns.models import Zone
 
 TYPE_FIXES = {
@@ -39,14 +39,14 @@ class LCloudZoneObject(ProviderObject):
                 )
             else:
                 LOGGER.warning("libcloud Zone updating not implemented")
-                return ProviderrResult.NOT_IMPLEMENTED
+                return ProviderResult.NOT_IMPLEMENTED
         except NotImplementedError:
-            return ProviderrResult.NOT_IMPLEMENTED
+            return ProviderResult.NOT_IMPLEMENTED
         except ZoneAlreadyExistsError:
-            return ProviderrResult.EXISTS_ALREADY
+            return ProviderResult.EXISTS_ALREADY
         except BaseHTTPError as exc:
             raise ProviderRetryException from exc
-        return ProviderrResult.SUCCESS
+        return ProviderResult.SUCCESS
 
     def delete(self):
         """Delete this instance"""
@@ -57,8 +57,8 @@ class LCloudZoneObject(ProviderObject):
                     _zone = zone
             if _zone:
                 if self.translator.provider_instance.driver.delete_zone(_zone):
-                    return ProviderrResult.SUCCESS
-            return ProviderrResult.OTHER_ERROR
+                    return ProviderResult.SUCCESS
+            return ProviderResult.OTHER_ERROR
         except BaseHTTPError as exc:
             raise ProviderRetryException from exc
 
