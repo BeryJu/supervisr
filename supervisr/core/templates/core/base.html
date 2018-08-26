@@ -11,6 +11,7 @@
 <div class="main-container clr-root-container">
   {% block main_container %}
   {% block messages %}
+    {% include 'blocks/cookie_message.html' %}
     {% include 'blocks/messages.html' with app_level=True %}
   {% endblock %}
   <header class="header header-1">
@@ -105,8 +106,8 @@
     </div>
   </div>
   {% endblock %}
-  {#{% include 'core/bottom_dock.html' %}#}
 </div>
+{% include 'blocks/cookie_notice.html' %}
 {% endblock %}
 
 {% block scripts %}

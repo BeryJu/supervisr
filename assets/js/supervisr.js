@@ -5,5 +5,20 @@ ClarityIcons.alias({'exclamation-triangle': ['warning-circle']});
 ClarityIcons.alias({'info-circle': ['primary-circle', 'danger-circle']});
 
 $(document).ready(function() {
-    $("table").tablesorter();
+  $("table").tablesorter();
+
+  var setCookie = function (name, value, days) {
+    var expires = "";
+    if (days) {
+      var date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+  };
+
+  $('[data-action=accept-cookies]').on('click', function (e) {
+    setCookie('supervisr_cookies_accepted', 'yes', 10*360);
+    $('.cookie-message').remove();
+  });
 });

@@ -19,6 +19,15 @@ $('document').ready(function() {
     $('.clr-root-container').removeClass('open-overflow-menu');
     $('.clr-root-container').removeClass('open-hamburger-menu');
   });
+
+  $('.modal [data-action=close]').on('click', function (e) {
+    $(e.target).closest('.modal').hide();
+  });
+
+  $('[data-action=show-modal]').on('click', function (e) {
+    var modalId = $(e.target).data('modal');
+    $('#'+modalId).show();
+  });
 });
 
 var clrWizard = function (containerId, initialPage) {
