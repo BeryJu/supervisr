@@ -28,9 +28,6 @@ class Celery(celery.Celery):
         register_logger_signal(client)
         # hook into the Celery error handler
         register_signal(client)
-        # Create all needed queues
-        from supervisr.core.providers.multiplexer import ProviderMultiplexer
-        ProviderMultiplexer().create_queues()
 
 
 # pylint: disable=unused-argument
