@@ -1,6 +1,4 @@
-"""
-Supervisr SAML IDP Views
-"""
+"""Supervisr SAML IDP Views"""
 import logging
 
 from django.contrib import auth, messages
@@ -35,7 +33,6 @@ try:
 except TypeError:
     URL_VALIDATOR = URLValidator()
 
-BASE_TEMPLATE_DIR = 'saml/idp/'
 
 
 def _generate_response(request, processor, remote):
@@ -53,9 +50,7 @@ def _generate_response(request, processor, remote):
 
 
 def render_xml(request, template, ctx):
-    """
-    Render template with content_type application/xml
-    """
+    """Render template with content_type application/xml"""
     return render(request, template, context=ctx, content_type="application/xml")
 
 
@@ -218,7 +213,7 @@ class IDPSettingsView(GenericSettingView):
     template_name = 'saml/idp/settings.html'
 
     def dispatch(self, request, *args, **kwargs):
-        self.extra_data['metadata'] = escape(descriptor(request).content)
+        self.extra_data['metadata'] = escape(descriptor(request).content.decode('utf-8'))
 
         # Show the certificate fingerprint
         sha1_fingerprint = _('<failed to parse certificate>')
@@ -228,4 +223,4 @@ class IDPSettingsView(GenericSettingView):
         except CryptoError:
             pass
         self.extra_data['fingerprint'] = sha1_fingerprint
-        return super(IDPSettingsView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
