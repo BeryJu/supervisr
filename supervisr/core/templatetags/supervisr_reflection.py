@@ -74,8 +74,9 @@ def sv_reflection_navbar_modules(context):
         app_list = []
         for app in get_apps():
             LOGGER.debug("Considering %s for Navbar", app.label)
-            title = app.title_modifier(context.request)
-            if app.navbar_enabled(context.request):
+            title = app.nav.get('title')(context.request)
+            icon = app.nav.get('icon')(context.request)
+            if app.nav.get('enabled')(context.request):
                 index = getattr(app, 'index', None)
                 if not index:
                     index = '%s:index' % app.label

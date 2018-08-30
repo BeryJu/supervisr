@@ -21,8 +21,12 @@ class SupervisrAppConfig(AppConfig):
     init_modules = ['signals', 'models']
     admin_url_name = 'admin-module_default'
     view_user_settings = None
-    navbar_enabled = lambda self, request: False
-    title_modifier = lambda self, request: self.verbose_name.title()
+
+    nav = {
+        'enabled': lambda self, request: False,
+        'title': lambda self, request: self.verbose_name.title(),
+        'icon': lambda self, request: 'unknown-status'
+    }
 
     def __init__(self, *args, **kwargs):
         """Set app Label based on full name"""
@@ -174,7 +178,6 @@ class SupervisrCoreConfig(SupervisrAppConfig):
         'providers.domain',
         'providers.tasks',
     ]
-    navbar_title = 'Core'
     verbose_name = 'Supervisr Core'
 
     def ready(self):
