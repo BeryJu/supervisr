@@ -149,7 +149,8 @@ migration_mariadb:
 # Deploy documentation
 deploy-doc:
   stage: deploy-docs
-  only: master
+  only: 
+    - master
   services: []
   environment:
     name: public_docs
@@ -163,7 +164,8 @@ deploy-doc:
     - 'rsync -avh --delete site/* "beryjuorg@ory1-web-prod-1.ory1.beryju.org:supervisr.beryju.org/docs/${CI_COMMIT_REF_NAME}"'
 deploy-dev-docs:
   stage: deploy-docs
-  only: master
+  only: 
+    - master
   services: []
   environment:
     name: public_docs
