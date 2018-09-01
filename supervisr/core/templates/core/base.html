@@ -47,6 +47,8 @@
     {% if user.is_authenticated %}
     <form class="search {% is_active 'search' %}" method="GET" action="{% url 'search' %}">
       <label for="search_input">
+        <input type="hidden" name="filter_app" value="{{ request.GET.filter_app|default:'' }}">
+        <input type="hidden" name="filter_model" value="{{ request.GET.filter_model|default:'' }}">
         <input id="search_input" name="q" placeholder="{% trans 'Search for keywords...' %}" type="text" {% if request.GET.q %} value="{{ request.GET.q }}" {% endif %}>
       </label>
     </form>

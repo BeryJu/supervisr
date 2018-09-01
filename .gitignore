@@ -169,7 +169,7 @@ typings/
 # dotenv environment variables file
 .env
 
-supervisr/media/
+supervisr/data/
 supervisr/cache/
 supervisr/core/templates/core/deploy.html
 docgen/supervisr/

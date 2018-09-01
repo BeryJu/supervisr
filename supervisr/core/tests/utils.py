@@ -81,9 +81,10 @@ def test_request(view,
 
 def internal_provider(user):
     """Quickly create an instance of internal Provider"""
-    credentials = EmptyCredential.objects.create(owner=user,
-                                                 name='internal-unittest-%s' % str(user))
-    provider = ProviderInstance.objects.create(
+    credentials, _created = EmptyCredential.objects.get_or_create(
+        owner=user,
+        name='internal-unittest-%s' % str(user))
+    provider, _created = ProviderInstance.objects.get_or_create(
         credentials=credentials,
         provider_path='supervisr.mod.provider.debug.providers.core.DebugProvider')
     return provider, credentials
@@ -101,6 +102,7 @@ class TestCase(DjangoTestCase):
 
     def setUp(self):
         self.system_user = get_system_user()
+        self.provider, self.credentials = internal_provider(self.system_user)
         os.environ['RECAPTCHA_TESTING'] = 'True'
 
 

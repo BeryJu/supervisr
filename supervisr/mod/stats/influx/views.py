@@ -17,7 +17,6 @@ class SettingsView(GenericSettingView):
     form = InfluxSettingsForm
 
     def post(self, request: HttpRequest) -> HttpResponse:
-        print(request.POST)
         if 'test' in request.POST:
             # Test button that sends a test message
             with InfluxClient() as client:

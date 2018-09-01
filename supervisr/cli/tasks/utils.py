@@ -6,24 +6,7 @@ from glob import glob
 from invoke import task
 from invoke.terminals import WINDOWS
 
-try:
-    import django
-except ImportError:
-    print("Django could not be imported")
-
 LOGGER = logging.getLogger(__name__)
-
-
-@task()
-# pylint: disable=unused-argument
-def list_users(ctx):
-    """Show a list of all users"""
-    django.setup()
-    from supervisr.core.models import User
-    users = User.objects.all().order_by('pk')
-    LOGGER.info("Listing users...")
-    for user in users:
-        LOGGER.info("id=%d username=%s email=%s", user.pk, user.username, user.email)
 
 
 @task
@@ -31,18 +14,18 @@ def list_users(ctx):
 def generate_secret_key(ctx):
     """Generate Django SECRET_KEY"""
     charset = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
-    print(''.join([random.SystemRandom().choice(charset) for i in range(50)]))
+    LOGGER.success(''.join([random.SystemRandom().choice(charset) for i in range(50)]))
 
 
 @task
 def clean(ctx):
     """Clean Python cached files"""
     ctx.run(r'find . -name *.pyc -exec rm -rf {} \;', warn=True)
-    print('Cleaned python cache')
+    LOGGER.success('Cleaned python cache')
     ctx.run(r'find supervisr/cache/ -name *.djcache -exec rm -rf {} \;', warn=True)
-    print('Cleaned django cache files')
+    LOGGER.success('Cleaned django cache files')
     ctx.run(r'find supervisr/puppet/modules/ -name *.tgz -exec rm -rf {} \;', warn=True)
-    print('Cleaned puppet modules')
+    LOGGER.success('Cleaned puppet modules')
 
 
 @task

@@ -31,7 +31,7 @@ admin_django.site.logout = RedirectView.as_view(pattern_name='account-logout',
 urlpatterns = [
     # Account views
     url(r'^$', common.IndexView.as_view(), name='common-index'),
-    url(r'^search/$', search.search, name='search'),
+    url(r'^search/$', search.SearchView.as_view(), name='search'),
     url(r'^accounts/login/$', accounts.LoginView.as_view(), name=django_settings.LOGIN_URL),
     url(r'^accounts/login/reauth/$', accounts.ReauthView.as_view(), name='account-reauth'),
     url(r'^accounts/signup/$', accounts.SignUpView.as_view(), name='account-signup'),

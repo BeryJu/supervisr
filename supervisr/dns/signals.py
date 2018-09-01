@@ -10,28 +10,28 @@ from supervisr.dns.models import Record, Zone
 
 LOGGER = logging.getLogger(__name__)
 
-SIG_DNS_ZONE_UPDATE = RobustSignal(providing_args=['zone'])
-SIG_DNS_REC_UPDATE = RobustSignal(providing_args=['zone', 'record'])
-SIG_DNS_RESOURCE_UPDATE = RobustSignal(providing_args=['resource_set'])
+on_dns_zone_update = RobustSignal(providing_args=['zone'])
+on_dns_record_update = RobustSignal(providing_args=['zone', 'record'])
+on_dns_resource_update = RobustSignal(providing_args=['resource_set'])
 
 
 @receiver(post_save)
 # pylint: disable=unused-argument
 def dns_zone_update(sender, instance, created, **kwargs):
-    """Trigger SIG_DNS_ZONE_UPDATE when new record is created or updated"""
+    """Trigger on_dns_zone_update when new record is created or updated"""
     if isinstance(instance, Zone):
-        SIG_DNS_ZONE_UPDATE.send(sender, zone=instance)
+        on_dns_zone_update.send(sender, zone=instance)
 
 
 @receiver(post_save)
 # pylint: disable=unused-argument
 def dns_rec_update(sender, instance, created, **kwargs):
-    """Trigger SIG_DNS_REC_UPDATE when new record is created or updated"""
+    """Trigger on_dns_record_update when new record is created or updated"""
     if isinstance(instance, Record):
-        SIG_DNS_REC_UPDATE.send(sender, record=instance, zone=instance.record_zone)
+        on_dns_record_update.send(sender, record=instance, zone=instance.record_zone)
 
 
-@receiver(SIG_DNS_REC_UPDATE)
+@receiver(on_dns_record_update)
 # pylint: disable=unused-argument
 def dns_serial_update(sender, zone: Zone, **kwargs):
     """Update SOA Serial when zone is changed or record changed"""

@@ -75,7 +75,7 @@ def unittest(ctx):
     ctx.run("%s manage.py test" % PYTHON_EXEC)
 
 
-@task(pre=[coverage, isort, lint, prospector, unittest])
+@task(pre=[isort, coverage, lint, prospector])
 # Some tasks to make full testing easier
 # pylint: disable=unused-argument
 def test(ctx):
