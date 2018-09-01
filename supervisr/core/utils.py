@@ -13,15 +13,12 @@ import redis
 from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
-from django.core.cache import cache
 from django.core.management.base import OutputWrapper
 from django.db import DEFAULT_DB_ALIAS
 from django.db.migrations.executor import MigrationExecutor
 from django.db.utils import ConnectionDoesNotExist, OperationalError
 from django.http import HttpRequest
-from django.shortcuts import render
 from django.template import Context, Template, loader
-from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.apps import SupervisrAppConfig, SupervisrCoreConfig
 from supervisr.core.logger import SUCCESS
@@ -54,23 +51,15 @@ def get_reverse_dns(dev_ip):
     return ''
 
 
-def do_404(request, message=None):
-    """Boilerplate to return a 404 message"""
-    return render(request, 'common/error.html', {
-        'code': 404,
-        'message': _(message) if message is not None else None
-    }, status=404)
-
-
-def render_from_string(tmpl: str, ctx: Context) -> str:
+def render_from_string(template: str, ctx: Context) -> str:
     """Render template from string to string"""
-    template = Template(tmpl)
+    template = Template(template)
     return template.render(ctx)
 
 
-def render_to_string(tmpl: str, ctx: Context) -> str:
+def render_to_string(template_path: str, ctx: Context) -> str:
     """Render a template to string"""
-    template = loader.get_template(tmpl)
+    template = loader.get_template(template_path)
     return template.render(ctx)
 
 
@@ -88,19 +77,6 @@ def get_apps(exclude=None):
             if not is_excluded:
                 app_list.append(app)
     return app_list
-
-
-def get_app_labels():
-    """Cache all installed apps and return the list"""
-    cache_key = 'core:app_labels'
-    if not cache.get(cache_key):
-        # Make a list of all short names for all apps
-        app_cache = []
-        for app in get_apps():
-            app_cache.append(app.label)
-        cache.set(cache_key, app_cache, 1000)
-        return app_cache
-    return cache.get(cache_key)  # pragma: no cover
 
 
 def class_to_path(cls):
