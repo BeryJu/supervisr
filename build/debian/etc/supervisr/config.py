@@ -1,6 +1,4 @@
-"""
-Supervisr default local settings
-"""
+"""Supervisr default local settings"""
 from os import path
 
 from supervisr.core.utils import (db_settings_from_dbconfig, import_dir,

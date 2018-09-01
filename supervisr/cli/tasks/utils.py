@@ -14,7 +14,7 @@ LOGGER = logging.getLogger(__name__)
 def generate_secret_key(ctx):
     """Generate Django SECRET_KEY"""
     charset = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
-    LOGGER.success(''.join([random.SystemRandom().choice(charset) for i in range(50)]))
+    print(''.join([random.SystemRandom().choice(charset) for i in range(50)]))
 
 
 @task
