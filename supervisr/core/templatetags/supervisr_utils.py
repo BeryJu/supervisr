@@ -7,6 +7,7 @@ from urllib.parse import urljoin
 from django import template
 from django.apps import apps
 from django.conf import settings
+from django.db.models import Model
 from django.template.loaders.app_directories import get_app_template_dirs
 from django.urls import reverse
 from django.utils.translation import ugettext as _
@@ -36,6 +37,8 @@ def back(context):
 @register.filter('fieldtype')
 def fieldtype(field):
     """Return classname"""
+    if isinstance(field, Model) or issubclass(field, Model):
+        return field._meta.verbose_name
     return field.__class__.__name__
 
 

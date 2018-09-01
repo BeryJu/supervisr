@@ -119,7 +119,7 @@ class DefaultSearchHandler:
             else:
                 handler_instance = handler
             results.update(handler_instance.search(query, request))
-        return OrderedDict(sorted(results.items()))
+        return OrderedDict(sorted(results.items(), key=lambda kv: kv[0].__name__))
 
     @property
     def model_app(self):
