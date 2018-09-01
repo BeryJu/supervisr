@@ -133,7 +133,6 @@ class TestAccount(TestCase):
         self.assertEqual(res.url, reverse('common-index'))
 
         res = test_request(accounts.ChangePasswordView.as_view(), user=user)
-        # print(res.content.decode('utf-8'))
         self.assertEqual(res.status_code, 200)
 
     def test_reset_password_init_view(self):

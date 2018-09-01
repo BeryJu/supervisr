@@ -124,7 +124,6 @@ class TestForms(TestCase):
         })
         form_a.request = form_request
         self.assertTrue(form_a.is_valid())
-        print(form_a.errors)
 
         # Test invalid domain
         form_b = DomainForm(data={
