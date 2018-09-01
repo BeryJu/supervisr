@@ -44,18 +44,19 @@ on_domain_created = RobustSignal(providing_args=['domain'])
 on_migration_post = RobustSignal(providing_args=['app_name'])
 on_setting_update = RobustSignal(providing_args=[])
 
-# SIG_CHECK_* Signals return a boolean
+# on_check_* Signals return a boolean
 
 # Return wether user with `email` exists
 on_check_user_exists = RobustSignal(providing_args=['email'])
 
-# SIG_GET_* Signals return something other than a boolean
+# get_* Signals return something other than a boolean
 
 # Return a hash for the /about/info page
 get_module_info = RobustSignal(providing_args=[])
 # Get information for health status
 get_module_health = RobustSignal(providing_args=[])
 
+on_search = RobustSignal(providing_args=['query', 'request'])
 
 # Set a statistic
 on_set_statistic = RobustSignal(providing_args=['key', 'value'])

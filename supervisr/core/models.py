@@ -20,7 +20,7 @@ from django.contrib.auth.models import AbstractUser, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import Max, options
+from django.db.models import Max
 from django.db.models.signals import post_save, pre_delete
 from django.db.utils import OperationalError, ProgrammingError
 from django.dispatch import receiver
@@ -39,8 +39,6 @@ from supervisr.core.signals import (on_domain_created, on_setting_update,
                                     on_user_sign_up_post)
 from supervisr.core.tasks import Progress
 from supervisr.core.utils import get_remote_ip, get_reverse_dns
-
-options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('sv_search_url', 'sv_search_fields',)
 
 
 def expiry_date():
@@ -555,9 +553,8 @@ class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
 
 
 class Domain(ProviderAcquirableSingle, UserAcquirable, CreatedUpdatedModel):
-    """
-    Information about a Domain, which is used for other sub-apps.
-    """
+    """Information about a Domain, which is used for other sub-apps."""
+
     domain_name = models.CharField(max_length=253, unique=True)
     description = models.TextField(blank=True)
 
@@ -567,14 +564,11 @@ class Domain(ProviderAcquirableSingle, UserAcquirable, CreatedUpdatedModel):
     class Meta:
 
         default_related_name = 'domains'
-        sv_search_fields = ['domain_name', 'provider_instance__name']
 
 
 class Event(CreatedUpdatedModel):
-    """
-    Store information about important Event's for auditing, like signing up, changing/resetting
-    your password or gaining access to a new Product
-    """
+    """Store information about important Event's for auditing, like signing up, changing/resetting
+    your password or gaining access to a new Product"""
 
     EVENT_IMPORTANCE_URGENT = 40
     EVENT_IMPORTANCE_IMPORTANT = 30
