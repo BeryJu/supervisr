@@ -8,7 +8,7 @@ django-debug-toolbar
 recommonmark
 autopep8
 pycodestyle<2.4.0,>=2.0.0
-https://github.com/BeryJu/pdoc/releases/download/0.3.2/pdoc-0.3.2-py3-none-any.whl
+-e git+https://github.com/BeryJu/pdoc.git@ebb38ec5d2a023a31442757bba697c60d315578f#egg=pdoc
 markdown
 mkdocs
 mkdocs-material
