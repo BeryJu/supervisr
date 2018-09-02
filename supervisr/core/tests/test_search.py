@@ -25,7 +25,7 @@ class TestSearchView(TestCase):
         res = test_request(SearchView.as_view(), user=self.system_user)
         self.assertEqual(res.status_code, 404)
 
-    def test_search_empty(self):
+    def test_search_view_empty(self):
         """Test Search with empty results"""
         res = test_request(SearchView.as_view(), user=self.system_user, req_kwargs={'q': ''})
         self.assertEqual(res.status_code, 404)
@@ -80,6 +80,19 @@ class TestSearchView(TestCase):
         results = handler.search(query, request)
         self.assertEqual(len(results[Domain]), 3)
         self.assertEqual(results[Domain][0].label, 'dom1.supervisr.beryju.org')
+
+    def test_search_handler_empty(self):
+        """Test default search algorithm"""
+        # Search Handler requires a request for user info so mock one
+        request = test_request(SearchView.as_view(), user=self.system_user, just_request=True)
+        handler = DefaultSearchHandler(model=Domain,
+                                       fields=['domain_name', 'description'],
+                                       label_field='domain_name', icon='world',
+                                       view_name='domain-index')
+        query = SearchQuery()
+        query.query = 'sssupervisr.beryju.org'
+        results = handler.search(query, request)
+        self.assertEqual(len(results), 0)
 
     def test_search_url_kwargs(self):
         """Test DefaultSearchHandler's view_kwarg_name"""

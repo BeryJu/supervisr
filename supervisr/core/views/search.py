@@ -149,7 +149,7 @@ class DefaultSearchHandler:
             })
         # Special case for UserAcquirable
         if issubclass(self.model, UserAcquirable):
-            model_query = model_query | Q(users__in=[request.user])
+            model_query = model_query & Q(users__in=[request.user])
         # Get matching objects and create SearchResult objects
         matching = self.model.objects.filter(model_query)
         if not matching.exists():
