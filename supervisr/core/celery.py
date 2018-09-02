@@ -23,11 +23,14 @@ class Celery(celery.Celery):
     # pylint: disable=method-hidden
     def on_configure(self):
         """Update raven client"""
-        client = Client(settings.SENTRY_DSN)
-        # register a custom filter to filter out duplicate logs
-        register_logger_signal(client)
-        # hook into the Celery error handler
-        register_signal(client)
+        try:
+            client = Client(settings.SENTRY_DSN)
+            # register a custom filter to filter out duplicate logs
+            register_logger_signal(client)
+            # hook into the Celery error handler
+            register_signal(client)
+        except RecursionError: # This error happens when pdoc is running
+            pass
 
 
 # pylint: disable=unused-argument
