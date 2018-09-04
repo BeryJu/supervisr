@@ -1,6 +1,6 @@
 """supervisr mod provider Debug Domain Translator"""
 from logging import getLogger
-from typing import List
+from typing import Generator
 
 from supervisr.core.providers.exceptions import ProviderObjectNotFoundException
 from supervisr.core.providers.objects import (ProviderObject,
@@ -24,7 +24,7 @@ class DebugDomainObject(ProviderObject):
 class DebugDomainTranslator(ProviderObjectTranslator[MailDomain]):
     """Debug Domain Translator"""
 
-    def to_external(self, internal: MailDomain) -> DebugDomainObject:
+    def to_external(self, internal: MailDomain) -> Generator[DebugDomainObject, None, None]:
         """Create DebugDomainObject from Domain"""
         LOGGER.debug("to_external %r", internal)
         return DebugDomainObject(
@@ -32,7 +32,7 @@ class DebugDomainTranslator(ProviderObjectTranslator[MailDomain]):
             name=internal.Domain_name
         )
 
-    def query_external(self, **kwargs) -> List[DebugDomainObject]:
+    def query_external(self, **kwargs) -> Generator[DebugDomainObject, None, None]:
         """Query DebugDomainObjects. Since these are used for debugging and not saved,
         return an empty array"""
         LOGGER.debug("query %r", kwargs)

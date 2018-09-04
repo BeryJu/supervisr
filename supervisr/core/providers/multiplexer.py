@@ -1,11 +1,11 @@
 """supervisr core provider multiplexer"""
 from logging import getLogger
-from typing import List
+from typing import List, Union
 
 from django.db.models import Model
 
 from supervisr.core.celery import CELERY_APP
-from supervisr.core.providers.base import BaseProvider, get_providers
+from supervisr.core.providers.base import BaseProvider
 from supervisr.core.providers.objects import ProviderObjectTranslator
 from supervisr.core.utils import class_to_path
 
@@ -15,15 +15,19 @@ LOGGER = getLogger(__name__)
 class ProviderMultiplexer(object):
     """Multiplex signals to all relevent providers"""
 
-    def create_queues(self):
-        """Walk through all providers and create all needed queues"""
-        for provider in get_providers(path=True):
-            CELERY_APP.control.add_consumer(provider)
-
-    def get_translator(self, instance: Model, root_provider: BaseProvider, iteration=0)\
-            -> ProviderObjectTranslator:
+    def get_translator(self, instance: Model, root_provider: BaseProvider,
+                       iteration=0) -> Union[ProviderObjectTranslator, None]:
         """Recursively walk through providers.
-        Limited to 100 iterations to prevent infinite loops"""
+        Limited to 100 iterations to prevent infinite loops
+
+        Args:
+            instance(Model): Model instance for which a translator should be found.
+            root_provider(BaseProvider): BaseProvider instance which should be walked.
+            iteration(int, optional): Defaults to 0. Iteration count to limit infinite loops.
+
+        Returns:
+            Union[ProviderObjectTranslator, None]: Translator instance if available otherwise None.
+        """
         sub_provider = root_provider.get_provider(type(instance))
         if sub_provider:
             if iteration >= 100:
@@ -38,7 +42,14 @@ class ProviderMultiplexer(object):
 
     def on_model_saved(self, invoker: 'User', instance: Model,
                        providers: List['ProviderInstance'], created: bool):
-        """Notify providers that model was saved so translation can start"""
+        """Notify providers that model was saved so translation can start
+
+        Args:
+            invoker (User): User invoking the task
+            instance (Model): Model instance which has been saved
+            providers (List[ProviderInstance]): List of Providers that should be notified
+            created (bool): True if Model has been created otherwise False
+        """
         from supervisr.core.providers.tasks import provider_do_save
         LOGGER.debug("instance %r, providers %r", instance, providers)
         for provider in providers:
@@ -52,7 +63,13 @@ class ProviderMultiplexer(object):
 
     def on_model_deleted(self, invoker: 'User', instance: Model,
                          providers: List['ProviderInstance']):
-        """Notify providers that model is about to be deleted"""
+        """Notify providers that model is about to be deleted
+
+        Args:
+            invoker (User): User invoking the task
+            instance (Model): Model instance which has been saved
+            providers (List[ProviderInstance]): List of Providers that should be notified
+        """
         from supervisr.core.providers.tasks import provider_do_delete
         LOGGER.debug("instance %r, providers %r", instance, providers)
         for provider in providers:

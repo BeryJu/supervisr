@@ -1,13 +1,17 @@
 """Supervisr PowerDNS Domain Provider"""
 
-from supervisr.core.providers.base import ProviderObjectTranslator
-from supervisr.dns.models import Zone
-from supervisr.dns.providers.base import BaseDNSProvider
+from supervisr.core.providers.base import (BaseProvider,
+                                           ProviderObjectTranslator)
+from supervisr.dns.models import Record, Resource, Zone
+from supervisr.mod.provider.nix_dns.providers.translators.record import \
+    PowerDNSRecordTranslator
+from supervisr.mod.provider.nix_dns.providers.translators.resource import \
+    PowerDNSResourceTranslator
 from supervisr.mod.provider.nix_dns.providers.translators.zone import \
     PowerDNSZoneTranslator
 
 
-class PowerDNSDBDNSProvider(BaseDNSProvider):
+class PowerDNSDBDNSProvider(BaseProvider):
     """PowerDNS provider"""
 
     parent = None
@@ -15,6 +19,10 @@ class PowerDNSDBDNSProvider(BaseDNSProvider):
     def get_translator(self, data_type) -> ProviderObjectTranslator:
         if data_type == Zone:
             return PowerDNSZoneTranslator
+        elif data_type == Record:
+            return PowerDNSRecordTranslator
+        elif data_type == Resource:
+            return PowerDNSResourceTranslator
         return None
 
     def check_credentials(self, credentials=None):

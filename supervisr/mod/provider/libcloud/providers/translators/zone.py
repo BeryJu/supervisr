@@ -1,12 +1,11 @@
 """supervisr mod provider libcloud Zone Translator"""
 from logging import getLogger
-from typing import List
+from typing import Generator
 
 from libcloud.common.exceptions import BaseHTTPError
 from libcloud.dns.types import ZoneAlreadyExistsError
 
-from supervisr.core.providers.exceptions import (ProviderObjectNotFoundException,
-                                                 ProviderRetryException)
+from supervisr.core.providers.exceptions import ProviderRetryException
 from supervisr.core.providers.objects import (ProviderObject,
                                               ProviderObjectTranslator,
                                               ProviderResult)
@@ -66,23 +65,12 @@ class LCloudZoneObject(ProviderObject):
 class LCloudZoneTranslator(ProviderObjectTranslator[Zone]):
     """PowerDNS Zone Translator"""
 
-    def to_external(self, internal: Zone) -> LCloudZoneObject:
+    def to_external(self, internal: Zone) -> Generator[LCloudZoneObject, None, None]:
         """Convert Zone to Domain"""
-        return LCloudZoneObject(
+        yield LCloudZoneObject(
             translator=self,
             id=internal.pk,
             name=internal.domain.domain_name,
             type='master',
             ttl=86400,
         )
-
-    def query_external(self, **kwargs) -> List[LCloudZoneObject]:
-        """Query Domain"""
-        raise NotImplementedError
-
-    def to_internal(self, query_result: LCloudZoneObject) -> Zone:
-        """Convert query_result to Zone"""
-        zones = Zone.objects.filter(domain__domain_name=query_result.name)
-        if not zones.exists():
-            raise ProviderObjectNotFoundException()
-        return zones.first()

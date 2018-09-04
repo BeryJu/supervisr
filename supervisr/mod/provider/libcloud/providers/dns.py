@@ -2,9 +2,9 @@
 
 from libcloud.dns.providers import get_driver
 
-from supervisr.core.providers.base import ProviderObjectTranslator
+from supervisr.core.providers.base import (BaseProvider,
+                                           ProviderObjectTranslator)
 from supervisr.dns.models import Record, Zone
-from supervisr.dns.providers.base import BaseDNSProvider
 from supervisr.mod.provider.libcloud.models import LibCloudCredentials
 from supervisr.mod.provider.libcloud.providers.translators.record import \
     LCloudRecordTranslator
@@ -12,7 +12,7 @@ from supervisr.mod.provider.libcloud.providers.translators.zone import \
     LCloudZoneTranslator
 
 
-class LibCloudDNSProvider(BaseDNSProvider):
+class LibCloudDNSProvider(BaseProvider):
     """libcloud DNS provider"""
 
     parent = None
