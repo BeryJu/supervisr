@@ -78,6 +78,13 @@ class Record(UserAcquirable):
     def __str__(self):
         return "Record %s" % self.name
 
+    @property
+    def fqdn(self):
+        """Get full FQDN with zone"""
+        if self.name == '@':
+            return self.record_zone.domain.domain_name
+        return "%s.%s" % (self.name, self.record_zone.domain.domain_name)
+
 
 class Resource(UserAcquirable):
     """Record Resource"""
@@ -91,7 +98,7 @@ class Resource(UserAcquirable):
     uuid = models.UUIDField(default=uuid4)
 
     def __str__(self):
-        return "RecordData %s %s" % (self.type, self.content)
+        return "Resource %s %s" % (self.type, self.content)
 
 
 class ResourceSet(UserAcquirable):

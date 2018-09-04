@@ -10,4 +10,4 @@ class SupervisrDNSConfig(SupervisrAppConfig):
     label = 'supervisr_dns'
     verbose_name = 'Supervisr DNS'
     navbar_enabled = lambda self, request: True
-    title_modifier = lambda self, request: 'dns'.upper()
+    title_modifier = lambda self, request: 'DNS'

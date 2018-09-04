@@ -25,4 +25,5 @@
   "cSpell.words": [
     "supervisr"
   ],
+  "autoDocstring.docstringFormat": "google",
 }

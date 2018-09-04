@@ -9,7 +9,7 @@ from invoke.terminals import WINDOWS
 def migrate(ctx):
     """Apply migrations"""
     from django.core.management import execute_from_command_line
-    execute_from_command_line(['manage.py', 'migrate'])
+    execute_from_command_line(['manage.py', 'migrate_all'])
 
 
 @task

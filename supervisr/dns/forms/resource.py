@@ -1,6 +1,4 @@
-"""
-Supervisr DNS ResourceSet Forms
-"""
+"""Supervisr DNS ResourceSet Forms"""
 
 from django import forms
 from django.core.validators import validate_ipv4_address, validate_ipv6_address

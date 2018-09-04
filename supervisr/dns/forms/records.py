@@ -1,6 +1,4 @@
-"""
-Supervisr DNS Record Forms
-"""
+"""Supervisr DNS Record Forms"""
 
 from django import forms
 from django.core.exceptions import ValidationError
@@ -10,9 +8,7 @@ from supervisr.dns.models import Record
 
 
 class RecordForm(forms.ModelForm):
-    """
-    Create/edit RecordForm
-    """
+    """Create/edit RecordForm"""
 
     title = _('General Information')
 

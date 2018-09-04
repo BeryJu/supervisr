@@ -37,7 +37,7 @@ def back(context):
 @register.filter('fieldtype')
 def fieldtype(field):
     """Return classname"""
-    if isinstance(field, Model) or issubclass(field, Model):
+    if isinstance(field.__class__, Model) or issubclass(field.__class__, Model):
         return field._meta.verbose_name
     return field.__class__.__name__
 

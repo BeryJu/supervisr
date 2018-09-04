@@ -1,6 +1,4 @@
-"""
-Supervisr Core User Views
-"""
+"""Supervisr Core User Views"""
 
 from django.contrib import messages
 from django.contrib.auth import logout as django_logout
