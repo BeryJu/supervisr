@@ -42,24 +42,24 @@ def config_loggers(*args, **kwags):
 
 # pylint: disable=unused-argument
 @celery.signals.after_task_publish.connect
-def after_task_publish_handler(sender=None, headers=None, body=None, **kwargs):
+def after_task_publish(sender=None, headers=None, body=None, **kwargs):
     """Log task_id after it was published"""
     info = headers if 'task' in headers else body
-    LOGGER.debug('for task id %s', info.get('id'))
+    LOGGER.debug('%-40s published (name=%s)', info.get('id'), info.get('task'))
 
 
 # pylint: disable=unused-argument
 @celery.signals.task_prerun.connect
-def task_prerun_handler(task_id, task, *args, **kwargs):
+def task_prerun(task_id, task, *args, **kwargs):
     """Log task_id on worker"""
-    LOGGER.debug('for task id %s', task_id)
+    LOGGER.debug('%-40s started (name=%s)', task_id, task.__name__)
 
 
 # pylint: disable=unused-argument
 @celery.signals.task_postrun.connect
-def task_postrun_handler(task_id, task, *args, retval=None, state=None, **kwargs):
+def task_postrun(task_id, task, *args, retval=None, state=None, **kwargs):
     """Log task_id on worker"""
-    LOGGER.debug('for task id %s (state=%s)', task_id, state)
+    LOGGER.debug('%-40s finished (name=%s, state=%s)', task_id, task.__name__, state)
 
 
 CELERY_APP = Celery('supervisr')

@@ -1,9 +1,9 @@
 """supervisr build tasks"""
+from logging import getLogger
+
 from invoke import task
 
-from supervisr.core.logger import SupervisrLogger
-
-LOGGER = SupervisrLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 @task

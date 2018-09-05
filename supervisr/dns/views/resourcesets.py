@@ -1,6 +1,4 @@
-"""
-Supervisr DNS record views
-"""
+"""Supervisr DNS resourceset views"""
 
 from django.contrib import messages
 from django.shortcuts import redirect, reverse
@@ -22,7 +20,7 @@ class ResourceSetReadView(GenericReadView):
 
     def get_instance(self):
         return self.model.objects.filter(uuid=self.kwargs.get('rset_uuid'),
-                                         users__in=[self.request.user])
+                                         users__in=[self.request.user]).order_by('name')
 
     def update_kwargs(self, kwargs):
         kwargs['records'] = kwargs.get('instance').resource.filter(
@@ -56,8 +54,8 @@ class ResourceSetUpdateView(GenericUpdateView):
         return redirect(reverse('supervisr_dns:rset-view', kwargs={'rset_uuid': instance.uuid}))
 
     def get_instance(self):
-        return ResourceSet.objects.filter(uuid=self.kwargs.get('rset_uuid'),
-                                          users__in=[self.request.user])
+        return self.model.objects.filter(uuid=self.kwargs.get('rset_uuid'),
+                                         users__in=[self.request.user]).order_by('name')
 
 
 class ResourceSetDeleteView(GenericDeleteView):

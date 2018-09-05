@@ -19,15 +19,16 @@ class ResourceCreateView(BaseWizardView):
     form_list = [ResourceForm]
 
     def finish(self, form_list):
-        rset_uuid = self.kwargs.get('rset_uuid')
-        rset = get_object_or_404(ResourceSet, uuid=rset_uuid, users__in=[self.request.user])
+        resource_set = get_object_or_404(ResourceSet,
+                                         uuid=self.kwargs.get('rset_uuid'),
+                                         users__in=[self.request.user])
         resource = form_list[0].save()
-        rset.resource.add(resource)
+        resource_set.resource.add(resource)
         UserAcquirableRelationship.objects.create(
             model=resource,
             user=self.request.user)
         messages.success(self.request, _('Record Resource successfully created'))
-        return redirect(reverse('supervisr_dns:rset-view', kwargs={'rset_uuid': rset.uuid}))
+        return redirect(reverse('supervisr_dns:rset-view', kwargs={'rset_uuid': resource_set.uuid}))
 
 
 class ResourceUpdateView(GenericUpdateView):
@@ -41,8 +42,8 @@ class ResourceUpdateView(GenericUpdateView):
         return 'supervisr_dns:index'
 
     def get_instance(self):
-        return Resource.objects.filter(uuid=self.kwargs.get('resource_uuid'),
-                                       users__in=[self.request.user])
+        return self.model.objects.filter(uuid=self.kwargs.get('resource_uuid'),
+                                         users__in=[self.request.user]).order_by('name')
 
 
 class ResourceDeleteView(GenericDeleteView):
