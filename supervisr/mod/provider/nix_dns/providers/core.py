@@ -1,4 +1,4 @@
-"""Supervisr OnlineNet Provider"""
+"""Supervisr nix_dns Provider"""
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from supervisr.core.models import EmptyCredential
 from supervisr.core.providers.base import BaseProvider, ProviderMetadata
 from supervisr.core.utils import check_db_connection
-from supervisr.mod.provider.nix_dns.providers.dns import PowerDNSDBDNSProvider
+from supervisr.mod.provider.nix_dns.providers.dns import NixDNSProvider
 
 
 class PowerDNSDBProvider(BaseProvider):
@@ -27,7 +27,7 @@ class PowerDNSDBProvider(BaseProvider):
 
     def get_provider(self, data_type) -> BaseProvider:
         if data_type._meta.app_label == 'supervisr_dns':
-            return PowerDNSDBDNSProvider
+            return NixDNSProvider
         return None
 
     class Meta(ProviderMetadata):

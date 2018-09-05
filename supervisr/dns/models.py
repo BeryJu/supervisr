@@ -1,10 +1,11 @@
 """Supervisr DNS Models"""
-
+from typing import Generator
 from uuid import uuid4
 
 from django.db import models
 
-from supervisr.core.models import Domain, ProviderAcquirable, UserAcquirable
+from supervisr.core.models import (Domain, ProviderAcquirable,
+                                   ProviderTriggerMixin, UserAcquirable)
 
 # imported from powerdns
 RECORD_TYPES = (
@@ -66,7 +67,7 @@ class Zone(ProviderAcquirable, UserAcquirable):
         return "Zone %s" % self.domain.domain_name
 
 
-class Record(UserAcquirable):
+class Record(ProviderTriggerMixin, UserAcquirable):
     """DNS Record"""
 
     name = models.TextField()
@@ -75,8 +76,10 @@ class Record(UserAcquirable):
     enabled = models.BooleanField(default=True)
     uuid = models.UUIDField(default=uuid4)
 
-    def __str__(self):
-        return "Record %s" % self.name
+    @property
+    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
+        """Return all provider instances that should be triggered"""
+        return self.record_zone.provider_instances
 
     @property
     def fqdn(self):
@@ -85,8 +88,11 @@ class Record(UserAcquirable):
             return self.record_zone.domain.domain_name
         return "%s.%s" % (self.name, self.record_zone.domain.domain_name)
 
+    def __str__(self):
+        return "Record %s" % self.name
 
-class Resource(UserAcquirable):
+
+class Resource(ProviderTriggerMixin, UserAcquirable):
     """Record Resource"""
 
     name = models.TextField()
@@ -97,16 +103,32 @@ class Resource(UserAcquirable):
     enabled = models.BooleanField(default=True)
     uuid = models.UUIDField(default=uuid4)
 
+    @property
+    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
+        """Return all provider instances that should be triggered"""
+        for resource_set in self.resourceset_set.all():
+            for record in resource_set.record_set.all():
+                for provider in record.record_zone.provider_instances:
+                    yield provider
+
     def __str__(self):
         return "Resource %s %s" % (self.type, self.content)
 
 
-class ResourceSet(UserAcquirable):
+class ResourceSet(ProviderTriggerMixin, UserAcquirable):
     """Connect Record to Resource"""
 
     uuid = models.UUIDField(default=uuid4)
     name = models.TextField()
     resource = models.ManyToManyField('Resource', blank=True)
+
+    @property
+    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
+        """Return all provider instances that should be triggered"""
+        print('this is being called too early probably')
+        for record in self.record_set.all():
+            for provider in record.record_zone.provider_instances:
+                yield provider
 
     def __str__(self):
         return "ResourceSet %s" % self.name

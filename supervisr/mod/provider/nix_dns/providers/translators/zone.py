@@ -22,12 +22,14 @@ class PowerDNSZoneObject(ProviderObject):
                 'name': self.name,
                 'account': self.account
             })
+        # TODO: Create SOA Record here
         if updated:
             return ProviderResult.SUCCESS_UPDATED
         return ProviderResult.SUCCESS_CREATED
 
     def delete(self) -> ProviderResult:
         """Delete this instance"""
+        # TODO: Delete SOA Record here
         existing = PDNSDomain.objects.filter(name=self.name, pk=self.id)
         if not existing.exists():
             raise ProviderObjectNotFoundException()

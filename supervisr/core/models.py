@@ -11,7 +11,7 @@ import time
 import uuid
 from difflib import get_close_matches
 from importlib import import_module
-from typing import List
+from typing import Generator, List
 
 from celery.result import AsyncResult
 from django.conf import settings
@@ -462,12 +462,30 @@ class UserAcquirableRelationship(models.Model):
         unique_together = (('user', 'model'),)
 
 
-class ProviderAcquirable(CastableModel):
+class ProviderTriggerMixin(models.Model):
+    """Base class for all models that trigger Provider updates"""
+
+    @property
+    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
+        """Return all provider instances that should be triggered"""
+        raise NotImplementedError()
+
+    class Meta:
+
+        abstract = True
+
+
+class ProviderAcquirable(ProviderTriggerMixin, CastableModel):
     """Base Class for Models that should have an N-M relationship with ProviderInstance"""
 
     provider_acquirable_id = models.AutoField(primary_key=True)
     providers = models.ManyToManyField('ProviderInstance',
                                        through='ProviderAcquirableRelationship', blank=True)
+
+    @property
+    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
+        """Return all provider instances that should be triggered"""
+        return self.providers.all().iterator()
 
     def update_provider_m2m(self, provider_list: List['ProviderInstance']):
         """Update m2m relationship to providers from form list"""
@@ -484,12 +502,16 @@ class ProviderAcquirable(CastableModel):
                 relationship.delete()
 
 
-class ProviderAcquirableSingle(CastableModel):
+class ProviderAcquirableSingle(ProviderTriggerMixin, CastableModel):
     """Base Class for Models that should have an N-1 relationship with ProviderInstance"""
 
     provider_acquirable_Single_id = models.AutoField(primary_key=True)
     provider_instance = models.ForeignKey('ProviderInstance', on_delete=models.CASCADE)
 
+    @property
+    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
+        """Return all provider instances that should be triggered"""
+        yield self.provider_instance
 
 class ProviderAcquirableRelationship(models.Model):
     """Relationship between ProviderInstance and any Class subclassing ProviderAcquirable"""

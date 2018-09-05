@@ -53,6 +53,7 @@ class ProviderMultiplexer(object):
         from supervisr.core.providers.tasks import provider_do_save
         LOGGER.debug("instance %r, providers %r", instance, providers)
         for provider in providers:
+            LOGGER.debug("provider_instance %r", provider)
             args = (provider.pk, class_to_path(instance.__class__), instance.pk, created)
             queue = class_to_path(provider.provider.__class__)
             CELERY_APP.control.add_consumer(queue)
@@ -73,6 +74,7 @@ class ProviderMultiplexer(object):
         from supervisr.core.providers.tasks import provider_do_delete
         LOGGER.debug("instance %r, providers %r", instance, providers)
         for provider in providers:
+            LOGGER.debug("provider_instance %r", provider)
             args = (provider.pk, class_to_path(instance.__class__), instance.pk)
             queue = class_to_path(provider.provider.__class__)
             CELERY_APP.control.add_consumer(queue)

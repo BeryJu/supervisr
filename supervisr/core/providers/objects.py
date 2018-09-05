@@ -1,8 +1,16 @@
 """supervisr core provider ObjectMarshall"""
-from enum import IntFlag
 from typing import Generator, Generic, TypeVar
 
+from aenum import IntFlag
+
 T = TypeVar('T')
+
+
+class ProviderAction(IntFlag):
+    """Actions which can be triggered by signals"""
+
+    SAVE = 1
+    DELETE = 2
 
 
 class ProviderResult(IntFlag):

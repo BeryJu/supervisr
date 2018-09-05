@@ -380,7 +380,7 @@ LOGGING = {
         },
         'celery': {
             'handlers': LOG_HANDLERS,
-            'level': 'INFO',
+            'level': 'WARNING',
             'propagate': True,
         },
     }

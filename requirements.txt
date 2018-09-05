@@ -21,6 +21,7 @@ pycryptodome
 colorlog
 django-celery-results
 markdown
+aenum
 dnspython
 requests
 # In here you can specify pip modules that should be installed
