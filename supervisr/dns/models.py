@@ -64,7 +64,7 @@ class Zone(ProviderAcquirable, UserAcquirable):
     soa_ttl = models.IntegerField(default=172800)
 
     def __str__(self):
-        return "Zone %s" % self.domain.domain_name
+        return self.domain.domain_name
 
 
 class Record(ProviderTriggerMixin, UserAcquirable):
@@ -89,7 +89,7 @@ class Record(ProviderTriggerMixin, UserAcquirable):
         return "%s.%s" % (self.name, self.record_zone.domain.domain_name)
 
     def __str__(self):
-        return "Record %s" % self.name
+        return self.fqdn
 
 
 class Resource(ProviderTriggerMixin, UserAcquirable):
@@ -112,7 +112,7 @@ class Resource(ProviderTriggerMixin, UserAcquirable):
                     yield provider
 
     def __str__(self):
-        return "Resource %s %s" % (self.type, self.content)
+        return "%s %s" % (self.type, self.content)
 
 
 class ResourceSet(ProviderTriggerMixin, UserAcquirable):
@@ -127,8 +127,9 @@ class ResourceSet(ProviderTriggerMixin, UserAcquirable):
         """Return all provider instances that should be triggered"""
         print('this is being called too early probably')
         for record in self.record_set.all():
+            print(record)
             for provider in record.record_zone.provider_instances:
                 yield provider
 
     def __str__(self):
-        return "ResourceSet %s" % self.name
+        return self.name

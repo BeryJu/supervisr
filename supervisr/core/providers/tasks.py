@@ -8,7 +8,7 @@ from django.core.exceptions import MultipleObjectsReturned
 from django.db.models import Model
 
 from supervisr.core.celery import CELERY_APP
-from supervisr.core.models import ProviderInstance, get_system_user
+from supervisr.core.models import ProviderInstance
 from supervisr.core.providers.exceptions import (ProviderRetryException,
                                                  SupervisrProviderException)
 from supervisr.core.providers.multiplexer import ProviderMultiplexer
@@ -48,75 +48,35 @@ def provider_resolve_helper(provider_pk: int, model_path: str, model_pk) -> Iter
         return translator.to_external(model_instance)
     except Exception as exc:  # noqa
         raise SupervisrProviderException from exc
-    return []  # This should never be reached, since either we return early or raise
 
 
 @CELERY_APP.task(bind=True, max_retries=10, base=SupervisrTask)
-def provider_signal_handler(self, action: ProviderAction, model: str, model_pk, **kwargs):
-    """Forward signal to ProviderMultiplexer"""
-    self.prepare(**kwargs)
-    model_class = path_to_class(model)
-    instance = get_instance(model_class, model_pk)
-    system_user = get_system_user()
-    multiplexer = ProviderMultiplexer()
-    del kwargs['invoker']
-
-    if action == ProviderAction.SAVE:
-        LOGGER.debug("provider_signal_handler post_save")
-        multiplexer.on_model_saved(system_user, instance, instance.provider_instances, **kwargs)
-    elif action == ProviderAction.DELETE:
-        LOGGER.debug("provider_signal_handler pre_delete")
-        multiplexer.on_model_deleted(system_user, instance, instance.provider_instances)
-
-
-@CELERY_APP.task(bind=True, max_retries=10, base=SupervisrTask)
-def provider_do_save(self, provider_pk: int, model: str, model_pk, created: bool, **kwargs):
+def provider_do_work(self, action: ProviderAction, provider_pk: int,
+                     model: str, model_pk, **kwargs):
     """Run the actual saving procedure and keep trying on failure"""
     self.prepare(**kwargs)
-    LOGGER.debug("Starting provider_do_save")
+    if 'invoker' in kwargs:
+        del kwargs['invoker']
+    LOGGER.debug("Starting provider_do_work %r", action)
     try:
         self.progress.set(1)
         count = 0
         result = 0
         provider_object_generator = provider_resolve_helper(provider_pk, model, model_pk)
         for provider_object in provider_object_generator:
-            result |= provider_object.save(created)
+            if action == ProviderAction.SAVE:
+                result |= provider_object.save(**kwargs)
+            elif action == ProviderAction.DELETE:
+                result |= provider_object.delete()
             count += 1
             self.progress.set(count)
+            LOGGER.debug("\tUpdated instance %r", provider_object)
         self.progress.set(100)
-        LOGGER.debug("Saved instance.")
         return result
     except ProviderRetryException as exc:
         LOGGER.warning(exc)
-        self.retry(args=[provider_pk, model, model_pk], countdown=2 ** self.request.retries)
-    except SupervisrProviderException as exc:
-        self.update_state(
-            state=states.FAILURE,
-            meta=str(exc)
-        )
-        # ignore the task so no other state is recorded
-        raise Ignore()
-
-
-@CELERY_APP.task(bind=True, max_retries=10, base=SupervisrTask)
-def provider_do_delete(self, provider_pk: int, model: str, model_pk, **kwargs):
-    """Run the actual deletion procedure and keep trying on failure"""
-    self.prepare(**kwargs)
-    try:
-        self.progress.set(1)
-        count = 0
-        result = 0
-        provider_object_generator = provider_resolve_helper(provider_pk, model, model_pk)
-        for provider_object in provider_object_generator:
-            result |= provider_object.delete()
-            count += 1
-            self.progress.set(count)
-        self.progress.set(100)
-        LOGGER.debug("Deleted instance.")
-        return result
-    except ProviderRetryException as exc:
-        LOGGER.warning(exc)
-        self.retry(args=[provider_pk, model, model_pk], countdown=2 ** self.request.retries)
+        raise self.retry(args=[action, provider_pk, model, model_pk], kwargs=kwargs,
+                         countdown=2 ** self.request.retries)
     except SupervisrProviderException as exc:
         self.update_state(
             state=states.FAILURE,

@@ -505,7 +505,7 @@ class ProviderAcquirable(ProviderTriggerMixin, CastableModel):
 class ProviderAcquirableSingle(ProviderTriggerMixin, CastableModel):
     """Base Class for Models that should have an N-1 relationship with ProviderInstance"""
 
-    provider_acquirable_Single_id = models.AutoField(primary_key=True)
+    provider_acquirable_single_id = models.AutoField(primary_key=True)
     provider_instance = models.ForeignKey('ProviderInstance', on_delete=models.CASCADE)
 
     @property

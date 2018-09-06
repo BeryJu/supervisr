@@ -93,7 +93,7 @@ def stat_output_verbose(signal, key, value, **kwargs):
 # pylint: disable=unused-argument
 def provider_post_save(sender, instance, created, **kwargs):
     """Forward signal to ChangeBuilder"""
-    from supervisr.core.providers.tasks import provider_signal_handler
+    from supervisr.core.providers.multiplexer import ProviderMultiplexer
     from supervisr.core.providers.objects import ProviderAction
     from supervisr.core.models import ProviderTriggerMixin, get_system_user
 
@@ -102,14 +102,14 @@ def provider_post_save(sender, instance, created, **kwargs):
         LOGGER.debug("ProviderTriggerMixin post_save")
         args = (ProviderAction.SAVE, class_to_path(instance.__class__), instance.pk)
         kwargs = {'created': created}
-        system_user.task_apply_async(provider_signal_handler, *args, **kwargs)
+        system_user.task_apply_async(ProviderMultiplexer(), *args, **kwargs)
 
 
 @receiver(pre_delete)
 # pylint: disable=unused-argument
 def provider_pre_delete(sender, instance, **kwargs):
     """Forward signal to ChangeBuilder"""
-    from supervisr.core.providers.tasks import provider_signal_handler
+    from supervisr.core.providers.multiplexer import ProviderMultiplexer
     from supervisr.core.providers.objects import ProviderAction
     from supervisr.core.models import ProviderTriggerMixin, get_system_user
 
@@ -117,7 +117,7 @@ def provider_pre_delete(sender, instance, **kwargs):
     if issubclass(instance.__class__, ProviderTriggerMixin):
         LOGGER.debug("ProviderTriggerMixin pre_delete")
         args = (ProviderAction.DELETE, class_to_path(instance.__class__), instance.pk)
-        system_user.task_apply_async(provider_signal_handler, *args)
+        system_user.task_apply_async(ProviderMultiplexer(), *args)
 
 
 @receiver(m2m_changed)
@@ -127,6 +127,7 @@ def provider_m2m(sender, instance, action, **kwargs):
 
     if issubclass(instance.__class__, ProviderTriggerMixin) or \
         issubclass(sender.__class__, ProviderTriggerMixin):
+
         if action == 'post_add':
             LOGGER.debug("m2m post_add (sender=%r, instance=%r)", sender, instance)
             provider_post_save(sender, instance, created=False, **kwargs)

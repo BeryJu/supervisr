@@ -1,19 +1,43 @@
 """supervisr core provider multiplexer"""
 from logging import getLogger
-from typing import List, Union
+from typing import Union
 
 from django.db.models import Model
 
 from supervisr.core.celery import CELERY_APP
+from supervisr.core.models import ProviderTriggerMixin, get_system_user
 from supervisr.core.providers.base import BaseProvider
-from supervisr.core.providers.objects import ProviderObjectTranslator
-from supervisr.core.utils import class_to_path
+from supervisr.core.providers.objects import (ProviderAction,
+                                              ProviderObjectTranslator)
+from supervisr.core.tasks import SupervisrTask
+from supervisr.core.utils import class_to_path, path_to_class
 
 LOGGER = getLogger(__name__)
 
 
-class ProviderMultiplexer(object):
+class ProviderMultiplexer(SupervisrTask):
     """Multiplex signals to all relevent providers"""
+
+    name = 'supervisr.core.providers.multiplexer.ProviderMultiplexer'
+
+    def run(self, action: ProviderAction, model: str, model_pk, **kwargs):
+        """Main Provider handler. This function is called as a task from `post_save`,
+        `pre_delete` and `m2m_changed`. Function uses `ProviderMultiplexer`
+
+        Args:
+            action (ProviderAction): [description]
+            model (str): [description]
+            model_pk ([type]): [description]
+        """
+        from supervisr.core.providers.tasks import get_instance
+        self.prepare(**kwargs)
+        del kwargs['invoker']
+        model_class = path_to_class(model)
+        instance = get_instance(model_class, model_pk)
+        system_user = get_system_user()
+
+        LOGGER.debug("provider_signal_handler %s", action)
+        self.model_modify_handler(action, system_user, instance, **kwargs)
 
     def get_translator(self, instance: Model, root_provider: BaseProvider,
                        iteration=0) -> Union[ProviderObjectTranslator, None]:
@@ -40,45 +64,26 @@ class ProviderMultiplexer(object):
             return translator(provider_instance=root_provider)
         return None
 
-    def on_model_saved(self, invoker: 'User', instance: Model,
-                       providers: List['ProviderInstance'], created: bool):
-        """Notify providers that model was saved so translation can start
+    def model_modify_handler(self, action: ProviderAction, invoker: 'User',
+                             instance: ProviderTriggerMixin, **kwargs):
+        """Notify providers that model was saved/deleted so translation can start
 
         Args:
+            action (ProviderAction): Which action to perform
             invoker (User): User invoking the task
             instance (Model): Model instance which has been saved
-            providers (List[ProviderInstance]): List of Providers that should be notified
-            created (bool): True if Model has been created otherwise False
         """
-        from supervisr.core.providers.tasks import provider_do_save
-        LOGGER.debug("instance %r, providers %r", instance, providers)
-        for provider in providers:
-            LOGGER.debug("provider_instance %r", provider)
-            args = (provider.pk, class_to_path(instance.__class__), instance.pk, created)
-            queue = class_to_path(provider.provider.__class__)
-            CELERY_APP.control.add_consumer(queue)
-            invoker.task_apply_async(provider_do_save, *args, celery_kwargs={
-                'queue': queue
-            }, users=provider.users.all())
-            LOGGER.debug("Fired task provider_do_save")
+        from supervisr.core.providers.tasks import provider_do_work
+        LOGGER.debug("instance %r, action %r", instance, action)
+        for provider in instance.provider_instances:
+            LOGGER.debug("\tprovider_instance %r", provider)
+            class_path = class_to_path(instance.__class__)
+            args = (action, provider.pk, class_path, instance.pk)
+            CELERY_APP.control.add_consumer(class_path)
+            invoker.task_apply_async(provider_do_work, *args, celery_kwargs={
+                'queue': class_path
+            }, users=provider.users.all(), **kwargs)
+            LOGGER.debug("\tstarted task provider_do_work")
 
-    def on_model_deleted(self, invoker: 'User', instance: Model,
-                         providers: List['ProviderInstance']):
-        """Notify providers that model is about to be deleted
 
-        Args:
-            invoker (User): User invoking the task
-            instance (Model): Model instance which has been saved
-            providers (List[ProviderInstance]): List of Providers that should be notified
-        """
-        from supervisr.core.providers.tasks import provider_do_delete
-        LOGGER.debug("instance %r, providers %r", instance, providers)
-        for provider in providers:
-            LOGGER.debug("provider_instance %r", provider)
-            args = (provider.pk, class_to_path(instance.__class__), instance.pk)
-            queue = class_to_path(provider.provider.__class__)
-            CELERY_APP.control.add_consumer(queue)
-            invoker.task_apply_async(provider_do_delete, *args, celery_kwargs={
-                'queue': queue
-            }, users=provider.users.all())
-            LOGGER.debug("Fired task provider_do_delete")
+CELERY_APP.tasks.register(ProviderMultiplexer())
