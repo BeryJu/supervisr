@@ -12,11 +12,11 @@ fi
 
 
 if [ "$1" = "purge" ]; then
-        if which ucf >/dev/null 2>&1; then
-                ucf --purge /etc/supervisr/conf.d/database-dbconfig.py
-                ucfr --purge supervisr /etc/supervisr/conf.d/database-dbconfig.py
-        fi
-        rm -rf /etc/supervisr/
+    if which ucf >/dev/null 2>&1; then
+        ucf --purge /etc/supervisr/conf.d/database-dbconfig.py
+        ucfr --purge supervisr /etc/supervisr/conf.d/database-dbconfig.py
+    fi
+    rm -rf /etc/supervisr/
 fi
 
 #DEBHELPER#

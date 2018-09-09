@@ -55,8 +55,7 @@ def provider_do_work(self, action: ProviderAction, provider_pk: int,
                      model: str, model_pk, **kwargs):
     """Run the actual saving procedure and keep trying on failure"""
     self.prepare(**kwargs)
-    if 'invoker' in kwargs:
-        del kwargs['invoker']
+    del kwargs['invoker']
     LOGGER.debug("Starting provider_do_work %r", action)
     try:
         self.progress.set(1)

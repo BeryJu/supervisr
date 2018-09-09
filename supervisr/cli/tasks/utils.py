@@ -33,16 +33,10 @@ def compile_reqs(ctx):
     """Compile all requirements into one requirements.txt"""
     if WINDOWS:
         ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
-    requirements = glob("supervisr/**/requirements.txt")
-    requirements.extend(glob("supervisr/**/**/requirements.txt"))
-    requirements.extend(glob("supervisr/**/**/**/requirements.txt"))
-    requirements.extend(glob("supervisr/**/**/**/**/requirements.txt"))
-    requirements_dev = glob("supervisr/**/requirements-dev.txt")
-    requirements_dev.extend(glob("supervisr/**/**/requirements-dev.txt"))
-    requirements_dev.extend(glob("supervisr/**/**/**/requirements-dev.txt"))
-    requirements_dev.extend(glob("supervisr/**/**/**/**/requirements-dev.txt"))
+    requirements = glob("supervisr/**/requirements.txt", recursive=True)
+    requirements_dev = glob("supervisr/**/requirements-dev.txt", recursive=True)
     ctx.run("cat %s > requirements.txt" % ' '.join(requirements))
-    ctx.run("cat %s > requirements-dev.txt" % ' '.join(requirements_dev))
+    ctx.run("cat %s > requirements-dev.txt" % ' '.join(requirements + requirements_dev))
 
 
 @task

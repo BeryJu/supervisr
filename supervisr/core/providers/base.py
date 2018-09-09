@@ -79,10 +79,8 @@ class BaseProvider(object):
     class Meta(ProviderMetadata):
         """Base Provider Meta"""
 
-        def __init__(self, provider):
-            super().__init__(provider)
-            self.selectable = False
-            self.ui_name = _('BaseProvider')
+        selectable = False
+        ui_name = _('BaseProvider')
 
 
 def get_providers(capabilities=None, path=False) -> list:

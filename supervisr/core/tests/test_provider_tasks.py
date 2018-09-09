@@ -64,12 +64,14 @@ class TestProviderTasks(TestCase):
         # Emulate new model created
         # pylint: disable=no-value-for-parameter
         self.assertEqual(provider_do_work(
-            ProviderAction.SAVE, self.provider.pk, self.domain_path, self.domain.pk, created=True),
+            ProviderAction.SAVE, self.provider.pk, self.domain_path, self.domain.pk,
+            created=True, invoker=self.system_user.pk),
                          ProviderResult.SUCCESS)
         # Emulate delete
         # pylint: disable=no-value-for-parameter
         self.assertEqual(provider_do_work(
-            ProviderAction.DELETE, self.provider.pk, self.domain_path, self.domain.pk),
+            ProviderAction.DELETE, self.provider.pk, self.domain_path,
+            self.domain.pk, invoker=self.system_user.pk),
                          ProviderResult.SUCCESS)
 
     @patch('supervisr.core.providers.tasks.provider_do_work.retry')
@@ -86,7 +88,8 @@ class TestProviderTasks(TestCase):
         with self.assertRaises(Retry):
             # pylint: disable=no-value-for-parameter
             provider_do_work(ProviderAction.SAVE, self.provider.pk,
-                             self.domain_path, self.domain.pk, created=True)
+                             self.domain_path, self.domain.pk,
+                             created=True, invoker=self.system_user.pk)
 
     @patch('supervisr.mod.provider.debug.providers.translators.core_domain.'
            'DebugDomainObject.save')
@@ -100,4 +103,5 @@ class TestProviderTasks(TestCase):
         with self.assertRaises(Ignore):
             # pylint: disable=no-value-for-parameter
             provider_do_work(ProviderAction.SAVE, self.provider.pk,
-                             self.domain_path, self.domain.pk, created=True)
+                             self.domain_path, self.domain.pk,
+                             created=True, invoker=self.system_user.pk)

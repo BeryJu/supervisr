@@ -20,7 +20,7 @@ class ProviderMultiplexer(SupervisrTask):
 
     name = 'supervisr.core.providers.multiplexer.ProviderMultiplexer'
 
-    def run(self, action: ProviderAction, model: str, model_pk, **kwargs):
+    def run(self, action: ProviderAction, model: str, model_pk, **kwargs) -> int:
         """Main Provider handler. This function is called as a task from `post_save`,
         `pre_delete` and `m2m_changed`. Function uses `ProviderMultiplexer`
 
@@ -37,7 +37,7 @@ class ProviderMultiplexer(SupervisrTask):
         system_user = get_system_user()
 
         LOGGER.debug("provider_signal_handler %s", action)
-        self.model_modify_handler(action, system_user, instance, **kwargs)
+        return self.model_modify_handler(action, system_user, instance, **kwargs)
 
     def get_translator(self, instance: Model, root_provider: BaseProvider,
                        iteration=0) -> Union[ProviderObjectTranslator, None]:
@@ -56,6 +56,7 @@ class ProviderMultiplexer(SupervisrTask):
         if sub_provider:
             if iteration >= 100:
                 LOGGER.debug("Provider walk canceled, 100 iterations reached")
+                return None
             sub_provider_instance = sub_provider(root_provider.credentials)
             LOGGER.debug("Redirected from %r to %r", root_provider, sub_provider_instance)
             return self.get_translator(instance, sub_provider_instance, iteration=iteration + 1)
@@ -65,7 +66,7 @@ class ProviderMultiplexer(SupervisrTask):
         return None
 
     def model_modify_handler(self, action: ProviderAction, invoker: 'User',
-                             instance: ProviderTriggerMixin, **kwargs):
+                             instance: ProviderTriggerMixin, **kwargs) -> int:
         """Notify providers that model was saved/deleted so translation can start
 
         Args:
@@ -75,6 +76,7 @@ class ProviderMultiplexer(SupervisrTask):
         """
         from supervisr.core.providers.tasks import provider_do_work
         LOGGER.debug("instance %r, action %r", instance, action)
+        provider_count = 0
         for provider in instance.provider_instances:
             LOGGER.debug("\tprovider_instance %r", provider)
             class_path = class_to_path(instance.__class__)
@@ -84,6 +86,8 @@ class ProviderMultiplexer(SupervisrTask):
                 'queue': class_path
             }, users=provider.users.all(), **kwargs)
             LOGGER.debug("\tstarted task provider_do_work")
+            provider_count += 1
+        return provider_count
 
 
 CELERY_APP.tasks.register(ProviderMultiplexer())

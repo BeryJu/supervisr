@@ -1,6 +1,4 @@
-"""
-Supervisr DNS r1 Record API
-"""
+"""Supervisr DNS v1 Record API"""
 from django.http import HttpRequest, HttpResponse
 
 from supervisr.core.api.models import UserAcquirableModelAPI
@@ -18,9 +16,7 @@ class RecordAPI(UserAcquirableModelAPI):
 
 @logged_in_or_basicauth('Supervisr DNS Update')
 def dyndns_update(request: HttpRequest, zone: str, record: str) -> HttpResponse:
-    """
-    Update DNS entry, but with basic auth
-    """
+    """Update DNS entry, but with basic auth"""
     zones = Zone.objects.filter(domain__domain=zone, users__in=[request.user])
     if not zones.exists():
         return HttpResponse('bad auth')

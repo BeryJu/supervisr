@@ -19,26 +19,25 @@ urllib3<1.23,>=1.21.1
 pip>=10
 pycryptodome
 colorlog
-django-celery-results
 markdown
 aenum
+# In here you can specify pip modules that should be installed
 dnspython
 requests
-# In here you can specify pip modules that should be installed
-django-two-factor-auth
-django-revproxy
-requests
-ldap3
-slumber
-apache-libcloud
-slumber
-influxdb>=4.1.1
-psutil
 django-oauth-toolkit
 django-cors-middleware
 requests_oauthlib>=0.4.2
 oauthlib>=2.0.6
+ldap3
 beautifulsoup4>=4.6.0
 lxml>=3.8.0
 signxml
 defusedxml
+slumber
+apache-libcloud
+slumber
+django-two-factor-auth
+django-revproxy
+influxdb>=4.1.1
+psutil
+requests
