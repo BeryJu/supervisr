@@ -21,7 +21,7 @@ variables:
   # Configure mysql environment variables (https://hub.docker.com/r/_/mysql/)
   MYSQL_DATABASE: supervisr_test
   MYSQL_ROOT_PASSWORD: 'EK-5jnKfjrGRm<77'
-  SUPERVISR_LOCAL_SETTINGS: supervisr.local_settings_ci
+  SUPERVISR_ENV: ci
 services:
   - redis:latest
   - mariadb:latest
@@ -149,7 +149,7 @@ migration_mariadb:
 # Deploy documentation
 deploy-doc:
   stage: deploy-docs
-  only: 
+  only:
     - master
   services: []
   environment:
@@ -164,7 +164,7 @@ deploy-doc:
     - 'rsync -avh --delete site/* "beryjuorg@ory1-web-prod-1.ory1.beryju.org:supervisr.beryju.org/docs/${CI_COMMIT_REF_NAME}"'
 deploy-dev-docs:
   stage: deploy-docs
-  only: 
+  only:
     - master
   services: []
   environment:

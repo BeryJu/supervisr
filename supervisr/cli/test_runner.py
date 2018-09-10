@@ -5,7 +5,7 @@ import os
 import sys
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
-os.environ.setdefault("SUPERVISR_LOCAL_SETTINGS", "supervisr.local_settings")
+os.environ.setdefault("SUPERVISR_ENV", "local")
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 if __name__ == '__main__':

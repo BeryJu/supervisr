@@ -13,7 +13,7 @@ except ImportError:
     pass
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
-os.environ.setdefault("SUPERVISR_LOCAL_SETTINGS", "supervisr.local_settings")
+os.environ.setdefault("SUPERVISR_ENV", "local")
 
 namespace = Collection()
 for submod in dir(tasks):
