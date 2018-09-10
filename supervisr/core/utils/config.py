@@ -49,7 +49,7 @@ class ConfigLoader:
         """Update config from file contents"""
         with open(path) as file:
             try:
-                self.__config.update(yaml.load(file))
+                self.__config.update(yaml.safe_load(file))
             except yaml.YAMLError as exc:
                 raise ImproperlyConfigured from exc
 

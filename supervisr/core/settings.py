@@ -364,6 +364,11 @@ with CONFIG.cd('log'):
                 'level': 'DEBUG',
                 'propagate': True,
             },
+            'flower': {
+                'handlers': LOG_HANDLERS,
+                'level': 'DEBUG',
+                'propagate': True,
+            },
             'celery': {
                 'handlers': LOG_HANDLERS,
                 'level': 'WARNING',
