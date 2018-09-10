@@ -1,7 +1,7 @@
 """Supervisr Core ProductView Test"""
 
 from supervisr.core.models import Product
-from supervisr.core.tests.utils import TestCase, test_request
+from supervisr.core.utils.tests import TestCase, test_request
 from supervisr.core.views import products
 
 

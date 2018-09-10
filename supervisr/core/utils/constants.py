@@ -1,6 +1,6 @@
-"""supervisr common regexs"""
+"""supervisr core constants and regexps"""
 
-
+TEST_DOMAIN = 'supervisrtest.beryju.org'
 DOMAIN_REGEX = (r'([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.'
                 r'([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*')
 EMAIL_DOMAIN_REGEX = DOMAIN_REGEX

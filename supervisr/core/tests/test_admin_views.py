@@ -1,6 +1,6 @@
 """Supervisr Core AdminView Test"""
 
-from supervisr.core.tests.utils import TestCase, test_request
+from supervisr.core.utils.tests import TestCase, test_request
 from supervisr.core.views import admin
 
 

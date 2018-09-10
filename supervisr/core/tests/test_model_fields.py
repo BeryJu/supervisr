@@ -3,7 +3,7 @@ import random
 import string
 
 from supervisr.core.fields import SignedAESEncryption
-from supervisr.core.tests.utils import TestCase
+from supervisr.core.utils.tests import TestCase
 
 
 class FieldsTest(TestCase):

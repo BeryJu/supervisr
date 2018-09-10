@@ -1,6 +1,6 @@
 """supervisr core logger"""
-
 from logging import NOTSET, addLevelName, getLoggerClass, setLoggerClass
+from pprint import pprint
 
 # Default levels:
 # Level		Numeric value
@@ -24,6 +24,11 @@ class SupervisrLogger(getLoggerClass()):
         """Logging method for CLI success messages"""
         if self.isEnabledFor(SUCCESS):
             self._log(SUCCESS, msg, args, **kwargs)
+
+    # pylint: disable=unused-argument
+    def pretty(self, msg, *args, **kwargs):
+        """Print message with pprint"""
+        pprint(msg)
 
 
 setLoggerClass(SupervisrLogger)

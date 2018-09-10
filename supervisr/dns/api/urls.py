@@ -1,6 +1,4 @@
-"""
-Supervisr DNS API Urls
-"""
+"""Supervisr DNS API Urls"""
 
 from supervisr.core.api.urls import auto_discover
 

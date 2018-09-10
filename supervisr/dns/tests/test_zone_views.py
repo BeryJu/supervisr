@@ -2,8 +2,8 @@
 
 from supervisr.core.models import (Domain, ProviderAcquirableRelationship,
                                    UserAcquirableRelationship)
-from supervisr.core.tests.constants import TEST_DOMAIN
-from supervisr.core.tests.utils import (TestCase, internal_provider,
+from supervisr.core.utils.constants import TEST_DOMAIN
+from supervisr.core.utils.tests import (TestCase, internal_provider,
                                         test_request)
 from supervisr.dns.models import Zone
 from supervisr.dns.utils import date_to_soa

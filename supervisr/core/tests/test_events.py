@@ -1,7 +1,7 @@
 """Supervisr Core Event Test"""
 
 from supervisr.core.models import Event
-from supervisr.core.tests.utils import TestCase
+from supervisr.core.utils.tests import TestCase
 
 
 class TestEvent(TestCase):

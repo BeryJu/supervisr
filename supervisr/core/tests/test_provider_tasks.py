@@ -11,9 +11,9 @@ from supervisr.core.providers.objects import (ProviderAction, ProviderObject,
                                               ProviderResult)
 from supervisr.core.providers.tasks import (get_instance, provider_do_work,
                                             provider_resolve_helper)
-from supervisr.core.tests.constants import TEST_DOMAIN
-from supervisr.core.tests.utils import TestCase
 from supervisr.core.utils import class_to_path
+from supervisr.core.utils.constants import TEST_DOMAIN
+from supervisr.core.utils.tests import TestCase
 
 
 class TestProviderTasks(TestCase):

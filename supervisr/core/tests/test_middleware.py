@@ -8,7 +8,7 @@ from supervisr.core.middleware.impersonate_middleware import impersonate
 from supervisr.core.middleware.permanent_message_middleware import \
     permanent_message
 from supervisr.core.models import Setting, User
-from supervisr.core.tests.utils import TestCase, test_request
+from supervisr.core.utils.tests import TestCase, test_request
 from supervisr.core.views import accounts, common
 
 

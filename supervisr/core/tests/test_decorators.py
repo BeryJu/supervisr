@@ -9,8 +9,8 @@ from supervisr.core.decorators import (REAUTH_KEY, REAUTH_MARGIN, ifapp,
                                        logged_in_or_basicauth, reauth_required,
                                        require_setting)
 from supervisr.core.models import Setting
-from supervisr.core.tests.utils import TestCase, test_request
 from supervisr.core.utils import b64encode
+from supervisr.core.utils.tests import TestCase, test_request
 from supervisr.core.views import accounts, common
 
 

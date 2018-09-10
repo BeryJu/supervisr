@@ -1,7 +1,7 @@
 """supervisr core setup tests"""
 
 from supervisr.core.models import Setting
-from supervisr.core.tests.utils import TestCase, test_request
+from supervisr.core.utils.tests import TestCase, test_request
 from supervisr.core.views.setup import SetupWizard
 
 

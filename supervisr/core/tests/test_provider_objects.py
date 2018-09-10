@@ -3,7 +3,7 @@
 from supervisr.core.providers.objects import (ProviderObject,
                                               ProviderObjectTranslator,
                                               ProviderResult)
-from supervisr.core.tests.utils import TestCase
+from supervisr.core.utils.tests import TestCase
 
 
 class TestProviderObjects(TestCase):

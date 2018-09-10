@@ -1,7 +1,7 @@
 """Supervisr Core SearchView Test"""
 
 from supervisr.core.models import Domain, UserAcquirableRelationship
-from supervisr.core.tests.utils import TestCase, test_request
+from supervisr.core.utils.tests import TestCase, test_request
 from supervisr.core.views.search import (DefaultSearchHandler, SearchQuery,
                                          SearchView)
 

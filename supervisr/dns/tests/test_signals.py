@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from supervisr.core.models import Domain, UserAcquirableRelationship
-from supervisr.core.tests.utils import TestCase, internal_provider
+from supervisr.core.utils.tests import TestCase, internal_provider
 from supervisr.dns.models import Record, Resource, ResourceSet, Zone
 
 

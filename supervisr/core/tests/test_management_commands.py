@@ -4,7 +4,7 @@ import os
 from django.core.management import call_command
 
 from supervisr.core.middleware.deploy_page_middleware import DEPLOY_PAGE_PATH
-from supervisr.core.tests.utils import TestCase, call_command_ret
+from supervisr.core.utils.tests import TestCase, call_command_ret
 
 
 class TestManagementCommands(TestCase):

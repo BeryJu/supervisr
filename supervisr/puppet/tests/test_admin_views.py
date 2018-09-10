@@ -2,7 +2,7 @@
 
 from django.contrib.auth.models import Group
 
-from supervisr.core.tests.utils import TestCase, test_request
+from supervisr.core.utils.tests import TestCase, test_request
 from supervisr.puppet.models import PuppetModule
 from supervisr.puppet.views import admin
 

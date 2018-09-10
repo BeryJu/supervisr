@@ -2,7 +2,7 @@
 
 from supervisr.core.providers.base import (BaseProvider, ProviderMetadata,
                                            get_providers)
-from supervisr.core.tests.utils import TestCase
+from supervisr.core.utils.tests import TestCase
 
 
 class TestProviderBase(TestCase):

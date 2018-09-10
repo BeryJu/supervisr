@@ -2,7 +2,7 @@
 
 from supervisr.core.api.v1.accounts import AccountAPI
 from supervisr.core.api.v1.credentials import CredentialAPI
-from supervisr.core.tests.utils import TestCase, test_request
+from supervisr.core.utils.tests import TestCase, test_request
 
 
 class TestAPIs(TestCase):

@@ -4,7 +4,7 @@ import threading
 from wsgiref.simple_server import WSGIRequestHandler, make_server
 from wsgiref.validate import validator
 
-from supervisr.core.tests.utils import TestCase, test_request
+from supervisr.core.utils.tests import TestCase, test_request
 from supervisr.mod.web_proxy.models import WebApplication
 from supervisr.mod.web_proxy.views import Proxy
 

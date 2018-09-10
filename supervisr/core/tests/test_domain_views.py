@@ -4,7 +4,7 @@
 from django.test import TestCase
 
 from supervisr.core.models import get_system_user
-from supervisr.core.tests.utils import test_request
+from supervisr.core.utils.tests import test_request
 from supervisr.core.views import domains
 
 

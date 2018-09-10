@@ -3,7 +3,7 @@
 import os
 import time
 
-from supervisr.core.tests.utils import TestCase
+from supervisr.core.utils.tests import TestCase
 from supervisr.static.models import FilePage
 
 

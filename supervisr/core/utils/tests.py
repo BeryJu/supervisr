@@ -18,11 +18,11 @@ from supervisr.core.models import (EmptyCredential, ProviderInstance,
 # pylint: disable=too-many-arguments
 def test_request(view,
                  method='GET',
-                 user=SVAnonymousUser,
-                 session_data=None,
-                 url_kwargs=None,
-                 req_kwargs=None,
-                 headers=None,
+                 user: User = SVAnonymousUser,
+                 session_data: dict = None,
+                 url_kwargs: dict = None,
+                 req_kwargs: dict = None,
+                 headers: dict = None,
                  just_request=False) -> HttpResponse:
     """Wrapper to make test requests easier
 
@@ -64,8 +64,6 @@ def test_request(view,
 
     if user is SVAnonymousUser:
         user = SVAnonymousUser()
-    elif isinstance(user, int):
-        user = User.objects.get(pk=user)
     request.user = user
 
     if just_request:

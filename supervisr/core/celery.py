@@ -13,7 +13,6 @@ pymysql.install_as_MySQLdb()
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
-os.environ.setdefault("SUPERVISR_LOCAL_SETTINGS", "supervisr.local_settings")
 
 LOGGER = logging.getLogger(__name__)
 
@@ -24,7 +23,7 @@ class Celery(celery.Celery):
     def on_configure(self):
         """Update raven client"""
         try:
-            client = Client(settings.SENTRY_DSN)
+            client = Client(settings.RAVEN_CONFIG.get('dsn'))
             # register a custom filter to filter out duplicate logs
             register_logger_signal(client)
             # hook into the Celery error handler
@@ -68,7 +67,7 @@ CELERY_APP = Celery('supervisr')
 # the configuration object to child processes.
 # - namespace='CELERY' means all celery-related configuration keys
 #   should have a `CELERY_` prefix.
-CELERY_APP.config_from_object('django.conf:settings', namespace='CELERY')
+CELERY_APP.config_from_object(settings, namespace='CELERY')
 
 # Load task modules from all registered Django app configs.
 CELERY_APP.autodiscover_tasks()

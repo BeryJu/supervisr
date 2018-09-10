@@ -8,7 +8,7 @@ from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
                                            SignupForm)
 from supervisr.core.models import AccountConfirmation, User
 from supervisr.core.signals import on_user_confirm_resend
-from supervisr.core.tests.utils import TestCase, test_request
+from supervisr.core.utils.tests import TestCase, test_request
 from supervisr.core.views import accounts
 
 

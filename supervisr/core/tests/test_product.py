@@ -3,7 +3,7 @@
 from supervisr.core.models import (Event, Product, User,
                                    UserAcquirableRelationship)
 from supervisr.core.signals import on_user_sign_up_post
-from supervisr.core.tests.utils import TestCase
+from supervisr.core.utils.tests import TestCase
 
 
 class TestProduct(TestCase):

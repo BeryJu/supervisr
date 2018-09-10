@@ -98,7 +98,7 @@ ENV/
 *.db
 
 # Local settings
-local_settings.py
+supervisr/environments/local.yml
 
 # Compiled HTML files
 *.html.py

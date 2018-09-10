@@ -1,6 +1,6 @@
 """supervisr mod stats influx view tests"""
 
-from supervisr.core.tests.utils import TestCase, test_request
+from supervisr.core.utils.tests import TestCase, test_request
 from supervisr.mod.stats.influx.views import SettingsView
 
 

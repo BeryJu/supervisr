@@ -1,0 +1,28 @@
+# This is the default configuration file
+log:
+  level:
+    console: DEBUG
+    file: DEBUG
+  syslog:
+    host: 127.0.0.1
+    port: 514
+  file: /dev/null
+email:
+  host: localhost
+  port: 25
+  user: ''
+  password: ''
+  use_tls: false
+  use_ssl: false
+  from: supervisr <supervisr@domain.tld>
+sentry: ''
+footer:
+  - text: ''
+    view: ''
+    url: ''
+secret_key: _k*@6h2u2@q-dku57hhgzb7tnx*ba9wodcb^s9g0j59@=y(@_o
+debug: true
+domains:
+  - localhost
+timezone: UTC
+redis: localhost

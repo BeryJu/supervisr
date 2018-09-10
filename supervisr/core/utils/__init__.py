@@ -3,9 +3,7 @@
 import base64
 import logging
 import socket
-from glob import glob
 from importlib import import_module
-from importlib.util import module_from_spec, spec_from_file_location
 from urllib.parse import urlparse
 from uuid import uuid4
 
@@ -15,7 +13,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.management.base import OutputWrapper
 from django.db import DEFAULT_DB_ALIAS
-from django.db.migrations.executor import MigrationExecutor
 from django.db.utils import ConnectionDoesNotExist, OperationalError
 from django.http import HttpRequest
 from django.template import Context, Template, loader
@@ -29,7 +26,7 @@ LOGGER = logging.getLogger(__name__)
 def get_remote_ip(request: HttpRequest) -> str:
     """Return the remote's IP"""
     if not request:
-        return '0.0.0.0' # nosec
+        return '0.0.0.0'  # nosec
     if request.META.get('HTTP_X_FORWARDED_FOR'):
         return request.META.get('HTTP_X_FORWARDED_FOR')
     return request.META.get('REMOTE_ADDR')
@@ -92,55 +89,6 @@ def path_to_class(path):
     package = '.'.join(parts[:-1])
     _class = getattr(import_module(package), parts[-1])
     return _class
-
-
-def db_settings_from_dbconfig(config_path):
-    """Generate Django DATABASE dict from dbconfig file"""
-    db_config = {}
-    with open(config_path, 'r') as file:
-        contents = file.read().split('\n')
-        for line in contents:
-            if line.startswith('#') or line == '':
-                continue
-            key, value = line.split('=')
-            value = value[1:-1]
-            if key == 'dbuser':
-                db_config['USER'] = value
-            elif key == 'dbpass':
-                db_config['PASSWORD'] = value
-            elif key == 'dbname':
-                db_config['NAME'] = value
-            elif key == 'dbserver':
-                db_config['HOST'] = value
-            elif key == 'dbport':
-                db_config['PORT'] = value
-            elif key == 'dbtype':
-                if value == 'mysql':
-                    db_config['ENGINE'] = 'django.db.backends.mysql'
-                    db_config['OPTIONS'] = {
-                        'charset': 'UTF8MB4',
-                        'sql_mode': ('STRICT_TRANS_TABLES,NO_ZERO_DATE,'
-                                     'NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO'),
-                    }
-                elif value == 'pgsql':
-                    db_config['ENGINE'] = 'django.db.backends.postgresql'
-        return db_config
-
-
-def read_simple(path, mode='r'):
-    """Simple wrapper for file reading"""
-    with open(path, mode) as file:
-        return file.read()
-
-
-def import_dir(directory):
-    """Import every file in a direct and call callback for each"""
-    files = glob(directory + '/*.py', recursive=True)
-    modules = []
-    for file in files:
-        spec = spec_from_file_location("", file)
-        modules.append(module_from_spec(spec))
-    return modules
 
 
 def b64encode(*args):
@@ -217,6 +165,7 @@ def is_url_absolute(url):
 def is_database_synchronized(database=DEFAULT_DB_ALIAS):
     """Check if database has migrations pending"""
     from django.db import connections
+    from django.db.migrations.executor import MigrationExecutor
     connection = connections[database]
     connection.prepare_database()
     executor = MigrationExecutor(connection)

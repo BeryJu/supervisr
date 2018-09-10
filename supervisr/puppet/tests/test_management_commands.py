@@ -5,7 +5,7 @@ from unittest import expectedFailure
 
 from django.contrib.auth.models import Group
 
-from supervisr.core.tests.utils import TestCase, call_command_ret
+from supervisr.core.utils.tests import TestCase, call_command_ret
 from supervisr.puppet.builder import ReleaseBuilder
 from supervisr.puppet.models import PuppetModule
 

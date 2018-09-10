@@ -7,11 +7,11 @@ from unittest import skipUnless
 from django.http import HttpResponseServerError
 from django.test import RequestFactory, TestCase
 
-from supervisr.core.tests.utils import test_request
 from supervisr.core.utils import (b64decode, b64encode, check_db_connection,
                                   class_to_path, get_remote_ip,
                                   get_reverse_dns, path_to_class,
                                   render_to_string, uuid)
+from supervisr.core.utils.tests import test_request
 
 
 class TestUtils(TestCase):

@@ -1,12 +1,12 @@
 """Supervisr Core Templatetags Test"""
 
 from django.template import Context
-from django.test import TestCase
 
 from supervisr.core.utils import render_from_string
+from supervisr.core.utils.tests import TestCase
 
 
-class TestTemplateTagss(TestCase):
+class TestTemplateTags(TestCase):
     """Supervisr Core Templatetags Test"""
 
     def test_ifapp_tag(self):

@@ -2,9 +2,9 @@
 from supervisr.core.models import Domain
 from supervisr.core.providers.multiplexer import ProviderMultiplexer
 from supervisr.core.providers.objects import ProviderAction
-from supervisr.core.tests.constants import TEST_DOMAIN
-from supervisr.core.tests.utils import TestCase
 from supervisr.core.utils import class_to_path
+from supervisr.core.utils.constants import TEST_DOMAIN
+from supervisr.core.utils.tests import TestCase
 
 
 class TestProviderMultiplexer(TestCase):

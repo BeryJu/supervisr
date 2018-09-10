@@ -1,0 +1,25 @@
+debug: false
+admins:
+    - admin <admin@domain.tld>
+email:
+    host: mx1.domain.tld
+    from: Supervisr <supervisr@domain.tld>
+http:
+    host: 0.0.0.0
+    port: 8000
+secret_key_file: /etc/supervisr/secret_key
+log:
+    level:
+        console: INFO
+        file: DEBUG
+    file: /var/log/supervisr/supervisr.log
+    # Logs can be sent to a syslog server by enabling this setting
+    # syslog:
+    #     host: 1.2.3.4
+    #     port: 514
+# Specify redis connection string
+# Format: <user>:<password>@<hostname>:<port>/<db_number>
+redis: localhost
+# Error reporting
+# disabled by default
+# sentry: https://c5f3fa4e642d4dbfaa5db684bd0f6a13@sentry.services.beryju.org/6
