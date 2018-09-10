@@ -106,7 +106,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.admindocs',
     'raven.contrib.django.raven_compat',
-]
+] + CONFIG.get('installed_apps', [])
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(

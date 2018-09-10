@@ -77,7 +77,7 @@ urlpatterns = [
     url(r'^providers/credentials/(?P<name>[a-zA-Z0-9\-\.\_\s]+)/delete/$',
         providers.CredentialDeleteView.as_view(), name='credential-delete'),
     # User views
-    url(r'^user/$', users.User, name='user-index'),
+    url(r'^user/$', users.index, name='user-index'),
     url(r'^user/events/$', users.events, name='user-events'),
     url(r'^user/delete/$', users.UserDeleteView.as_view(), name='user-delete'),
     url(r'^user/feedback/send/$', users.send_feedback, name='user-send_feedback'),
