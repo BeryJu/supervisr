@@ -209,7 +209,6 @@ for db_alias, db_config in CONFIG.get('databases').items():
         'NAME': db_config.get('name'),
         'USER': db_config.get('user'),
         'PASSWORD': db_config.get('password'),
-        'TEST': db_config.get('test'),
         'OPTIONS': db_config.get('options'),
     }
 
