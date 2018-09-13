@@ -4,13 +4,15 @@
 {% load i18n %}
 
 {% block title %}
-{% title 'Zones' %}
+{% title 'Reverse Zones' %}
 {% endblock %}
 
 {% block content %}
-<h1><clr-icon shape="router" size="48"></clr-icon>{% trans 'DNS Zones' %}</h1>
+<h1>
+  <clr-icon shape="router" size="48"></clr-icon>{% trans 'Reverse DNS Zones' %}
+</h1>
 <div class="btn-group btn-link btn-icon-link">
-  <a href="{% url 'supervisr_dns:zone-create' %}" class="btn">
+  <a href="" class="btn">
     <clr-icon shape="add"></clr-icon>
   </a>
   <a data-ctx-name="edit" class="btn">
@@ -40,9 +42,8 @@
   </thead>
   <tbody>
     {% for zone in instances %}
-    <tr data-selectable data-ctx-edit="{% url 'supervisr_dns:zone-update' zone_uuid=zone.uuid %}?back={{ request.get_full_path }}"
-      data-ctx-trash="{% url 'supervisr_dns:zone-delete' zone_uuid=zone.uuid %}?back={{ request.get_full_path }}">
-      <td>{{ zone.domain }}</td>
+    <tr data-selectable >
+      <td>{{ zone.zone_ip }}</td>
       <td>{{ zone.users.all|join:"," }}</td>
       <td>{{ zone.record_set.all|length }}</td>
       <td>{{ zone.providers.all|join:"," }}</td>

@@ -10,20 +10,32 @@
     <section class="nav-group">
       <a href="{% url 'supervisr_dns:index' %}" class="nav-link {% is_active 'index' %}">{% trans "Zones" %}</a>
       <ul class="nav-list">
-        {% related_models 'supervisr.dns.models.Zone' as zones %} {% for z in zones %}
+        {% related_models 'supervisr.dns.models.Zone' as zones %}
+        {% for zone in zones %}
         <li>
-          <a href="{% url 'supervisr_dns:record-list' zone=z.domain %}" class="nav-link {% is_active_url 'supervisr_dns:record-list' zone=z.domain %}">{{ z.domain }}</a>
+          <a href="{% url 'supervisr_dns:record-list' zone_uuid=zone.uuid %}" class="nav-link {% is_active_url 'supervisr_dns:record-list' zone_uuid=zone.uuid %}">{{ zone.domain }}</a>
         </li>
         {% endfor %}
       </ul>
     </section>
     <section class="nav-group">
-      <a href="{% url 'supervisr_dns:rset-create' %}" class="nav-link {% is_active 'rset-create' %}">{% trans "Resource Sets" %}</a>
+      <a href="{% url 'supervisr_dns:reverse-zone-index' %}" class="nav-link {% is_active 'reverse-zone-index' %}">{% trans "Reverse Zones" %}</a>
       <ul class="nav-list">
-        {% related_models 'supervisr.dns.models.ResourceSet' as rsets %}
-        {% for r in rsets %}
+        {% related_models 'supervisr.dns.models.ReverseZone' as zones %}
+        {% for zone in zones %}
         <li>
-          <a href="{% url 'supervisr_dns:rset-view' rset_uuid=r.uuid %}" class="nav-link {% is_active_url 'supervisr_dns:rset-view' rset_uuid=r.uuid %}">{{ r.name }}</a>
+          <a href="" class="nav-link">{{ zone.zone_ip }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    <section class="nav-group">
+      <a href="{% url 'supervisr_dns:record-set-create' %}" class="nav-link {% is_active 'record-set-create' %}">{% trans "Sets" %}</a>
+      <ul class="nav-list">
+        {% related_models 'supervisr.dns.models.SetRecord' as set_records %}
+        {% for set in set_records %}
+        <li>
+          <a href="{% url 'supervisr_dns:record-set-view' record_uuid=set.uuid %}" class="nav-link {% is_active_url 'supervisr_dns:record-set-view' record_uuid=set.uuid %}">{{ set.name }}</a>
         </li>
         {% endfor %}
       </ul>

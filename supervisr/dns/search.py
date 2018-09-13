@@ -5,7 +5,7 @@ from django.shortcuts import reverse
 
 from supervisr.core.signals import on_search
 from supervisr.core.views.search import DefaultSearchHandler
-from supervisr.dns.models import Record, Zone
+from supervisr.dns.models import DataRecord, SetRecord, Zone
 
 
 class ZoneSearchHandler(DefaultSearchHandler):
@@ -21,25 +21,35 @@ class ZoneSearchHandler(DefaultSearchHandler):
         return instance.domain.domain_name
 
 
-class RecordSearchHandler(DefaultSearchHandler):
-    """Search Handler for Record"""
+class DataRecordSearchHandler(DefaultSearchHandler):
+    """Search Handler for DataRecord"""
 
-    model = Record
+    model = DataRecord
     fields = ['name']
     icon = 'view-list'
 
-    def get_label(self, instance, request: HttpRequest) -> str:
-        """Return label for SearchResult."""
-        return instance.zone.domain.domain_name
+    def get_url(self, instance, request: HttpRequest) -> str:
+        """Return full URL for SearchResult."""
+        return reverse('supervisr_dns:index')
+
+
+class SetRecordSearchHandler(DefaultSearchHandler):
+    """Search Handler for SetRecord"""
+
+    model = SetRecord
+    fields = ['name']
+    icon = 'view-list'
 
     def get_url(self, instance, request: HttpRequest) -> str:
         """Return full URL for SearchResult."""
-        return reverse('supervisr_dns:record-list', kwargs={'zone': instance.zone})
+        return reverse('supervisr_dns:index')
 
 
 @receiver(on_search)
 # pylint: disable=unused-argument
 def search_handler(sender, query, request, *args, **kwargs):
     """Inbuilt search handler for DNS models"""
-    return DefaultSearchHandler.combine(handlers=[RecordSearchHandler, ZoneSearchHandler],
+    return DefaultSearchHandler.combine(handlers=[ZoneSearchHandler,
+                                                  DataRecordSearchHandler,
+                                                  SetRecordSearchHandler],
                                         query=query, request=request)

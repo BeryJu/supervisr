@@ -1,5 +1,5 @@
 """Supervisr DNS Util Test"""
-from django.test import TestCase
+from supervisr.core.utils.tests import TestCase
 
 # from supervisr.dns.utils import zone_to_rec
 

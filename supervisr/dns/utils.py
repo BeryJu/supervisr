@@ -12,7 +12,7 @@ import dns.zone
 from dns.rdtypes.ANY.MX import MX
 from dns.rdtypes.ANY.SOA import SOA
 
-from supervisr.dns.models import Record, Resource, Zone
+from supervisr.dns.models import DataRecord, Zone
 
 
 def date_to_soa(_date: date = date.today()) -> int:
@@ -43,17 +43,14 @@ def zone_to_rec(data, root_zone=''):
                 # MX records need to have their exchange extracted seperately
                 if isinstance(dataset_data, MX):
                     content = dataset_data.exchange
-                record = Record.objects.create(
-                    name=r_name)
-                # resource_set = ResourceSet.objects.create(
-                #     name=r_name)
-                resource = Resource(
+                record = DataRecord.objects.create(
+                    name=r_name,
                     type=dns.rdatatype.to_text(dataset.rdtype),
                     content=content,
                     ttl=dataset.ttl)
                 # TODO: Remove Priority from content if set
                 if getattr(dataset_data, 'preference', None):
-                    resource.prio = dataset_data.preference
+                    record.prio = dataset_data.preference
                 # SOA record should last in list, so auto-serial update
                 # isn't triggered
                 if isinstance(dataset_data, SOA):
@@ -64,7 +61,7 @@ def zone_to_rec(data, root_zone=''):
     return records
 
 
-def record_to_rdata(record: Record, zone: Zone) -> dns.rdata.Rdata:
+def record_to_rdata(record: DataRecord, zone: Zone) -> dns.rdata.Rdata:
     """Convert record to RDATA"""
     rtype = dns.rdatatype.from_text(record.type)
     cls = dns.rdataclass.IN
