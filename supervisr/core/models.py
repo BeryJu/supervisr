@@ -28,6 +28,7 @@ from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+from raven.contrib.django.raven_compat.models import client
 
 from supervisr.core import fields
 from supervisr.core.decorators import database_catchall
@@ -88,15 +89,13 @@ class CastableModel(models.Model):
 
     @time_method('CastableModel.cast')
     def cast(self):
-        """
-        This method converts "self" into its correct child class.
-        """
+        """This method converts "self" into its correct child class."""
         for name in dir(self):
             try:
                 attr = getattr(self, name)
-                if isinstance(attr, self.__class__):
+                if isinstance(attr, self.__class__) and self.__class__ != attr.__class__:
                     return attr
-            except (AttributeError, ObjectDoesNotExist, OperationalError):
+            except (AttributeError, ObjectDoesNotExist, OperationalError, NotImplementedError):
                 pass
         return self
 
@@ -374,9 +373,7 @@ class AccountConfirmation(CreatedUpdatedModel):
 
     @property
     def is_expired(self):
-        """
-        Returns whether or not the confirmation is expired or not
-        """
+        """Returns whether or not the confirmation is expired or not"""
         return self.expires < time.time()
 
     def __str__(self):
@@ -755,11 +752,17 @@ class ProviderInstance(CreatedUpdatedModel, UserAcquirable):
     @property
     def provider(self) -> BaseProvider:
         """Return instance of provider saved"""
-        if not self._class:
-            path_parts = self.provider_path.split('.')
-            module = import_module('.'.join(path_parts[:-1]))
-            self._class = getattr(module, path_parts[-1])
-        return self._class(credentials=self.credentials)
+        try:
+            if not self._class:
+                path_parts = self.provider_path.split('.')
+                module = import_module('.'.join(path_parts[:-1]))
+                self._class = getattr(module, path_parts[-1])
+            return self._class(credentials=self.credentials)
+        # We do a broad catch here since the mainly runs in the main thread
+        # and we dont want to disrupt anything if a provider errors out
+        except Exception: # pylint: disable=broad-except
+            client.captureException()
+        return None
 
     def __str__(self):
         return self.name
@@ -768,10 +771,8 @@ class ProviderInstance(CreatedUpdatedModel, UserAcquirable):
 @receiver(on_user_sign_up_post)
 # pylint: disable=unused-argument
 def product_handle_post_signup(sender, signal, user, **kwargs):
-    """
-    Auto-associates Product with new users. We have a separate function for
-    this since we use the default Django User Model.
-    """
+    """Auto-associates Product with new users. We have a separate function for
+    this since we use the default Django User Model."""
     to_add = Product.objects.filter(auto_add=True)
     for product in to_add:
         UserAcquirableRelationship.objects.create(

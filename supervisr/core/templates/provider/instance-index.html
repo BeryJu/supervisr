@@ -26,29 +26,29 @@
 <table class="table instances">
   <thead>
     <tr>
+      <th>{% trans 'Provider status' %}</th>
       <th>{% trans 'Name' %}</th>
       <th>{% trans 'Provider' %}</th>
       <th>{% trans 'Credentials' %}</th>
       <th>{% trans 'Capabilities' %}</th>
-      <th>{% trans 'Authentication Status' %}</th>
     </tr>
   </thead>
   <tbody>
     {% for instance in instances %}
     <tr data-selectable data-ctx-edit="{% url 'instance-edit' uuid=instance.uuid %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'instance-delete' uuid=instance.uuid %}?back={{ request.get_full_path }}">
-      <td><span>{{ instance.name }}</span></td>
-      <td><span>{{ instance.provider.get_meta.ui_name }}</span></td>
-      <td><span>{{ instance.credentials.name }}</span></td>
-      <td><span>{{ instance.provider.get_meta.get_capabilities|join:', ' }}</span></td>
       <td>
         {% with status=instance.provider.check_status %}
           {% if status == True %}
             <span class="label label-success">{% trans "OK" %}</span>
           {% else %}
-            <span class="label is-error">{{ status }}</span>
+            <span class="label label-danger">{{ status }}</span>
           {% endif %}
         {% endwith %}
       </td>
+      <td><span>{{ instance.name }}</span></td>
+      <td><span>{{ instance.provider.get_meta.ui_name|default:'Error!' }}</span></td>
+      <td><span>{{ instance.credentials.name }}</span></td>
+      <td><span>{{ instance.provider.get_meta.get_capabilities|join:', '|default:'-' }}</span></td>
     </tr>
     {% endfor %}
   </tbody>
