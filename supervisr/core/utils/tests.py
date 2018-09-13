@@ -16,14 +16,14 @@ from supervisr.core.models import (EmptyCredential, ProviderInstance,
 
 
 # pylint: disable=too-many-arguments
-def test_request(view,
+def test_request(view: callable,
                  method='GET',
                  user: User = SVAnonymousUser,
                  session_data: dict = None,
                  url_kwargs: dict = None,
                  req_kwargs: dict = None,
                  headers: dict = None,
-                 just_request=False) -> HttpResponse:
+                 just_request: bool = False) -> HttpResponse:
     """Wrapper to make test requests easier
 
     Args:

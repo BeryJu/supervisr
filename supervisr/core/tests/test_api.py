@@ -1,5 +1,4 @@
 """Supervisr Core API Test"""
-
 from supervisr.core.api.v1.accounts import AccountAPI
 from supervisr.core.api.v1.credentials import CredentialAPI
 from supervisr.core.utils.tests import TestCase, test_request

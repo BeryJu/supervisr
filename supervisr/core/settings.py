@@ -46,7 +46,6 @@
 
 
 import importlib
-import logging
 import os
 import sys
 
@@ -375,10 +374,6 @@ with CONFIG.cd('log'):
             },
         }
     }
-
-LOGGER = logging.getLogger(__name__)
-LOGGER.warning("Running with database '%s' (backend=%s)", DATABASES['default']['NAME'],
-               DATABASES['default']['ENGINE'])
 
 TEST = False
 TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'

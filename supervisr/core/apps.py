@@ -179,6 +179,9 @@ class SupervisrCoreConfig(SupervisrAppConfig):
     verbose_name = 'Supervisr Core'
 
     def ready(self):
+        LOGGER.info("Running with database '%s' (backend=%s)",
+                    settings.DATABASES['default']['NAME'],
+                    settings.DATABASES['default']['ENGINE'])
         super(SupervisrCoreConfig, self).ready()
         self.clear_cache()
         # Check for invalid settings
