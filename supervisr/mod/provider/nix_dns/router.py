@@ -17,7 +17,6 @@ class PowerDNSRouter(object):
     # pylint: disable=unused-argument
     def db_for_write(self, model, **hints):
         """Attempts to write auth models go to PowerDNS."""
-        # print(model)
         if model._meta.app_label == 'supervisr_mod_provider_nix_dns':
             return 'powerdns'
         return None

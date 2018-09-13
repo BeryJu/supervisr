@@ -8,7 +8,7 @@ from supervisr.core.providers.exceptions import ProviderRetryException
 from supervisr.core.providers.objects import (ProviderObject,
                                               ProviderObjectTranslator,
                                               ProviderResult)
-from supervisr.dns.models import Record
+from supervisr.dns.providers.compat import CompatDNSRecord
 
 
 class LCloudRecordObject(ProviderObject):
@@ -21,7 +21,7 @@ class LCloudRecordObject(ProviderObject):
     def save(self, created: bool):
         """Save this instance"""
         try:
-            print('test')
+            pass
             # return self.translator.provider_instance.driver.create_record(
             #     domain=self.name,
             #     type=self.type,
@@ -50,15 +50,15 @@ class LCloudRecordObject(ProviderObject):
             raise ProviderRetryException from exc
 
 
-class LCloudRecordTranslator(ProviderObjectTranslator[Record]):
+class LCloudRecordTranslator(ProviderObjectTranslator[CompatDNSRecord]):
     """PowerDNS Record Translator"""
 
-    def to_external(self, internal: Record) -> Generator[LCloudRecordObject, None, None]:
+    def to_external(self, internal: CompatDNSRecord) -> Generator[LCloudRecordObject, None, None]:
         """Convert Record to Domain"""
         yield LCloudRecordObject(
             translator=self,
             id=internal.pk,
-            name=internal.domain.domain_name,
+            name=str(internal.domain.domain_name),
             type='master',
             ttl=86400,
         )

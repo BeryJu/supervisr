@@ -1,7 +1,7 @@
 """Supervisr PowerDNS Domain Provider"""
 
 from supervisr.core.providers.base import ProviderObjectTranslator
-from supervisr.dns.models import Zone
+from supervisr.dns.models import ReverseZone, Zone
 from supervisr.dns.providers.compat import CompatDNSProvider, CompatDNSRecord
 from supervisr.mod.provider.nix_dns.providers.translators.record import \
     PowerDNSRecordTranslator
@@ -15,11 +15,11 @@ class NixDNSProvider(CompatDNSProvider):
     parent = None
 
     def get_translator(self, data_type) -> ProviderObjectTranslator:
-        if data_type == Zone:
+        if data_type == Zone or data_type == ReverseZone:
             return PowerDNSZoneTranslator
         elif data_type == CompatDNSRecord:
             return PowerDNSRecordTranslator
-        # Record, Resource and ResourceSet is handeled by Compat
+        # DataRecord and SetRecord is handeled by Compat
         return super().get_translator(data_type)
 
     def check_credentials(self, credentials=None):

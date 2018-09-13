@@ -2,9 +2,9 @@
 
 from libcloud.dns.providers import get_driver
 
-from supervisr.core.providers.base import (BaseProvider,
-                                           ProviderObjectTranslator)
-from supervisr.dns.models import Record, Zone
+from supervisr.core.providers.base import ProviderObjectTranslator
+from supervisr.dns.models import ReverseZone, Zone
+from supervisr.dns.providers.compat import CompatDNSProvider, CompatDNSRecord
 from supervisr.mod.provider.libcloud.models import LibCloudCredentials
 from supervisr.mod.provider.libcloud.providers.translators.record import \
     LCloudRecordTranslator
@@ -12,7 +12,7 @@ from supervisr.mod.provider.libcloud.providers.translators.zone import \
     LCloudZoneTranslator
 
 
-class LibCloudDNSProvider(BaseProvider):
+class LibCloudDNSProvider(CompatDNSProvider):
     """libcloud DNS provider"""
 
     parent = None
@@ -21,7 +21,7 @@ class LibCloudDNSProvider(BaseProvider):
     driver = None
 
     def __init__(self, credentials: LibCloudCredentials):
-        super(LibCloudDNSProvider, self).__init__(credentials)
+        super().__init__(credentials)
         # Create new libcloud Provider instance
         self.driver_cls = get_driver(credentials.provider)
         self.driver = self.driver_cls(
@@ -35,11 +35,11 @@ class LibCloudDNSProvider(BaseProvider):
         )
 
     def get_translator(self, data_type) -> ProviderObjectTranslator:
-        if data_type == Zone:
+        if data_type == Zone or data_type == ReverseZone:
             return LCloudZoneTranslator
-        elif data_type == Record:
+        elif data_type == CompatDNSRecord:
             return LCloudRecordTranslator
-        return None
+        return super().get_translator(data_type)
 
     def check_credentials(self, credentials=None):
         """Check Credentials"""
