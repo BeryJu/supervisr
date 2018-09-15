@@ -71,10 +71,10 @@ def pick(cont, arg, fallback=''):
 
 
 @register.simple_tag(takes_context=True)
-def title(context, title=None):
+def title(context, *title):
     """Return either just branding or title - branding"""
     branding = Setting.get('branding', default='supervisr')
-    if title is None or title == '':
+    if not title:
         return branding
     # Include App Title in title
     app = ''
@@ -88,7 +88,7 @@ def title(context, title=None):
             app_title = dj_app.title_modifier(context.request)
             app = app_title + ' -'
     return _("%(title)s - %(app)s %(branding)s" % {
-        'title': title,
+        'title': ' - '.join([str(x) for x in title]),
         'branding': branding,
         'app': app,
     })

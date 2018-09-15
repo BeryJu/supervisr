@@ -526,10 +526,9 @@ class ProviderAcquirableRelationship(models.Model):
 
 
 class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
-    """
-    Information about the Main Product itself. This instances of this classes
-    are assumed to be managed services.
-    """
+    """Information about the Main Product itself. This instances of this classes
+    are assumed to be managed services."""
+
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     name = models.TextField()
     slug = models.SlugField(blank=True)
