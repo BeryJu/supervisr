@@ -86,7 +86,8 @@ class SetupWizard(AnonymousRequiredMixin, NamedWizard):
     def get_context_data(self, form, **kwargs):
         context = super().get_context_data(form=form, **kwargs)
         if self.steps.current == 'post-install':
-            self.run_migrate()
+            for db_alias in settings.DATABASES.keys():
+                self.run_migrate(db_alias=db_alias)
             context['migration_status'] = self.migration_progress
         # Store state of install for template so we can show different texts for fresh installs
         # vs upgrades

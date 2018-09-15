@@ -5,7 +5,7 @@ from supervisr.core.forms.accounts import (ChangePasswordForm, LoginForm,
                                            PasswordResetFinishForm, SignupForm)
 from supervisr.core.forms.domains import DomainForm
 from supervisr.core.models import Setting, User, UserAcquirableRelationship
-from supervisr.core.tests.utils import (TestCase, internal_provider,
+from supervisr.core.utils.tests import (TestCase, internal_provider,
                                         test_request)
 from supervisr.core.views.common import IndexView
 
@@ -124,7 +124,6 @@ class TestForms(TestCase):
         })
         form_a.request = form_request
         self.assertTrue(form_a.is_valid())
-        print(form_a.errors)
 
         # Test invalid domain
         form_b = DomainForm(data={

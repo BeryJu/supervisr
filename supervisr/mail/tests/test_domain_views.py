@@ -4,7 +4,7 @@ from supervisr.core.models import (BaseCredential, Domain,
                                    ProviderAcquirableRelationship,
                                    ProviderInstance,
                                    UserAcquirableRelationship)
-from supervisr.core.tests.utils import TestCase, test_request
+from supervisr.core.utils.tests import TestCase, test_request
 from supervisr.mail.models import MailDomain
 from supervisr.mail.views import domains
 

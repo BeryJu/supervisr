@@ -138,7 +138,7 @@ var clrTabs = function () {
         btn.attr('aria-selected', false);
     };
     var selectTab = function (id) {
-        if (id == '') return;
+        if (id == '' || id == undefined) return;
         $('section#'+id).attr('aria-hidden', false);
         var btn = $('ul[role="tablist"] button[aria-controls="' + id + '"]');
         btn.addClass('active');

@@ -7,11 +7,11 @@ from unittest import skipUnless
 from django.http import HttpResponseServerError
 from django.test import RequestFactory, TestCase
 
-from supervisr.core.tests.utils import test_request
 from supervisr.core.utils import (b64decode, b64encode, check_db_connection,
-                                  class_to_path, do_404, get_remote_ip,
+                                  class_to_path, get_remote_ip,
                                   get_reverse_dns, path_to_class,
                                   render_to_string, uuid)
+from supervisr.core.utils.tests import test_request
 
 
 class TestUtils(TestCase):
@@ -46,11 +46,6 @@ class TestUtils(TestCase):
     def test_uuid(self):
         """test uuid"""
         self.assertTrue(uuid().isalnum())
-
-    def test_404(self):
-        """test 404 helper"""
-        request = self.factory.get('/')
-        self.assertEqual(do_404(request).status_code, 404)
 
     def test_render_to_string(self):
         """test render_to_string"""

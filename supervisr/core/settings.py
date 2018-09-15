@@ -3,8 +3,8 @@
 ####################################################################################################
 ####################################################################################################
 ###
-### You should not edit this file. These settings are the defaults. To Override Values, copy them
-### to ../local_settings.py and modify them there.
+### You should not edit this file. Settings can be changed by editing /etc/supervisr/config.yml
+### (Debian) or supervisr/environments/local.yml (source)
 ###
 ####################################################################################################
 ####################################################################################################
@@ -46,19 +46,20 @@
 
 
 import importlib
-import logging
 import os
 import sys
 
 import raven
 from django.contrib import messages
 
+from supervisr.core.utils.config import CONFIG
+
 # WARNING!
 # This can only be changed before the first `migrate` is run
 # If you change this afterwards, it may cause serious damage!
 SYSTEM_USER_NAME = 'supervisr'
 USER_PROFILE_ID_START = 5000
-FOOTER_EXTRA_LINKS = []
+FOOTER_EXTRA_LINKS = CONFIG.get('footer')
 # Structure of
 # {
 # text: "",
@@ -68,11 +69,8 @@ FOOTER_EXTRA_LINKS = []
 
 REMEMBER_SESSION_AGE = 60 * 60 * 24 * 30  # One Month
 
-LOGGER = logging.getLogger(__name__)
-
 NOCAPTCHA = True
 
-CORS_ORIGIN_ALLOW_ALL = True
 REQUEST_APPROVAL_PROMPT = 'auto'
 
 CHERRYPY_SERVER = {
@@ -107,19 +105,21 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.admindocs',
     'raven.contrib.django.raven_compat',
-    'django_celery_results',
-]
+] + CONFIG.get('installed_apps', [])
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__)))) + "/static"
-MEDIA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/media"
-SECRET_KEY = '_k*@6h2u2@q-dku57hhgzb7tnx*ba9wodcb^s9g0j59@=y(@_o' # noqa Debug SECRET_KEY
-DEBUG = True
-ALLOWED_HOSTS = ['*']
+MEDIA_ROOT = BASE_DIR + "/data/media"
+SECRET_KEY = CONFIG.get('secret_key',
+                        '_k*@6h2u2@q-dku57hhgzb7tnx*ba9wodcb^s9g0j59@=y(@_o') # noqa Debug
+DEBUG = CONFIG.get('debug', True)
+CORS_ORIGIN_ALLOW_ALL = not DEBUG
+CORS_ORIGIN_WHITELIST = CONFIG.get('domains')
+ALLOWED_HOSTS = CONFIG.get('domains')
 
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = CONFIG.get('timezone', 'UTC')
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -200,15 +200,18 @@ API_KEY_PARAM = 'sv-api-key'
 
 WSGI_APPLICATION = 'supervisr.core.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'dev.db',
+DATABASES = {}
+for db_alias, db_config in CONFIG.get('databases').items():
+    DATABASES[db_alias] = {
+        'ENGINE': db_config.get('engine'),
+        'HOST': db_config.get('host'),
+        'NAME': db_config.get('name'),
+        'USER': db_config.get('user'),
+        'PASSWORD': db_config.get('password'),
+        'OPTIONS': db_config.get('options'),
     }
-}
 
 AUTH_USER_MODEL = 'supervisr_core.User'
-
 AUTHENTICATION_BACKENDS = [
     'supervisr.core.auth.EmailBackend',
     'supervisr.core.auth.APIKeyBackend',
@@ -236,41 +239,12 @@ STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 )
 
-EMAIL_FROM = 'Supervisr <supervisr@localhost>'
-
-LOG_LEVEL_FILE = 'DEBUG'
-LOG_LEVEL_CONSOLE = 'DEBUG' if DEBUG else 'INFO'
-LOG_FILE = '/dev/null'
-
-LOG_SYSLOG_HOST = '127.0.0.1'
-LOG_SYSLOG_PORT = 514
-
-SENTRY_DSN = ''
-sys.path.append('/etc/supervisr')
-
-
-def load_local_settings(module_path):
-    """Load module *mod* and apply contents to ourselves"""
-    try:
-        loaded_module = importlib.import_module(module_path, package=None)
-        for key, value in loaded_module.__dict__.items():
-            if not key.startswith('__') and not key.endswith('__'):
-                globals()[key] = value
-        LOGGER.warning("Loaded '%s' as local_settings", module_path)
-        return True
-    except (ImportError, PermissionError) as exception:
-        LOGGER.info('Not loaded %s because %s', module_path, exception)
-        return False
-
-for _module in [os.environ.get('SUPERVISR_LOCAL_SETTINGS', 'supervisr.local_settings'), 'config']:
-    if load_local_settings(_module):
-        break
 
 # Apply redis settings from local_settings
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://%s" % REDIS,
+        "LOCATION": "redis://%s" % CONFIG.get('redis'),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -282,10 +256,18 @@ DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS = True
 SESSION_CACHE_ALIAS = "default"
 
 CELERY_TASK_DEFAULT_QUEUE = 'supervisr'
-CELERY_BROKER_URL = 'redis://%s' % REDIS
-CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BROKER_URL = 'redis://%s' % CONFIG.get('redis')
 
-SERVER_EMAIL = EMAIL_FROM
+with CONFIG.cd('email'):
+    EMAIL_HOST = CONFIG.get('host', default='localhost')
+    EMAIL_PORT = CONFIG.get('port', default=25)
+    EMAIL_HOST_USER = CONFIG.get('user', default='')
+    EMAIL_HOST_PASSWORD = CONFIG.get('password', default='')
+    EMAIL_USE_TLS = CONFIG.get('use_tls', default=False)
+    EMAIL_USE_SSL = CONFIG.get('use_ssl', default=False)
+    EMAIL_FROM = CONFIG.get('from')
+    SERVER_EMAIL = CONFIG.get('from')
+
 ENVIRONMENT = 'production' if DEBUG is False else 'development'
 
 # Try to get version from git, otherwise get from setup.py
@@ -296,7 +278,7 @@ except raven.exceptions.InvalidGitRepository:
     VERSION = __version__
 
 RAVEN_CONFIG = {
-    'dsn': SENTRY_DSN,
+    'dsn': CONFIG.get('sentry', ''),
     'release': VERSION,
     'environment': ENVIRONMENT,
     'tags': {'external_domain': ''}
@@ -304,97 +286,103 @@ RAVEN_CONFIG = {
 
 LOG_HANDLERS = ['console', 'syslog', 'file', 'sentry']
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'default': {
-            'format': ('[%(asctime)s] %(levelname)s '
-                       '[%(name)s::%(funcName)s::%(lineno)s] %(message)s'),
+with CONFIG.cd('log'):
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': True,
+        'formatters': {
+            'default': {
+                'format': ('[%(asctime)s] %(levelname)s '
+                           '[%(name)s::%(funcName)s::%(lineno)s] %(message)s'),
+            },
+            'verbose': {
+                'format': ('%(process)-5d %(thread)d %(name)-45s '
+                           '%(levelname)-8s %(funcName)-20s %(message)s'),
+            },
+            'color': {
+                '()': 'colorlog.ColoredFormatter',
+                'format': ('%(log_color)s%(process)-5d %(thread)d %(name)-45s '
+                           '%(levelname)-8s %(funcName)-20s %(message)s'),
+                'log_colors': {
+                    'DEBUG': 'bold_black',
+                    'INFO': 'white',
+                    'WARNING': 'yellow',
+                    'ERROR': 'red',
+                    'CRITICAL': 'bold_red',
+                    'SUCCESS': 'green',
+                },
+            }
         },
-        'verbose': {
-            'format': ('%(process)-5d %(thread)d %(name)-45s '
-                       '%(levelname)-8s %(funcName)-20s %(message)s'),
+        'handlers': {
+            'console': {
+                'level': CONFIG.get('level').get('console'),
+                'class': 'logging.StreamHandler',
+                'formatter': 'color',
+            },
+            'sentry': {
+                'level': 'ERROR',
+                'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+            },
+            'syslog': {
+                'level': CONFIG.get('level').get('file'),
+                'class': 'logging.handlers.SysLogHandler',
+                'formatter': 'verbose',
+                'address': (CONFIG.get('syslog').get('host'),
+                            CONFIG.get('syslog').get('port'))
+            },
+            'file': {
+                'level': CONFIG.get('level').get('file'),
+                'class': 'logging.FileHandler',
+                'filename': CONFIG.get('file'),
+            },
         },
-        'color': {
-            '()': 'colorlog.ColoredFormatter',
-            'format': ('%(log_color)s%(process)-5d %(thread)d %(name)-45s '
-                       '%(levelname)-8s %(funcName)-20s %(message)s'),
-            'log_colors': {
-                'DEBUG': 'bold_black',
-                'INFO': 'white',
-                'WARNING': 'yellow',
-                'ERROR': 'red',
-                'CRITICAL': 'bold_red',
-                'SUCCESS': 'green',
+        'loggers': {
+            'supervisr': {
+                'handlers': LOG_HANDLERS,
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+            'django': {
+                'handlers': LOG_HANDLERS,
+                'level': 'INFO',
+                'propagate': True,
+            },
+            'tasks': {
+                'handlers': LOG_HANDLERS,
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+            'cherrypy': {
+                'handlers': LOG_HANDLERS,
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+            'oauthlib': {
+                'handlers': LOG_HANDLERS,
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+            'flower': {
+                'handlers': LOG_HANDLERS,
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+            'celery': {
+                'handlers': LOG_HANDLERS,
+                'level': 'WARNING',
+                'propagate': True,
             },
         }
-    },
-    'handlers': {
-        'console': {
-            'level': LOG_LEVEL_CONSOLE,
-            'class': 'logging.StreamHandler',
-            'formatter': 'color',
-        },
-        'sentry': {
-            'level': 'ERROR',
-            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
-        },
-        'syslog': {
-            'level': LOG_LEVEL_FILE,
-            'class': 'logging.handlers.SysLogHandler',
-            'formatter': 'verbose',
-            'address': (LOG_SYSLOG_HOST, LOG_SYSLOG_PORT)
-        },
-        'file': {
-            'level': LOG_LEVEL_FILE,
-            'class': 'logging.FileHandler',
-            'filename': LOG_FILE,
-        },
-    },
-    'loggers': {
-        'supervisr': {
-            'handlers': LOG_HANDLERS,
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'django': {
-            'handlers': LOG_HANDLERS,
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'tasks': {
-            'handlers': LOG_HANDLERS,
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'cherrypy': {
-            'handlers': LOG_HANDLERS,
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'oauthlib': {
-            'handlers': LOG_HANDLERS,
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'celery': {
-            'handlers': LOG_HANDLERS,
-            'level': 'INFO',
-            'propagate': True,
-        },
     }
-}
-
-LOGGER.warning("Running with database '%s' (backend=%s)", DATABASES['default']['NAME'],
-               DATABASES['default']['ENGINE'])
 
 TEST = False
 TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
+TEST_OUTPUT_VERBOSE = 2
+
 TEST_OUTPUT_FILE_NAME = 'unittest.xml'
 
 if 'test' in sys.argv:
-    # LOGGING = None
+    LOGGING = None
     TEST = True
 
 if DEBUG is True:

@@ -1,7 +1,7 @@
 """supervisr mod web_proxy urls"""
 from django.conf.urls import url
 
-from supervisr.core.regex import SLUG_REGEX
+from supervisr.core.utils.constants import SLUG_REGEX
 from supervisr.mod.web_proxy.views import Proxy
 
 urlpatterns = [

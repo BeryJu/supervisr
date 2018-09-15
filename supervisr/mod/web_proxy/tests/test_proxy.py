@@ -1,12 +1,20 @@
 """supervisr mod web_proxy proxy tests"""
 
 import threading
-from wsgiref.simple_server import make_server
+from wsgiref.simple_server import WSGIRequestHandler, make_server
 from wsgiref.validate import validator
 
-from supervisr.core.tests.utils import TestCase, test_request
+from supervisr.core.utils.tests import TestCase, test_request
 from supervisr.mod.web_proxy.models import WebApplication
 from supervisr.mod.web_proxy.views import Proxy
+
+
+class NoLoggingWSGIRequestHandler(WSGIRequestHandler):
+    """Disable WSGI Server logging"""
+
+    # pylint: disable=redefined-builtin
+    def log_message(self, format, *args):
+        pass
 
 
 class TestProxy(TestCase):
@@ -27,7 +35,7 @@ class TestProxy(TestCase):
             return [self.expected_result]
         validator_app = validator(simple_app)
 
-        self.httpd = make_server('', 0, validator_app)
+        self.httpd = make_server('', 0, validator_app, handler_class=NoLoggingWSGIRequestHandler)
         thread = threading.Thread(target=self.httpd.serve_forever)
         thread.daemon = True
         thread.start()

@@ -1,6 +1,4 @@
-"""
-Supervisr DNS Migration views
-"""
+"""Supervisr DNS Migration views"""
 
 from django.contrib import messages
 from django.shortcuts import redirect, reverse
@@ -21,13 +19,10 @@ TEMPLATES = {
     '2': 'dns/migrate/preview.html',
 }
 
+
 # pylint: disable=too-many-ancestors
-
-
 class BindZoneImportWizard(BaseWizardView):
-    """
-    Import DNS records from bind zone
-    """
+    """Import DNS records from bind zone"""
 
     title = _('Import Bind Zone')
     form_list = [ZoneForm, ZoneImportForm, ZoneImportPreviewForm]
@@ -80,6 +75,6 @@ class BindZoneImportWizard(BaseWizardView):
                                              '%(count)d records imported.' % {
                                                  'count': len(records)}))
             return redirect(reverse('supervisr_dns:dns-record-list',
-                                    kwargs={'zone': m_dom.domain.domain}))
+                                    kwargs={'zone_uuid': m_dom.uuid}))
         messages.error(self.request, _('Created nothing'))
         return redirect(reverse('supervisr_dns:index'))

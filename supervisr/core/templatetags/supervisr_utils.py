@@ -7,6 +7,7 @@ from urllib.parse import urljoin
 from django import template
 from django.apps import apps
 from django.conf import settings
+from django.db.models import Model
 from django.template.loaders.app_directories import get_app_template_dirs
 from django.urls import reverse
 from django.utils.translation import ugettext as _
@@ -36,6 +37,8 @@ def back(context):
 @register.filter('fieldtype')
 def fieldtype(field):
     """Return classname"""
+    if isinstance(field.__class__, Model) or issubclass(field.__class__, Model):
+        return field._meta.verbose_name
     return field.__class__.__name__
 
 
@@ -68,10 +71,10 @@ def pick(cont, arg, fallback=''):
 
 
 @register.simple_tag(takes_context=True)
-def title(context, title=None):
+def title(context, *title):
     """Return either just branding or title - branding"""
     branding = Setting.get('branding', default='supervisr')
-    if title is None or title == '':
+    if not title:
         return branding
     # Include App Title in title
     app = ''
@@ -85,7 +88,7 @@ def title(context, title=None):
             app_title = dj_app.title_modifier(context.request)
             app = app_title + ' -'
     return _("%(title)s - %(app)s %(branding)s" % {
-        'title': title,
+        'title': ' - '.join([str(x) for x in title]),
         'branding': branding,
         'app': app,
     })

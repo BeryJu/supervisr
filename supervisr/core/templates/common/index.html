@@ -40,10 +40,14 @@
                 {% for app in hosted_applications %} {% if app.primary_url %}
                 <li>
                   <a href="{{ app.primary_url }}">
-                    {% if app.icon %} {% cache 600 app app.uuid %}
-                    <img src="{% media app.icon %}" alt="{{ app.name }} Icon"> {% endcache %} {% else %}
+                    {% if app.icon %}
+                      {% cache 600 app app.uuid %}
+                        <img src="{% media app.icon %}" alt="{{ app.name }} Icon">
+                      {% endcache %}
+                    {% else %}
                     <clr-icon shape="application" size="64"></clr-icon>
-                    {% endif %} {{ app.name }}
+                    {% endif %}
+                    {{ app.name }}
                   </a>
                 </li>
                 {% endif %} {% endfor %}
@@ -76,13 +80,13 @@
             {% for instance in user_providers %}
             <tr>
               <td><span>{{ instance.name }}</span></td>
-              <td><span>{{ instance.provider.get_meta.ui_name }}</span></td>
+              <td><span>{{ instance.provider.get_meta.ui_name|default:'Error' }}</span></td>
               <td>
                 {% with status=instance.provider.check_status %}
                   {% if status == True %}
                     <span class="label label-success">{% trans "OK" %}</span>
-                  {% elif status == False %}
-                    <span class="label is-error">{% trans 'Error' %}</span>
+                  {% elif status == False or instance.provider == None %}
+                    <span class="label label-danger">{% trans 'Error' %}</span>
                   {% else %}
                     <span class="label">{{ status }}</span>
                   {% endif %}

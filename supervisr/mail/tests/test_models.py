@@ -1,7 +1,7 @@
 """Supervisr Mail Test"""
 
 from supervisr.core.models import BaseCredential, ProviderInstance
-from supervisr.core.tests.utils import TestCase
+from supervisr.core.utils.tests import TestCase
 from supervisr.mail.models import Account
 
 

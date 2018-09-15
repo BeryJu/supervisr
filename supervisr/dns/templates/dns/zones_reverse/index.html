@@ -1,0 +1,63 @@
+{% extends "dns/base.html" %}
+
+{% load supervisr_utils %}{
+{% load i18n %}
+
+{% block title %}
+{% title 'Reverse Zones' %}
+{% endblock %}
+
+{% block content %}
+<h1>
+  <clr-icon shape="router" size="48"></clr-icon>{% trans 'Reverse DNS Zones' %}
+</h1>
+<div class="btn-group btn-link btn-icon-link">
+  <a href="" class="btn">
+    <clr-icon shape="add"></clr-icon>
+  </a>
+  <a data-ctx-name="edit" class="btn">
+    <clr-icon shape="edit"></clr-icon>
+  </a>
+  <a data-ctx-name="trash" class="btn">
+    <clr-icon shape="trash"></clr-icon>
+  </a>
+  <div class="btn-group-overflow dropdown">
+    <button class="btn dropdown-toggle" clrDropdown>
+      <clr-icon shape="ellipsis-horizontal"></clr-icon>
+    </button>
+    <div class="dropdown-menu">
+      <a href="{% url 'supervisr_dns:migrate-import-bind' %}" class="dropdown-item">{% trans 'Import from Bind Zone' %}</a>
+    </div>
+  </div>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>{% trans 'Domain' %}</th>
+      <th>{% trans 'Owner' %}</th>
+      <th>{% trans 'Records' %}</th>
+      <th>{% trans 'Providers' %}</th>
+      <th>{% trans 'Enabled' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for zone in instances %}
+    <tr data-selectable >
+      <td>{{ zone.zone_ip }}</td>
+      <td>{{ zone.users.all|join:"," }}</td>
+      <td>{{ zone.record_set.all|length }}</td>
+      <td>{{ zone.providers.all|join:"," }}</td>
+      <td>{{ zone.enabled }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% include 'blocks/pagination.html' with pages=instances %}
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+  clrTableSelect('.container');
+</script>
+{% endblock %}

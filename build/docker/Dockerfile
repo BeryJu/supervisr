@@ -4,8 +4,8 @@ LABEL Author="BeryJu.org <supervisr@beryju.org>"
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV SUPERVISR_LOCAL_SETTINGS supervisr.local_settings_docker
 ENV DOCKER_CONTAINER 1
+ENV SUPERVISR_ENV docker
 
 RUN apt-get update && apt-get install netcat build-essential -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
 COPY . /supervisr/

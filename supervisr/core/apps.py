@@ -18,7 +18,7 @@ LOGGER = logging.getLogger(__name__)
 class SupervisrAppConfig(AppConfig):
     """Base AppConfig Class that logs when it's loaded"""
 
-    init_modules = ['signals', 'models']
+    init_modules = ['signals', 'models', 'search']
     admin_url_name = 'admin-module_default'
     view_user_settings = None
 
@@ -63,12 +63,12 @@ class SupervisrAppConfig(AppConfig):
         LOGGER.debug("Loaded %s", self.name)
         for module in self.init_modules:
             if importlib.util.find_spec("%s.%s" % (self.name, module)) is not None:
-                LOGGER.debug("Loaded %s.%s", self.name, module)
                 try:
                     importlib.import_module("%s.%s" % (self.name, module))
                 except Exception as exc:  # pylint: disable=broad-except
                     # Log the error but continue starting
                     LOGGER.error(exc)
+                LOGGER.debug("Loaded %s.%s", self.name, module)
 
     def check_requirements(self):
         """Check requirements(-dev) and see if everything is installed"""
@@ -177,10 +177,14 @@ class SupervisrCoreConfig(SupervisrAppConfig):
         'providers.base',
         'providers.domain',
         'providers.tasks',
+        'search',
     ]
     verbose_name = 'Supervisr Core'
 
     def ready(self):
+        LOGGER.info("Running with database '%s' (backend=%s)",
+                    settings.DATABASES['default']['NAME'],
+                    settings.DATABASES['default']['ENGINE'])
         super(SupervisrCoreConfig, self).ready()
         self.clear_cache()
         # Check for invalid settings

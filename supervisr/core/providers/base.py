@@ -1,4 +1,5 @@
 """Supervisr Core Generic Provider"""
+from typing import Type, Union
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -42,7 +43,7 @@ class BaseProvider(object):
     @property
     def dotted_path(self):
         """Return absolute module and class path"""
-        return '%s.%s' % (self.__module__, self.__class__.__name__)
+        return class_to_path(self.__class__)
 
     @property
     def get_meta(self) -> ProviderMetadata:
@@ -50,42 +51,36 @@ class BaseProvider(object):
         return self._meta
 
     # pylint: disable=unused-argument
-    def get_translator(self, data_type) -> ProviderObjectTranslator:
+    def get_translator(self, data_type: Type) -> ProviderObjectTranslator:
         """Get translator for type. If none available return None"""
         return None
 
     # pylint: disable=unused-argument
-    def get_provider(self, data_type) -> 'BaseProvider':
+    def get_provider(self, data_type: Type) -> 'BaseProvider':
         """Get provider for type. This function is called if this class has no
         translator for data_type. The returned class will be instantied with the same credentials,
         and will also be checked for translators. Return None if providers are known."""
         return None
 
-    def check_credentials(self, credentials=None):
-        """
-        Check if Credentials is the correct class and try authentication.
+    def check_credentials(self, credentials=None) -> bool:
+        """Check if Credentials is the correct class and try authentication.
         credentials might be none, in which case credentials from the constructor should be used.
-        Should return False if check fails, otherwise True
-        """
+        Should return False if check fails, otherwise True"""
         raise NotImplementedError()
 
-    def check_status(self):
-        """
-        This is used to check if the provider is reachable
+    def check_status(self) -> Union[bool, str]:
+        """This is used to check if the provider is reachable
         Expected Return values:
          - True: Everything is ok
          - False: Error (show generic warning)
-         - String: Error (show string)
-        """
+         - String: Error (show string)"""
         raise NotImplementedError()
 
     class Meta(ProviderMetadata):
         """Base Provider Meta"""
 
-        def __init__(self, provider):
-            super(BaseProvider.Meta, self).__init__(provider)
-            self.selectable = False
-            self.ui_name = _('BaseProvider')
+        selectable = False
+        ui_name = _('BaseProvider')
 
 
 def get_providers(capabilities=None, path=False) -> list:

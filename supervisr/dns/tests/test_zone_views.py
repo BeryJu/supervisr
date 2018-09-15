@@ -2,8 +2,8 @@
 
 from supervisr.core.models import (Domain, ProviderAcquirableRelationship,
                                    UserAcquirableRelationship)
-from supervisr.core.tests.constants import TEST_DOMAIN
-from supervisr.core.tests.utils import (TestCase, internal_provider,
+from supervisr.core.utils.constants import TEST_DOMAIN
+from supervisr.core.utils.tests import (TestCase, internal_provider,
                                         test_request)
 from supervisr.dns.models import Zone
 from supervisr.dns.utils import date_to_soa
@@ -42,16 +42,16 @@ class TestZoneViews(TestCase):
         """Test ZoneUpdateView"""
         self.assertEqual(test_request(ZoneUpdateView.as_view(),
                                       method='POST',
-                                      url_kwargs={'zone': self.zone.domain.domain_name},
+                                      url_kwargs={'zone_uuid': self.zone.uuid},
                                       user=self.system_user).status_code, 200)
 
     def test_zone_delete(self):
         """Test ZoneDeleteView"""
         self.assertEqual(test_request(ZoneDeleteView.as_view(),
-                                      url_kwargs={'zone': self.zone.domain.domain_name},
+                                      url_kwargs={'zone_uuid': self.zone.uuid},
                                       user=self.system_user).status_code, 200)
         self.assertEqual(test_request(ZoneDeleteView.as_view(),
                                       method='POST',
                                       req_kwargs={'confirmdelete': True},
-                                      url_kwargs={'zone': self.zone.domain.domain_name},
+                                      url_kwargs={'zone_uuid': self.zone.uuid},
                                       user=self.system_user).status_code, 302)

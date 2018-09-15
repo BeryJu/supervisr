@@ -4,7 +4,7 @@ import os
 
 from supervisr.core.forms.accounts import SignupForm
 from supervisr.core.models import User
-from supervisr.core.tests.utils import TestCase, test_request
+from supervisr.core.utils.tests import TestCase, test_request
 from supervisr.core.views import accounts, users
 
 

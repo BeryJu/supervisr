@@ -64,7 +64,7 @@ class Record(models.Model):
     content = models.TextField(blank=True, null=True)
     ttl = models.IntegerField(blank=True, null=True)
     prio = models.IntegerField(blank=True, null=True)
-    change_date = models.IntegerField(blank=True, null=True)
+    change_date = models.IntegerField(blank=True, null=True) # TODO: Automatically set this on save
     disabled = models.IntegerField(blank=True, null=True)
     ordername = models.CharField(max_length=255, blank=True, null=True)
     auth = models.IntegerField(blank=True, null=True)

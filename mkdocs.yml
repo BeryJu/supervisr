@@ -49,8 +49,8 @@ extra:
 
 theme:
   name: 'material'
-  logo: 'theme_images/icon_white.png'
-  favion: 'theme_images/icon.png'
+  logo: 'img/white.png'
+  favion: 'img/icon.png'
 
 markdown_extensions:
   - admonition

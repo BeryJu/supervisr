@@ -2,14 +2,13 @@
 import inspect
 import os
 import os.path
+from logging import getLogger
 
 from django import setup
 from django.core.management import execute_from_command_line
 from invoke import task
 
-from supervisr.core.logger import SupervisrLogger
-
-LOGGER = SupervisrLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 @task

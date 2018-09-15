@@ -11,6 +11,6 @@ class SignalException(SupervisrException):
     pass
 
 
-class UnauthorizedExcception(SupervisrException):
+class UnauthorizedException(SupervisrException):
     """User is not authorized"""
     pass

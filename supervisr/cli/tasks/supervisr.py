@@ -9,7 +9,7 @@ from invoke.terminals import WINDOWS
 def migrate(ctx):
     """Apply migrations"""
     from django.core.management import execute_from_command_line
-    execute_from_command_line(['manage.py', 'migrate'])
+    execute_from_command_line(['manage.py', 'migrate_all'])
 
 
 @task
@@ -34,7 +34,7 @@ def run_celery_beat(ctx):
 @task
 def run_celery_flower(ctx):
     """Run Celery flower"""
-    ctx.run(("celery -A supervisr.core flower --address=127.0.0.1 "
+    ctx.run(("celery -A supervisr.core flower --address=127.0.0.1 --logging=none "
              "--url_prefix=/app/mod/web/proxy/supervisr_flower"))
 
 

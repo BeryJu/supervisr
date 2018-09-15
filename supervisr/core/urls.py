@@ -10,9 +10,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
-from supervisr.core.regex import (DOMAIN_REGEX, EMAIL_REGEX, MOD_REGEX,
-                                  UUID_REGEX)
 from supervisr.core.utils import get_apps
+from supervisr.core.utils.constants import (DOMAIN_REGEX, EMAIL_REGEX,
+                                            MOD_REGEX, UUID_REGEX)
 from supervisr.core.views import (accounts, admin, common, domains, products,
                                   providers, search, settings, setup, users)
 
@@ -31,7 +31,7 @@ admin_django.site.logout = RedirectView.as_view(pattern_name='account-logout',
 urlpatterns = [
     # Account views
     url(r'^$', common.IndexView.as_view(), name='common-index'),
-    url(r'^search/$', search.search, name='search'),
+    url(r'^search/$', search.SearchView.as_view(), name='search'),
     url(r'^accounts/login/$', accounts.LoginView.as_view(), name=django_settings.LOGIN_URL),
     url(r'^accounts/login/reauth/$', accounts.ReauthView.as_view(), name='account-reauth'),
     url(r'^accounts/signup/$', accounts.SignUpView.as_view(), name='account-signup'),
@@ -77,7 +77,7 @@ urlpatterns = [
     url(r'^providers/credentials/(?P<name>[a-zA-Z0-9\-\.\_\s]+)/delete/$',
         providers.CredentialDeleteView.as_view(), name='credential-delete'),
     # User views
-    url(r'^user/$', users.User, name='user-index'),
+    url(r'^user/$', users.index, name='user-index'),
     url(r'^user/events/$', users.events, name='user-events'),
     url(r'^user/delete/$', users.UserDeleteView.as_view(), name='user-delete'),
     url(r'^user/feedback/send/$', users.send_feedback, name='user-send_feedback'),

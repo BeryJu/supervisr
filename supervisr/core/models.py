@@ -11,7 +11,7 @@ import time
 import uuid
 from difflib import get_close_matches
 from importlib import import_module
-from typing import List
+from typing import Generator, List
 
 from celery.result import AsyncResult
 from django.conf import settings
@@ -20,7 +20,7 @@ from django.contrib.auth.models import AbstractUser, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import Max, options
+from django.db.models import Max
 from django.db.models.signals import post_save, pre_delete
 from django.db.utils import OperationalError, ProgrammingError
 from django.dispatch import receiver
@@ -28,6 +28,7 @@ from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+from raven.contrib.django.raven_compat.models import client
 
 from supervisr.core import fields
 from supervisr.core.decorators import database_catchall
@@ -39,8 +40,6 @@ from supervisr.core.signals import (on_domain_created, on_setting_update,
                                     on_user_sign_up_post)
 from supervisr.core.tasks import Progress
 from supervisr.core.utils import get_remote_ip, get_reverse_dns
-
-options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('sv_search_url', 'sv_search_fields',)
 
 
 def expiry_date():
@@ -90,15 +89,13 @@ class CastableModel(models.Model):
 
     @time_method('CastableModel.cast')
     def cast(self):
-        """
-        This method converts "self" into its correct child class.
-        """
+        """This method converts "self" into its correct child class."""
         for name in dir(self):
             try:
                 attr = getattr(self, name)
-                if isinstance(attr, self.__class__):
+                if isinstance(attr, self.__class__) and self.__class__ != attr.__class__:
                     return attr
-            except (AttributeError, ObjectDoesNotExist, OperationalError):
+            except (AttributeError, ObjectDoesNotExist, OperationalError, NotImplementedError):
                 pass
         return self
 
@@ -376,9 +373,7 @@ class AccountConfirmation(CreatedUpdatedModel):
 
     @property
     def is_expired(self):
-        """
-        Returns whether or not the confirmation is expired or not
-        """
+        """Returns whether or not the confirmation is expired or not"""
         return self.expires < time.time()
 
     def __str__(self):
@@ -464,12 +459,30 @@ class UserAcquirableRelationship(models.Model):
         unique_together = (('user', 'model'),)
 
 
-class ProviderAcquirable(CastableModel):
+class ProviderTriggerMixin(models.Model):
+    """Base class for all models that trigger Provider updates"""
+
+    @property
+    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
+        """Return all provider instances that should be triggered"""
+        raise NotImplementedError()
+
+    class Meta:
+
+        abstract = True
+
+
+class ProviderAcquirable(ProviderTriggerMixin, CastableModel):
     """Base Class for Models that should have an N-M relationship with ProviderInstance"""
 
     provider_acquirable_id = models.AutoField(primary_key=True)
     providers = models.ManyToManyField('ProviderInstance',
                                        through='ProviderAcquirableRelationship', blank=True)
+
+    @property
+    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
+        """Return all provider instances that should be triggered"""
+        return self.providers.all().iterator()
 
     def update_provider_m2m(self, provider_list: List['ProviderInstance']):
         """Update m2m relationship to providers from form list"""
@@ -486,12 +499,16 @@ class ProviderAcquirable(CastableModel):
                 relationship.delete()
 
 
-class ProviderAcquirableSingle(CastableModel):
+class ProviderAcquirableSingle(ProviderTriggerMixin, CastableModel):
     """Base Class for Models that should have an N-1 relationship with ProviderInstance"""
 
-    provider_acquirable_Single_id = models.AutoField(primary_key=True)
+    provider_acquirable_single_id = models.AutoField(primary_key=True)
     provider_instance = models.ForeignKey('ProviderInstance', on_delete=models.CASCADE)
 
+    @property
+    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
+        """Return all provider instances that should be triggered"""
+        yield self.provider_instance
 
 class ProviderAcquirableRelationship(models.Model):
     """Relationship between ProviderInstance and any Class subclassing ProviderAcquirable"""
@@ -509,10 +526,9 @@ class ProviderAcquirableRelationship(models.Model):
 
 
 class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
-    """
-    Information about the Main Product itself. This instances of this classes
-    are assumed to be managed services.
-    """
+    """Information about the Main Product itself. This instances of this classes
+    are assumed to be managed services."""
+
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     name = models.TextField()
     slug = models.SlugField(blank=True)
@@ -555,9 +571,8 @@ class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
 
 
 class Domain(ProviderAcquirableSingle, UserAcquirable, CreatedUpdatedModel):
-    """
-    Information about a Domain, which is used for other sub-apps.
-    """
+    """Information about a Domain, which is used for other sub-apps."""
+
     domain_name = models.CharField(max_length=253, unique=True)
     description = models.TextField(blank=True)
 
@@ -567,14 +582,11 @@ class Domain(ProviderAcquirableSingle, UserAcquirable, CreatedUpdatedModel):
     class Meta:
 
         default_related_name = 'domains'
-        sv_search_fields = ['domain_name', 'provider_instance__name']
 
 
 class Event(CreatedUpdatedModel):
-    """
-    Store information about important Event's for auditing, like signing up, changing/resetting
-    your password or gaining access to a new Product
-    """
+    """Store information about important Event's for auditing, like signing up, changing/resetting
+    your password or gaining access to a new Product"""
 
     EVENT_IMPORTANCE_URGENT = 40
     EVENT_IMPORTANCE_IMPORTANT = 30
@@ -739,11 +751,17 @@ class ProviderInstance(CreatedUpdatedModel, UserAcquirable):
     @property
     def provider(self) -> BaseProvider:
         """Return instance of provider saved"""
-        if not self._class:
-            path_parts = self.provider_path.split('.')
-            module = import_module('.'.join(path_parts[:-1]))
-            self._class = getattr(module, path_parts[-1])
-        return self._class(credentials=self.credentials)
+        try:
+            if not self._class:
+                path_parts = self.provider_path.split('.')
+                module = import_module('.'.join(path_parts[:-1]))
+                self._class = getattr(module, path_parts[-1])
+            return self._class(credentials=self.credentials)
+        # We do a broad catch here since the mainly runs in the main thread
+        # and we dont want to disrupt anything if a provider errors out
+        except Exception: # pylint: disable=broad-except
+            client.captureException()
+        return None
 
     def __str__(self):
         return self.name
@@ -752,10 +770,8 @@ class ProviderInstance(CreatedUpdatedModel, UserAcquirable):
 @receiver(on_user_sign_up_post)
 # pylint: disable=unused-argument
 def product_handle_post_signup(sender, signal, user, **kwargs):
-    """
-    Auto-associates Product with new users. We have a separate function for
-    this since we use the default Django User Model.
-    """
+    """Auto-associates Product with new users. We have a separate function for
+    this since we use the default Django User Model."""
     to_add = Product.objects.filter(auto_add=True)
     for product in to_add:
         UserAcquirableRelationship.objects.create(

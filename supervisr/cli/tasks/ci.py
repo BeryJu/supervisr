@@ -75,7 +75,7 @@ def unittest(ctx):
     ctx.run("%s manage.py test" % PYTHON_EXEC)
 
 
-@task(pre=[coverage, isort, lint, prospector, unittest])
+@task(pre=[isort, coverage, lint, prospector])
 # Some tasks to make full testing easier
 # pylint: disable=unused-argument
 def test(ctx):
@@ -91,6 +91,6 @@ def docs(ctx):
     tool = 'pdoc'
     if WINDOWS:
         tool = 'python env\\Scripts\\pdoc'
-    os.makedirs('docgen')
+    os.makedirs('docgen', exist_ok=True)
     ctx.run("%s supervisr --html --html-dir=\"docgen\""
-            " --html-no-source  --overwrite --docstring-style=google" % tool)
+            " --django  --overwrite --docstring-style=google" % tool)

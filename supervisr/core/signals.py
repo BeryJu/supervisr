@@ -1,15 +1,16 @@
 """Supervisr Core Signal definitions"""
+from logging import getLogger
 
-
-from django.db.models.signals import post_migrate, post_save, pre_delete
+from django.db.models.signals import (m2m_changed, post_migrate, post_save,
+                                      pre_delete)
 from django.dispatch import Signal, receiver
 from passlib.hash import sha512_crypt
 
 from supervisr.core.apps import SupervisrAppConfig
 from supervisr.core.exceptions import SignalException
-from supervisr.core.logger import SupervisrLogger
+from supervisr.core.utils import class_to_path
 
-LOGGER = SupervisrLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 class RobustSignal(Signal):
@@ -44,18 +45,19 @@ on_domain_created = RobustSignal(providing_args=['domain'])
 on_migration_post = RobustSignal(providing_args=['app_name'])
 on_setting_update = RobustSignal(providing_args=[])
 
-# SIG_CHECK_* Signals return a boolean
+# on_check_* Signals return a boolean
 
 # Return wether user with `email` exists
 on_check_user_exists = RobustSignal(providing_args=['email'])
 
-# SIG_GET_* Signals return something other than a boolean
+# get_* Signals return something other than a boolean
 
 # Return a hash for the /about/info page
 get_module_info = RobustSignal(providing_args=[])
 # Get information for health status
 get_module_health = RobustSignal(providing_args=[])
 
+on_search = RobustSignal(providing_args=['query', 'request'])
 
 # Set a statistic
 on_set_statistic = RobustSignal(providing_args=['key', 'value'])
@@ -89,39 +91,46 @@ def stat_output_verbose(signal, key, value, **kwargs):
 
 @receiver(post_save)
 # pylint: disable=unused-argument
-def change_on_save(sender, instance, created, **kwargs):
+def provider_post_save(sender, instance, created, **kwargs):
     """Forward signal to ChangeBuilder"""
     from supervisr.core.providers.multiplexer import ProviderMultiplexer
-    from supervisr.core.models import ProviderAcquirable, ProviderAcquirableSingle, get_system_user
+    from supervisr.core.providers.objects import ProviderAction
+    from supervisr.core.models import ProviderTriggerMixin, get_system_user
 
     system_user = get_system_user()
-    multiplexer = ProviderMultiplexer()
-    providers = []
-    if issubclass(instance.__class__, ProviderAcquirable) and \
-            instance.__class__ is not ProviderAcquirable:
-        providers = instance.providers.all()
-    elif issubclass(instance.__class__, ProviderAcquirableSingle) and \
-            instance.__class__ is not ProviderAcquirableSingle:
-        providers = [instance.provider_instance, ]
-    if providers:
-        multiplexer.on_model_saved(system_user, instance, providers, created)
+    if issubclass(instance.__class__, ProviderTriggerMixin):
+        LOGGER.debug("ProviderTriggerMixin post_save")
+        args = (ProviderAction.SAVE, class_to_path(instance.__class__), instance.pk)
+        kwargs = {'created': created}
+        system_user.task_apply_async(ProviderMultiplexer(), *args, **kwargs)
 
 
 @receiver(pre_delete)
 # pylint: disable=unused-argument
-def change_on_delete(sender, instance, *args, **kwargs):
+def provider_pre_delete(sender, instance, **kwargs):
     """Forward signal to ChangeBuilder"""
     from supervisr.core.providers.multiplexer import ProviderMultiplexer
-    from supervisr.core.models import ProviderAcquirable, ProviderAcquirableSingle, get_system_user
+    from supervisr.core.providers.objects import ProviderAction
+    from supervisr.core.models import ProviderTriggerMixin, get_system_user
 
     system_user = get_system_user()
-    multiplexer = ProviderMultiplexer()
-    providers = []
-    if issubclass(instance.__class__, ProviderAcquirable) and \
-            instance.__class__ is not ProviderAcquirable:
-        providers = instance.providers.all()
-    elif issubclass(instance.__class__, ProviderAcquirableSingle) and \
-            instance.__class__ is not ProviderAcquirableSingle:
-        providers = [instance.provider_instance, ]
-    if providers:
-        multiplexer.on_model_deleted(system_user, instance, providers)
+    if issubclass(instance.__class__, ProviderTriggerMixin):
+        LOGGER.debug("ProviderTriggerMixin pre_delete")
+        args = (ProviderAction.DELETE, class_to_path(instance.__class__), instance.pk)
+        system_user.task_apply_async(ProviderMultiplexer(), *args)
+
+
+@receiver(m2m_changed)
+def provider_m2m(sender, instance, action, **kwargs):
+    """Trigger provider_post_save and provider_pre_delete from m2m updates"""
+    from supervisr.core.models import ProviderTriggerMixin
+
+    if issubclass(instance.__class__, ProviderTriggerMixin) or \
+        issubclass(sender.__class__, ProviderTriggerMixin):
+
+        if action == 'post_add':
+            LOGGER.debug("m2m post_add (sender=%r, instance=%r)", sender, instance)
+            provider_post_save(sender, instance, created=False, **kwargs)
+        elif action == 'pre_remove':
+            LOGGER.debug("m2m pre_delete (sender=%r, instance=%r)", sender, instance)
+            provider_pre_delete(sender, instance, **kwargs)

@@ -15,7 +15,22 @@
     <div class="card-header">
       {% trans app %}
     </div>
-    {{ results }}
+    {% for model, model_results in results.items %}
+    <table class="table table-noborder table-compact">
+      <thead>
+        <tr>
+          <th class="left">{{ model|fieldtype|title }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for result in model_results %}
+        <tr>
+          <td class="left"><clr-icon shape="{{ result.icon }}"></clr-icon>  <a href="{{ result.url }}">{{ result.label }}</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endfor %}
   </div>
 </div>
 {% empty %}

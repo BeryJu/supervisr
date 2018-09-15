@@ -12,7 +12,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from supervisr.core.api.utils import api_response
-from supervisr.core.exceptions import UnauthorizedExcception
+from supervisr.core.exceptions import UnauthorizedException
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ class API(View):
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         my_allowed = self.ALLOWED_VERBS[request.method]
-        verb = kwargs['verb']
+        verb = kwargs.get('verb', '')
         if verb not in my_allowed:
             return api_response(request, {'error': 'verb not allowed in HTTP VERB'}, code=400)
 
@@ -55,7 +55,7 @@ class API(View):
             if handler:
                 result = handler(request, data)
                 return api_response(request, {'code': 200, 'data': result})
-        except UnauthorizedExcception:
+        except UnauthorizedException:
             return api_response(request, {'data': {'error': 'unauthorized'}}, code=401)
         except PermissionDenied:
             return api_response(request, {'data': {'error': 'permission denied'}}, code=403)
@@ -74,7 +74,7 @@ class API(View):
     def init_user_filter(user):
         """This method is used to check if the user has access"""
         if not user.is_authenticated:
-            raise UnauthorizedExcception
+            raise UnauthorizedException
         return True
 
     def authenticate_with_key(self, request: HttpRequest):

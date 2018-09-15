@@ -31,7 +31,6 @@ class LoggerProgressRecorder(BaseRecorder):
         if total:
             self.total = total
         LOGGER.info('processed %s items of %s', current, total)
-        print('processed {} items of {}'.format(current, total))
 
 
 # pylint: disable=too-few-public-methods

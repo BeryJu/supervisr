@@ -103,7 +103,8 @@ class ProviderUpdateView(GenericUpdateView):
         return self.model.objects.filter(uuid=self.kwargs.get('uuid'),
                                          users__in=[self.request.user])
 
-    def update_form(self, form: ProviderForm) -> ProviderForm:
+    def get_form(self, *args, instance: ProviderInstance, **kwargs) -> ProviderForm:
+        form = super().get_form(*args, instance=instance, **kwargs)
         providers = get_providers()
         credentials = BaseCredential.objects.filter(owner=self.request.user)
         form_providers = [(class_to_path(s),

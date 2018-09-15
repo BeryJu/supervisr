@@ -1,7 +1,7 @@
 """Supervisr Core Signals Test"""
 
 from supervisr.core.signals import RobustSignal, SignalException
-from supervisr.core.tests.utils import TestCase
+from supervisr.core.utils.tests import TestCase
 
 
 class TestSignals(TestCase):

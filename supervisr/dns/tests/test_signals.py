@@ -2,56 +2,36 @@
 from datetime import datetime
 
 from supervisr.core.models import Domain, UserAcquirableRelationship
-from supervisr.core.tests.utils import TestCase, internal_provider
-from supervisr.dns.models import Record, Resource, ResourceSet, Zone
+from supervisr.core.utils.tests import TestCase
+from supervisr.dns.models import DataRecord, Zone
 
 
 class TestSignals(TestCase):
     """Supervisr DNS Signal Test"""
 
-    provider = None
-    user = None
-    credentials = None
-
-    def setUp(self):
-        super(TestSignals, self).setUp()
-        self.provider, self.credentials = internal_provider(self.system_user)
-
-    def create_single_record(self, **kwargs) -> Record:
-        """Create record, resource and resourceset"""
-        record_zone = kwargs.pop('record_zone')
-        resource = Resource.objects.create(**kwargs)
-        resource_set = ResourceSet.objects.create(
-            name='test'
-        )
-        resource_set.resource.add(resource)
-        record = Record.objects.create(
-            name='test',
-            record_zone=record_zone,
-            resource_set=resource_set
-        )
-        return record
-
     def test_signal_soa_update(self):
         """Test automated SOA update"""
-        t_domain = Domain.objects.create(
+        domain = Domain.objects.create(
             domain_name='test.beryju.org',
             provider_instance=self.provider)
-        t_zone = Zone.objects.create(
-            domain=t_domain,
+        zone = Zone.objects.create(
+            domain=domain,
+            soa_mname='test',
+            soa_rname='test',
             soa_serial=2017110401)
         UserAcquirableRelationship.objects.create(
-            model=t_zone,
+            model=zone,
             user=self.system_user)
-        self.assertEqual(t_zone.soa_serial, 2017110401)
-        t_record_a = self.create_single_record(
-            record_zone=t_zone,
+        self.assertEqual(zone.soa_serial, 2017110401)
+        record = DataRecord.objects.create(
+            name='test',
             type='A',
             content='127.0.0.1')
         now = datetime.now()
+        self.assertEqual(zone.soa_serial, 2017110401)
+        zone.records.add(record)
+        record.content = '127.0.0.2'
+        record.save()
         correct_serial_a = int("%04d%02d%02d01" % (now.year, now.month, now.day))
-        correct_serial_b = int("%04d%02d%02d02" % (now.year, now.month, now.day))
-        self.assertEqual(t_zone.soa_serial, correct_serial_a)
-        t_record_a.content = '127.0.0.2'
-        t_record_a.save()
-        self.assertEqual(t_zone.soa_serial, correct_serial_b)
+        zone.refresh_from_db()
+        self.assertEqual(zone.soa_serial, correct_serial_a)

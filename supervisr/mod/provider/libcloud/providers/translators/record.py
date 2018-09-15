@@ -1,15 +1,14 @@
 """supervisr mod provider libcloud Record Translator"""
-from typing import List
+from typing import Generator
 
 from libcloud.common.exceptions import BaseHTTPError
 from libcloud.dns.types import RecordAlreadyExistsError
 
-from supervisr.core.providers.exceptions import (ProviderObjectNotFoundException,
-                                                 ProviderRetryException)
+from supervisr.core.providers.exceptions import ProviderRetryException
 from supervisr.core.providers.objects import (ProviderObject,
                                               ProviderObjectTranslator,
                                               ProviderResult)
-from supervisr.dns.models import Record
+from supervisr.dns.providers.compat import CompatDNSRecord
 
 
 class LCloudRecordObject(ProviderObject):
@@ -22,7 +21,7 @@ class LCloudRecordObject(ProviderObject):
     def save(self, created: bool):
         """Save this instance"""
         try:
-            print('test')
+            pass
             # return self.translator.provider_instance.driver.create_record(
             #     domain=self.name,
             #     type=self.type,
@@ -51,26 +50,15 @@ class LCloudRecordObject(ProviderObject):
             raise ProviderRetryException from exc
 
 
-class LCloudRecordTranslator(ProviderObjectTranslator[Record]):
+class LCloudRecordTranslator(ProviderObjectTranslator[CompatDNSRecord]):
     """PowerDNS Record Translator"""
 
-    def to_external(self, internal: Record) -> LCloudRecordObject:
+    def to_external(self, internal: CompatDNSRecord) -> Generator[LCloudRecordObject, None, None]:
         """Convert Record to Domain"""
-        return LCloudRecordObject(
+        yield LCloudRecordObject(
             translator=self,
             id=internal.pk,
-            name=internal.domain.domain_name,
+            name=str(internal.domain.domain_name),
             type='master',
             ttl=86400,
         )
-
-    def query_external(self, **kwargs) -> List[LCloudRecordObject]:
-        """Query Domain"""
-        raise NotImplementedError
-
-    def to_internal(self, query_result: LCloudRecordObject) -> Record:
-        """Convert query_result to Record"""
-        records = Record.objects.filter(domain__domain_name=query_result.name)
-        if not records.exists():
-            raise ProviderObjectNotFoundException()
-        return records.first()

@@ -1,10 +1,9 @@
-"""
-Supervisr DNS record views
-"""
+"""Supervisr DNS record views"""
+from typing import Union
 
 from django.contrib import messages
 from django.db.models import QuerySet
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.utils.translation import ugettext as _
 
@@ -12,48 +11,49 @@ from supervisr.core.models import UserAcquirableRelationship
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
                                           GenericUpdateView)
 from supervisr.core.views.wizards import BaseWizardView
-from supervisr.dns.forms.records import RecordForm
-from supervisr.dns.models import Record, Zone
+from supervisr.dns.forms.records import DataRecordForm, SetRecordForm
+from supervisr.dns.models import BaseRecord, DataRecord, SetRecord, Zone
 
 
-class RecordIndexView(GenericIndexView):
-    """Show a list of all records for zone"""
+def redirect_back(request: HttpRequest) -> HttpResponse:
+    """Redirect back based on URL parameters"""
+    if 'zone_uuid' in request.GET:
+        return redirect(reverse('supervisr_dns:record-list', kwargs={
+            'zone_uuid': request.GET.get('zone_uuid')
+        }))
+    if 'record_uuid' in request.GET:
+        return redirect(reverse('supervisr_dns:record-set-view', kwargs={
+            'record_uuid': request.GET.get('record_uuid')
+        }))
+    if 'back' in request.GET:
+        return redirect(request.GET.get('back'))
+    return redirect(reverse('supervisr_dns:index'))
 
-    model = Record
-    template = 'dns/records/index.html'
-    zone = None
+class SetRecordView(GenericIndexView):
+    """Show list of all sub-records of set"""
+
+    model = BaseRecord
+    template = 'dns/records/set_index.html'
+    instance = None
 
     def get_instance(self) -> QuerySet:
-        self.zone = get_object_or_404(Zone, domain__domain_name=self.kwargs.get('zone'),
-                                      users__in=[self.request.user])
-        return self.model.objects.filter(record_zone=self.zone,
-                                         users__in=[self.request.user]).order_by('name')
+        self.instance = get_object_or_404(SetRecord,
+                                          uuid=self.kwargs.get('record_uuid'),
+                                          users__in=[self.request.user])
+        return self.instance.records.filter(users__in=[self.request.user]).order_by('name')
 
-    def update_kwargs(self, kwargs: dict) -> dict:
-        kwargs['zone'] = self.zone
+    def update_kwargs(self, kwargs) -> dict:
+        kwargs = super().update_kwargs(kwargs)
+        kwargs['set'] = self.instance
         return kwargs
 
 
 # pylint: disable=too-many-ancestors
-class RecordNewView(BaseWizardView):
-    """
-    Wizard to create a blank Record
-    """
+class DataRecordWizard(BaseWizardView):
+    """Wizard to create a new DataRecord"""
 
-    title = _('New Record')
-    form_list = [RecordForm]
-
-    def get_form(self, step=None, data=None, files=None):
-        form = super(RecordNewView, self).get_form(step, data, files)
-        if step is None:
-            step = self.steps.current
-        if step == '0':
-            user_zones = Zone.objects.filter(users__in=[self.request.user])
-            zone_pk = user_zones.filter(
-                domain__domain_name=self.kwargs.get('zone')).first().pk
-            form.fields['record_zone'].queryset = user_zones
-            form.fields['record_zone'].initial = zone_pk
-        return form
+    title = _('New Data Record')
+    form_list = [DataRecordForm]
 
     def finish(self, form_list):
         record = form_list[0].save()
@@ -61,50 +61,78 @@ class RecordNewView(BaseWizardView):
             model=record,
             user=self.request.user)
         messages.success(self.request, _('DNS Record successfully created'))
-        return redirect(reverse('supervisr_dns:record-list',
-                                kwargs={'zone': self.kwargs.get('zone')}))
+        if 'zone_uuid' in self.request.GET:
+            zone_uuid = self.request.GET.get('zone_uuid')
+            zone = get_object_or_404(Zone, uuid=zone_uuid,
+                                     users__in=[self.request.user])
+            zone.records.add(record)
+        if 'set_uuid' in self.request.GET:
+            set_uuid = self.request.GET.get('set_uuid')
+            _set = get_object_or_404(SetRecord, uuid=set_uuid,
+                                     users__in=[self.request.user])
+            _set.records.add(record)
+        return redirect_back(self.request)
+
+
+# pylint: disable=too-many-ancestors
+class SetRecordWizard(BaseWizardView):
+    """Wizard to create a new SetRecord"""
+
+    title = _('New Set Record')
+    form_list = [SetRecordForm]
+
+    def finish(self, form_list):
+        record = form_list[0].save()
+        UserAcquirableRelationship.objects.create(
+            model=record,
+            user=self.request.user)
+        messages.success(self.request, _('DNS Record successfully created'))
+        if 'zone_uuid' in self.request.GET:
+            zone_uuid = self.request.GET.get('zone_uuid')
+            zone = get_object_or_404(Zone, uuid=zone_uuid,
+                                     users__in=[self.request.user])
+            zone.records.add(record)
+        if 'set_uuid' in self.request.GET:
+            set_uuid = self.request.GET.get('set_uuid')
+            _set = get_object_or_404(SetRecord, uuid=set_uuid,
+                                     users__in=[self.request.user])
+            _set.records.add(record)
+        return redirect_back(self.request)
 
 
 class RecordUpdateView(GenericUpdateView):
     """Edit a record"""
 
-    model = Record
-    form = RecordForm
+    model = BaseRecord
+    form = DataRecordForm
     zone = None
 
     def get_instance(self) -> QuerySet:
-        self.zone = get_object_or_404(Zone, domain__domain_name=self.kwargs.get('zone'),
-                                      users__in=[self.request.user])
-        return self.model.objects.filter(record_zone=self.zone, users__in=[self.request.user],
-                                         name=self.kwargs.get('record'),
-                                         uuid=self.kwargs.get('uuid'))
+        return self.model.objects.filter(users__in=[self.request.user],
+                                         uuid=self.kwargs.get('record_uuid'))
 
-    def redirect(self, instance: Record) -> HttpResponse:
-        return redirect(reverse('supervisr_dns:record-list',
-                                kwargs={'zone': self.kwargs.get('zone')}))
+    def redirect(self, instance: DataRecord) -> HttpResponse:
+        return redirect_back(self.request)
 
-    def update_form(self, form: RecordForm) -> RecordForm:
-        # Make a list of all zones so user can switch zones
-        user_zones = Zone.objects.filter(users__in=[self.request.user])
-        zone_pk = user_zones.filter(domain__domain_name=self.kwargs.get('zone')).first().pk
-        form.fields['record_zone'].queryset = user_zones
-        form.fields['record_zone'].initial = zone_pk
-        return form
+    def get_form(self, *args, instance: BaseRecord, **kwargs
+                ) -> Union[DataRecordForm, SetRecordForm]:
+        instance = instance.cast()
+        if isinstance(instance, DataRecord):
+            return DataRecordForm(*args, instance=instance, **kwargs)
+        elif isinstance(instance, SetRecord):
+            return SetRecordForm(*args, instance=instance, **kwargs)
+        raise ValueError('instance must be either DataRecord or SetRecord')
 
 
 class RecordDeleteView(GenericDeleteView):
     """Delete a record"""
 
-    model = Record
+    model = BaseRecord
     zone = None
 
     def get_instance(self) -> QuerySet:
-        self.zone = get_object_or_404(Zone, domain__domain_name=self.kwargs.get('zone'),
-                                      users__in=[self.request.user])
-        return self.model.objects.filter(record_zone=self.zone, users__in=[self.request.user],
-                                         name=self.kwargs.get('record'),
-                                         uuid=self.kwargs.get('uuid'))
+        return self.model.objects.filter(users__in=[self.request.user],
+                                         uuid=self.kwargs.get('record_uuid'))
 
-    def redirect(self, instance: Record) -> HttpResponse:
-        return redirect(reverse('supervisr_dns:record-list',
-                                kwargs={'zone': self.kwargs.get('zone')}))
+    def redirect(self, instance: DataRecord) -> HttpResponse:
+        return redirect_back(self.request)

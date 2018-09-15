@@ -57,7 +57,7 @@ module.exports = function(grunt) {
       },
       images: {
         files: [
-          { expand: true, cwd: 'img', src: ['*'], dest: '../supervisr/core/static/img/' },
+          { expand: true, cwd: 'img', src: ['*.png'], dest: '../supervisr/core/static/img/' },
         ]
       },
       fonts: {
@@ -67,7 +67,7 @@ module.exports = function(grunt) {
       },
       image_doc: {
         files: [
-          { expand: true, cwd: 'img', src: ['icon.png', 'icon_white.png'], dest: '../docs/img/'},
+          { expand: true, cwd: 'img', src: ['icon.png','white.png'], dest: '../docs/img/'},
         ]
       }
     }

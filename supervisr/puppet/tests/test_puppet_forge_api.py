@@ -6,7 +6,7 @@ from shutil import rmtree
 from django.contrib.auth.models import Group
 
 from supervisr.core.models import Setting
-from supervisr.core.tests.utils import TestCase, test_request
+from supervisr.core.utils.tests import TestCase, test_request
 from supervisr.puppet.api.v1 import forge_api
 from supervisr.puppet.builder import ReleaseBuilder
 from supervisr.puppet.models import PuppetModule

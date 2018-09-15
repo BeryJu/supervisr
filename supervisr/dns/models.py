@@ -1,10 +1,12 @@
 """Supervisr DNS Models"""
-
+from ipaddress import ip_address
+from typing import Generator
 from uuid import uuid4
 
 from django.db import models
 
-from supervisr.core.models import Domain, ProviderAcquirable, UserAcquirable
+from supervisr.core.models import (CastableModel, Domain, ProviderAcquirable,
+                                   ProviderTriggerMixin, UserAcquirable)
 
 # imported from powerdns
 RECORD_TYPES = (
@@ -49,11 +51,9 @@ RECORD_TYPES = (
 )
 
 
-class Zone(ProviderAcquirable, UserAcquirable):
-    """DNS Zone"""
+class BaseZone(CastableModel):
+    """Base Zone fields"""
 
-    domain = models.ForeignKey(Domain, on_delete=models.CASCADE)
-    enabled = models.BooleanField(default=True)
     soa_mname = models.TextField()
     soa_rname = models.TextField()
     soa_serial = models.IntegerField()
@@ -61,45 +61,82 @@ class Zone(ProviderAcquirable, UserAcquirable):
     soa_retry = models.IntegerField(default=7200)
     soa_expire = models.IntegerField(default=3600000)
     soa_ttl = models.IntegerField(default=172800)
+    enabled = models.BooleanField(default=True)
+    records = models.ManyToManyField('BaseRecord', blank=True)
+    uuid = models.UUIDField(default=uuid4)
+
+    class Meta:
+
+        abstract = True
+
+
+class Zone(BaseZone, ProviderAcquirable, UserAcquirable):
+    """DNS Zone"""
+
+    domain = models.ForeignKey(Domain, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "Zone %s" % self.domain.domain_name
+        return self.domain.domain_name
 
 
-class Record(UserAcquirable):
-    """DNS Record"""
+class ReverseZone(BaseZone, ProviderAcquirable, UserAcquirable):
+    """Reverse DNS Zone for IPv4 and IPv6"""
+
+    zone_ip = models.GenericIPAddressField(unpack_ipv4=True)
+    netmask = models.IntegerField()
+
+    @property
+    def zone_name(self):
+        """Get .arpa name"""
+        return ip_address(self.zone_ip).reverse_pointer
+
+    def __str__(self):
+        return self.zone_ip
+
+
+class BaseRecord(UserAcquirable):
+    """Base DNS Record"""
 
     name = models.TextField()
-    record_zone = models.ForeignKey('Zone', on_delete=models.CASCADE)
-    resource_set = models.ForeignKey('ResourceSet', on_delete=models.CASCADE)
     enabled = models.BooleanField(default=True)
     uuid = models.UUIDField(default=uuid4)
 
     def __str__(self):
-        return "Record %s" % self.name
+        if self.cast() != self:
+            return self.cast().__str__()
+        return self.name
 
 
-class Resource(UserAcquirable):
-    """Record Resource"""
+class SetRecord(BaseRecord, ProviderTriggerMixin):
+    """DNS Record pointing to a collection of other Records. Can be recursive."""
 
-    name = models.TextField()
+    append_name = models.BooleanField(default=False)
+    records = models.ManyToManyField('BaseRecord', blank=True, related_name='set')
+
+    @property
+    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
+        """Return all provider instances that should be triggered"""
+        raise NotImplementedError()
+
+    def __str__(self):
+        return "Set %s" % self.name
+
+class DataRecord(BaseRecord, ProviderTriggerMixin):
+    """DNS Record pointing to a single Address/"""
+
     type = models.CharField(max_length=10, choices=RECORD_TYPES)
     content = models.TextField()
     ttl = models.IntegerField(default=3600)
     priority = models.IntegerField(default=0)
-    enabled = models.BooleanField(default=True)
-    uuid = models.UUIDField(default=uuid4)
+
+    @property
+    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
+        """Return all provider instances that should be triggered"""
+        # for resource_set in self.resourceset_set.all():
+        #     for record in resource_set.record_set.all():
+        #         for provider in record.record_zone.provider_instances:
+        #             yield provider
+        raise NotImplementedError()
 
     def __str__(self):
-        return "RecordData %s %s" % (self.type, self.content)
-
-
-class ResourceSet(UserAcquirable):
-    """Connect Record to Resource"""
-
-    uuid = models.UUIDField(default=uuid4)
-    name = models.TextField()
-    resource = models.ManyToManyField('Resource', blank=True)
-
-    def __str__(self):
-        return "ResourceSet %s" % self.name
+        return "%s (type=%s content=%s)" % (self.name, self.type, self.content)

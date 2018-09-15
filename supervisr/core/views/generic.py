@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
-from django.db.models.query import QuerySet
+from django.db.models.query import Q, QuerySet
 from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
@@ -15,6 +15,7 @@ from django.utils.translation import ugettext as _
 from django.views import View
 
 from supervisr.core.decorators import anonymous_required
+from supervisr.core.models import UserAcquirable
 
 
 class LoginRequiredMixin(View):
@@ -50,7 +51,7 @@ class GenericModelView(LoginRequiredMixin):
     template_name = None
 
     def __init__(self, *args, **kwargs):
-        super(GenericModelView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.template is not None:
             warnings.warn("self.template is deprecated in favor of self.template_name",
                           DeprecationWarning)
@@ -64,7 +65,7 @@ class GenericModelView(LoginRequiredMixin):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(GenericModelView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get_instance(self) -> QuerySet:
         """Get model instance. Here you can apply extra filters.
@@ -72,8 +73,16 @@ class GenericModelView(LoginRequiredMixin):
         By default we filter with the argument `pk` matching `pk`.
         This method should return a QuerySet.
         """
+        query = Q()
         if 'pk' in self.kwargs:
-            return self.model.filter(pk=self.kwargs.get('pk'))
+            query &= Q(pk=self.kwargs.get('pk'))
+        if 'uuid' in self.kwargs:
+            query &= Q(uuid=self.kwargs.get('uuid'))
+        if issubclass(self.model, UserAcquirable):
+            query &= Q(users__in=[self.request.user])
+
+        if query:
+            return self.model.filter(query)
         raise NotImplementedError()
 
     def _redirect_helper(self, *args, **kwargs) -> HttpResponse:
@@ -153,7 +162,7 @@ class GenericUpdateView(GenericModelView):
     template_name = 'generic/form_modal.html'
 
     def __init__(self, *args, **kwargs):
-        super(GenericUpdateView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.form is None:
             raise ValueError("`form` Property has to be overwritten")
         if not issubclass(self.form, ModelForm):
@@ -167,9 +176,14 @@ class GenericUpdateView(GenericModelView):
             'title': 'Edit %s' % self.model_verbose_name,
         })
 
-    def update_form(self, form) -> ModelForm:
-        """Edit form instance after it has been instantiated"""
-        return form
+    def get_form(self, *args, instance: models.Model, **kwargs) -> ModelForm:
+        """Get form instance. *args and **kwargs should be passed to Form Constructor."""
+        # pylint: disable=not-callable
+        form_instance = self.form(*args, instance=instance, **kwargs)
+        if getattr(self, 'update_form', False):
+            warnings.warn('GenericUpdateView.update_form is deprecated in favor of get_form.')
+            return self.update_form(form_instance)
+        return form_instance
 
     def save(self, form: ModelForm) -> models.Model:
         """Save the data from the form"""
@@ -178,15 +192,13 @@ class GenericUpdateView(GenericModelView):
     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle Get request"""
         instance = get_object_or_404(self.get_instance())
-        # pylint: disable=not-callable
-        form = self.update_form(self.form(instance=instance))
+        form = self.get_form(instance=instance)
         return self.render(form)
 
     def post(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle Post request"""
         instance = get_object_or_404(self.get_instance())
-        # pylint: disable=not-callable
-        form = self.update_form(self.form(request.POST, instance=instance))
+        form = self.get_form(request.POST, instance=instance)
         if form.is_valid():
             self.save(form)
             messages.success(self.request, _('Successfully edited %(verbose_name)s'

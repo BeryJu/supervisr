@@ -1,7 +1,7 @@
 """supervisr mod stats influx task tests"""
 
 from supervisr.core.models import Setting
-from supervisr.core.tests.utils import TestCase
+from supervisr.core.utils.tests import TestCase
 from supervisr.mod.stats.influx.tasks import push_influx_data
 
 
