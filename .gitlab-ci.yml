@@ -6,6 +6,7 @@ before_script:
   - "virtualenv env"
   - "source env/bin/activate"
   - "pip install --no-cache-dir -U -r requirements.txt -r requirements-dev.txt"
+  - "apt-get install -y graphviz"
   - "mkdir ~/.ssh"
   - "cp .gitlab/known_hosts ~/.ssh/"
 
