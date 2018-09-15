@@ -25,8 +25,8 @@ class GraphView(LoginRequiredMixin):
         self.__graph.attr('node', shape='record')
         self.__graph.attr(rankdir='LR')
         self.__graph.format = 'svg'
-
-        assert self.model is not None, "`self.model` must be overwritten."
+        if self.model is None:
+            raise ValueError("`self.model` must be overwritten.")
 
     def get_label(self, model: Model) -> str:
         """Get label for model"""
