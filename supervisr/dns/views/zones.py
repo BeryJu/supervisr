@@ -1,7 +1,6 @@
 """Supervisr DNS Views"""
-
 from django.contrib import messages
-from django.db.models import QuerySet
+from django.db.models import Model, QuerySet
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.utils.translation import ugettext as _
@@ -11,9 +10,11 @@ from supervisr.core.models import (Domain, ProviderInstance,
 from supervisr.core.providers.base import get_providers
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
                                           GenericUpdateView)
+from supervisr.core.views.graph import GraphView
 from supervisr.core.views.wizards import BaseWizardView
 from supervisr.dns.forms.zones import ZoneForm
-from supervisr.dns.models import BaseRecord, ReverseZone, Zone
+from supervisr.dns.models import (BaseRecord, DataRecord, ReverseZone,
+                                  SetRecord, Zone)
 
 
 class RecordIndexView(GenericIndexView):
@@ -35,6 +36,22 @@ class RecordIndexView(GenericIndexView):
         kwargs['zone'] = self.zone
         kwargs['is_reverse'] = isinstance(self.zone.cast(), ReverseZone)
         return kwargs
+
+
+class ZoneGraphView(GraphView):
+    """Show a graph of Zone-Record relationships"""
+
+    model = Zone
+
+    def get_label(self, model: Model) -> str:
+        if isinstance(model, Zone):
+            return 'Zone | %s' % str(model)
+        if isinstance(model, SetRecord):
+            return 'Set | Name "%s"' % model.name
+        elif isinstance(model, DataRecord):
+            return 'Data | Name "%s" | Type "%s" | Content "%s"' % \
+                    (model.name, model.type, model.content)
+        return super().get_label(model)
 
 
 class ZoneIndexView(GenericIndexView):

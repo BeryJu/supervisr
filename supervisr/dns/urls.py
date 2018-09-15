@@ -15,6 +15,8 @@ urlpatterns = [
         zones.ZoneDeleteView.as_view(), name='zone-delete'),
     url(r'^zones/(?P<zone_uuid>%s)/records/$' % UUID_REGEX,
         zones.RecordIndexView.as_view(), name='record-list'),
+    url(r'^zones/(?P<uuid>%s)/graph/$' % UUID_REGEX,
+        zones.ZoneGraphView.as_view(), name='zone-graph'),
     url(r'^migrate/import/bind/$',
         migrate.BindZoneImportWizard.as_view(), name='migrate-import-bind'),
     # Reverse Zones

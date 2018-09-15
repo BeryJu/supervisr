@@ -27,7 +27,7 @@ class DebugZoneTranslator(ProviderObjectTranslator[Zone]):
     def to_external(self, internal: Zone) -> Generator[DebugZoneObject, None, None]:
         """Create DebugZoneObject from Zone"""
         LOGGER.debug("to_external %r", internal)
-        return DebugZoneObject(
+        yield DebugZoneObject(
             translator=self,
             name=internal.domain.domain_name
         )

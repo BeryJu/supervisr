@@ -56,9 +56,6 @@ class DataRecordWizard(BaseWizardView):
     form_list = [DataRecordForm]
 
     def finish(self, form_list):
-        zone = get_object_or_404(Zone,
-                                 uuid=self.kwargs.get('zone_uuid'),
-                                 users__in=[self.request.user])
         record = form_list[0].save()
         UserAcquirableRelationship.objects.create(
             model=record,
@@ -69,6 +66,11 @@ class DataRecordWizard(BaseWizardView):
             zone = get_object_or_404(Zone, uuid=zone_uuid,
                                      users__in=[self.request.user])
             zone.records.add(record)
+        if 'set_uuid' in self.request.GET:
+            set_uuid = self.request.GET.get('set_uuid')
+            _set = get_object_or_404(SetRecord, uuid=set_uuid,
+                                     users__in=[self.request.user])
+            _set.records.add(record)
         return redirect_back(self.request)
 
 
@@ -90,6 +92,11 @@ class SetRecordWizard(BaseWizardView):
             zone = get_object_or_404(Zone, uuid=zone_uuid,
                                      users__in=[self.request.user])
             zone.records.add(record)
+        if 'set_uuid' in self.request.GET:
+            set_uuid = self.request.GET.get('set_uuid')
+            _set = get_object_or_404(SetRecord, uuid=set_uuid,
+                                     users__in=[self.request.user])
+            _set.records.add(record)
         return redirect_back(self.request)
 
 

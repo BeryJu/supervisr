@@ -4,7 +4,7 @@
 {% load i18n %}
 
 {% block title %}
-{% title 'Records' %}
+{% title zone.domain.domain_name 'Records' %}
 {% endblock %}
 
 {% block header %}
@@ -17,7 +17,15 @@
 {% endblock %}
 
 {% block content %}
-<h1><clr-icon shape="view-list" size="48"></clr-icon>{% blocktrans with z=zone.domain.domain_name %}Records for {{ z }}{% endblocktrans %}</h1>
+<h1>
+  <clr-icon shape="view-list" size="48"></clr-icon>
+  {% blocktrans with name=zone.domain.domain_name %}
+    Records for {{ name }}
+  {% endblocktrans %}
+  <a data-action="show-modal" data-modal="graph-modal">
+    <clr-icon shape="organization"></clr-icon>
+  </a>
+</h1>
 <div class="btn-group btn-link btn-icon-link">
   <div class="btn-group-overflow dropdown">
     <button class="btn dropdown-toggle" clrDropdown>
@@ -65,7 +73,7 @@
       <td>{{ record.cast.type }}</td>
       <td>{{ record.cast.content }}</td>
       {% else %}
-      <td>{% trans 'TODO: Link here' %}</td>
+      <td><a href="{% url 'supervisr_dns:record-set-view' record_uuid=record.uuid %}">{% trans 'See more' %}</a></td>
       <td>{% trans '-' %}</td>
       <td>{% trans '-' %}</td>
       {% endif %}
@@ -74,11 +82,36 @@
   </tbody>
 </table>
 {% include 'blocks/pagination.html' with pages=instances %}
+
+<div class="modal graph-message" style="display: none;" id="graph-modal">
+  <div class="modal-dialog modal-xl" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          {% blocktrans with name=zone.domain.domain_name %}
+            Zone {{name}} Graph
+          {% endblocktrans %}
+        </h3>
+      </div>
+      <div class="modal-body">
+        <img data-src="{% url 'supervisr_dns:zone-graph' uuid=zone.uuid %}" alt="Zone graph">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-action="close" type="button">{% trans 'Close' %}</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop" aria-hidden="true"></div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
 {{ block.super }}
 <script>
+$('[data-src]').each(function () {
+  $(this).attr('src', $(this).attr('data-src'));
+});
 clrTableSelect('.content-area');
 </script>
 {% endblock %}
