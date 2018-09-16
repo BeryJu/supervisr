@@ -105,9 +105,8 @@ def disable(request: HttpRequest) -> HttpResponse:
         send_notification=True)
     return redirect(reverse('common-index'))
 
+
 # pylint: disable=too-many-ancestors
-
-
 @method_decorator([login_required, reauth_required], name="dispatch")
 class TFASetupView(BaseWizardView):
     """Wizard to create a Mail Account"""
@@ -178,7 +177,7 @@ class TFASetupView(BaseWizardView):
         return form
 
     # pylint: disable=unused-argument
-    def done(self, final_forms, **kwargs):
+    def finish(self, forms_list):
         # Save device as confirmed
         self.totp_device.confirmed = True
         self.totp_device.save()

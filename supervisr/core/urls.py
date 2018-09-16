@@ -15,6 +15,7 @@ from supervisr.core.utils.constants import (DOMAIN_REGEX, EMAIL_REGEX,
                                             MOD_REGEX, UUID_REGEX)
 from supervisr.core.views import (accounts, admin, common, domains, products,
                                   providers, search, settings, setup, users)
+from supervisr.core.views.x509 import ca, certificates
 
 LOGGER = logging.getLogger(__name__)
 
@@ -90,6 +91,22 @@ urlpatterns = [
     url(r'^admin/monitoring/tasks/$', admin.TasksView.as_view(), name='admin-tasks'),
     url(r'^admin/monitoring/events/$', admin.EventView.as_view(), name='admin-events'),
     url(r'^admin/products/$', products.ProductAdminIndex.as_view(), name='admin-product_index'),
+    # x509 - Certificates
+    url(r'^x509/import/$',
+        certificates.ImportWizard.as_view(), name='x509-import'),
+    url(r'^x509/certificates/$',
+        certificates.CertificateIndexView.as_view(), name='certificate-index'),
+    url(r'^x509/certificates/(?P<uuid>%s)/update/$' % UUID_REGEX,
+        certificates.CertificateUpdateView.as_view(), name='certificate-update'),
+    url(r'^x509/certificates/(?P<uuid>%s)/delete/$' % UUID_REGEX,
+        certificates.CertificateDeleteView.as_view(), name='certificate-delete'),
+    # x509 - CA
+    url(r'^x509/ca/$',
+        ca.CAIndexView.as_view(), name='ca-index'),
+    url(r'^x509/ca/(?P<uuid>%s)/update/$' % UUID_REGEX,
+        ca.CAUpdateView.as_view(), name='ca-update'),
+    url(r'^x509/ca/(?P<uuid>%s)/delete/$' % UUID_REGEX,
+        ca.CADeleteView.as_view(), name='ca-delete'),
     # Setup
     url(r'^setup/(?P<step>.+)/$', setup.SetupWizard.as_view(url_name='setup'), name='setup'),
     # Settings

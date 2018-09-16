@@ -1,0 +1,60 @@
+{% extends 'common/base.html' %}
+
+{% load i18n %}
+{% load supervisr_utils %}
+
+{% block title %}
+{% title 'Certificates' %}
+{% endblock %}
+
+{% block content %}
+<h1>
+  <clr-icon shape="certificate" size="48"></clr-icon>{% trans "Certificates" %}
+</h1>
+<div class="btn-group btn-link btn-icon-link">
+  <div class="btn-group-overflow dropdown">
+    <button class="btn dropdown-toggle" clrDropdown>
+      <clr-icon shape="add"></clr-icon>
+      <clr-icon shape="caret down"></clr-icon>
+    </button>
+    <div class="dropdown-menu">
+      <a href="{% url 'x509-import' %}" class="dropdown-item">{% trans 'Import Certificate from PEM data' %}</a>
+    </div>
+  </div>
+  <a data-ctx-name="edit" class="btn">
+    <clr-icon shape="edit"></clr-icon>
+  </a>
+  <a data-ctx-name="trash" class="btn">
+    <clr-icon shape="trash"></clr-icon>
+  </a>
+  <a data-ctx-name="diff" class="btn">
+    <clr-icon shape="layers"></clr-icon>
+  </a>
+</div>
+<table class="table instances">
+  <thead>
+    <tr>
+      <th>{% trans 'Subject' %}</th>
+      <th>{% trans 'Common Name' %}</th>
+      <th>{% trans 'Issuer' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for instance in instances %}
+    <tr data-selectable data-ctx-edit="{% url 'certificate-update' uuid=instance.uuid %}?back={{ request.get_full_path }}"
+      data-ctx-trash="{% url 'certificate-delete' uuid=instance.uuid %}?back={{ request.get_full_path }}">
+      <td>{{ instance.subject }}</td>
+      <td>{{ instance.cn }}</td>
+      <td>{{ instance.issuer }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+  clrTableSelect('.container');
+</script>
+{% endblock %}

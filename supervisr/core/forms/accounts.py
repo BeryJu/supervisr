@@ -28,7 +28,7 @@ class LoginForm(forms.Form):
         public_key=Setting.get('recaptcha:public'))
 
     def __init__(self, *args, **kwargs):
-        super(LoginForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if not Setting.get_bool('recaptcha:enabled'):
             self.fields.pop('captcha')
 
@@ -47,7 +47,7 @@ class SignupForm(forms.Form):
         public_key=Setting.get('recaptcha:public'))
 
     def __init__(self, *args, **kwargs):
-        super(SignupForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if not Setting.get_bool('recaptcha:enabled'):
             self.fields.pop('captcha')
 

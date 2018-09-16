@@ -70,9 +70,9 @@ class GenericModelView(LoginRequiredMixin):
     def get_instance(self) -> QuerySet:
         """Get model instance. Here you can apply extra filters.
 
-        By default we filter with the argument `pk` matching `pk`.
-        This method should return a QuerySet.
-        """
+        By default we filter with the argument `pk` matching `pk` and `uuid` matching `uuid`.
+        Default sorting is done by `pk`.
+        This method should return a QuerySet."""
         query = Q()
         if 'pk' in self.kwargs:
             query &= Q(pk=self.kwargs.get('pk'))
@@ -82,7 +82,7 @@ class GenericModelView(LoginRequiredMixin):
             query &= Q(users__in=[self.request.user])
 
         if query:
-            return self.model.filter(query)
+            return self.model.objects.filter(query).order_by('pk')
         raise NotImplementedError()
 
     def _redirect_helper(self, *args, **kwargs) -> HttpResponse:

@@ -58,9 +58,9 @@ class BaseWizardView(SessionWizardView):
             return self._handle_request_res
         return super().render(form, **kwargs)
 
-    def finish(self, form_list):
+    def finish(self, form_list) -> HttpResponse:
         """Wrapper for done with an actual list as param"""
-        pass
+        raise NotImplementedError()
 
     def done(self, form_list, **kwargs):
         # Cleanup session
@@ -76,4 +76,6 @@ class BaseWizardView(SessionWizardView):
 
 class NamedWizard(BaseWizardView, NamedUrlSessionWizardView):
     """Same as BaseWizardView except with named steps"""
-    pass
+
+    def finish(self, form_list) -> HttpResponse:
+        raise NotImplementedError()

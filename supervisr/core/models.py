@@ -1,6 +1,4 @@
 """supervisr core models"""
-from __future__ import unicode_literals
-
 import base64
 import inspect
 import json
@@ -13,21 +11,29 @@ from difflib import get_close_matches
 from importlib import import_module
 from typing import Generator, List
 
+import pytz
 from celery.result import AsyncResult
+from cryptography import x509
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import asymmetric, serialization
 from django.conf import settings
 from django.contrib.auth import models as django_auth_models
 from django.contrib.auth.models import AbstractUser, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import Max
+from django.db.models import Max, QuerySet
 from django.db.models.signals import post_save, pre_delete
 from django.db.utils import OperationalError, ProgrammingError
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.encoding import force_bytes
 from django.utils.translation import ugettext as _
+from django_ca.models import Certificate as _Cert
+from django_ca.models import CertificateAuthority as _CA
+from django_ca.utils import int_to_hex
 from raven.contrib.django.raven_compat.models import client
 
 from supervisr.core import fields
@@ -83,9 +89,36 @@ def get_system_user() -> 'User':
         return system_users.first()
     return None
 
+############################
+###
+### Abstract Models
+###
+############################
+
+
+class ProviderTriggerMixin(models.Model):
+    """Base class for all models that trigger Provider updates"""
+
+    @property
+    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
+        """Return all provider instances that should be triggered"""
+        raise NotImplementedError()
+
+    class Meta:
+        abstract = True
+
+
+class UUIDModel(models.Model):
+    """Abstract base model which uses a UUID as primary key"""
+
+    uuid = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+
+    class Meta:
+        abstract = True
+
 
 class CastableModel(models.Model):
-    """Base Model for Models using Inheritance to cast them"""
+    """Abstract base Model for Models using Inheritance to cast them"""
 
     @time_method('CastableModel.cast')
     def cast(self):
@@ -171,8 +204,7 @@ class GlobalPermissionManager(models.Manager):
 
     def get_queryset(self):
         """Filter for us"""
-        return super(GlobalPermissionManager, self).\
-            get_queryset().filter(content_type__model='global_permission')
+        return super().get_queryset().filter(content_type__model='global_permission')
 
 
 class GlobalPermission(Permission):
@@ -189,11 +221,12 @@ class GlobalPermission(Permission):
             model=self._meta.verbose_name, app_label=self._meta.app_label,
         )
         self.content_type = ctype
-        super(GlobalPermission, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Setting(CreatedUpdatedModel):
     """Save key-value settings to db"""
+
     setting_id = models.AutoField(primary_key=True)
     key = models.CharField(max_length=255)
     namespace = models.CharField(max_length=255)
@@ -323,7 +356,7 @@ class Setting(CreatedUpdatedModel):
             return False
 
     def save(self, *args, **kwargs):
-        res = super(Setting, self).save(*args, **kwargs)
+        res = super().save(*args, **kwargs)
         on_setting_update.send(sender=self, setting=self)
         return res
 
@@ -353,10 +386,8 @@ class Task(CreatedUpdatedModel):
         return "Task %s (invoker: %s)" % (self.task_uuid, self.invoker)
 
 
-class AccountConfirmation(CreatedUpdatedModel):
-    """
-    Save information about actions that need to be confirmed
-    """
+class AccountConfirmation(UUIDModel, CreatedUpdatedModel):
+    """Save information about actions that need to be confirmed"""
 
     KIND_SIGN_UP = 0
     KIND_PASSWORD_RESET = 1
@@ -365,7 +396,6 @@ class AccountConfirmation(CreatedUpdatedModel):
         (KIND_PASSWORD_RESET, _('Password Reset')),
     )
 
-    account_confirmation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     expires = models.BigIntegerField(default=expiry_date, editable=False)
     confirmed = models.BooleanField(default=False)
@@ -444,7 +474,7 @@ class UserAcquirableRelationship(models.Model):
         first_save = False
         if self.pk is None:
             first_save = True
-        super(UserAcquirableRelationship, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if first_save:
             # Trigger event that we were saved
             on_user_acquirable_relationship_created.send(
@@ -455,21 +485,7 @@ class UserAcquirableRelationship(models.Model):
         return "User '%s' <=> UserAcquirable '%s'" % (self.user, self.model.cast())
 
     class Meta:
-
         unique_together = (('user', 'model'),)
-
-
-class ProviderTriggerMixin(models.Model):
-    """Base class for all models that trigger Provider updates"""
-
-    @property
-    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
-        """Return all provider instances that should be triggered"""
-        raise NotImplementedError()
-
-    class Meta:
-
-        abstract = True
 
 
 class ProviderAcquirable(ProviderTriggerMixin, CastableModel):
@@ -510,6 +526,7 @@ class ProviderAcquirableSingle(ProviderTriggerMixin, CastableModel):
         """Return all provider instances that should be triggered"""
         yield self.provider_instance
 
+
 class ProviderAcquirableRelationship(models.Model):
     """Relationship between ProviderInstance and any Class subclassing ProviderAcquirable"""
 
@@ -525,11 +542,10 @@ class ProviderAcquirableRelationship(models.Model):
         unique_together = (('provider_instance', 'model'),)
 
 
-class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
+class Product(UUIDModel, CreatedUpdatedModel, UserAcquirable, CastableModel):
     """Information about the Main Product itself. This instances of this classes
     are assumed to be managed services."""
 
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     name = models.TextField()
     slug = models.SlugField(blank=True)
     description = models.TextField(blank=True)
@@ -554,7 +570,7 @@ class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
         # Auto generate slug
         self.slug = slugify(self.name)
 
-        super(Product, self).save(force_insert, force_update, using, update_fields)
+        super().save(force_insert, force_update, using, update_fields)
         if self.auto_all_add is True:
             # Since there is no better way to do the query other way roundd
             # We have to do it like this
@@ -568,6 +584,113 @@ class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
                 UserAcquirableRelationship.objects.create(
                     user=missing_user,
                     model=self)
+
+
+class Certificate(UUIDModel, _Cert, UserAcquirable):
+    """Custom wrapper for django_ca's Certificate Model to manage user permissions"""
+
+    @staticmethod
+    def from_pem(pem: str) -> 'Certificate':
+        """Create Certificate instance from pem"""
+        instance = Certificate()
+        cert = x509.load_pem_x509_certificate(force_bytes(pem), default_backend())
+        # Check if cert is a CA, in which case we import the CA
+        key_usage = cert.extensions.get_extension_for_oid(x509.oid.ExtensionOID.KEY_USAGE)
+        if key_usage.value.key_cert_sign:
+            return CA.from_pem(pem)
+        instance.pub = pem
+        instance.expires = cert.not_valid_after
+        if settings.USE_TZ:
+            instance.expires = timezone.make_aware(instance.expires, timezone=pytz.utc)
+        instance.serial = int_to_hex(cert.serial_number)
+        return instance
+
+class CA(UUIDModel, _CA, UserAcquirable):
+    """Custom wrapper for django_ca's CertificateAuthority Model to manage user permissions"""
+
+    @staticmethod
+    def from_pem(pem: str) -> 'CA':
+        """Import CA from pem"""
+        instance = CA()
+        cert = x509.load_pem_x509_certificate(force_bytes(pem), default_backend())
+        # Check if cert is a CA, if not raise
+        key_usage = cert.extensions.get_extension_for_oid(x509.oid.ExtensionOID.KEY_USAGE)
+        if not key_usage.value.key_cert_sign:
+            raise ValueError('Certificate does not have key_cert_sign.')
+        instance.pub = pem
+        instance.expires = cert.not_valid_after
+        if settings.USE_TZ:
+            instance.expires = timezone.make_aware(instance.expires, timezone=pytz.utc)
+        instance.serial = int_to_hex(cert.serial_number)
+        instance.name = cert.subject.get_attributes_for_oid(x509.NameOID.COMMON_NAME)[0].value
+        return instance
+
+class Key(UUIDModel, UserAcquirable):
+    """Private key which is stored encrypted"""
+
+    name = models.TextField()
+    private_key = fields.EncryptedField()
+    __key = None
+
+    def __str__(self):
+        return "%s Key '%s' (length=%d)" % (self.algorithm.upper(), self.name, self.length)
+
+    @staticmethod
+    def generate(length=4096, algorithm='rsa'):
+        """Generate new Key"""
+        algo = getattr(asymmetric, algorithm)
+        key = algo.generate_private_key(
+            public_exponent=65537,
+            key_size=length,
+            backend=default_backend())
+        key_pem = key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption())
+        key_instance = Key(key=key_pem.decode('utf-8'))
+        return key_instance
+
+    def __load_private(self):
+        """Load private key into serialized instance"""
+        self.__key = serialization.load_pem_private_key(
+            self.key.encode('utf-8'),
+            password=None,
+            backend=default_backend())
+
+    @property
+    def algorithm(self):
+        """Get key algorithm"""
+        if not self.__key:
+            self.__load_private()
+        if isinstance(self.__key, asymmetric.rsa.RSAPrivateKey):
+            return 'rsa'
+        elif isinstance(self.__key, asymmetric.dsa.DSAPrivateKey):
+            return 'dsa'
+        return None
+
+    @property
+    def length(self):
+        """Get key bit length"""
+        if not self.__key:
+            self.__load_private()
+        return self.__key.key_size
+
+
+class CertificateKeyPair(UUIDModel, CreatedUpdatedModel):
+    """Store a pair of a Certificate and Key instance. Not inheriting from UserAcquirable,
+    since users which have a UserAcquirableRelationship with Certificate and Key have access
+    to this"""
+
+    name = models.TextField()
+    certificate = models.ForeignKey('Certificate', on_delete=models.CASCADE)
+    key = models.ForeignKey('Key', on_delete=models.CASCADE)
+
+    def for_user(self, user: User) -> QuerySet:
+        """Query for CertificateKeyPair instances which `user` has access to."""
+        return self.objects.filter(certificate_users__in=[user], key_users__in=[user])
+
+    class Meta:
+        unique_together = (('certificate', 'key',), )
 
 
 class Domain(ProviderAcquirableSingle, UserAcquirable, CreatedUpdatedModel):
@@ -668,6 +791,7 @@ class Event(CreatedUpdatedModel):
 
 class BaseCredential(CreatedUpdatedModel, CastableModel):
     """Basic set of credentials"""
+
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     form = ''  # form class which is used for setup

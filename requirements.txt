@@ -22,6 +22,7 @@ colorlog
 markdown
 aenum
 graphviz
+django-ca
 # In here you can specify pip modules that should be installed
 dnspython
 requests

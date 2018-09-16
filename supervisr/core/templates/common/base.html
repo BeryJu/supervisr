@@ -31,6 +31,22 @@
     <a href="{% url 'product-index' %}" class="nav-link {% is_active 'product' %}">
       {% trans 'Products' %}
     </a>
+    <section class="nav-group">
+      <input id="provider_group" type="checkbox">
+      <label for="provider_group">{% trans "Encryption" %}</label>
+      <ul class="nav-list">
+        <li>
+          <a href="{% url 'certificate-index' %}" class="nav-link {% is_active_url 'certificate-index' %}">
+            {% trans "Certificates" %}
+          </a>
+        </li>
+          <li>
+            <a href="{% url 'ca-index' %}" class="nav-link {% is_active_url 'ca-index' %}">
+              {% trans "Certificate Authorities" %}
+            </a>
+          </li>
+      </ul>
+    </section>
   </section>
   {% include 'blocks/sidebar_footer.html' %}
 </nav>

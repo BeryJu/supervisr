@@ -105,12 +105,14 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.admindocs',
     'raven.contrib.django.raven_compat',
+    'django_ca',
 ] + CONFIG.get('installed_apps', [])
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__)))) + "/static"
 MEDIA_ROOT = BASE_DIR + "/data/media"
+CA_DIR = BASE_DIR + "/data/ca"
 SECRET_KEY = CONFIG.get('secret_key',
                         '_k*@6h2u2@q-dku57hhgzb7tnx*ba9wodcb^s9g0j59@=y(@_o') # noqa Debug
 DEBUG = CONFIG.get('debug', True)
@@ -390,6 +392,9 @@ if DEBUG is True:
     INSTALLED_APPS.append('debug_toolbar')
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
 
+# Ensure all directories are created
+for directory in [BASE_DIR, MEDIA_ROOT, CA_DIR, STATIC_ROOT]:
+    os.makedirs(directory, exist_ok=True)
 
 # Load subapps's INSTALLED_APPS
 for _app in INSTALLED_APPS:
