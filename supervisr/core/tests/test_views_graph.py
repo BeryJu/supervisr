@@ -1,7 +1,8 @@
 """supervisr core graph views"""
 
 from unittest.mock import PropertyMock, patch
-from xml.etree import ElementTree
+
+from defusedxml import ElementTree
 
 from supervisr.core.models import (Product, ProductExtension, User,
                                    UserAcquirableRelationship)
