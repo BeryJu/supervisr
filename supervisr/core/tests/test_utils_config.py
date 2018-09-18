@@ -6,7 +6,7 @@ from supervisr.core.utils.config import ConfigLoader
 from supervisr.core.utils.tests import TestCase
 
 
-class TestConfigs(TestCase):
+class TestConfig(TestCase):
     """Test ConfigLoader"""
 
     def test_load_invalid(self):
