@@ -5,7 +5,7 @@ import time
 from django.contrib.auth.models import AnonymousUser
 from django.http import HttpResponse
 
-from supervisr.core.decorators import (REAUTH_KEY, REAUTH_MARGIN, ifapp,
+from supervisr.core.decorators import (RE_AUTH_KEY, RE_AUTH_MARGAIN, ifapp,
                                        logged_in_or_basicauth, reauth_required,
                                        require_setting)
 from supervisr.core.models import Setting
@@ -41,13 +41,13 @@ class TestDecorators(TestCase):
         self.assertEqual(
             test_request(reauth_required(common.IndexView.as_view()),
                          user=self.system_user,
-                         session_data={REAUTH_KEY: time.time()}).status_code, 200)
+                         session_data={RE_AUTH_KEY: time.time()}).status_code, 200)
         # Test reauth with old time time
         self.assertEqual(
             test_request(reauth_required(common.IndexView.as_view()),
                          user=self.system_user,
-                         session_data={REAUTH_KEY: time.time() - REAUTH_MARGIN - 100}).status_code,
-            302)
+                         session_data={RE_AUTH_KEY: time.time() - RE_AUTH_MARGAIN - 100})
+            .status_code, 302)
 
     def test_ifapp(self):
         """Test ifapp decorator"""

@@ -134,9 +134,9 @@ class Progress(object):
 
 
 @CELERY_APP.task(bind=True)
-def stat_proxy(self, key, value):
+def stat_proxy(self, key, value, hints=None):
     """Handle statistic sending in a task"""
-    on_set_statistic.send(key=key, value=value, sender=self)
+    on_set_statistic.send(key=key, value=value, hints=hints, sender=self)
 
 
 @CELERY_APP.task(bind=True, base=SupervisrTask)

@@ -15,7 +15,7 @@ from django.utils.translation import ugettext as _
 from django.views import View
 
 from supervisr.core.decorators import anonymous_required
-from supervisr.core.models import UserAcquirable
+from supervisr.core.models import CastableModel, UserAcquirable
 
 
 class LoginRequiredMixin(View):
@@ -71,8 +71,8 @@ class GenericModelView(LoginRequiredMixin):
         """Get model instance. Here you can apply extra filters.
 
         By default we filter with the argument `pk` matching `pk`.
-        This method should return a QuerySet.
-        """
+        Default sorting is done by `pk`.
+        This method should return a QuerySet."""
         query = Q()
         if 'pk' in self.kwargs:
             query &= Q(pk=self.kwargs.get('pk'))
@@ -82,7 +82,7 @@ class GenericModelView(LoginRequiredMixin):
             query &= Q(users__in=[self.request.user])
 
         if query:
-            return self.model.filter(query)
+            return self.model.objects.filter(query).order_by('pk')
         raise NotImplementedError()
 
     def _redirect_helper(self, *args, **kwargs) -> HttpResponse:
@@ -150,6 +150,8 @@ class GenericReadView(GenericModelView):
     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle get request"""
         instance = get_object_or_404(self.get_instance())
+        if isinstance(instance, CastableModel):
+            instance = instance.cast()
         render_kwargs = self.update_kwargs({'instance': instance})
         return self.render(render_kwargs)
 
@@ -192,12 +194,16 @@ class GenericUpdateView(GenericModelView):
     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle Get request"""
         instance = get_object_or_404(self.get_instance())
+        if isinstance(instance, CastableModel):
+            instance = instance.cast()
         form = self.get_form(instance=instance)
         return self.render(form)
 
     def post(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle Post request"""
         instance = get_object_or_404(self.get_instance())
+        if isinstance(instance, CastableModel):
+            instance = instance.cast()
         form = self.get_form(request.POST, instance=instance)
         if form.is_valid():
             self.save(form)
@@ -223,11 +229,15 @@ class GenericDeleteView(GenericModelView):
     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle Get request"""
         instance = get_object_or_404(self.get_instance())
+        if isinstance(instance, CastableModel):
+            instance = instance.cast()
         return self.render(instance)
 
     def post(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle Post request"""
         instance = get_object_or_404(self.get_instance())
+        if isinstance(instance, CastableModel):
+            instance = instance.cast()
         if 'confirmdelete' in request.POST:
             instance.delete()
             messages.success(self.request, _('Successfully deleted %(verbose_name)s'

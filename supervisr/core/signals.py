@@ -60,7 +60,7 @@ get_module_health = RobustSignal(providing_args=[])
 on_search = RobustSignal(providing_args=['query', 'request'])
 
 # Set a statistic
-on_set_statistic = RobustSignal(providing_args=['key', 'value'])
+on_set_statistic = RobustSignal(providing_args=['key', 'value', 'hints'])
 
 
 @receiver(post_migrate)
@@ -84,9 +84,9 @@ def crypt6_handle_user_change_pass(signal, user, password, **kwargs):
 
 @receiver(on_set_statistic)
 # pylint: disable=unused-argument
-def stat_output_verbose(signal, key, value, **kwargs):
+def stat_output_verbose(signal, key, hints, value, **kwargs):
     """Output stats to LOGGER"""
-    LOGGER.debug("Stats: '%s': %r", key, value)
+    LOGGER.debug("Stats: '%s': %r (hints=%r)", key, value, hints)
 
 
 @receiver(post_save)
