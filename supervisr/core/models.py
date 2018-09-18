@@ -83,9 +83,36 @@ def get_system_user() -> 'User':
         return system_users.first()
     return None
 
+############################
+###
+### Abstract Models
+###
+############################
+
+
+class ProviderTriggerMixin(models.Model):
+    """Base class for all models that trigger Provider updates"""
+
+    @property
+    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
+        """Return all provider instances that should be triggered"""
+        raise NotImplementedError()
+
+    class Meta:
+        abstract = True
+
+
+class UUIDModel(models.Model):
+    """Abstract base model which uses a UUID as primary key"""
+
+    uuid = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+
+    class Meta:
+        abstract = True
+
 
 class CastableModel(models.Model):
-    """Base Model for Models using Inheritance to cast them"""
+    """Abstract Base Model for Models using Inheritance to cast them"""
 
     @time_method('CastableModel.cast')
     def cast(self):
@@ -171,8 +198,7 @@ class GlobalPermissionManager(models.Manager):
 
     def get_queryset(self):
         """Filter for us"""
-        return super(GlobalPermissionManager, self).\
-            get_queryset().filter(content_type__model='global_permission')
+        return super().get_queryset().filter(content_type__model='global_permission')
 
 
 class GlobalPermission(Permission):
@@ -189,11 +215,12 @@ class GlobalPermission(Permission):
             model=self._meta.verbose_name, app_label=self._meta.app_label,
         )
         self.content_type = ctype
-        super(GlobalPermission, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Setting(CreatedUpdatedModel):
     """Save key-value settings to db"""
+
     setting_id = models.AutoField(primary_key=True)
     key = models.CharField(max_length=255)
     namespace = models.CharField(max_length=255)
@@ -230,7 +257,7 @@ class Setting(CreatedUpdatedModel):
             return default
 
     def __str__(self):
-        return "Setting %s/%s" % (self.namespace, self.key)
+        return "%s/%s" % (self.namespace, self.key)
 
     @staticmethod
     def get(key: str, namespace='', default='', inspect_offset=1) -> str:
@@ -323,9 +350,9 @@ class Setting(CreatedUpdatedModel):
             return False
 
     def save(self, *args, **kwargs):
-        res = super(Setting, self).save(*args, **kwargs)
+        result = super().save(*args, **kwargs)
         on_setting_update.send(sender=self, setting=self)
-        return res
+        return result
 
     class Meta:
 
@@ -353,10 +380,8 @@ class Task(CreatedUpdatedModel):
         return "Task %s (invoker: %s)" % (self.task_uuid, self.invoker)
 
 
-class AccountConfirmation(CreatedUpdatedModel):
-    """
-    Save information about actions that need to be confirmed
-    """
+class AccountConfirmation(UUIDModel, CreatedUpdatedModel):
+    """Save information about actions that need to be confirmed"""
 
     KIND_SIGN_UP = 0
     KIND_PASSWORD_RESET = 1
@@ -365,7 +390,6 @@ class AccountConfirmation(CreatedUpdatedModel):
         (KIND_PASSWORD_RESET, _('Password Reset')),
     )
 
-    account_confirmation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     expires = models.BigIntegerField(default=expiry_date, editable=False)
     confirmed = models.BooleanField(default=False)
@@ -444,7 +468,7 @@ class UserAcquirableRelationship(models.Model):
         first_save = False
         if self.pk is None:
             first_save = True
-        super(UserAcquirableRelationship, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if first_save:
             # Trigger event that we were saved
             on_user_acquirable_relationship_created.send(
@@ -455,21 +479,7 @@ class UserAcquirableRelationship(models.Model):
         return "User '%s' <=> UserAcquirable '%s'" % (self.user, self.model.cast())
 
     class Meta:
-
         unique_together = (('user', 'model'),)
-
-
-class ProviderTriggerMixin(models.Model):
-    """Base class for all models that trigger Provider updates"""
-
-    @property
-    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
-        """Return all provider instances that should be triggered"""
-        raise NotImplementedError()
-
-    class Meta:
-
-        abstract = True
 
 
 class ProviderAcquirable(ProviderTriggerMixin, CastableModel):
@@ -510,6 +520,7 @@ class ProviderAcquirableSingle(ProviderTriggerMixin, CastableModel):
         """Return all provider instances that should be triggered"""
         yield self.provider_instance
 
+
 class ProviderAcquirableRelationship(models.Model):
     """Relationship between ProviderInstance and any Class subclassing ProviderAcquirable"""
 
@@ -525,11 +536,10 @@ class ProviderAcquirableRelationship(models.Model):
         unique_together = (('provider_instance', 'model'),)
 
 
-class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
+class Product(UUIDModel, CreatedUpdatedModel, UserAcquirable, CastableModel):
     """Information about the Main Product itself. This instances of this classes
     are assumed to be managed services."""
 
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     name = models.TextField()
     slug = models.SlugField(blank=True)
     description = models.TextField(blank=True)
@@ -554,7 +564,7 @@ class Product(CreatedUpdatedModel, UserAcquirable, CastableModel):
         # Auto generate slug
         self.slug = slugify(self.name)
 
-        super(Product, self).save(force_insert, force_update, using, update_fields)
+        super().save(force_insert, force_update, using, update_fields)
         if self.auto_all_add is True:
             # Since there is no better way to do the query other way roundd
             # We have to do it like this
