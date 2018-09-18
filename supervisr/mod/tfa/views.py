@@ -177,7 +177,6 @@ class TFASetupView(BaseWizardView):
             form.fields['tokens'].choices = tokens
         return form
 
-    # pylint: disable=unused-argument
     def finish(self, form_list):
         # Save device as confirmed
         self.totp_device.confirmed = True

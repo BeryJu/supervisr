@@ -47,28 +47,18 @@ def walk_m2m(root: Model,
         if prevent_duplicates and root in all_model_list:
             return
         # Check if model instance should be excluded or included
-        should_add = True
-        if exclude_classes and root.__class__ in exclude_classes:
-            should_add = False
-        if only_classes and root.__class__ not in only_classes:
-            should_add = False
-        if should_add:
+        if (exclude_classes and root.__class__ not in exclude_classes) or \
+                (only_classes and root.__class__ in only_classes):
             models.append(root)
         # Keep a second list with all models so we can check for duplicates,
         # even if class would normally be filtered out
         all_model_list.append(root)
         # Check if model instance requires further walking
         for field_name in get_walkable_field_names(root):
-            field = None
-            try:
-                field = getattr(root, field_name).all()
-            except AttributeError:
-                try:
-                    field = getattr(root, field_name+'_set').all()
-                except AttributeError:
-                    field = []
-            for field_rel in field:
-                walk(field_rel)
+            field = getattr(root, field_name, getattr(root, field_name + '_set', None))
+            if field:
+                for field_rel in field.all():
+                    walk(field_rel)
 
     walk(root)
     return models
