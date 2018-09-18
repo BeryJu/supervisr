@@ -48,7 +48,8 @@ def walk_m2m(root: Model,
             return
         # Check if model instance should be excluded or included
         if (exclude_classes and root.__class__ not in exclude_classes) or \
-                (only_classes and root.__class__ in only_classes):
+                (only_classes and root.__class__ in only_classes) or \
+                (only_classes == exclude_classes == []):
             models.append(root)
         # Keep a second list with all models so we can check for duplicates,
         # even if class would normally be filtered out
