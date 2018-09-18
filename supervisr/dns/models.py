@@ -94,12 +94,20 @@ class ReverseZone(BaseZone, ProviderAcquirable, UserAcquirable):
         return self.zone_ip
 
 
-class BaseRecord(UserAcquirable):
+class BaseRecord(UserAcquirable, ProviderTriggerMixin):
     """Base DNS Record"""
 
     name = models.TextField()
     enabled = models.BooleanField(default=True)
     uuid = models.UUIDField(default=uuid4)
+
+    @property
+    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
+        """Return all provider instances that should be triggered"""
+        from supervisr.core.utils.models import walk_m2m
+        for zone in walk_m2m(self.cast(), only_classes=[Zone]):
+            for provider in zone.provider_instances:
+                yield provider
 
     def __str__(self):
         if self.cast() != self:
@@ -107,36 +115,22 @@ class BaseRecord(UserAcquirable):
         return self.name
 
 
-class SetRecord(BaseRecord, ProviderTriggerMixin):
+class SetRecord(BaseRecord):
     """DNS Record pointing to a collection of other Records. Can be recursive."""
 
     append_name = models.BooleanField(default=False)
     records = models.ManyToManyField('BaseRecord', blank=True, related_name='set')
 
-    @property
-    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
-        """Return all provider instances that should be triggered"""
-        raise NotImplementedError()
-
     def __str__(self):
         return "Set %s" % self.name
 
-class DataRecord(BaseRecord, ProviderTriggerMixin):
+class DataRecord(BaseRecord):
     """DNS Record pointing to a single Address/"""
 
     type = models.CharField(max_length=10, choices=RECORD_TYPES)
     content = models.TextField()
     ttl = models.IntegerField(default=3600)
     priority = models.IntegerField(default=0)
-
-    @property
-    def provider_instances(self) -> Generator['ProviderInstance', None, None]:
-        """Return all provider instances that should be triggered"""
-        # for resource_set in self.resourceset_set.all():
-        #     for record in resource_set.record_set.all():
-        #         for provider in record.record_zone.provider_instances:
-        #             yield provider
-        raise NotImplementedError()
 
     def __str__(self):
         return "%s (type=%s content=%s)" % (self.name, self.type, self.content)

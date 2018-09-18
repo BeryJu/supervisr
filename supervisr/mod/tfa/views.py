@@ -178,7 +178,7 @@ class TFASetupView(BaseWizardView):
         return form
 
     # pylint: disable=unused-argument
-    def done(self, final_forms, **kwargs):
+    def finish(self, form_list):
         # Save device as confirmed
         self.totp_device.confirmed = True
         self.totp_device.save()
