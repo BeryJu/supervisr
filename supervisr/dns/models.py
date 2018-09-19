@@ -1,12 +1,12 @@
 """Supervisr DNS Models"""
 from ipaddress import ip_address
 from typing import Generator
-from uuid import uuid4
 
 from django.db import models
 
 from supervisr.core.models import (CastableModel, Domain, ProviderAcquirable,
-                                   ProviderTriggerMixin, UserAcquirable)
+                                   ProviderTriggerMixin, UserAcquirable,
+                                   UUIDModel)
 
 # imported from powerdns
 RECORD_TYPES = (
@@ -51,7 +51,7 @@ RECORD_TYPES = (
 )
 
 
-class BaseZone(CastableModel):
+class BaseZone(UUIDModel, CastableModel):
     """Base Zone fields"""
 
     soa_mname = models.TextField()
@@ -63,7 +63,6 @@ class BaseZone(CastableModel):
     soa_ttl = models.IntegerField(default=172800)
     enabled = models.BooleanField(default=True)
     records = models.ManyToManyField('BaseRecord', blank=True)
-    uuid = models.UUIDField(default=uuid4)
 
     class Meta:
 
@@ -94,12 +93,11 @@ class ReverseZone(BaseZone, ProviderAcquirable, UserAcquirable):
         return self.zone_ip
 
 
-class BaseRecord(UserAcquirable, ProviderTriggerMixin):
+class BaseRecord(UUIDModel, UserAcquirable, ProviderTriggerMixin):
     """Base DNS Record"""
 
     name = models.TextField()
     enabled = models.BooleanField(default=True)
-    uuid = models.UUIDField(default=uuid4)
 
     @property
     def provider_instances(self) -> Generator['ProviderInstance', None, None]:

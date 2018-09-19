@@ -18,7 +18,7 @@ from django.http import HttpRequest
 from django.template import Context, Template, loader
 
 from supervisr.core.apps import SupervisrAppConfig, SupervisrCoreConfig
-from supervisr.core.logger import SUCCESS
+from supervisr.core.utils.logger import SUCCESS
 
 LOGGER = logging.getLogger(__name__)
 

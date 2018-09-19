@@ -63,10 +63,6 @@ class GenericModelView(LoginRequiredMixin):
         if self.model_verbose_name == '':
             self.model_verbose_name = self.model._meta.verbose_name.title()
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
     def get_instance(self) -> QuerySet:
         """Get model instance. Here you can apply extra filters.
 

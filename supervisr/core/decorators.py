@@ -16,8 +16,8 @@ from django.utils.functional import wraps
 from django.utils.http import urlencode
 from django.utils.translation import ugettext_lazy as _
 
-from supervisr.core.statistics import stat_set
 from supervisr.core.utils import get_apps
+from supervisr.core.utils.statistics import set_statistic
 
 RE_AUTH_KEY = getattr(settings, 'RE_AUTH_KEY', 'supervisr_require_re_auth_done')
 RE_AUTH_MARGAIN = getattr(settings, 'RE_AUTH_MARGAIN', 300)
@@ -110,7 +110,7 @@ def time(statistic_key):
             result = method(*args, **kwargs)
             time_end = datetime.now()
             delta = time_end - time_start
-            stat_set(statistic_key, delta.total_seconds() * 1000, unit='millisecond')
+            set_statistic(statistic_key, delta.total_seconds() * 1000, unit='millisecond')
             return result
         return timer
     return outer_wrapper
