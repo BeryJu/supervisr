@@ -6,7 +6,8 @@ from typing import Generator
 
 from django.utils.translation import ugettext_lazy as _
 
-from supervisr.core.models import EmptyCredential, Setting
+from supervisr.core.models import (EmptyCredential, ProviderTriggerMixin,
+                                   Setting)
 from supervisr.core.providers.base import BaseProvider, ProviderMetadata
 from supervisr.core.providers.objects import (ProviderObject,
                                               ProviderObjectTranslator,
@@ -20,7 +21,10 @@ class DebugObject(ProviderObject):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.sleep_duration = Setting.get_int('sleep_duration')
+        try:
+            self.sleep_duration = Setting.get_int('sleep_duration')
+        except ValueError:
+            self.sleep_duration = 10
 
     def save(self, **kwargs) -> ProviderResult:
         LOGGER.debug('Sleeping %ss', self.sleep_duration)
@@ -54,7 +58,9 @@ class DebugProvider(BaseProvider):
         return True
 
     def get_translator(self, data_type) -> ProviderObjectTranslator:
-        return DebugTranslator
+        if issubclass(data_type, ProviderTriggerMixin):
+            return DebugTranslator
+        return super().get_translator(data_type)
 
     def get_provider(self, data_type) -> BaseProvider:
         return None

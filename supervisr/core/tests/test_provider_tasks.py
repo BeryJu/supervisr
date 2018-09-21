@@ -49,8 +49,7 @@ class TestProviderTasks(TestCase):
         self.assertEqual(provider_resolve_helper(
             self.provider.pk, user_path, self.system_user.pk), [])
 
-    @patch('supervisr.mod.provider.debug.providers.translators.core_domain.'
-           'DebugDomainTranslator.to_external')
+    @patch('supervisr.mod.provider.debug.providers.core.DebugTranslator.to_external')
     def test_resolve_helper_fail(self, to_external):
         """Test provider_resolve_helper (throwing error)"""
         to_external.side_effect = RuntimeError('testing')
@@ -63,20 +62,20 @@ class TestProviderTasks(TestCase):
         """Test provider_do_work"""
         # Emulate new model created
         # pylint: disable=no-value-for-parameter
-        self.assertEqual(provider_do_work(
+        result_1 = provider_do_work(
             ProviderAction.SAVE, self.provider.pk, self.domain_path, self.domain.pk,
-            created=True, invoker=self.system_user.pk),
-                         ProviderResult.SUCCESS)
+            created=True, invoker=self.system_user.pk)
+        self.assertIn(self.provider.pk, result_1)
+        self.assertEqual(result_1[self.provider.pk][0][1], ProviderResult.SUCCESS)
         # Emulate delete
         # pylint: disable=no-value-for-parameter
-        self.assertEqual(provider_do_work(
+        result_2 = provider_do_work(
             ProviderAction.DELETE, self.provider.pk, self.domain_path,
-            self.domain.pk, invoker=self.system_user.pk),
-                         ProviderResult.SUCCESS)
+            self.domain.pk, invoker=self.system_user.pk)
+        self.assertEqual(result_1, result_2)
 
     @patch('supervisr.core.providers.tasks.provider_do_work.retry')
-    @patch('supervisr.mod.provider.debug.providers.translators.core_domain.'
-           'DebugDomainObject.save')
+    @patch('supervisr.mod.provider.debug.providers.core.DebugObject.save')
     @patch('supervisr.core.tasks.ProgressRecorder.set')
     # pylint: disable=unused-argument
     def test_provider_do_work_retry(self, progress_set, save, task_retry):
@@ -91,8 +90,7 @@ class TestProviderTasks(TestCase):
                              self.domain_path, self.domain.pk,
                              created=True, invoker=self.system_user.pk)
 
-    @patch('supervisr.mod.provider.debug.providers.translators.core_domain.'
-           'DebugDomainObject.save')
+    @patch('supervisr.mod.provider.debug.providers.core.DebugObject.save')
     @patch('supervisr.core.tasks.ProgressRecorder.set')
     # pylint: disable=unused-argument
     def test_provider_do_work_ignore(self, progress_set, save):

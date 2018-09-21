@@ -1,4 +1,8 @@
 """supervisr core multiplexer tests"""
+from unittest.mock import patch
+
+from celery.result import GroupResult
+
 from supervisr.core.models import Domain
 from supervisr.core.providers.multiplexer import ProviderMultiplexer
 from supervisr.core.providers.objects import ProviderAction
@@ -20,12 +24,15 @@ class TestProviderMultiplexer(TestCase):
     def test_multiplexer(self):
         """Test ProviderMultiplexer"""
         multiplexer = ProviderMultiplexer()
-        self.assertEqual(multiplexer.run(ProviderAction.SAVE, self.domain_path,
-                                         self.domain.pk, invoker=self.system_user.pk), 1)
+        self.assertIsInstance(multiplexer.run(ProviderAction.SAVE, self.domain_path,
+                                              self.domain.pk, invoker=self.system_user.pk),
+                              GroupResult)
 
-    def test_get_translator(self):
+    @patch('supervisr.mod.provider.debug.providers.core.DebugTranslator.to_external')
+    def test_get_translator(self, to_external):
         """Test `ProviderMultiplexer`.`get_translator`"""
+        to_external.return_value = None
         multiplexer = ProviderMultiplexer()
         self.assertIsNone(
-            multiplexer.get_translator(self.domain, self.domain.provider_instance.provider,
+            multiplexer.get_translator(self.system_user, self.domain.provider_instance.provider,
                                        iteration=100))
