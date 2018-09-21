@@ -44,7 +44,7 @@
       data-ctx-trash="{% url 'supervisr_dns:zone-delete' zone_uuid=zone.uuid %}?back={{ request.get_full_path }}">
       <td>{{ zone.domain }}</td>
       <td>{{ zone.users.all|join:"," }}</td>
-      <td>{{ zone.record_set.all|length }}</td>
+      <td>{{ zone.records.all|length }}</td>
       <td>{{ zone.providers.all|join:"," }}</td>
       <td>{{ zone.enabled }}</td>
     </tr>
