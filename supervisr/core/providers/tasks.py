@@ -2,7 +2,6 @@
 from logging import getLogger
 from typing import Iterable
 
-from celery import states
 from celery.exceptions import Ignore
 from django.core.exceptions import MultipleObjectsReturned
 from django.db.models import Model
@@ -78,9 +77,8 @@ def provider_do_work(self, action: ProviderAction, provider_pk: int,
         raise self.retry(args=[action, provider_pk, model, model_pk], kwargs=kwargs,
                          countdown=2 ** self.request.retries)
     except SupervisrProviderException as exc:
-        self.update_state(
-            state=states.FAILURE,
-            meta=str(exc)
-        )
+        # self.update_state(
+        #     state=states.FAILURE,
+        #     meta={'error': str(exc)})
         # ignore the task so no other state is recorded
         raise Ignore()

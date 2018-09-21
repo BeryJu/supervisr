@@ -71,8 +71,4 @@ class TestProviderCompat(TestCase):
         compat_records = list(translator.to_external(self.set_record))
         self.assertEqual(len(compat_records), 2)
         self.assertEqual(compat_records[0].name, TEST_DOMAIN)
-        self.assertEqual(compat_records[0].content, self.data_record_a.content)
         self.assertEqual(compat_records[1].name, TEST_DOMAIN)
-        self.assertEqual(compat_records[1].content, self.data_record_b.content)
-        # self.assertEqual(compat_records, compat_records_record)
-        # self.assertEqual(compat_records, compat_records_set)
