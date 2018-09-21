@@ -18,7 +18,7 @@ class LCloudRecordObject(ProviderObject):
     type = None
     ttl = None
 
-    def save(self, created: bool):
+    def save(self, **kwargs) -> ProviderResult:
         """Save this instance"""
         try:
             pass
@@ -36,7 +36,7 @@ class LCloudRecordObject(ProviderObject):
             raise ProviderRetryException from exc
         return ProviderResult.SUCCESS
 
-    def delete(self):
+    def delete(self, **kwargs) -> ProviderResult:
         """Delete this instance"""
         try:
             # _zone = None

@@ -25,10 +25,10 @@ class LCloudZoneObject(ProviderObject):
     type = None
     ttl = None
 
-    def save(self, created: bool):
+    def save(self, **kwargs) -> ProviderResult:
         """Save this instance"""
         try:
-            if created:
+            if 'created' in kwargs:
                 extra = TYPE_FIXES.get(self.translator.provider_instance.driver.type, {})
                 self.translator.provider_instance.driver.create_zone(
                     domain=self.name,
@@ -47,7 +47,7 @@ class LCloudZoneObject(ProviderObject):
             raise ProviderRetryException from exc
         return ProviderResult.SUCCESS
 
-    def delete(self):
+    def delete(self, **kwargs) -> ProviderResult:
         """Delete this instance"""
         try:
             _zone = None

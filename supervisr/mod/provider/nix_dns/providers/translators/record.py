@@ -25,7 +25,7 @@ class PowerDNSRecordObject(ProviderObject):
             raise ProviderObjectNotFoundException()
         self.domain = domains.first()
 
-    def save(self, created: bool) -> ProviderResult:
+    def save(self, **kwargs) -> ProviderResult:
         """Save this instance"""
         LOGGER.debug("About to create %s (type=%s, content=%s)",
                      self.internal.name, self.internal.type, self.internal.content)
@@ -42,7 +42,7 @@ class PowerDNSRecordObject(ProviderObject):
             return ProviderResult.SUCCESS_UPDATED
         return ProviderResult.SUCCESS_CREATED
 
-    def delete(self) -> ProviderResult:
+    def delete(self, **kwargs) -> ProviderResult:
         """Delete this instance"""
         LOGGER.debug("About to delete %s (type=%s, content=%s)",
                      self.internal.name, self.internal.type, self.internal.content)

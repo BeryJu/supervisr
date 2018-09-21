@@ -14,23 +14,19 @@ class PowerDNSZoneObject(ProviderObject):
 
     account = None
 
-    def save(self, created: bool) -> ProviderResult:
+    def save(self, **kwargs) -> ProviderResult:
         """Save this instance"""
         _obj, updated = PDNSDomain.objects.update_or_create(
-            pk=self.id,
-            defaults={
-                'name': self.name,
-                'account': self.account
-            })
+            name=self.name)
         # TODO: Create SOA Record here
         if updated:
             return ProviderResult.SUCCESS_UPDATED
         return ProviderResult.SUCCESS_CREATED
 
-    def delete(self) -> ProviderResult:
+    def delete(self, **kwargs) -> ProviderResult:
         """Delete this instance"""
         # TODO: Delete SOA Record here
-        existing = PDNSDomain.objects.filter(name=self.name, pk=self.id)
+        existing = PDNSDomain.objects.filter(name=self.name)
         if not existing.exists():
             raise ProviderObjectNotFoundException()
         existing.first().delete()
@@ -44,6 +40,5 @@ class PowerDNSZoneTranslator(ProviderObjectTranslator[Zone]):
         """Convert Zone to Domain"""
         yield PowerDNSZoneObject(
             translator=self,
-            id=internal.pk,
             name=internal.domain.domain_name
         )
