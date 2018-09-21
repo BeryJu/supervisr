@@ -1,0 +1,90 @@
+{
+    "builders": [
+        {
+            "name": "supervisr-debian",
+            "type": "vmware-iso",
+            "guest_os_type": "debian9-64",
+            "tools_upload_flavor": "linux",
+            "iso_url": "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-9.5.0-amd64-netinst.iso",
+            "iso_checksum_url": "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/SHA512SUMS",
+            "iso_checksum_type": "sha512",
+            "ssh_port": 22,
+            "ssh_timeout": "15m",
+            "ssh_username": "appliance",
+            "ssh_password": "b3ryju0rg!",
+            "ssh_wait_timeout": "30m",
+            "disk_size": "15000",
+            "http_directory": "http",
+            "vnc_disable_password": true,
+
+            "remote_type": "esx5",
+            "remote_host": "{{user `esxi_host`}}",
+            "remote_password": "{{user `esxi_pass`}}",
+            "remote_username": "root",
+            "remote_datastore": "{{user `esxi_storage`}}",
+
+            "boot_command": [
+                "<esc><wait>",
+                "install <wait>",
+                "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed <wait>",
+                "debian-installer=en_US.UTF-8 <wait>",
+                "auto <wait>",
+                "locale=en_US.UTF-8 <wait>",
+                "kbd-chooser/method=us <wait>",
+                "keyboard-configuration/xkb-keymap=us <wait>",
+                "fb=false <wait>",
+                "debconf/frontend=noninteractive <wait>",
+                "netcfg/get_hostname=supervisr <wait>",
+                "netcfg/get_domain=beryju.org <wait>",
+                "console-setup/ask_detect=false <wait>",
+                "console-keymaps-at/keymap=us <wait>",
+                "grub-installer/bootdev=/dev/sda <wait>",
+                "<enter><wait>"
+            ],
+            "boot_wait": "5s",
+            "shutdown_command": "echo 'b3ryju0rg!' | sudo -S poweroff",
+            "vmx_data": {
+                "memsize": "4096",
+                "numvcpus": "2",
+                "sound.present": "FALSE",
+                "ethernet0.networkName": "LAN"
+            },
+            "format": "ova",
+            "ovftool_options": [
+                "--noImageFiles"
+            ]
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "execute_command": "echo 'b3ryju0rg!' | sudo -S sh -c '{{ .Vars }} {{ .Path }}'",
+            "inline": [
+                "wget https://apt.puppetlabs.com/puppetlabs-release-pc1-stretch.deb",
+                "dpkg -i puppetlabs-release-pc1-stretch.deb",
+                "apt-get update",
+                "apt-get install puppet-agent apt-transport-https",
+                "echo 'appliance ALL=(ALL)  NOPASSWD:ALL' >> /etc/sudoers.d/build-nopasswd-temp"
+            ]
+        },
+        {
+            "type": "puppet-masterless",
+            "manifest_file": "site.pp",
+            "module_paths": "puppet/",
+            "puppet_bin_dir": "/opt/puppetlabs/puppet/bin/"
+        },
+        {
+            "type": "shell",
+            "execute_command": "echo 'b3ryju0rg!' | sudo -S sh -c '{{ .Vars }} {{ .Path }}'",
+            "inline": [
+                "rm -f /etc/sudoers.d/build-nopasswd-temp"
+            ]
+        }
+    ],
+    "variables": {
+        "ssh_public_key_path": "~/.ssh/id_rsa.pub",
+        "esxi_host": "{{env `ESXI_HOST`}}",
+        "esxi_pass": "{{env `ESXI_PASS`}}",
+        "esxi_storage": "{{env `ESXI_STORAGE`}}"
+    }
+}

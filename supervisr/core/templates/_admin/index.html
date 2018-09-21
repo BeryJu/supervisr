@@ -1,12 +1,10 @@
 {% extends "_admin/base.html" %}
 
-{% load supervisr_title %}
-{% load supervisr_setting %}
+{% load supervisr_utils %}
 {% load i18n %}
-{% load setting %}
 
 {% block title %}
-{% supervisr_title "Overview - Administrator" %}
+{% title "Overview - Administrator" %}
 {% endblock %}
 
 {% block content %}
@@ -29,12 +27,26 @@
       <tbody>
         <tr>
           <td>{% trans 'Version' %}</td>
-          <td>{% setting 'VERSION_HASH' %}</td>
+          <td>{% setting 'VERSION' %}</td>
         </tr>
         <tr>
           <td>{% trans 'Install ID' %}</td>
           <td>{% supervisr_setting 'install_id' %}</td>
         </tr>
+      </tbody>
+    </table>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>{% trans 'Celery Workers' %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for worker in celery_workers %}
+        <tr>
+          <td>{{ worker }}</td>
+        </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>

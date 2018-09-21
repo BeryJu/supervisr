@@ -1,6 +1,4 @@
-"""
-Supervisr Puppet Module Builder
-"""
+"""Supervisr Puppet Module Builder"""
 import glob
 import gzip
 import io
@@ -15,19 +13,21 @@ from django.contrib.auth.models import Group
 from django.core.files import File
 from django.template import loader
 
+from supervisr.core.celery import CELERY_APP
+from supervisr.core.decorators import time
 from supervisr.core.models import User
-from supervisr.core.utils import time
+from supervisr.core.tasks import SupervisrTask
 from supervisr.puppet.models import PuppetModuleRelease
 from supervisr.puppet.utils import ForgeImporter
 
 LOGGER = logging.getLogger(__name__)
 
-# pylint: disable=too-many-instance-attributes
-class ReleaseBuilder(object):
-    """
-    Class to build PuppetModuleRelease's in Memory from files and templates
-    """
 
+# pylint: disable=too-many-instance-attributes
+class ReleaseBuilder(SupervisrTask):
+    """Class to build PuppetModuleRelease's in Memory from files and templates"""
+
+    name = 'supervisr.puppet.builder.ReleaseBuilder'
     module = None
     base_dir = None
     version = None
@@ -38,8 +38,8 @@ class ReleaseBuilder(object):
     _tgz_file = None
     _release = None
 
-    def __init__(self, module, version=None):
-        super(ReleaseBuilder, self).__init__()
+    def set_module(self, module, version=None):
+        """Initialise this class with module. Optionally set new version to be built"""
         self.module = module
         if self.module.source_path:
             self.base_dir = self.module.source_path
@@ -61,12 +61,10 @@ class ReleaseBuilder(object):
         self._spooled_tgz_file = io.BytesIO()
         self._tgz_file = tarfile.TarFile(mode='w', fileobj=self._spooled_tgz_file)
         self._root_dir = '%s-%s-%s' % (module.owner.username.lower(), module.name, self.version)
-        LOGGER.info('Building %s', self._root_dir)
+        LOGGER.debug('Building %s', self._root_dir)
 
     def make_context(self, context):
-        """
-        Add a few variables to the context
-        """
+        """Add a few variables to the context"""
         context.update({
             'PUPPET': {
                 'module': self.module,
@@ -75,13 +73,11 @@ class ReleaseBuilder(object):
             'settings': conf.settings,
             'puppet_systemgroup': Group.objects.get(name='Puppet Systemusers'),
             'User': User.objects,
-            })
+        })
         return context
 
     def to_tarinfo(self, template, ctx, rel_path):
-        """
-        Convert text to a in-memory file/tarinfo
-        """
+        """Convert text to a in-memory file/tarinfo"""
         # First off render the template
         # Convert it to bytes, create a TarInfo object and add it to the main archive
         byteio = io.BytesIO(self.render_template(template, ctx).encode('utf-8'))
@@ -93,9 +89,7 @@ class ReleaseBuilder(object):
 
     @staticmethod
     def validate_json(body):
-        """
-        Return True if body is valid JSON, else raise Exception
-        """
+        """Return True if body is valid JSON, else raise Exception"""
         try:
             json.loads(body)
             return True
@@ -105,21 +99,18 @@ class ReleaseBuilder(object):
 
     @time(statistic_key='puppet.builder.import_deps')
     def import_deps(self):
-        """
-        Import dependencies for release
-        """
+        """Import dependencies for release"""
         if not self._release:
             return False
         dependencies = json.loads(self._release.metadata)['dependencies']
         importer = ForgeImporter()
         for module in dependencies:
-            importer.import_module(module['name'])
-        LOGGER.info('Imported dependencies for %s', self._root_dir)
+            importer.delay(module['name'])
+        LOGGER.debug('Imported dependencies for %s', self._root_dir)
+        return True
 
     def render_template(self, path, context=None, check_json=True):
-        """
-        Render template and return as string
-        """
+        """Render template and return as string"""
         LOGGER.debug("About to render '%s' for puppet", path)
         if not context:
             context = self.make_context({})
@@ -128,14 +119,12 @@ class ReleaseBuilder(object):
         # If it's a json file now, check if it's valid
         if path.endswith('.json') and check_json:
             self.validate_json(rendered)
-            LOGGER.info('Successfully validated %s', path)
+            LOGGER.debug('Successfully validated %s', path)
         return rendered
 
     @time(statistic_key='puppet.builder.build')
-    def build(self, context=None, db_add=True, force_rebuild=False):
-        """
-        Copy non-templates into tar, render templates into tar and import into django
-        """
+    def run(self, context=None, db_add=True, force_rebuild=False):
+        """Copy non-templates into tar, render templates into tar and import into django"""
         files = glob.glob('%s/**' % self.base_dir, recursive=True)
         if context is None:
             context = {}
@@ -147,7 +136,7 @@ class ReleaseBuilder(object):
                 self._tgz_file.add(file, arcname=arc_path, recursive=False)
             else:
                 self.to_tarinfo(file, _context, arc_path)
-            LOGGER.info('Added %s', arc_path)
+            LOGGER.debug('Added %s', arc_path)
 
         # Flush to file buffer
         self._tgz_file.close()
@@ -163,13 +152,16 @@ class ReleaseBuilder(object):
             with NamedTemporaryFile(dir=module_dir, suffix='.tgz', prefix=prefix) as temp_file:
                 temp_file.write(gzipped)
                 temp_file.seek(0, io.SEEK_SET)
-                LOGGER.info("Target filename: %s", temp_file.name)
+                LOGGER.debug("Target filename: %s", temp_file.name)
                 # Create the module in the db and write it to disk
                 self._release = PuppetModuleRelease.objects.create(
                     module=self.module,
                     version=self.version,
                     release=File(temp_file))
         elif force_rebuild is True:
-            with open(prefix+'.tgz', mode='w+b') as file:
+            with open(prefix + '.tgz', mode='w+b') as file:
                 file.write(gzipped)
-                LOGGER.info("Wrote module to %s", prefix+'.tgz')
+                LOGGER.debug("Wrote module to %s", prefix + '.tgz')
+
+
+CELERY_APP.tasks.register(ReleaseBuilder())

@@ -1,6 +1,4 @@
-"""
-Supervisr API Urls
-"""
+"""Supervisr API Urls"""
 
 import importlib
 import inspect
@@ -14,9 +12,17 @@ from django.conf.urls import include, url
 
 LOGGER = logging.getLogger(__name__)
 
+
 def auto_discover():
     """Automatically discover API modules and return urlpatterns for them"""
     urlpatterns = []
+    # We need this local_base_dir for non-packaged modules
+    # This gets the absolute path to three directories up
+    # since this should be called from $root/api/urls.py
+    local_base_dir = os.path.dirname(
+        os.path.dirname(
+            os.path.dirname(
+                os.path.abspath(inspect.getmodule(inspect.stack()[1][0]).__file__))))
     urls_module = inspect.getmodule(inspect.stack()[1][0]).__name__
     # Get the base API module
     base = importlib.import_module('.'.join(urls_module.split('.')[:-1]))
@@ -31,11 +37,17 @@ def auto_discover():
                                  .replace('./', '') \
                                  .replace('.py', '') \
                                  .replace(settings.BASE_DIR, 'supervisr') \
+                                 .replace(local_base_dir, '') \
                                  .replace(os.sep, '.')
+        # Since absolute paths start with a /, which gets converted to a
+        # dot above, we need to remove this here to make it a non-relative
+        # import
+        if module_path[0] == '.':
+            module_path = module_path[1:]
         # This is just a sanity check to see if the module is importable
         importlib.import_module(module_path)
-        version_name = module_path.split('.')[-2] # get the second last module name (version)
-        namespace = '/'.join(module_path.split('.')[:-1])
+        version_name = module_path.split('.')[-2]  # get the second last module name (version)
+        namespace = '_'.join(module_path.split('.')[:-1])
         urlpatterns.append(url('%s/' % version_name, include((module_path, namespace),
                                                              namespace=namespace)))
         # get numerical api version to determine default

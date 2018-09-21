@@ -1,41 +1,29 @@
-"""
-Supervisr DNS r1 Record API
-"""
-from django.http import HttpResponse
+"""Supervisr DNS v1 Record API"""
+from django.http import HttpRequest, HttpResponse
 
-from supervisr.core.api.models import ProductAPI
+from supervisr.core.api.models import UserAcquirableModelAPI
 from supervisr.core.decorators import logged_in_or_basicauth
 from supervisr.core.utils import get_remote_ip
-from supervisr.dns.forms.records import RecordForm
-from supervisr.dns.models import Record, Zone
+from supervisr.dns.api.utils import BadAuthResponse, GoodResponse
+from supervisr.dns.forms.records import DataRecordForm
+from supervisr.dns.models import DataRecord
 
 
-class RecordAPI(ProductAPI):
-    """
-    Record API
-    """
-    model = Record
-    form = RecordForm
+class RecordAPI(UserAcquirableModelAPI):
+    """Record API"""
+    model = DataRecord
+    form = DataRecordForm
+
 
 @logged_in_or_basicauth('Supervisr DNS Update')
-def dyndns_update(req, zone, record):
-    """
-    Update DNS entry, but with basic auth
-    """
-    zones = Zone.objects.filter(domain__domain=zone, users__in=[req.user])
-    if not zones.exists():
-        return HttpResponse('bad auth')
-    r_zone = zones.first()
-
-    records = Record.objects.filter(domain=r_zone, name=record, type='A')
+def dyndns_update(request: HttpRequest, record_uuid: str) -> HttpResponse:
+    """Update DNS entry, but with basic auth"""
+    records = DataRecord.objects.filter(uuid=record_uuid, users__in=[request.user])
     if not records.exists():
-        return HttpResponse('nohost')
-    r_record = records.first()
+        return BadAuthResponse()
 
-    remote = get_remote_ip(req)
-    if r_record.content == remote:
-        return HttpResponse("nochg %s" % remote)
+    record = records.first()
+    record.content = get_remote_ip(request)
+    record.save()
 
-    r_record.content = remote
-    r_record.save()
-    return HttpResponse("ok")
+    return GoodResponse()

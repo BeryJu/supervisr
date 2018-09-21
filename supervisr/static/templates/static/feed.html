@@ -2,10 +2,10 @@
 
 {% load i18n %}
 {% load markdown %}
-{% load supervisr_title %}
+{% load supervisr_utils %}
 
 {% block title %}
-  {% supervisr_title 'Feed' %}
+  {% title 'Feed' %}
 {% endblock %}
 
 {% block content %}
@@ -13,7 +13,7 @@
   {% for page in pages %}
     <div class="card">
       <div class="card-header">
-        <h1><a href="{% url 'supervisr/static:page-view' slug=page.slug %}">{{ page.title }}</a></h1>
+        <h1><a href="{% url 'supervisr_static:page-view' slug=page.slug %}">{{ page.title }}</a></h1>
       </div>
       <div class="card-block">
         <div class="card-title">
@@ -30,7 +30,7 @@
       </div>
     </div>
   {% endfor %}
-  {% include 'blocks/block_pagination.html' %}
+  {% include 'blocks/pagination.html' %}
 </div>
 {% endblock %}
 

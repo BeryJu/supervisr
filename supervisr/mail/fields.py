@@ -1,6 +1,4 @@
-"""
-Supervisr Mail MultiEmail Field (based on Textarea)
-"""
+"""Supervisr Mail MultiEmail Field (based on Textarea)"""
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -9,9 +7,8 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class MultiEmailField(forms.Field):
-    """
-    Email field for multiple emails
-    """
+    """Email field for multiple emails"""
+
     message = _('Enter valid email addresses.')
     code = 'invalid'
     widget = Textarea

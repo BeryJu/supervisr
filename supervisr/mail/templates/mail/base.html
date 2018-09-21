@@ -1,28 +1,22 @@
 {% extends "core/base.html" %}
 
 {% load i18n %}
-{% load related_products %}
-{% load is_active %}
-{% load is_active_url %}
+{% load supervisr_utils %}
+{% load supervisr_is_active %}
 
 {% block sidenav %}
 <nav class="sidenav clr-nav-level-2">
   <section class="sidenav-content">
     <section class="nav-group">
-      <a href="{% url 'supervisr/mail:mail-index' %}" class="nav-link {% is_active 'mail-index' %}">{% trans "Domains" %}</a>
+      <a href="{% url 'supervisr_mail:index' %}" class="nav-link {% is_active 'index' %}">{% trans "Domains" %}</a>
       <ul class="nav-list">
-        {% related_products 'supervisr.mail.models.MailDomain' as domains %}
+        {% related_models 'supervisr.mail.models.MailDomain' as domains %}
         {% for domain in domains %}
-        <li><a href="{% url 'supervisr/mail:mail-domain-view' domain=domain.domain.domain %}" class="nav-link {% is_active_url 'supervisr/mail:mail-domain-view' domain.domain.domain %}">{{ domain.domain.domain }}</a></li>
+        <li><a href="{% url 'supervisr_mail:domain-view' domain=domain.domain.domain_name %}" class="nav-link {% is_active_url 'supervisr_mail:domain-view' domain=domain.domain.domain_name %}">{{ domain.domain.domain_name }}</a></li>
         {% endfor %}
       </ul>
     </section>
-    <a href="{% url 'supervisr/mail:mail-account-index' %}" class="nav-link {% is_active 'mail-account-index' %}">
-    {% trans "All Accounts" %}
-    </a>
-    <a href="{% url 'supervisr/mail:mail-alias-index' %}" class="nav-link {% is_active 'mail-alias-index' %}">
-    {% trans "All Aliases" %}
-    </a>
   </section>
+  {% include 'blocks/sidebar_footer.html' %}
 </nav>
 {% endblock %}

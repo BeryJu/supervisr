@@ -1,16 +1,12 @@
-"""
-Supervisr DNS r1 Zone API
-"""
+"""Supervisr DNS v1 Zone API"""
 
-from supervisr.core.api.models import ProductAPI
+from supervisr.core.api.models import UserAcquirableModelAPI
 from supervisr.dns.forms.zones import ZoneForm
 from supervisr.dns.models import Zone
 
 
-class ZoneAPI(ProductAPI):
-    """
-    Zone API
-    """
+class ZoneAPI(UserAcquirableModelAPI):
+    """Zone API"""
 
     model = Zone
     form = ZoneForm

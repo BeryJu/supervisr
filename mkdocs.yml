@@ -8,6 +8,38 @@ repo_url: 'https://git.beryju.org/BeryJu.org/supervisr'
 
 copyright: 'Copyright &copy; 2017-2018 BeryJu.org'
 
+nav:
+  - Home: 'index.md'
+  - 'API':
+    - 'OAuth 2': 'API/OAuth 2.md'
+  - 'Extending Supervisr':
+    - 'Creating a module': 'extending_supervisr/creating_a_module.md'
+    - 'Overwriting settings': 'extending_supervisr/overwriting_settings.md'
+    - 'UI integration': 'extending_supervisr/ui_integration.md'
+  - 'FAQ':
+    - 'MySQL':
+      - 'Index size': 'faq/mysql/index_size.md'
+    - "error'str' object has no attribute 'tzinfo'": 'faq/error_str_object_has_no_attribute_tzinfo.md'
+  - 'Installation':
+    - 'Debian Packages': 'installation/debian_package.md'
+    - 'Docker': 'installation/docker.md'
+    - 'From source': 'installation/source.md'
+    - 'Error reporting': 'installation/error_reporting.md'
+  - 'Modules':
+    - 'Bacula':
+      - 'Installation': 'Modules/Bacula/installation.md'
+  - 'SSO':
+    - 'External source': 'sso/external_sources.md'
+    - 'LDAP':
+      - 'Authenticating aginst Active Directory': 'sso/ldap/authenticating_against_ad.md'
+    - 'OAuth':
+      - 'Sentry': 'sso/oauth/sentry.md'
+      - 'Grafana': 'sso/oauth/grafana.md'
+      - 'Chronograf': 'sso/oauth/chronograf.md'
+    - 'SAML':
+      - 'GitLab': 'sso/saml/gitlab/gitlab.md'
+      - 'Nextcloud': 'sso/saml/nextcloud/nextcloud.md'
+
 extra:
   social:
     - type: 'github'
@@ -17,8 +49,8 @@ extra:
 
 theme:
   name: 'material'
-  logo: 'theme_images/icon_white.png'
-  favion: 'theme_images/icon.png'
+  logo: 'img/white.png'
+  favion: 'img/icon.png'
 
 markdown_extensions:
   - admonition

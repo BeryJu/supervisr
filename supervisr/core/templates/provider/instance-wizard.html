@@ -1,11 +1,10 @@
-{% extends 'core/generic_wizard.html' %}
+{% extends 'generic/wizard.html' %}
 
-{% load supervisr_title %}
-{% load fieldtype %}
+{% load supervisr_utils %}
 {% load i18n %}
 
 {% block title %}
-{% supervisr_title title %}
+{% title title %}
 {% endblock %}
 
 {% block after_form %}
@@ -14,14 +13,15 @@
 {% endblock %}
 
 {% block scripts %}
+{{ block.super }}
 <script>
   var providers = {
-    {% for prov in providers %}
-    '{{ prov.dotted_path }}': {
-      'ui_name': '{{ prov.get_meta.ui_name }}',
-      'ui_description': '{{ prov.get_meta.ui_description }}',
-      'capabilities': '{{ prov.get_meta.get_capabilities|join:", " }}',
-      'author': '{{ prov.get_meta.get_author }}',
+    {% for path, info in providers.items %}
+    '{{ path }}': {
+      'ui_name': '{{ info.ui_name }}',
+      'ui_description': '{{ info.ui_description }}',
+      'capabilities': '{{ info.capabilities }}',
+      'author': '{{ info.author }}',
     },
     {% endfor %}
   };

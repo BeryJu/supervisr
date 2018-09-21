@@ -1,13 +1,10 @@
 {% extends "_admin/base.html" %}
 
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load i18n %}
-{% load hostname %}
-{% load setting %}
-{% load fieldtype %}
 
 {% block title %}
-{% supervisr_title "System Info" %}
+{% title "System Info" %}
 {% endblock %}
 
 {% block content %}
@@ -20,11 +17,11 @@
     </tr>
   </thead>
   <tbody>
-    {% for cat, cat_data in info.items %}
+    {% for category_name, category_data in info.items %}
       <tr>
-        <td class="left" colspan="100%"><strong>{{ cat }}</strong></td>
+        <td class="left" colspan="100%"><strong>{{ category_name }}</strong></td>
       </tr>
-      {% for k, v in cat_data.items %}
+      {% for k, v in category_data.items %}
       <tr>
         <td class="left">{{ k }}</td>
         <td class="left">{{ v }}</td>

@@ -1,17 +1,12 @@
-"""
-Supervisr Core Domain Provider
-"""
+"""Supervisr Core Domain Provider"""
 
 from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.providers.base import BaseProvider, ProviderMetadata
 
 
-# pylint: disable=too-many-ancestors
 class DomainProvider(BaseProvider):
-    """
-    Base Provider for all domains
-    """
+    """Base Provider for all domains"""
 
     selectable = False
 
@@ -33,35 +28,8 @@ class DomainProvider(BaseProvider):
         """
         raise NotImplementedError("This Method should be overwritten by subclasses")
 
-    def register(self, domain, **kwargs):
-        """
-        Register method, used to register a new domain.
-        """
-        pass
-
-    def check_available(self, domain):
-        """
-        Check if a domain is already in use
-        """
-        pass
-
-    def check_expiry(self, domain):
-        """
-        Check when a domain is expiring
-        """
-        pass
-
-    def import_domains(self):
-        """
-        Import domains from provider
-        """
-        pass
-
-    # pylint: disable=too-few-public-methods
     class Meta(ProviderMetadata):
-        """
-        Domain Provider meta data
-        """
+        """Domain Provider meta data"""
 
         def __init__(self, provider):
             super(DomainProvider.Meta, self).__init__(provider)

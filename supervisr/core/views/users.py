@@ -1,6 +1,4 @@
-"""
-Supervisr Core User Views
-"""
+"""Supervisr Core User Views"""
 
 from django.contrib import messages
 from django.contrib.auth import logout as django_logout
@@ -20,42 +18,41 @@ from supervisr.core.models import Event, User
 
 
 @login_required
-def index(req):
+def index(request: HttpRequest) -> HttpResponse:
     """Show index view User information"""
     initial_data = {
-        'name': req.user.first_name,
-        'username': req.user.username,
-        'email': req.user.email,
-        'unix_username': req.user.unix_username,
-        'unix_userid': req.user.unix_userid,
-        'theme': req.user.theme,
-        'rows_per_page': req.user.rows_per_page,
-        'api_key': req.user.api_key,
+        'name': request.user.first_name,
+        'username': request.user.username,
+        'email': request.user.email,
+        'unix_username': request.user.unix_username,
+        'unix_userid': request.user.unix_userid,
+        'theme': request.user.theme,
+        'rows_per_page': request.user.rows_per_page,
+        'api_key': request.user.api_key,
     }
-    if req.method == 'POST':
-        form = EditUserForm(req.POST, initial=initial_data)
+    if request.method == 'POST':
+        form = EditUserForm(request.POST, initial=initial_data)
         if form.is_valid():
-            req.user.first_name = form.cleaned_data.get('name')
-            req.user.email = form.cleaned_data.get('email')
-            req.user.username = form.cleaned_data.get('username')
-            req.user.theme = form.cleaned_data.get('theme')
-            req.user.rows_per_page = form.cleaned_data.get('rows_per_page')
-            req.user.save()
-            messages.success(req, _('User updated successfully'))
+            request.user.first_name = form.cleaned_data.get('name')
+            request.user.email = form.cleaned_data.get('email')
+            request.user.username = form.cleaned_data.get('username')
+            request.user.theme = form.cleaned_data.get('theme')
+            request.user.rows_per_page = form.cleaned_data.get('rows_per_page')
+            request.user.save()
+            messages.success(request, _('User updated successfully'))
     else:
         form = EditUserForm(initial=initial_data)
-    return render(req, 'user/index.html', {'form': form})
+    return render(request, 'user/index.html', {'form': form})
+
 
 @login_required
-def events(req):
-    """
-    Show a paginated list of all events
-    """
+def events(request: HttpRequest) -> HttpResponse:
+    """Show a paginated list of all events"""
     event_list = Event.objects.filter(
-        user=req.user, hidden=False).order_by('-create_date')
-    paginator = Paginator(event_list, req.user.rows_per_page)
+        user=request.user, hidden=False).order_by('-create_date')
+    paginator = Paginator(event_list, request.user.rows_per_page)
 
-    page = req.GET.get('page')
+    page = request.GET.get('page')
     try:
         event_page = paginator.page(page)
     except PageNotAnInteger:
@@ -63,29 +60,30 @@ def events(req):
     except EmptyPage:
         event_page = paginator.page(paginator.num_pages)
 
-    return render(req, 'user/events.html', {'events': event_page})
+    return render(request, 'user/events.html', {'events': event_page})
+
 
 @login_required
-def send_feedback(req):
-    """
-    Show Form to send feedback
-    """
-    if req.method == 'POST':
-        form = FeedbackForm(req.POST, initial={'email': req.user.email})
+def send_feedback(request: HttpRequest) -> HttpResponse:
+    """Show Form to send feedback"""
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST, initial={'email': request.user.email})
         if form.is_valid():
-            email = req.user.email
+            email = request.user.email
             text = form.cleaned_data.get('message')
-            send_message(['support@beryju.org', 'admin@beryju.org'],
-                         '[Supervisr] Feedback from %s' % email,
-                         text='User %s sent feedback: %s' % (email, text))
-            messages.success(req, _('Successfully sent feedback.'))
+            send_message.delay(
+                recipients=['support@beryju.org', 'admin@beryju.org'],
+                subject='[supervisr] Feedback from %s' % email,
+                text='User %s sent feedback: %s' % (email, text))
+            messages.success(request, _('Successfully sent feedback.'))
 
-    form = FeedbackForm(initial={'email': req.user.email})
-    return render(req, 'user/feedback.html', {
+    form = FeedbackForm(initial={'email': request.user.email})
+    return render(request, 'user/feedback.html', {
         'title': 'Send Feedback',
         'primary_action': 'Send',
         'form': form
-        })
+    })
+
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(reauth_required, name='dispatch')
@@ -101,12 +99,12 @@ class UserDeleteView(View):
         Returns:
             Rendered HTML
         """
-        return render(request, 'core/generic_delete.html', {
+        return render(request, 'generic/delete.html', {
             'object': 'Account %s' % request.user.username,
             'title': 'Delete %s' % request.user.username,
             'delete_url': reverse('user-delete'),
             'extra_markup': '<h4>%s</h4>' % _('This action cannot be reversed!')
-            })
+        })
 
     def post(self, request: HttpRequest) -> HttpResponse:
         """Handle post request

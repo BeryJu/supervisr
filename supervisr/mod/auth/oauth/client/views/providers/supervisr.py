@@ -15,6 +15,7 @@ from supervisr.mod.auth.oauth.client.views.core import OAuthCallback
 
 LOGGER = logging.getLogger(__name__)
 
+
 class SupervisrOAuth2Client(OAuth2Client):
     """
     Supervisr OAuth2 Client
@@ -35,6 +36,7 @@ class SupervisrOAuth2Client(OAuth2Client):
             return None
         else:
             return response.json() or response.text
+
 
 class SupervisrOAuthCallback(OAuthCallback):
     """

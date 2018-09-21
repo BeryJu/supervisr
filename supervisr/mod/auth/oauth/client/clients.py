@@ -1,16 +1,13 @@
-"""
-OAuth Clients
-"""
-
-from __future__ import unicode_literals
+"""OAuth Clients"""
 
 import json
 import logging
 from urllib.parse import parse_qs, urlencode
 
+from django.conf import settings
 from django.utils.crypto import constant_time_compare, get_random_string
 from django.utils.encoding import force_text
-from requests.api import request
+from requests import Session
 from requests.exceptions import RequestException
 from requests_oauthlib import OAuth1
 
@@ -18,13 +15,15 @@ LOGGER = logging.getLogger(__name__)
 
 
 class BaseOAuthClient(object):
-    """
-    Base OAuth Client
-    """
+    """Base OAuth Client"""
+
+    _session = None
 
     def __init__(self, provider, token=''):
         self.provider = provider
         self.token = token
+        self._session = Session()
+        self._session.headers.update({'User-Agent': 'web:supervisr:%s' % settings.VERSION})
 
     def get_access_token(self, request, callback=None):
         "Fetch access token from callback request."
@@ -58,10 +57,9 @@ class BaseOAuthClient(object):
         "Parse token and secret from raw token response."
         raise NotImplementedError('Defined in a sub-class')  # pragma: no cover
 
-    # pylint: disable=no-self-use
     def request(self, method, url, **kwargs):
         "Build remote url request."
-        return request(method, url, **kwargs)
+        return self._session.request(method, url, **kwargs)
 
     @property
     def session_key(self):
@@ -171,7 +169,7 @@ class OAuth2Client(BaseOAuthClient):
             LOGGER.warning('No state stored in the sesssion.')
         return check
 
-    def get_access_token(self, request, callback=None):
+    def get_access_token(self, request, callback=None, **request_kwargs):
         "Fetch access token from callback request."
         callback = request.build_absolute_uri(callback or request.path)
         if not self.check_application_state(request, callback):
@@ -189,7 +187,8 @@ class OAuth2Client(BaseOAuthClient):
             LOGGER.warning('No code returned by the provider')
             return None
         try:
-            response = self.request('post', self.provider.access_token_url, data=args)
+            response = self.request('post', self.provider.access_token_url,
+                                    data=args, **request_kwargs)
             response.raise_for_status()
         except RequestException as exc:
             LOGGER.warning('Unable to fetch access token: %s', exc)
@@ -197,7 +196,7 @@ class OAuth2Client(BaseOAuthClient):
         else:
             return response.text
 
-    # pylint: disable=no-self-use, unused-argument
+    # pylint: disable=unused-argument
     def get_application_state(self, request, callback):
         "Generate state optional parameter."
         return get_random_string(32)

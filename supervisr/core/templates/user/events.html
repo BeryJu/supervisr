@@ -1,13 +1,10 @@
 {% extends "user/base.html" %}
 
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load i18n %}
-{% load hostname %}
-{% load setting %}
-{% load fieldtype %}
 
 {% block title %}
-{% supervisr_title "Events" %}
+{% title "Events" %}
 {% endblock %}
 
 {% block content_area %}
@@ -42,5 +39,5 @@
     {% endfor %}
   </tbody>
 </table>
-{% include "blocks/block_pagination.html" with pages=events %}
+{% include "blocks/pagination.html" with pages=events %}
 {% endblock %}

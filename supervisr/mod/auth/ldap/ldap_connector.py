@@ -1,6 +1,4 @@
-"""
-Wrapper for ldap3 to easily manage user
-"""
+"""Wrapper for ldap3 to easily manage user"""
 import logging
 import os
 import sys
@@ -10,8 +8,8 @@ import ldap3
 import ldap3.core.exceptions
 from passlib.hash import sha512_crypt
 
+from supervisr.core.decorators import time
 from supervisr.core.models import Setting, User, make_username
-from supervisr.core.utils import time
 from supervisr.mod.auth.ldap.forms.settings import GeneralSettingsForm
 from supervisr.mod.auth.ldap.models import LDAPGroupMapping, LDAPModification
 
@@ -20,10 +18,9 @@ LOGGER = logging.getLogger(__name__)
 USERNAME_FIELD = 'sAMAccountName'
 LOGIN_FIELD = 'userPrincipalName'
 
+
 class LDAPConnector(object):
-    """
-    Wrapper for ldap3 to easily manage user
-    """
+    """Wrapper for ldap3 to easily manage user"""
 
     con = None
     domain = None
@@ -64,7 +61,7 @@ class LDAPConnector(object):
                                     password=Setting.get('bind:password'), **con_args)
 
         if self.mock:
-            json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock.json')
+            json_path = os.path.join(os.path.dirname(__file__), 'tests', 'ldap_mock.json')
             self.con.strategy.entries_from_json(json_path)
 
         try:
@@ -84,7 +81,7 @@ class LDAPConnector(object):
         pid = os.getpid()
         json_path = os.path.join(os.path.dirname(__file__), 'test', 'ldap_mock_%d.json' % pid)
         os.unlink(json_path)
-        LOGGER.info("Cleaned up LDAP Mock from PID %d", pid)
+        LOGGER.debug("Cleaned up LDAP Mock from PID %d", pid)
 
     def apply_db(self):
         """Check if any unapplied LDAPModification's are left"""
@@ -100,7 +97,7 @@ class LDAPConnector(object):
                 obj.delete()
             except ldap3.core.exceptions.LDAPException as exc:
                 LOGGER.error(exc)
-        LOGGER.info("Recovered %d Modifications from DB.", len(to_apply))
+        LOGGER.debug("Recovered %d Modifications from DB.", len(to_apply))
 
     @staticmethod
     def handle_ldap_error(object_dn, action, data):
@@ -170,7 +167,7 @@ class LDAPConnector(object):
             return None
         # Create the user data.
         field_map = {
-            'username': '%('+USERNAME_FIELD+')s',
+            'username': '%(' + USERNAME_FIELD + ')s',
             'first_name': '%(givenName)s %(sn)s',
             'email': '%(mail)s',
             'crypt6_password': sha512_crypt.hash(password),
@@ -199,7 +196,7 @@ class LDAPConnector(object):
             user.set_unusable_password()
             user.save()
         # All done!
-        LOGGER.info("LDAP user lookup succeeded")
+        LOGGER.debug("LDAP user lookup succeeded")
         return user
 
     def auth_user(self, password, **filters):
@@ -227,7 +224,7 @@ class LDAPConnector(object):
                     attributes=[ldap3.ALL_ATTRIBUTES, ldap3.ALL_OPERATIONAL_ATTRIBUTES],
                     get_operational_attributes=True,
                     size_limit=1,
-                ):
+            ):
                 response = self.con.response[0]
                 # If user has no email set in AD, use UPN
                 if 'mail' not in response.get('attributes'):
@@ -264,26 +261,26 @@ class LDAPConnector(object):
         username_trunk = username[:20] if len(username) > 20 else username
         # AD doesn't like sAMAccountName's with . at the end
         username_trunk = username_trunk[:-1] if username_trunk[-1] == '.' else username_trunk
-        user_dn = 'cn='+username+','+self.base_dn
-        LOGGER.info('New DN: '+user_dn)
+        user_dn = 'cn=' + username + ',' + self.base_dn
+        LOGGER.debug('New DN: %s', user_dn)
         attrs = {
-            'distinguishedName' : str(user_dn),
-            'cn'                : str(username),
-            'description'       : str('t='+str(py_time.time())),
-            'sAMAccountName'    : str(username_trunk),
-            'givenName'         : str(user.first_name),
-            'displayName'       : str(user.first_name),
-            'name'              : str(user.first_name),
-            'mail'              : str(user.email),
-            'userPrincipalName' : str(username+'@'+self.domain),
-            'objectClass'       : ['top', 'person', 'organizationalPerson', 'user'],
+            'distinguishedName': str(user_dn),
+            'cn': str(username),
+            'description': str('t=' + str(py_time.time())),
+            'sAMAccountName': str(username_trunk),
+            'givenName': str(user.first_name),
+            'displayName': str(user.first_name),
+            'name': str(user.first_name),
+            'mail': str(user.email),
+            'userPrincipalName': str(username + '@' + self.domain),
+            'objectClass': ['top', 'person', 'organizationalPerson', 'user'],
         }
         try:
             self.con.add(user_dn, attributes=attrs)
         except ldap3.core.exceptions.LDAPException as exception:
             LOGGER.warning("Failed to create user ('%s'), saved to DB", exception)
             LDAPConnector.handle_ldap_error(user_dn, LDAPModification.ACTION_ADD, attrs)
-        LOGGER.info("Signed up user %s", user.email)
+        LOGGER.debug("Signed up user %s", user.email)
         return self.change_password(raw_password, mail=user.email)
 
     @time(statistic_key='ldap.ldap_connector._do_modify')

@@ -1,10 +1,10 @@
 {% extends "_admin/base.html" %}
 
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load i18n %}
 
 {% block title %}
-{% supervisr_title "Settings" %}
+{% title "Settings" %}
 {% endblock %}
 
 {% block header %}
@@ -24,7 +24,7 @@
     <div class="content">
       <div class="col-md-12">
         <h1><clr-icon shape="cog" size="48"></clr-icon>{% trans "Settings" %}</h1>
-        {% include 'blocks/block_messages.html' %}
+        {% include 'blocks/messages.html' %}
         <form method="POST">
           {% csrf_token %}
           <section class="form-block">

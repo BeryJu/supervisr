@@ -1,8 +1,8 @@
-"""
-Supervisr Core Account APIv1
-"""
+"""Supervisr Core Account APIv1"""
+from django.http import HttpRequest, HttpResponse
 
 from supervisr.core.api.models import ModelAPI
+from supervisr.core.decorators import logged_in_or_basicauth
 from supervisr.core.models import Product, User
 
 
@@ -39,3 +39,10 @@ class AccountAPI(ModelAPI):
                 return {'result': True}
 
         return {'result': False}
+
+
+# pylint: disable=unused-argument
+@logged_in_or_basicauth('Supervisr Auth')
+def http_basic_auth(request: HttpRequest) -> HttpResponse:
+    """simply return 'ok' if authentication was successful"""
+    return HttpResponse('ok')

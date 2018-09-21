@@ -1,0 +1,56 @@
+{% extends "core/skel.html" %}
+
+{% load supervisr_utils %}
+{% load i18n %}
+
+{% block header %}
+<title>{% title title %}</title>
+{% endblock %}
+
+{% block body %}
+<div class="login-wrapper">
+  <form class="login" method="POST">
+    <label class="title">
+      <clr-icon shape="supervisr" class="branding-color" size="48"></clr-icon>
+      {% supervisr_setting 'branding' %}
+    </label>
+    <label class="subtitle">
+      {% trans title %}
+    </label>
+    <div class="login-group">
+      {% include 'blocks/form_login.html' with form=form %}
+      {% block messages %}
+        {% if messages %}
+          {% for msg in messages %}
+            <div class="error {{ msg.level_tag }} active">
+            {{ msg.message|safe }}
+            </div>
+          {% endfor %}
+        {% endif %}
+        {% for field in form %}
+          {% if field.errors %}
+            {% for error in field.errors %}
+              <div class="error active">
+              {{ field.label }}: {{ error|escape }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      {% endblock %}
+      {% if next %}
+        <input type="hidden" name="next" value="{{ next }}" />
+      {% endif %}
+      {% if form %}
+        <button type="submit" class="btn btn-primary">{% trans primary_action|default:'Login' %}</button>
+      {% endif %}
+      {% if extra_links %}
+        {% for link, name in extra_links.items %}
+          <a href="{% url link %}" class="signup">{% trans name %}</a>
+        {% endfor %}
+      {% endif %}
+      {% block extra %}
+      {% endblock %}
+    </div>
+  </form>
+</div>
+{% endblock %}

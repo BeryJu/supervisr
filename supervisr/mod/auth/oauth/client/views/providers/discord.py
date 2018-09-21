@@ -1,6 +1,4 @@
-"""
-Discord OAuth Views
-"""
+"""Discord OAuth Views"""
 import json
 import logging
 
@@ -15,20 +13,18 @@ from supervisr.mod.auth.oauth.client.views.core import (OAuthCallback,
 
 LOGGER = logging.getLogger(__name__)
 
+
 class DiscordOAuthRedirect(OAuthRedirect):
-    """
-    Discord OAuth2 Redirect
-    """
+    """Discord OAuth2 Redirect"""
 
     def get_additional_parameters(self, provider):
         return {
             'scope': 'email identify',
         }
 
+
 class DiscordOAuth2Client(OAuth2Client):
-    """
-    Discord OAuth2 Client
-    """
+    """Discord OAuth2 Client"""
 
     def get_profile_info(self, raw_token):
         "Fetch user profile information."
@@ -46,10 +42,9 @@ class DiscordOAuth2Client(OAuth2Client):
         else:
             return response.json() or response.text
 
+
 class DiscordOAuth2Callback(OAuthCallback):
-    """
-    Discord OAuth2 Callback
-    """
+    """Discord OAuth2 Callback"""
 
     client_class = DiscordOAuth2Client
 

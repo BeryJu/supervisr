@@ -1,4 +1,4 @@
-{% load supervisr_setting %}
+{% load supervisr_utils %}
 
 {
     "name": "{{ PUPPET.module.owner.username }}-supervisr_mail",

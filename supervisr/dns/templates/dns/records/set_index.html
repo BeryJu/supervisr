@@ -1,0 +1,76 @@
+{% extends "dns/base.html" %}
+
+{% load supervisr_utils %}
+{% load i18n %}
+
+{% block title %}
+{% title 'Set' %}
+{% endblock %}
+
+{% block content %}
+<h1>
+  <clr-icon shape="file-group" size="48"></clr-icon>
+  {% blocktrans with name=set.name %}Set '{{ name }}'{% endblocktrans %}
+  <a href="{% url 'supervisr_dns:record-update' record_uuid=set.uuid %}?back={{ request.get_full_path }}">
+    <clr-icon shape="edit"></clr-icon>
+  </a>
+  <a href="{% url 'supervisr_dns:record-delete' record_uuid=set.uuid %}?back={{ request.get_full_path }}">
+    <clr-icon shape="trash"></clr-icon>
+  </a>
+</h1>
+<div class="btn-group btn-link btn-icon-link">
+  <div class="btn-group-overflow dropdown">
+    <button class="btn dropdown-toggle" clrDropdown>
+      <clr-icon shape="add"></clr-icon>
+      <clr-icon shape="caret down"></clr-icon>
+    </button>
+    <div class="dropdown-menu">
+      <a href="{% url 'supervisr_dns:record-data-create' %}?set_id={{ set.uuid }}" class="dropdown-item">{% trans 'Create new Data Record and attach to Set' %}</a>
+      <a href="{% url 'supervisr_dns:record-set-create' %}?set_id={{ set.uuid }}" class="dropdown-item">{% trans 'Create new Set and attach to Set' %}</a>
+      <a href="{% url 'supervisr_dns:record-set-create' %}?set_id={{ set.uuid }}" class="dropdown-item">{% trans 'Attach existing Record' %}</a>
+    </div>
+  </div>
+  <a data-ctx-name="edit" class="btn">
+    <clr-icon shape="edit"></clr-icon>
+  </a>
+  <a data-ctx-name="trash" class="btn">
+    <clr-icon shape="trash"></clr-icon>
+  </a>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>{% trans 'Name' %}</th>
+      <th>{% trans 'Enabled' %}</th>
+      <th>{% trans 'Set' %}</th>
+      <th>{% trans 'Type' %}</th>
+      <th>{% trans 'Content' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for record in instances %}
+    <tr data-selectable data-ctx-edit="{% url 'supervisr_dns:record-update' record_uuid=record.uuid %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'supervisr_dns:record-delete' record_uuid=record.uuid %}?back={{ request.get_full_path }}">
+      <td>{{ record.name|default:'@' }}</td>
+      <td>{{ record.enabled }}</td>
+      {% if record.cast|fieldtype == 'data record' %}
+      <td>{% trans '-' %}</td>
+      <td>{{ record.cast.type }}</td>
+      <td>{{ record.cast.content }}</td>
+      {% else %}
+      <td>{% trans 'TODO: Link here' %}</td>
+      <td>{% trans '-' %}</td>
+      <td>{% trans '-' %}</td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% include 'blocks/pagination.html' with pages=zones %}
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+  clrTableSelect('.container');
+</script>
+{% endblock %}

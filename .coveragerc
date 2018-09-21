@@ -3,6 +3,8 @@ source = supervisr/
 omit =
     env/
     manage.py
+    supervisr/cli/tasks/*
+    supervisr/cli/_seed/*
     supervisr/core/wsgi.py
     supervisr/*settings*.py
     supervisr/_tasks/*

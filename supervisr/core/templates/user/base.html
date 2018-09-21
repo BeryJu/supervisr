@@ -1,8 +1,8 @@
 {% extends "core/base.html" %}
 
 {% load i18n %}
-{% load is_active %}
-{% load supervisr_dyn_user %}
+{% load supervisr_is_active %}
+{% load supervisr_reflection %}
 
 {% block sidenav %}
 <nav class="sidenav clr-nav-level-2">
@@ -13,7 +13,7 @@
     <a href="{% url 'user-events' %}" class="nav-link {% is_active 'user-events' %}">
       {% trans "Events" %}
     </a>
-    {% supervisr_dyn_user as view_settings %}
+    {% sv_reflection_user_modules as view_settings %}
     {% for sub in view_settings %}
     <a href="{% url sub.view %}" class="nav-link {% is_active sub.view %}">
       {% trans sub.title %}
@@ -23,5 +23,6 @@
       {% trans "Send Feedback" %}
     </a>
   </section>
+  {% include 'blocks/sidebar_footer.html' %}
 </nav>
 {% endblock %}

@@ -1,12 +1,12 @@
 {% extends "common/base.html" %}
 
+{% load supervisr_utils %}
 {% load cache %}
-{% load supervisr_title %}
 {% load i18n %}
 {% load gravatar %}
 
 {% block title %}
-{% supervisr_title "Overview" %}
+{% title "Overview" %}
 {% endblock %}
 
 {% block content_area %}
@@ -21,8 +21,45 @@
       </div>
       <div class="card-block">
         <div class="card-text">
-          {% blocktrans with name=user.first_name %}Hey, {{ name }}{% endblocktrans %}
+          {% blocktrans with name=user.short_name %}Hey, {{ name }}{% endblocktrans %}
         </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-header">
+        {% trans "Quicklaunch" %}
+      </div>
+      <div class="card-block">
+        {% if hosted_applications %}
+        <div class="launcher">
+          <div class="app-launcher">
+            <div class="apps">
+              <ul>
+                {% for app in hosted_applications %} {% if app.primary_url %}
+                <li>
+                  <a href="{{ app.primary_url }}">
+                    {% if app.icon %}
+                      {% cache 600 app app.uuid %}
+                        <img src="{% media app.icon %}" alt="{{ app.name }} Icon">
+                      {% endcache %}
+                    {% else %}
+                    <clr-icon shape="application" size="64"></clr-icon>
+                    {% endif %}
+                    {{ app.name }}
+                  </a>
+                </li>
+                {% endif %} {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="card-text">
+          <p>{% trans "No Hosted Applications yet!" %}</p>
+        </div>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -43,13 +80,13 @@
             {% for instance in user_providers %}
             <tr>
               <td><span>{{ instance.name }}</span></td>
-              <td><span>{{ instance.provider.get_meta.ui_name }}</span></td>
+              <td><span>{{ instance.provider.get_meta.ui_name|default:'Error' }}</span></td>
               <td>
                 {% with status=instance.provider.check_status %}
                   {% if status == True %}
                     <span class="label label-success">{% trans "OK" %}</span>
-                  {% elif status == False %}
-                    <span class="label is-error">{% trans 'Error' %}</span>
+                  {% elif status == False or instance.provider == None %}
+                    <span class="label label-danger">{% trans 'Error' %}</span>
                   {% else %}
                     <span class="label">{{ status }}</span>
                   {% endif %}
@@ -61,7 +98,7 @@
         </table>
         {% else %}
         <div class="card-text">
-          <p>{% trans "No Provders" %}</p>
+          <p>{% trans "No Provders yet!" %}</p>
         </div>
         {% endif %}
       </div>
@@ -99,43 +136,6 @@
         {% else %}
         <div class="card-text">
           <p>{% trans "No Current Events!" %}</p>
-        </div>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-  <div class="col-md-3">
-    <div class="card">
-      <div class="card-header">
-        {% trans "Quicklaunch" %}
-      </div>
-      <div class="card-block">
-        {% if hosted_applications %}
-         <div class="launcher">
-           <div class="app-launcher">
-             <div class="apps">
-               <ul>
-                  {% for app in hosted_applications %}
-                  <li>
-                    <a href="{{ app.product.management_url }}">
-                      {% if app.product.icon %}
-                      {% cache 600 app app.product.uuid %}
-                      <img src="{{ app.product.icon_b64 }}" alt="{{ app.name }} Icon">
-                      {% endcache %}
-                      {% else %}
-                      <clr-icon shape="application" size="64"></clr-icon>
-                      {% endif %}
-                      {{ app.name }}
-                    </a>
-                  </li>
-                  {% endfor %}
-               </ul>
-             </div>
-            </div>
-        </div>
-        {% else %}
-        <div class="card-text">
-          <p>{% trans "No Hosted Applications yet!" %}</p>
         </div>
         {% endif %}
       </div>

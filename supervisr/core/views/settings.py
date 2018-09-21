@@ -4,30 +4,27 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
-from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
-from django.views import View
+from django.views.generic import TemplateView
 
 from supervisr.core.forms.settings import SettingsForm
 from supervisr.core.models import Setting
+from supervisr.core.views.generic import AdminRequiredMixin, LoginRequiredMixin
 
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-# pylint: disable=unused-argument
-def settings(req, namespace):
-    """
-    Admin settings
-    """
+def settings(request: HttpRequest, namespace: str) -> HttpResponse:
+    """Admin settings"""
     all_settings = Setting.objects.filter(namespace=namespace).order_by('key')
     namespaces = Setting.objects.all() \
         .values_list('namespace', flat=True) \
         .distinct() \
         .order_by('namespace')
     # Update settings when posted
-    if req.method == 'POST':
+    if request.method == 'POST':
         update_counter = 0
-        for name_key, value in req.POST.items():
+        for name_key, value in request.POST.items():
             # Names are formatted <namespace>/<key>
             if '/' in name_key:
                 namespace, key = name_key.split('/')
@@ -40,28 +37,30 @@ def settings(req, namespace):
                     setting.value = value
                     setting.save()
         Setting.objects.update()
-        messages.success(req, _('Updated %d settings' % update_counter))
-    return render(req, '_admin/settings.html', {
+        messages.success(request, _('Updated %d settings' % update_counter))
+    return render(request, '_admin/settings.html', {
         'settings': all_settings,
         'namespaces': namespaces,
         'current_namespace': namespace
-        })
+    })
 
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def mod_default(req):
-    """
-    Default view for modules without admin view
-    """
-    return render(req, '_admin/mod_default.html', {'mod': req.GET.get('mod', '')})
 
-@method_decorator(login_required, name='dispatch')
-@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
-class GenericSettingView(View):
+class ModuleDefaultView(TemplateView, AdminRequiredMixin):
+    """Default view for modules without admin view"""
+
+    template_name = '_admin/module_default.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['module'] = self.request.GET.get('module', '')
+        return context
+
+
+class GenericSettingView(LoginRequiredMixin, AdminRequiredMixin):
     """Generic Setting View"""
 
-    form = None # type: Type[SettingsForm]
-    template_name = 'core/generic_form.html' # type: str
+    form = None  # type: Type[SettingsForm]
+    template_name = 'generic/form.html'  # type: str
     extra_data = {}
 
     def render(self, request: HttpRequest, form: SettingsForm) -> HttpResponse:
@@ -85,7 +84,7 @@ class GenericSettingView(View):
         Returns:
             Login template
         """
-        form = self.form() # pylint: disable=not-callable
+        form = self.form()  # pylint: disable=not-callable
         return self.render(request, form)
 
     def post(self, request: HttpRequest) -> HttpResponse:
@@ -97,7 +96,7 @@ class GenericSettingView(View):
         Returns:
             Either a redirect to next view or login template if any errors exist
         """
-        form = self.form(request.POST) # pylint: disable=not-callable
+        form = self.form(request.POST)  # pylint: disable=not-callable
         if form.is_valid():
             form.save()
             messages.success(request, _('Settings successfully updated.'))

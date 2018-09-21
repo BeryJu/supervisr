@@ -19,6 +19,15 @@ $('document').ready(function() {
     $('.clr-root-container').removeClass('open-overflow-menu');
     $('.clr-root-container').removeClass('open-hamburger-menu');
   });
+
+  $('.modal [data-action=close]').on('click', function (e) {
+    $(e.target).closest('.modal').hide();
+  });
+
+  $('[data-action=show-modal]').on('click', function (e) {
+    var modalId = $(e.target).data('modal');
+    $('#'+modalId).show();
+  });
 });
 
 var clrWizard = function (containerId, initialPage) {
@@ -129,7 +138,7 @@ var clrTabs = function () {
         btn.attr('aria-selected', false);
     };
     var selectTab = function (id) {
-        if (id == '') return;
+        if (id == '' || id == undefined) return;
         $('section#'+id).attr('aria-hidden', false);
         var btn = $('ul[role="tablist"] button[aria-controls="' + id + '"]');
         btn.addClass('active');

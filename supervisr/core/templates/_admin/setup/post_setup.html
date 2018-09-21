@@ -1,0 +1,12 @@
+{% extends 'generic/wizard.html' %}
+
+{% load i18n %}
+
+{% block form %}
+<h1>{% trans 'Success!' %}</h1>
+<p>
+  {% blocktrans %}
+    Congratulations! You've successfully installed supervisr.
+  {% endblocktrans %}
+</p>
+{% endblock %}

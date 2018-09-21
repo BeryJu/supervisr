@@ -4,25 +4,21 @@
 {% load i18n %}
 {% load markdown %}
 {% load static %}
-{% load supervisr_title %}
+{% load supervisr_utils %}
 
 {% block title %}
-  {% supervisr_title page.title %}
+  {% title page.title %}
 {% endblock %}
 
 {% block header %}
 <style>
   .home-hero .bg-img {
       {% if page.cast.product and page.cast.product.icon %}
-      {% cache 600 hero_icon page.pk %}
-      {% with b64=page.cast.product.icon_b64 %}
-      mask-image: url({{ b64 }});
-      -webkit-mask-image: url({{ b64 }});
-      {% endwith %}
-      {% endcache %}
+      mask-image: url({% media page.cast.product.icon %});
+      -webkit-mask-image: url({% media page.cast.product.icon %});
       {% else %}
-      mask-image: url({% static 'img/icon.svg' %});
-      -webkit-mask-image: url({% static 'img/icon.svg' %});
+      mask-image: url({% static 'img/white@2x.svg' %});
+      -webkit-mask-image: url({% static 'img/white@2x.svg' %});
       {% endif %}
   }
 </style>
@@ -79,7 +75,7 @@
             <span class="alert-text">
               {% trans "Also available in the following languages: " %}
               {% for lang in related_langs %}
-              <a style="color: initial" class="alert-action" href="{% url 'supervisr/static:page-view' slug=page.slug lang=lang %}">{{ lang|upper }}</a>
+              <a style="color: initial" class="alert-action" href="{% url 'supervisr_static:page-view' slug=page.slug lang=lang %}">{{ lang|upper }}</a>
               {% endfor %}
             </span>
           </div>
@@ -99,8 +95,8 @@
         {% else %}
         {{ page.content }}
         {% endif %}
-        {% if page.cast.product and page.cast.product.management_url and user.is_authenticated %}
-        <a href="{{ page.cast.product.management_url }}" class="btn btn-primary">{% trans 'Open' %}</a>
+        {% if page.cast.product and page.cast.product.primary_url and user.is_authenticated %}
+        <a href="{{ page.cast.product.primary_url }}" class="btn btn-primary">{% trans 'Open' %}</a>
         {% endif %}
       </div>
     </div>

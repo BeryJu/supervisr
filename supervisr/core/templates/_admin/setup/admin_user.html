@@ -1,0 +1,12 @@
+{% extends 'generic/wizard.html' %}
+
+{% load i18n %}
+
+{% block form %}
+<p>
+  {% blocktrans %}
+    Here you can create your first user. This user will have administrative rights, so be sure to choose a secure password.
+  {% endblocktrans %}
+</p>
+{{ block.super }}
+{% endblock %}

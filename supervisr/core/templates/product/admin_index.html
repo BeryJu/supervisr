@@ -1,8 +1,8 @@
 {% extends '_admin/base.html' %}
 
+{% load supervisr_utils %}
 {% load i18n %}
 {% load cache %}
-{% load supervisr_title %}
 
 {% block header %}
 <style>
@@ -15,12 +15,13 @@
 {% endblock %}
 
 {% block title %}
-  {% supervisr_title 'Products' %}
+  {% title 'Products' %}
 {% endblock %}
 
 {% block content %}
+<h1><clr-icon shape="objects" size="48"></clr-icon>{% trans "Products" %}</h1>
 <div class="btn-group">
-  <a href="" class="btn">
+  <a href="{% url 'products-new' %}" class="btn">
     <clr-icon shape="add"></clr-icon>
     {% trans 'Add' %}
   </a>
@@ -40,7 +41,7 @@
       <div class="card-img">
         {% if product.icon %}
         {% cache 600 app product.uuid %}
-        <img src="{{ product.icon_b64 }}" alt="{{ name }} Icon">
+        <img src="{% media product.icon %}" alt="{{ name }} Icon">
         {% endcache %}
         {% else %}
         <clr-icon shape="application" size="64"></clr-icon>
@@ -54,9 +55,9 @@
       </div>
       <div class="card-footer">
         <a href="{% url 'product-view' slug=product.slug %}" class="btn btn-sm btn-link">{% trans 'Details' %}</a>
-        <a href="" class="btn btn-sm btn-link">{% trans 'UPRs' %}</a>
-        {% if product.management_url %}
-        <a href="{{ product.management_url }}" class="btn btn-sm btn-link">{% trans 'Open' %}</a>
+        <a href="" class="btn btn-sm btn-link">{% trans 'Relationships' %}</a>
+        {% if product.primary_url %}
+        <a href="{{ product.primary_url }}" class="btn btn-sm btn-link">{% trans 'Open' %}</a>
         {% endif %}
       </div>
     </div>

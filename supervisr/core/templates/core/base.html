@@ -1,13 +1,8 @@
 {% extends "core/skel.html" %}
 
-{% load ifapp %}
-{% load supervisr_title %}
-{% load supervisr_dyn_navapps %}
-{% load supervisr_setting %}
-{% load is_active %}
-{% load is_active_app %}
-{% load setting %}
-{% load hostname %}
+{% load supervisr_reflection %}
+{% load supervisr_utils %}
+{% load supervisr_is_active %}
 {% load i18n %}
 {% load static %}
 {% load gravatar %}
@@ -16,27 +11,28 @@
 <div class="main-container clr-root-container">
   {% block main_container %}
   {% block messages %}
-    {% include 'blocks/block_messages.html' with app_level=True %}
+    {% include 'blocks/cookie_message.html' %}
+    {% include 'blocks/messages.html' with app_level=True %}
   {% endblock %}
-  <header class="header header-1">
+  <header class="header header-6">
     <button class="header-hamburger-trigger" type="button">
       <span></span>
     </button>
     <div class="branding">
       <a class="logo-and-title" href="{% url 'common-index' %}">
         <clr-icon shape="supervisr" class="clr-icon clarity-logo is-info"></clr-icon>
-        <span class="title">{% supervisr_setting 'branding' %}</span>
+        <span class="title">{% supervisr_setting 'branding' default='supervisr' %}</span>
       </a>
     </div>
     <div class="divider"></div>
     <div class="header-nav clr-nav-level-1">
       {% if user.is_authenticated %}
-      <a class="nav-link {% is_active 'account' 'common' 'domain' 'instance' 'credential' %}" href="{% url 'common-index' %}">
+      <a class="nav-link {% is_active 'account' 'common' 'domain' 'instance' 'credential' app_name='supervisr_core' %}" href="{% url 'common-index' %}">
         <span class="nav-text">{% trans "Home" %}</span>
       </a>
-      {% supervisr_dyn_navapps as installed_apps %}
+      {% sv_reflection_navbar_modules as installed_apps %}
       {% for app in installed_apps %}
-      <a class="nav-link {% is_active app.short %}" href="{% url app.index %}">
+      <a class="nav-link {% is_active_app app.label %}" href="{% url app.index %}">
         <span class="nav-text">{% trans app.title %}</span>
       </a>
       {% endfor %}
@@ -51,6 +47,8 @@
     {% if user.is_authenticated %}
     <form class="search {% is_active 'search' %}" method="GET" action="{% url 'search' %}">
       <label for="search_input">
+        <input type="hidden" name="filter_app" value="{{ request.GET.filter_app|default:'' }}">
+        <input type="hidden" name="filter_model" value="{{ request.GET.filter_model|default:'' }}">
         <input id="search_input" name="q" placeholder="{% trans 'Search for keywords...' %}" type="text" {% if request.GET.q %} value="{{ request.GET.q }}" {% endif %}>
       </label>
     </form>
@@ -79,11 +77,6 @@
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="{% url 'user-send_feedback' %}">{% trans 'Send Feedback' %}</a>
           <div class="dropdown-divider"></div>
-          {% ifapp 'supervisr/static' as static_enabled %}
-          {% if static_enabled %}
-          <a class="dropdown-item" href="{% url 'supervisr/static:page-view' slug='attributions' %}">{% trans "Attributions" %}</a>
-          <div class="dropdown-divider"></div>
-          {% endif %}
           <a class="dropdown-item" href="{% url 'account-logout' %}">{% trans "Logout" %}</a>
         </div>
       </div>
@@ -116,4 +109,12 @@
   </div>
   {% endblock %}
 </div>
+{% include 'blocks/cookie_notice.html' %}
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+  clrTabs();
+</script>
 {% endblock %}

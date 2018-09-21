@@ -1,5 +1,0 @@
-etc/supervisr/
-etc/supervisr/conf.d/
-var/log/supervisr/
-usr/share/supervisr/
-usr/doc/supervisr/

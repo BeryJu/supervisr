@@ -1,0 +1,109 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-08-16 18:05+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: forms/settings.py:18
+msgid "Signing"
+msgstr ""
+
+#: forms/settings.py:19
+msgid "Certificate"
+msgstr ""
+
+#: forms/settings.py:20
+msgid "Private Key"
+msgstr ""
+
+#: templates/saml/idp/invalid_user.html:4
+msgid "You have logged in, but your user account is not enabled for SAML 2.0."
+msgstr ""
+
+#: templates/saml/idp/logged_out.html:4
+msgid "You have successfully logged out of the Identity Provider."
+msgstr ""
+
+#: templates/saml/idp/login.html:22
+msgid "SSO - Authorize External Source"
+msgstr ""
+
+#: templates/saml/idp/login.html:26
+#, python-format
+msgid ""
+"\n"
+"          You're about to sign into %(remote)s\n"
+"        "
+msgstr ""
+
+#: templates/saml/idp/login.html:31
+#, python-format
+msgid ""
+"\n"
+"          You are logged in as %(user)s. Not you?\n"
+"        "
+msgstr ""
+
+#: templates/saml/idp/login.html:34
+msgid "Logout"
+msgstr ""
+
+#: templates/saml/idp/login.html:38
+msgid "Continue"
+msgstr ""
+
+#: templates/saml/idp/login.html:41
+msgid "Cancel"
+msgstr ""
+
+#: templates/saml/idp/settings.html:11
+msgid "SAML2 IDP"
+msgstr ""
+
+#: templates/saml/idp/settings.html:16
+msgid "Settings"
+msgstr ""
+
+#: templates/saml/idp/settings.html:23
+msgid "Update"
+msgstr ""
+
+#: templates/saml/idp/settings.html:33
+msgid "Metadata"
+msgstr ""
+
+#: templates/saml/idp/settings.html:36
+msgid "Cert Fingerprint (SHA1):"
+msgstr ""
+
+#: templates/saml/idp/settings.html:42
+msgid "Download Metadata"
+msgstr ""
+
+#: views.py:121
+#, python-format
+msgid "You authenticated %s (via SAML) (skipped Authz)"
+msgstr ""
+
+#: views.py:134
+#, python-format
+msgid "You authenticated %s (via SAML)"
+msgstr ""
+
+#: views.py:224
+msgid "<failed to parse certificate>"
+msgstr ""

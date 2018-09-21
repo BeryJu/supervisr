@@ -1,11 +1,10 @@
 {% extends "puppet/base.html" %}
 
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load i18n %}
-{% load setting %}
 
 {% block title %}
-{% supervisr_title "Overview" %}
+{% title "Overview" %}
 {% endblock %}
 
 {% block content %}
@@ -41,13 +40,13 @@
         {% trans "Debug: Puppet Build" %}
       </div>
       <div class="card-footer">
-        <a class="btn btn-primary" href="{% url 'supervisr/puppet:puppet-debug-build' user='supervisr' module='supervisr_core' %}">
+        <a class="btn btn-primary" href="{% url 'supervisr_puppet:puppet-debug-build' user='supervisr' module='supervisr_core' %}">
           core
         </a>
-        <a class="btn btn-primary" href="{% url 'supervisr/puppet:puppet-debug-build' user='supervisr' module='supervisr_mail' %}">
+        <a class="btn btn-primary" href="{% url 'supervisr_puppet:puppet-debug-build' user='supervisr' module='supervisr_mail' %}">
           mail
         </a>
-        <a class="btn btn-primary" href="{% url 'supervisr/puppet:puppet-debug-build' user='supervisr' module='supervisr_dns' %}">
+        <a class="btn btn-primary" href="{% url 'supervisr_puppet:puppet-debug-build' user='supervisr' module='supervisr_dns' %}">
           dns
         </a>
       </div>

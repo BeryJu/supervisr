@@ -1,6 +1,4 @@
-"""
-Supervisr Puppet Models
-"""
+"""Supervisr Puppet Models"""
 import hashlib
 import json
 import logging
@@ -12,10 +10,9 @@ from pymysql.err import InternalError
 
 LOGGER = logging.getLogger(__name__)
 
+
 class PuppetModuleRelease(models.Model):
-    """
-    Store Information about a Puppet Module Release
-    """
+    """Store Information about a Puppet Module Release"""
     version = models.TextField()
     release = models.FileField(max_length=500)
     downloads = models.IntegerField(default=0)
@@ -30,36 +27,27 @@ class PuppetModuleRelease(models.Model):
 
     @property
     def get_size(self):
-        """
-        Return size of release (not implemented yet)
-        """
+        """Return size of release (not implemented yet)"""
         return 0
 
     @property
     def get_md5(self):
-        """
-        Return MD5 hash of release
-        """
-        return hashlib.md5(self.release.read()).hexdigest()
+        """Return MD5 hash of release"""
+        # MD5 specified in puppet forge api spec
+        return hashlib.md5(self.release.read()).hexdigest() # nosec
 
     @property
     def get_downloads(self):
-        """
-        Return download count
-        """
+        """Return download count"""
         return self.downloads
 
     @property
     def get_metaobject(self):
-        """
-        Return Metdata as parsed object
-        """
+        """Return Metdata as parsed object"""
         return json.loads(self.metadata)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        """
-        Import metadata, readme, changelog and license on first save
-        """
+        """Import metadata, readme, changelog and license on first save"""
         if not self.pk:
             self.readme = ''
             self.changelog = ''
@@ -70,7 +58,7 @@ class PuppetModuleRelease(models.Model):
             for file in tar.getnames():
                 if file.lower().endswith('metadata.json'):
                     self.metadata = tar.extractfile(file).read().decode('utf-8')
-                    LOGGER.info("%s: Added 'metadata' from targz", self.module.name)
+                    LOGGER.debug("%s: Added 'metadata' from targz", self.module.name)
                     try:
                         json.loads(self.metadata)
                     except ValueError:
@@ -80,7 +68,7 @@ class PuppetModuleRelease(models.Model):
                     if file.lower().endswith('%s.md' % key):
                         try:
                             setattr(self, key, tar.extractfile(file).read().decode('utf-8'))
-                            LOGGER.info("%s: Added '%s' from targz", self.module.name, key)
+                            LOGGER.debug("%s: Added '%s' from targz", self.module.name, key)
                         except InternalError:
                             pass
         super(PuppetModuleRelease, self).save(force_insert, force_update, using, update_fields)
@@ -88,10 +76,9 @@ class PuppetModuleRelease(models.Model):
     def __str__(self):
         return "PuppetModuleRelease '%s-%s'" % (self.module.name, self.version)
 
+
 class PuppetModule(models.Model):
-    """
-    Store Information about a Puppet Module
-    """
+    """Store Information about a Puppet Module"""
     name = models.TextField()
     downloads = models.IntegerField(default=0)
     create_at = models.DateTimeField(auto_now_add=True)

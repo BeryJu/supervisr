@@ -1,5 +1,11 @@
 """supervisr mod beacon settings"""
-from django.conf import settings
 
-BEACON_ENABLED = not settings.DEBUG
-BEACON_REMOTE = 'https://my.beryju.org'
+from datetime import timedelta
+
+CELERY_BEAT_SCHEDULE = {
+    'send-beacons': {
+        'task': 'supervisr.mod.beacon.tasks.run_sender',
+        'schedule': timedelta(minutes=15),
+        'options': {'queue': 'supervisr.mod.beacon'}
+    }
+}

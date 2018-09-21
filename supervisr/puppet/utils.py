@@ -1,6 +1,4 @@
-"""
-Supervisr Puppet Utils
-"""
+"""Supervisr Puppet Utils"""
 
 import json
 import logging
@@ -11,85 +9,88 @@ import requests
 from django.conf import settings
 from django.core.files import File
 
+from supervisr.core.celery import CELERY_APP
 from supervisr.core.models import User
+from supervisr.core.tasks import SupervisrTask
 from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 
 LOGGER = logging.getLogger(__name__)
 
-class ForgeImporter(object):
-    """
-    Helper class to import users, modules and releases from PuppetForge
-    """
 
+class ForgeNotFound(requests.exceptions.HTTPError):
+    """PuppetForge returned a 404 error"""
+
+class ForgeImporter(SupervisrTask):
+    """Helper class to import users, modules and releases from PuppetForge"""
+
+    name = 'supervisr.puppet.utils.ForgeImporter'
     BASE_URL = 'https://forgeapi.puppetlabs.com'
     output_base = os.path.join(settings.MEDIA_ROOT, 'puppet', 'modules')
 
     def __init__(self):
+        super(ForgeImporter, self).__init__()
         if settings.TEST:
             self.output_base = os.path.join(self.output_base, 'test')
         os.makedirs(self.output_base, exist_ok=True)
 
+    def run(self, *args, **kwargs):
+        """Wrapper for import_module"""
+        return self.import_module(*args, **kwargs)
+
     def import_module(self, name):
-        """
-        Import user, module and all releases of that module
-        """
+        """Import user, module and all releases of that module"""
         user, module = name.split('-')
         p_user = self.get_user_info(user)
         p_module = self.get_module_info(p_user, module)
         self.import_releases(p_user, p_module)
 
-    def _get_helper(self, url):
-        """
-        Shortcut to get json data
-        """
+    def __get_helper(self, url):
+        """Shortcut to get json data"""
         f_url = '%s/%s' % (self.BASE_URL, url)
         LOGGER.debug("About to GET %s", f_url)
-        return requests.get(f_url).json()
+        response = requests.get(f_url).json()
+        if 'errors' in response:
+            raise ForgeNotFound()
+        return response
 
     def get_user_info(self, username):
-        """
-        Get user information and create in DB if non existant
-        """
-        result = self._get_helper('/v3/users/' + username)
-
+        """Get user information and create in DB if non existant"""
+        result = self.__get_helper('/v3/users/' + username)
         existing_user = User.objects.filter(
-            username=result['username'],
-            first_name=result['display_name'])
+            username=result.get('username'),
+            first_name=result.get('display_name'))
 
         if not existing_user:
-            LOGGER.info("Created user '%s' from PuppetForge...", result['username'])
+            LOGGER.debug("Created user '%s' from PuppetForge...", result.get('username'))
             return User.objects.create(
-                username=result['username'],
-                first_name=result['display_name'])
+                username=result.get('username'),
+                first_name=result.get('display_name'))
 
-        LOGGER.info("User '%s' exists already", result['username'])
+        LOGGER.debug("User '%s' exists already", result['username'])
         return existing_user.first()
 
     def get_module_info(self, user, modulename):
-        """
-        Get module information and create in DB if non existant
-        """
-        result = self._get_helper('/v3/modules/%s-%s' % (user.username, modulename))
+        """Get module information and create in DB if non existant"""
+        result = self.__get_helper('/v3/modules/%s-%s' % (user.username, modulename))
 
         existing_module = PuppetModule.objects.filter(
             owner=user,
-            name=result['name'])
+            name=result.get('name', ''))
 
         if not existing_module:
-            LOGGER.info("Created module '%s-%s' from PuppetForge...", user.username, result['name'])
+            LOGGER.debug("Created module '%s-%s' from PuppetForge...",
+                         user.username, result.get('name'))
             return PuppetModule.objects.create(
                 owner=user,
-                name=result['name'],
-                supported=result['supported'])
+                name=result.get('name'),
+                supported=result.get('supported'))
 
-        LOGGER.info("Module '%s-%s' exists already", user.username, result['name'])
+        LOGGER.debug("Module '%s-%s' exists already", user.username, result['name'])
         return existing_module.first()
 
     def import_releases(self, user, module):
-        """
-        Get release information and create in DB if non existant
-        """
-        result = self._get_helper('/v3/releases?module=%s-%s' % (user.username, module.name))
+        """Get release information and create in DB if non existant"""
+        result = self.__get_helper('/v3/releases?module=%s-%s' % (user.username, module.name))
 
         for release in result['results']:
             existing_module = PuppetModuleRelease.objects.filter(
@@ -97,8 +98,8 @@ class ForgeImporter(object):
                 version=release['version'])
 
             if not existing_module:
-                LOGGER.info("Created release '%s-%s@%s' from PuppetForge...",
-                            user.username, module.name, release['version'])
+                LOGGER.debug("Created release '%s-%s@%s' from PuppetForge...",
+                             user.username, module.name, release['version'])
 
                 archive = requests.get(self.BASE_URL + release['file_uri'], stream=True)
                 filename = '%s/%s-%s-%s.tgz' \
@@ -115,9 +116,12 @@ class ForgeImporter(object):
                     changelog=release['changelog'],
                     license=release['license'],
                     release=File(open(filename, mode='rb'))
-                    )
+                )
 
                 os.remove(filename)
             else:
-                LOGGER.info("Release %s-%s@%s exists already", user.username,
-                            module.name, release['version'])
+                LOGGER.debug("Release %s-%s@%s exists already", user.username,
+                             module.name, release['version'])
+
+
+CELERY_APP.tasks.register(ForgeImporter())

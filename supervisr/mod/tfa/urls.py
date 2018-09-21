@@ -1,16 +1,14 @@
-"""
-Supervisr Mod 2FA Urls
-"""
+"""Supervisr Mod 2FA Urls"""
 
 from django.conf.urls import url
 
-from supervisr.mod.tfa.views import tfa
+from supervisr.mod.tfa import views
 
 urlpatterns = [
-    url(r'^$', tfa.index, name='tfa-index'),
-    url(r'qr/$', tfa.qr_code, name='tfa-qr'),
-    url(r'verify/$', tfa.verify, name='tfa-verify'),
-    url(r'enable/$', tfa.TFASetupView.as_view(), name='tfa-enable'),
-    url(r'disable/$', tfa.disable, name='tfa-disable'),
-    url(r'user_settings/$', tfa.user_settings, name='tfa-user_settings'),
+    url(r'^$', views.index, name='tfa-index'),
+    url(r'qr/$', views.qr_code, name='tfa-qr'),
+    url(r'verify/$', views.verify, name='tfa-verify'),
+    url(r'enable/$', views.TFASetupView.as_view(), name='tfa-enable'),
+    url(r'disable/$', views.disable, name='tfa-disable'),
+    url(r'user_settings/$', views.user_settings, name='tfa-user_settings'),
 ]

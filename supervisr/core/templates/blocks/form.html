@@ -1,0 +1,57 @@
+{% load supervisr_utils %}
+
+{% csrf_token %}
+{% for field in form %}
+{% for error in field.errors %}
+<div class="alert alert-danger">
+  <div class="alert-items">
+    <div class="alert-item">
+      <div class="alert-icon-wrapper">
+        <clr-icon class="alert-icon" shape="exclamation-circle"></clr-icon>
+      </div>
+      <span class="alert-text">
+        {{ error }}
+      </span>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% if field.help_text %}
+<span>
+  {{ field.help_text }}
+</span>
+{% endif %}
+<div class="form-group">
+  {% if field.field.widget|fieldtype == 'RadioSelect' %}
+    <label {% if field.field.required %}class="required"{% endif %} for="{{ field.name }}-{{ forloop.counter0 }}">
+      {{ field.label }}
+    </label>
+    {% for c in field %}
+    <div class="radio">
+      <input type="radio" id="{{ field.name }}-{{ forloop.counter0 }}" name="{% if wizard %}{{ wizard.steps.current }}-{% endif %}{{ field.name }}" value="{{ c.data.value }}" {% if c.data.selected %} checked {% endif %}>
+      <label for="{{ field.name }}-{{ forloop.counter0 }}">{{ c.choice_label }}</label>
+    </div>
+    {% endfor %}
+  {% elif field.field.widget|fieldtype == 'Select' %}
+  <label {% if field.field.required %}class="required"{% endif %} for="{{ field.name }}-{{ forloop.counter0 }}">
+    {{ field.label }}
+  </label>
+  <div class="select">
+    {{ field }}
+  </div>
+  {% elif field.field.widget|fieldtype == 'CheckboxInput' %}
+  <label {% if field.field.required %}class="required"{% endif %} for="{{ field.name }}-{{ forloop.counter0 }}">
+    {{ field.label }}
+  </label>
+  <div class="toggle-switch">
+    {{ field }}
+    <label for="{{ field.auto_id }}"></label>
+  </div>
+  {% else %}
+  <label {% if field.field.required %}class="required"{% endif %} for="{{ field.name }}-{{ forloop.counter0 }}">
+    {{ field.label }}
+  </label>
+  {{ field }}
+  {% endif %}
+</div>
+{% endfor %}

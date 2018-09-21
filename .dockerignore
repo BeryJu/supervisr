@@ -1,0 +1,6 @@
+env/
+supervisr/local_settings.py
+site/
+htmlcov/
+assets/
+build/packer/output*

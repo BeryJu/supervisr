@@ -1,17 +1,18 @@
 {% extends "core/base.html" %}
 
 {% load i18n %}
-{% load is_active %}
+{% load supervisr_is_active %}
 
 {% block sidenav %}
 <nav class="sidenav clr-nav-level-2">
   <section class="sidenav-content">
-    <a href="{% url 'supervisr/puppet:puppet-index' %}" class="nav-link {% is_active 'supervisr/puppet:puppet-index' %}">
+    <a href="{% url 'supervisr_puppet:index' %}" class="nav-link {% is_active 'supervisr_puppet:index' %}">
       {% trans "Overview" %}
     </a>
-    <a href="{% url 'supervisr/puppet:puppet-debug-render' %}" class="nav-link {% is_active 'supervisr/puppet:puppet-debug-render' %}">
+    <a href="{% url 'supervisr_puppet:puppet-debug-render' %}" class="nav-link {% is_active 'supervisr_puppet:puppet-debug-render' %}">
       {% trans "Debug Renderer" %}
     </a>
   </section>
+  {% include 'blocks/sidebar_footer.html' %}
 </nav>
 {% endblock %}

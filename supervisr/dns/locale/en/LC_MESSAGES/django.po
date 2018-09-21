@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-15 19:26+0200\n"
+"POT-Creation-Date: 2018-08-20 10:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,168 +17,202 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .\forms\migrate.py:7 .\forms\migrate.py:9
+#: forms/migrate.py:8 forms/migrate.py:10
 msgid "Zone Data"
 msgstr ""
 
-#: .\forms\migrate.py:13
+#: forms/migrate.py:15
 msgid "Preview Results"
 msgstr ""
 
-#: .\forms\migrate.py:15
+#: forms/migrate.py:17
 msgid "Accept Import"
 msgstr ""
 
-#: .\forms\records.py:17 .\forms\zones.py:16
+#: forms/records.py:17 forms/resource.py:15 forms/resourcesets.py:14
+#: forms/zones.py:13
 msgid "General Information"
 msgstr ""
 
-#: .\forms\records.py:36 .\templates\dns\records\index.html:47
+#: forms/records.py:23
+msgid "Name may not end with dot."
+msgstr ""
+
+#: forms/resource.py:32
 msgid "Priority"
 msgstr ""
 
-#: .\templates\dns\alias\index.html:11
+#: forms/zones.py:29
+msgid "SOA MNAME"
+msgstr ""
+
+#: forms/zones.py:30
+msgid "SOA RNAME"
+msgstr ""
+
+#: forms/zones.py:31
+msgid "SOA Serial"
+msgstr ""
+
+#: forms/zones.py:32
+msgid "SOA Refresh"
+msgstr ""
+
+#: forms/zones.py:33
+msgid "SOA Retry"
+msgstr ""
+
+#: forms/zones.py:34
+msgid "SOA Expire"
+msgstr ""
+
+#: forms/zones.py:35
+msgid "SOA TTL"
+msgstr ""
+
+#: forms/zones.py:38
+msgid "Primary master name server."
+msgstr ""
+
+#: forms/zones.py:39
+msgid "Responsible person for this Zone."
+msgstr ""
+
+#: providers/base.py:21
+msgid "BaseDNSProvider"
+msgstr ""
+
+#: templates/dns/alias/index.html:11
 msgid "Aliases"
 msgstr ""
 
-#: .\templates\dns\alias\index.html:26
+#: templates/dns/alias/index.html:26
 msgid "Address"
 msgstr ""
 
-#: .\templates\dns\alias\index.html:27
+#: templates/dns/alias/index.html:27
 msgid "Forwarder Destination"
 msgstr ""
 
-#: .\templates\dns\alias\index.html:28 .\templates\dns\zones\index.html:35
+#: templates/dns/alias/index.html:28 templates/dns/zones/index.html:36
 msgid "Owner"
 msgstr ""
 
-#: .\templates\dns\alias\index.html:29
+#: templates/dns/alias/index.html:29
 msgid "Is Catchall?"
 msgstr ""
 
-#: .\templates\dns\base.html:12
-msgid "Overview"
-msgstr ""
-
-#: .\templates\dns\base.html:15 .\templates\dns\index.html:54
-#: .\templates\dns\zones\index.html:11
+#: templates/dns/base.html:11
 msgid "Zones"
 msgstr ""
 
-#: .\templates\dns\base.html:24
-msgid "TSIG"
+#: templates/dns/base.html:21
+msgid "Resource Sets"
 msgstr ""
 
-#: .\templates\dns\index.html:11
-msgid "DNS"
-msgstr ""
-
-#: .\templates\dns\index.html:13
-msgid "Unclaimed Domains"
-msgstr ""
-
-#: .\templates\dns\index.html:18 .\templates\dns\zones\index.html:34
-msgid "Domain"
-msgstr ""
-
-#: .\templates\dns\index.html:19
-msgid "Provider"
-msgstr ""
-
-#: .\templates\dns\index.html:20
-msgid "Actions"
-msgstr ""
-
-#: .\templates\dns\index.html:34
-msgid "Blank Zone"
-msgstr ""
-
-#: .\templates\dns\index.html:35 .\templates\dns\records\index.html:37
-#: .\templates\dns\zones\index.html:27
-msgid "Import from Bind Zone"
-msgstr ""
-
-#: .\templates\dns\index.html:48 .\templates\dns\zones\index.html:36
-msgid "Records"
-msgstr ""
-
-#: .\templates\dns\migrate\preview.html:9 .\templates\dns\records\index.html:45
+#: templates/dns/migrate/preview.html:9 templates/dns/records/index.html:43
+#: templates/dns/resourcesets/view.html:35
 msgid "Name"
 msgstr ""
 
-#: .\templates\dns\migrate\preview.html:10
-#: .\templates\dns\records\index.html:46
+#: templates/dns/migrate/preview.html:10
+#: templates/dns/resourcesets/view.html:36
 msgid "Type"
 msgstr ""
 
-#: .\templates\dns\migrate\preview.html:11
-#: .\templates\dns\records\index.html:50
+#: templates/dns/migrate/preview.html:11
+#: templates/dns/resourcesets/view.html:39
 msgid "Content"
 msgstr ""
 
-#: .\templates\dns\records\index.html:21
+#: templates/dns/records/index.html:20
 #, python-format
 msgid "Records for %(z)s"
 msgstr ""
 
-#: .\templates\dns\records\index.html:48
-msgid "TTL"
+#: templates/dns/records/index.html:36 templates/dns/zones/index.html:28
+msgid "Import from Bind Zone"
 msgstr ""
 
-#: .\templates\dns\records\index.html:49 .\templates\dns\zones\index.html:37
+#: templates/dns/records/index.html:44 views/resourcesets.py:52
+msgid "Resource Set"
+msgstr ""
+
+#: templates/dns/records/index.html:45 templates/dns/resourcesets/view.html:38
+#: templates/dns/zones/index.html:39
 msgid "Enabled"
 msgstr ""
 
-#: .\views\migrate.py:30
+#: templates/dns/resourcesets/view.html:13
+#, python-format
+msgid "Resource Set '%(name)s'"
+msgstr ""
+
+#: templates/dns/resourcesets/view.html:37
+msgid "TTL"
+msgstr ""
+
+#: templates/dns/zones/index.html:12
+msgid "DNS Zones"
+msgstr ""
+
+#: templates/dns/zones/index.html:35
+msgid "Domain"
+msgstr ""
+
+#: templates/dns/zones/index.html:37
+msgid "Records"
+msgstr ""
+
+#: templates/dns/zones/index.html:38
+msgid "Providers"
+msgstr ""
+
+#: views/migrate.py:32
 msgid "Import Bind Zone"
 msgstr ""
 
-#: .\views\migrate.py:78
+#: views/migrate.py:79
 #, python-format
-msgid "DNS Domain successfully created and %(count)d Records imported."
+msgid "DNS domain successfully created and %(count)d records imported."
 msgstr ""
 
-#: .\views\migrate.py:83
+#: views/migrate.py:84
 msgid "Created nothing"
 msgstr ""
 
-#: .\views\records.py:52
+#: views/records.py:43
 msgid "New Record"
 msgstr ""
 
-#: .\views\records.py:73
+#: views/records.py:63
 msgid "DNS Record successfully created"
 msgstr ""
 
-#: .\views\records.py:103
-msgid "Successfully edited Record"
+#: views/resource.py:20
+msgid "New Record Resource"
 msgstr ""
 
-#: .\views\records.py:105
-msgid "Invalid Record"
+#: views/resource.py:31
+msgid "Record Resource successfully created"
 msgstr ""
 
-#: .\views\records.py:137
-msgid "Record successfully deleted"
+#: views/resource.py:39
+msgid "Record Resource"
 msgstr ""
 
-#: .\views\zones.py:48
+#: views/resourcesets.py:36
+msgid "New Resource Set"
+msgstr ""
+
+#: views/resourcesets.py:44
+msgid "Resource Set successfully created"
+msgstr ""
+
+#: views/zones.py:34
 msgid "New Zone"
 msgstr ""
 
-#: .\views\zones.py:79
-msgid "DNS Domain successfully created"
-msgstr ""
-
-#: .\views\zones.py:103
-msgid "Successfully edited Zone"
-msgstr ""
-
-#: .\views\zones.py:105
-msgid "Invalid Zone"
-msgstr ""
-
-#: .\views\zones.py:130
-msgid "Zone successfully deleted"
+#: views/zones.py:64
+msgid "DNS Zone successfully created"
 msgstr ""

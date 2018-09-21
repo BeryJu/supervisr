@@ -1,7 +1,5 @@
-"""
-SAML IDP Admin
-"""
+"""SAML IDP Admin"""
 
 from supervisr.core.admin import admin_autoregister
 
-admin_autoregister('supervisr/mod/auth/saml/idp')
+admin_autoregister('supervisr_mod_auth_saml_idp')

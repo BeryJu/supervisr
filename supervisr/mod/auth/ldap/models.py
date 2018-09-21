@@ -22,12 +22,13 @@ class LDAPModification(CreatedUpdatedModel):
     )
 
     ldap_moddification_id = models.AutoField(primary_key=True)
-    dn = models.CharField(max_length=255) # pylint: disable=invalid-name
+    dn = models.CharField(max_length=255)
     action = models.CharField(max_length=17, choices=ACTIONS, default=ACTION_MODIFY)
     data = JSONField()
 
     def __str__(self):
         return "LDAPModification %d from %s" % (self.ldap_moddification_id, self.created)
+
 
 class LDAPGroupMapping(CreatedUpdatedModel):
     """Model to map an LDAP Group to a supervisr group"""
@@ -37,6 +38,7 @@ class LDAPGroupMapping(CreatedUpdatedModel):
 
     def __str__(self):
         return "LDAPGroupMapping %s -> %s" % (self.ldap_dn, self.group.name)
+
 
 class ProductExtensionLDAP(ProductExtension):
     """

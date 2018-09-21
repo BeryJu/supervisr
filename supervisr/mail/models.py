@@ -7,31 +7,17 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from passlib.hash import sha512_crypt
 
-from supervisr.core.models import (CreatedUpdatedModel, Domain, Event, Product,
-                                   ProviderInstance)
+from supervisr.core.models import (CreatedUpdatedModel, Domain, Event,
+                                   ProviderAcquirable, User, UserAcquirable)
 
 LOGGER = logging.getLogger(__name__)
 
 
-class MailDomain(Product):
-    """
-    Stores information about a MailDomain
-    """
+class MailDomain(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
+    """Stores information about a MailDomain"""
 
     domain = models.OneToOneField(Domain, on_delete=models.CASCADE)
-    provider = models.ForeignKey(ProviderInstance, default=None, on_delete=models.CASCADE)
-    domain_raw = models.TextField(blank=True, help_text=_('This field is automatically generated'
-                                                          'by Django to make queries easier.'))
-    destination = models.TextField(default='internal')
     enabled = models.BooleanField(default=True)
-
-    def save(self, *args, **kwargs):
-        """
-        Override save to set domain_raw
-        """
-        if self.domain_raw is not self.domain.domain:
-            self.domain_raw = self.domain.domain
-        super(MailDomain, self).save(*args, **kwargs)
 
     def __str__(self):
         return "Mail Domain %s" % self.domain
@@ -43,73 +29,64 @@ class MailDomain(Product):
         """
         return self.mailaccount_set.filter(is_catchall=True).exists()
 
-class MailAccount(Product):
-    """
-    Store information about a MailAccount/MailForward
-    """
-    address = models.CharField(max_length=64) # rfc5321 4.5.3.1.1.
-    domain = models.ForeignKey(MailDomain, on_delete=models.CASCADE)
-    quota = models.BigIntegerField(default=0) # account quota in MB. 0 == unlimited
-    size = models.BigIntegerField(default=0)
+
+class MailDomainAddressRelationship(CreatedUpdatedModel, UserAcquirable):
+    """Store relationship between Address and MailDomains"""
+
+    mail_domain = models.ForeignKey('MailDomain', on_delete=models.CASCADE)
+    mail_address = models.ForeignKey('Address', on_delete=models.CASCADE)
+    is_catchall = models.BooleanField(default=False)
+    enabled = models.BooleanField(default=True)
+
+
+class Address(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
+    """Single Mail address"""
+
+    mail_address = models.CharField(max_length=64)
+    enabled = models.BooleanField(default=True)
+    domains = models.ManyToManyField('MailDomain', through='MailDomainAddressRelationship')
+
+    def __str__(self):
+        return "Address %s" % self.mail_address
+
+
+class Forwarder(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
+    """Forwader from an address to a target"""
+
+    source_address = models.ForeignKey('Address', on_delete=models.CASCADE)
+    destination_address = models.EmailField()
+
+    def __str__(self):
+        return "Forwarder '%s' => '%s'" % (self.source_address, self.destination_address)
+
+
+class AccountAddressRelationship(CreatedUpdatedModel, UserAcquirable):
+    """Store relationship between Account and Address"""
+
+    mail_account = models.ForeignKey('Account', on_delete=models.CASCADE)
+    mail_address = models.ForeignKey('Address', on_delete=models.CASCADE)
     can_send = models.BooleanField(default=True)
     can_receive = models.BooleanField(default=True)
+
+
+class Account(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
+    """Mail Account that stores mail"""
+
+    name = models.TextField()
+    addresses = models.ManyToManyField(Address, through=AccountAddressRelationship)
+    quota = models.BigIntegerField(default=0)  # account quota in MB. 0 == unlimited
+    size = models.BigIntegerField(default=0)
     password = models.CharField(max_length=128, blank=True)
-    is_catchall = models.BooleanField(default=False)
 
-    domain_raw = models.TextField(blank=True, help_text=_('This field is automatically generated'
-                                                          'by Django to make queries easier.'))
-    email_raw = models.TextField(blank=True, help_text=_('This field is automatically generated'
-                                                         'by Django to make queries easier.'))
-
-    @property
-    def email(self):
-        """
-        Get our full address
-        """
-        return self.email_raw
-
-    def set_password(self, invoker, new_password, salt=None, request=None):
-        """
-        Sets a new password with a new salt
-        """
+    def set_password(self, invoker: User, new_password: str, salt: str = None, request=None):
+        """Sets a new password with a new salt"""
         self.password = sha512_crypt.hash(new_password, salt=salt)
-        LOGGER.info("Updated Password MailAccount %s", self.email)
+        LOGGER.debug("Updated Password Account %s", self.name)
         Event.create(
             user=invoker,
-            message=_("Changed Password for Mail Account %(account)s" % {'account':str(self)}),
+            message=_("Changed Password for Mail Account %(account)s" % {'account': str(self)}),
             request=request)
         self.save()
 
-    def save(self, *args, **kwargs):
-        """
-        Override save to set domain_raw and email_raw
-        """
-        domain = str(self.domain.domain.domain)
-        self.domain_raw = domain
-        if self.email_raw is not '%s@%s' % (self.address, domain):
-            self.email_raw = '%s@%s' % (self.address, domain)
-        super(MailAccount, self).save(*args, **kwargs)
-
     def __str__(self):
-        return "%s@%s" % (self.address, self.domain.domain.domain)
-
-    def search_title(self):
-        """
-        Return email address for search results
-        """
-        return self.email
-
-    class Meta:
-
-        sv_search_fields = ['address', 'email_raw']
-
-class MailAlias(CreatedUpdatedModel):
-    """
-    Record to save destinations to forward mail to
-    """
-
-    account = models.ForeignKey(MailAccount, on_delete=models.CASCADE)
-    destination = models.EmailField()
-
-    def __str__(self):
-        return "%s => %s" % (self.account.email_raw, self.destination)
+        return "Account %s" % self.name

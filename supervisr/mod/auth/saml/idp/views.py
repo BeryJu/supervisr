@@ -1,6 +1,4 @@
-"""
-Supervisr SAML IDP Views
-"""
+"""Supervisr SAML IDP Views"""
 import logging
 
 from django.contrib import auth, messages
@@ -15,12 +13,13 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.html import escape
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
+from OpenSSL.crypto import FILETYPE_PEM
 from OpenSSL.crypto import Error as CryptoError
-from OpenSSL.crypto import FILETYPE_PEM, load_certificate
+from OpenSSL.crypto import load_certificate
 
-from supervisr.core.models import Event, Setting, UserProductRelationship
+from supervisr.core.models import Event, Setting, UserAcquirableRelationship
 from supervisr.core.utils import render_to_string
-from supervisr.core.views.common import error_response
+from supervisr.core.views.common import ErrorResponseView
 from supervisr.core.views.settings import GenericSettingView
 from supervisr.mod.auth.saml.idp import exceptions, registry, xml_signing
 from supervisr.mod.auth.saml.idp.forms.settings import IDPSettingsForm
@@ -34,7 +33,6 @@ try:
 except TypeError:
     URL_VALIDATOR = URLValidator()
 
-BASE_TEMPLATE_DIR = 'saml/idp/'
 
 
 def _generate_response(request, processor, remote):
@@ -52,10 +50,9 @@ def _generate_response(request, processor, remote):
 
 
 def render_xml(request, template, ctx):
-    """
-    Render template with content_type application/xml
-    """
+    """Render template with content_type application/xml"""
     return render(request, template, context=ctx, content_type="application/xml")
+
 
 @csrf_exempt
 def login_begin(request):
@@ -75,7 +72,8 @@ def login_begin(request):
         return HttpResponseBadRequest('the SAML request payload is missing')
 
     request.session['RelayState'] = source.get('RelayState', '')
-    return redirect(reverse('supervisr/mod/auth/saml/idp:saml_login_process'))
+    return redirect(reverse('supervisr_mod_auth_saml_idp:saml_login_process'))
+
 
 def redirect_to_sp(request, acs_url, saml_response, relay_state):
     """
@@ -86,8 +84,9 @@ def redirect_to_sp(request, acs_url, saml_response, relay_state):
         'attrs': {
             'SAMLResponse': saml_response,
             'RelayState': relay_state
-            }
-        })
+        }
+    })
+
 
 @login_required
 def login_process(request):
@@ -100,12 +99,12 @@ def login_process(request):
     # Check if user has access
     access = True
     if remote.productextensionsaml2_set.exists() and \
-        remote.productextensionsaml2_set.first().product_set.exists():
+            remote.productextensionsaml2_set.first().product_set.exists():
         # Only check if there is a connection from OAuth2 Application to product
         product = remote.productextensionsaml2_set.first().product_set.first()
-        upr = UserProductRelationship.objects.filter(user=request.user, product=product)
+        relationship = UserAcquirableRelationship.objects.filter(user=request.user, model=product)
         # Product is invite_only = True and no relation with user exists
-        if product.invite_only and not upr.exists():
+        if product.invite_only and not relationship.exists():
             access = False
     # Check if we should just autosubmit
     if remote.skip_authorization and access:
@@ -145,7 +144,8 @@ def login_process(request):
                 raise Http404
             return full_res
         except exceptions.CannotHandleAssertion as exc:
-            return error_response(request, str(exc))
+            return ErrorResponseView.as_view()(request, str(exc))
+
 
 @csrf_exempt
 def logout(request):
@@ -167,6 +167,7 @@ def logout(request):
 
     return render(request, 'saml/idp/logged_out.html')
 
+
 @login_required
 @csrf_exempt
 def slo_logout(request):
@@ -175,22 +176,23 @@ def slo_logout(request):
     logs out the user and returns a standard logged-out page.
     """
     request.session['SAMLRequest'] = request.POST['SAMLRequest']
-    #TODO: Parse SAML LogoutRequest from POST data, similar to login_process().
-    #TODO: Add a URL dispatch for this view.
-    #TODO: Modify the base processor to handle logouts?
-    #TODO: Combine this with login_process(), since they are so very similar?
-    #TODO: Format a LogoutResponse and return it to the browser.
-    #XXX: For now, simply log out without validating the request.
+    # TODO: Parse SAML LogoutRequest from POST data, similar to login_process().
+    # TODO: Add a URL dispatch for this view.
+    # TODO: Modify the base processor to handle logouts?
+    # TODO: Combine this with login_process(), since they are so very similar?
+    # TODO: Format a LogoutResponse and return it to the browser.
+    # XXX: For now, simply log out without validating the request.
     auth.logout(request)
     return render(request, 'saml/idp/logged_out.html')
+
 
 def descriptor(request):
     """
     Replies with the XML Metadata IDSSODescriptor.
     """
     entity_id = Setting.get('issuer')
-    slo_url = request.build_absolute_uri(reverse('supervisr/mod/auth/saml/idp:saml_logout'))
-    sso_url = request.build_absolute_uri(reverse('supervisr/mod/auth/saml/idp:saml_login_begin'))
+    slo_url = request.build_absolute_uri(reverse('supervisr_mod_auth_saml_idp:saml_logout'))
+    sso_url = request.build_absolute_uri(reverse('supervisr_mod_auth_saml_idp:saml_login_begin'))
     pubkey = xml_signing.load_certificate(strip=True)
     ctx = {
         'entity_id': entity_id,
@@ -203,6 +205,7 @@ def descriptor(request):
     response['Content-Disposition'] = 'attachment; filename="sv_metadata.xml'
     return response
 
+
 class IDPSettingsView(GenericSettingView):
     """IDP Settings"""
 
@@ -210,7 +213,7 @@ class IDPSettingsView(GenericSettingView):
     template_name = 'saml/idp/settings.html'
 
     def dispatch(self, request, *args, **kwargs):
-        self.extra_data['metadata'] = escape(descriptor(request).content)
+        self.extra_data['metadata'] = escape(descriptor(request).content.decode('utf-8'))
 
         # Show the certificate fingerprint
         sha1_fingerprint = _('<failed to parse certificate>')
@@ -220,4 +223,4 @@ class IDPSettingsView(GenericSettingView):
         except CryptoError:
             pass
         self.extra_data['fingerprint'] = sha1_fingerprint
-        return super(IDPSettingsView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)

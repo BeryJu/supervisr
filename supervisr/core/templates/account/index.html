@@ -1,11 +1,10 @@
 {% extends "_admin/base.html" %}
 
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load i18n %}
-{% load setting %}
 
 {% block title %}
-{% supervisr_title "Overview" %}
+{% title "Overview" %}
 {% endblock %}
 
 {% block content %}
@@ -29,7 +28,7 @@
       </div>
       <div class="card-block">
         <div class="card-text">
-          <h1 class="text-center">{% setting 'VERSION_HASH' %}</h1>
+          <h1 class="text-center">{% setting 'VERSION' %}</h1>
         </div>
       </div>
     </div>

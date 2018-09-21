@@ -1,12 +1,10 @@
-"""
-Supervisr Core Base API
-"""
+"""Supervisr Core Base API"""
 import json
 import logging
 
 from django.conf import settings
-from django.contrib.auth import login as django_login
 from django.contrib.auth import authenticate
+from django.contrib.auth import login as django_login
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpRequest, QueryDict
 from django.utils.decorators import method_decorator
@@ -14,25 +12,26 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from supervisr.core.api.utils import api_response
+from supervisr.core.exceptions import UnauthorizedException
 
 LOGGER = logging.getLogger(__name__)
 
+
 class API(View):
-    """
-    Basic API
-    """
+    """Basic API"""
 
     ALLOWED_VERBS = {
         'GET': [],
         'POST': [],
     }
 
+    # pylint: disable=too-many-return-statements
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         my_allowed = self.ALLOWED_VERBS[request.method]
-        verb = kwargs['verb']
+        verb = kwargs.get('verb', '')
         if verb not in my_allowed:
-            return api_response(request, {'error': 'verb not allowed in HTTP VERB', 'code': 400})
+            return api_response(request, {'error': 'verb not allowed in HTTP VERB'}, code=400)
 
         # Check if API Key in request, if so try to authenticate with it
         self.authenticate_with_key(request)
@@ -56,14 +55,17 @@ class API(View):
             if handler:
                 result = handler(request, data)
                 return api_response(request, {'code': 200, 'data': result})
+        except UnauthorizedException:
+            return api_response(request, {'data': {'error': 'unauthorized'}}, code=401)
         except PermissionDenied:
-            return api_response(request, {'data': {'error': 'permission denied'}, 'code': 403})
+            return api_response(request, {'data': {'error': 'permission denied'}}, code=403)
         except KeyError as exc:
-            return api_response(request, {'data': {'error': exc.args[0]}, 'code': 404})
+            return api_response(request, {'data': {'error': exc.args[0]}}, code=404)
         except Http404:
-            return api_response(request, {'data': {'error': 'not found'}, 'code': 404})
+            return api_response(request, {'data': {'error': 'not found'}}, code=404)
+        else:
+            return api_response(request, {'data': {'error': 'unknown error'}}, code=500)
 
-    # pylint: disable=unused-argument
     def pre_handler(self, handler, request):
         """Optional Handler, which is run before the chosen handler is run"""
         pass
@@ -72,14 +74,14 @@ class API(View):
     def init_user_filter(user):
         """This method is used to check if the user has access"""
         if not user.is_authenticated:
-            raise PermissionDenied
+            raise UnauthorizedException
         return True
 
     def authenticate_with_key(self, request: HttpRequest):
         """Try to authenticate with request data"""
         if settings.API_KEY_PARAM in request.GET or \
-            settings.API_KEY_PARAM in request.POST or \
-            settings.API_KEY_PARAM in request.META:
+                settings.API_KEY_PARAM in request.POST or \
+                settings.API_KEY_PARAM in request.META:
 
             user = authenticate(request)
             if user:

@@ -1,6 +1,6 @@
 ### auth/30_supervisr_config
 #################################
-{% load supervisr_setting %}
+{% load supervisr_utils %}
 {% supervisr_setting 'debug' as debug %}
 
 plain_server:

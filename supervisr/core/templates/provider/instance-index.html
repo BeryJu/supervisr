@@ -1,10 +1,10 @@
 {% extends "common/base.html" %}
 
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load i18n %}
 
 {% block title %}
-{% supervisr_title "Providers" %}
+{% title "Providers" %}
 {% endblock %}
 
 {% block content %}
@@ -19,31 +19,36 @@
   <a data-ctx-name="trash" class="btn">
     <clr-icon shape="trash"></clr-icon>
   </a>
+  <a data-ctx-name="diff" class="btn">
+    <clr-icon shape="layers"></clr-icon>
+  </a>
 </div>
 <table class="table instances">
   <thead>
     <tr>
+      <th>{% trans 'Provider status' %}</th>
       <th>{% trans 'Name' %}</th>
       <th>{% trans 'Provider' %}</th>
       <th>{% trans 'Credentials' %}</th>
-      <th>{% trans 'Authentication Status' %}</th>
+      <th>{% trans 'Capabilities' %}</th>
     </tr>
   </thead>
   <tbody>
-    {% for instance in providers %}
+    {% for instance in instances %}
     <tr data-selectable data-ctx-edit="{% url 'instance-edit' uuid=instance.uuid %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'instance-delete' uuid=instance.uuid %}?back={{ request.get_full_path }}">
-      <td><span>{{ instance.name }}</span></td>
-      <td><span>{{ instance.provider.get_meta.ui_name }}</span></td>
-      <td><span>{{ instance.credentials.name }}</span></td>
       <td>
         {% with status=instance.provider.check_status %}
           {% if status == True %}
             <span class="label label-success">{% trans "OK" %}</span>
           {% else %}
-            <span class="label is-error">{{ status }}</span>
+            <span class="label label-danger">{{ status }}</span>
           {% endif %}
         {% endwith %}
       </td>
+      <td><span>{{ instance.name }}</span></td>
+      <td><span>{{ instance.provider.get_meta.ui_name|default:'Error!' }}</span></td>
+      <td><span>{{ instance.credentials.name }}</span></td>
+      <td><span>{{ instance.provider.get_meta.get_capabilities|join:', '|default:'-' }}</span></td>
     </tr>
     {% endfor %}
   </tbody>
@@ -51,6 +56,7 @@
 {% endblock %}
 
 {% block scripts %}
+{{ block.super }}
 <script>
 clrTableSelect('.container');
 </script>

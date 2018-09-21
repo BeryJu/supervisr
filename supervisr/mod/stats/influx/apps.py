@@ -1,64 +1,23 @@
-"""
-Supervisr Stats Influx AppConfig
-"""
+"""Supervisr Stats Influx AppConfig"""
 
-import logging
-import os
+from supervisr.core.apps import SettingBootstrapper, SupervisrAppConfig
 
-import psutil
-
-from supervisr.core.apps import SupervisrAppConfig
-from supervisr.core.thread.background import SCHEDULER, catch_exceptions
-
-LOGGER = logging.getLogger(__name__)
 
 class SupervisrModStatInfluxConfig(SupervisrAppConfig):
-    """
-    Supervisr Influx AppConfig
-    """
+    """Supervisr Influx AppConfig"""
 
     name = 'supervisr.mod.stats.influx'
-    admin_url_name = 'supervisr/mod/stats/influx:admin_settings'
-    label = 'supervisr/mod/stats/influx'
-    verbose_name = 'Supervisr mod/stats/influx'
-    title_modifier = lambda self, title, request: 'Stats/Influx'
+    admin_url_name = 'supervisr_mod_stats_influx:admin_settings'
+    label = 'supervisr_mod_stats_influx'
+    verbose_name = 'Supervisr mod_stats_influx'
+    title_modifier = lambda self, request: 'Stats/Influx'
 
-    def ready(self):
-        super(SupervisrModStatInfluxConfig, self).ready()
-        SupervisrModStatInfluxConfig._worker()
-
-    @staticmethod
-    def _worker():
-        from supervisr.core.models import Setting
-        from supervisr.mod.stats.influx.influx_client import InfluxClient
-
-        if Setting.get_bool('enabled'):
-            try:
-                client = InfluxClient()
-                client.connect()
-
-                @catch_exceptions()
-                def send():
-                    """
-                    Send CPU and Memory usage
-                    """
-                    process = psutil.Process(os.getpid())
-                    client.write('server',
-                                 memory=process.memory_info().rss / 1024 / 1024,
-                                 cpu=process.cpu_percent())
-
-                SCHEDULER.every(10).seconds.do(send)
-
-            except (TimeoutError, ConnectionError, IOError):
-                LOGGER.warning("Failed to connect to influx server '%s'.", Setting.get('host'))
-
-
-    def ensure_settings(self):
-        return {
-            'enabled': False,
-            'host': 'localhost',
-            'port': 8086,
-            'database': 'supervisr',
-            'username': 'root',
-            'password': 'root',
-        }
+    def bootstrap(self):
+        settings = SettingBootstrapper()
+        settings.add(key='enabled', value=False)
+        settings.add(key='host', value='localhost')
+        settings.add(key='port', value=8086)
+        settings.add(key='database', value='supervisr')
+        settings.add(key='username', value='root')
+        settings.add(key='password', value='root')
+        return settings,

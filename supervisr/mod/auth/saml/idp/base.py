@@ -23,6 +23,7 @@ def get_random_id():
     random_id = '_' + uuid.uuid4().hex
     return random_id
 
+
 def get_time_string(delta=0):
     """
     Get Data formatted in SAML format
@@ -90,11 +91,11 @@ class Processor(object):
 
         self._assertion_params = {
             'ASSERTION_ID': self._assertion_id,
-            'ASSERTION_SIGNATURE': '', # it's unsigned
+            'ASSERTION_SIGNATURE': '',  # it's unsigned
             'AUDIENCE': self._audience,
             'AUTH_INSTANT': get_time_string(),
             'ISSUE_INSTANT': get_time_string(),
-            'NOT_BEFORE': get_time_string(-1 * HOURS), #TODO: Make these settings.
+            'NOT_BEFORE': get_time_string(-1 * HOURS),  # TODO: Make these settings.
             'NOT_ON_OR_AFTER': get_time_string(int(Setting.get('assertion_valid_for')) * MINUTES),
             'SESSION_INDEX': self._session_index,
             'SESSION_NOT_ON_OR_AFTER': get_time_string(8 * HOURS),
@@ -207,10 +208,10 @@ class Processor(object):
         Formats _response_params as _response_xml.
         """
         sign_it = Setting.get_bool('signing')
+        assertion_id = self._assertion_params['ASSERTION_ID']
         self._response_xml = xml_render.get_response_xml(self._response_params,
                                                          signed=sign_it,
-                                                         assertion_id=
-                                                         self._assertion_params['ASSERTION_ID'])
+                                                         assertion_id=assertion_id)
 
     def _get_django_response_params(self):
         """
@@ -227,7 +228,7 @@ class Processor(object):
         """
         Parses various parameters from _request_xml into _request_params.
         """
-        #Minimal test to verify that it's not binarily encoded still:
+        # Minimal test to verify that it's not binarily encoded still:
         if not str(self._request_xml.strip()).startswith('<'):
             raise Exception('RequestXML is not valid XML; '
                             'it may need to be decoded or decompressed.')

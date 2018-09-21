@@ -1,6 +1,4 @@
-"""
-Supervisr Core r1 Model API
-"""
+"""Supervisr Core Model API"""
 import collections
 
 from django import forms
@@ -8,15 +6,14 @@ from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.db.models.fields import NOT_PROVIDED
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 
 from supervisr.core.api.crud import CRUDAPI
-from supervisr.core.models import Product, UserProductRelationship
+from supervisr.core.models import UserAcquirable, UserAcquirableRelationship
 
 
 class ModelAPI(CRUDAPI):
-    """
-    Basic API for Models
-    """
+    """Basic API for Models"""
 
     model = None
     form = None
@@ -25,18 +22,14 @@ class ModelAPI(CRUDAPI):
     viewable_fields = ['name']
     editable_fields = ['name']
 
-    # pylint: disable=unused-argument
     def pre_handler(self, handler, request):
-        """
-        Check if form is set and read fields from it
-        """
+        """Check if form is set and read fields from it"""
         if self.form:
             # Wrapper for single form APIs
             if not isinstance(self.form, collections.Sequence):
                 self.form = [self.form]
             new_fields = []
             for frm in self.form:
-                # pylint: disable=not-callable
                 frm_inst = frm()
                 if isinstance(frm_inst, forms.ModelForm):
                     if getattr(frm_inst.Meta, 'fields', None):
@@ -45,7 +38,8 @@ class ModelAPI(CRUDAPI):
                     elif getattr(frm_inst.Meta, 'exclude', None):
                         # Remove excluded fields from model
                         model = frm_inst.Meta.model
-                        fields = [x.name for x in model._meta.get_fields() if not x.name in frm_inst.Meta.exclude]
+                        fields = [x.name for x in model._meta.get_fields()
+                                  if x.name not in frm_inst.Meta.exclude]
                     # Add all fields from all arrays into our fields
                     new_fields += fields
             # convert concatenated list into set to remove duplicates
@@ -58,17 +52,13 @@ class ModelAPI(CRUDAPI):
 
     @staticmethod
     def user_filter(queryset, user):
-        """
-        This method is used to check if the user has access
-        """
+        """This method is used to check if the user has access"""
         if not user.is_authenticated:
             raise PermissionDenied
         return queryset
 
     def model_to_dict(self, qs):
-        """
-        Convert queryset to dict
-        """
+        """Convert queryset to dict"""
         final_arr = []
         for m_inst in qs:
             inst_dict = {'pk': m_inst.pk}
@@ -82,9 +72,7 @@ class ModelAPI(CRUDAPI):
 
     @staticmethod
     def sanitize_data(data, keyset):
-        """
-        Sanitize data with keyset
-        """
+        """Sanitize data with keyset"""
         new_data = {}
         for key, value in data.items():
             if key in keyset:
@@ -93,18 +81,14 @@ class ModelAPI(CRUDAPI):
 
     @staticmethod
     def check_keys(data, keyset):
-        """
-        Check if data has all keys it should have
-        """
+        """Check if data has all keys it should have"""
         for key in keyset:
             if key not in data:
                 raise KeyError('Key %s not in data' % key)
         return True
 
     def fill_with_defaults(self, data):
-        """
-        Fill up data with defaults from model
-        """
+        """Fill up data with defaults from model"""
         # pylint: disable=not-callable
         model = self.model()
         for field in model._meta.get_fields():
@@ -117,26 +101,17 @@ class ModelAPI(CRUDAPI):
         return data
 
     def resolve_foreign_key(self, data):
-        """
-        Check for fields which are ForeignKey and resolve pk to instance
-        """
+        """Check for fields which are ForeignKey and resolve pk to instance"""
         # pylint: disable=not-callable
         model = self.model()
         for field in model._meta.get_fields():
             # pylint: disable=unidiomatic-typecheck
             if type(field) == models.fields.related.ForeignKey:
-                rev_match = field.target_field.model.objects.filter(pk=data[field.name])
-                if not rev_match.exists():
-                    raise Http404
-                assert len(rev_match) == 1
-                data[field.name] = rev_match.first()
+                data[field.name] = get_object_or_404(field.target_field.model, pk=data[field.name])
         return data
 
-    # pylint: disable=unused-argument
     def create(self, request, data):
-        """
-        Create instance based on request data
-        """
+        """Create instance based on request data"""
         # Make sure only allowed fields are present
         sanitized = ModelAPI.sanitize_data(data, self.editable_fields)
         # # Fill data with model default data
@@ -149,9 +124,7 @@ class ModelAPI(CRUDAPI):
         return self.model_to_dict([inst, ])
 
     def read(self, request, data):
-        """
-        Show list of models
-        """
+        """Show list of models"""
         # Make sure only allowed fields are present
         sanitized = ModelAPI.sanitize_data(data, self.queryable_fields)
         all_instances = self.model.objects.filter(**sanitized)
@@ -160,18 +133,12 @@ class ModelAPI(CRUDAPI):
         return self.model_to_dict(filtered)
 
     def update(self, request, data):
-        """
-        Update model based on pk parameter
-        """
+        """Update model based on pk parameter"""
         # Check if primary key is set
         if 'pk' not in data:
             raise Http404
         # Filter after user
-        inst = ModelAPI.user_filter(self.model.objects.filter(pk=data['pk']), request.user)
-        if not inst.exists():
-            raise Http404
-        assert len(inst) == 1
-        r_inst = inst.first()
+        instance = ModelAPI.user_filter(get_object_or_404(self.model, pk=data['pk']), request.user)
         # Make sure only allowed fields are present
         update_data = ModelAPI.sanitize_data(data, self.editable_fields)
         # Resolve foreign keys
@@ -179,40 +146,31 @@ class ModelAPI(CRUDAPI):
         # # Check if all necessary keys are existent
         # self.check_keys(update_data, self.editable_fields)
         for key, value in update_data.items():
-            setattr(r_inst, key, value)
-        r_inst.save()
-        return self.model_to_dict([r_inst, ])
+            setattr(instance, key, value)
+        instance.save()
+        return self.model_to_dict([instance, ])
 
     def delete(self, request, data):
-        """
-        Delete model instance
-        """
+        """Delete model instance"""
         # Check if primary key is set
         if 'pk' not in data:
             raise Http404
         # Filter after user
-        inst = ModelAPI.user_filter(self.model.objects.filter(pk=data['pk']), request.user)
-        if not inst.exists():
-            raise Http404
-        assert len(inst) == 1
-        r_inst = inst.first()
-        r_inst.delete()
+        instance = ModelAPI.user_filter(get_object_or_404(self.model, pk=data['pk']), request.user)
+        instance.delete()
         return {'success': True}
 
-class ProductAPI(ModelAPI):
-    """
-    ModelAPI optimized for Product-based Models
-    """
 
-    model = Product
+class UserAcquirableModelAPI(ModelAPI):
+    """ModelAPI optimized for UserAcquirable Models"""
+
+    model = UserAcquirable
 
     def create(self, request, data):
-        """
-        Create instance based on request data
-        """
-        orig = super(ProductAPI, self).create(request, data)
-        prod = orig[0]
-        UserProductRelationship.objects.create(
-            product=prod,
+        """Create instance based on request data"""
+        original = super(UserAcquirableModelAPI, self).create(request, data)
+        model = original[0]
+        UserAcquirableRelationship.objects.create(
+            model=model,
             user=request.user)
-        return orig
+        return original

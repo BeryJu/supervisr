@@ -1,6 +1,4 @@
-"""
-Supervisr Core Account Views
-"""
+"""Supervisr Core Account Views"""
 
 import logging
 import time
@@ -8,11 +6,11 @@ from typing import Dict
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
-from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.signals import user_logged_in, user_logged_out
+from django.forms import ValidationError
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -30,14 +28,14 @@ from supervisr.core.forms.accounts import (ChangePasswordForm,
                                            SignupForm)
 from supervisr.core.models import (AccountConfirmation, Setting, User,
                                    make_username)
-from supervisr.core.signals import (SIG_USER_CHANGE_PASS, SIG_USER_CONFIRM,
-                                    SIG_USER_PASS_RESET_INIT,
-                                    SIG_USER_POST_CHANGE_PASS,
-                                    SIG_USER_POST_SIGN_UP,
-                                    SIG_USER_RESEND_CONFIRM, SIG_USER_SIGN_UP,
-                                    SignalException)
+from supervisr.core.signals import (SignalException, on_user_change_password,
+                                    on_user_change_password_post,
+                                    on_user_confirm_resend, on_user_confirmed,
+                                    on_user_password_reset_init,
+                                    on_user_sign_up, on_user_sign_up_post)
 
 LOGGER = logging.getLogger(__name__)
+
 
 @method_decorator(anonymous_required, name='dispatch')
 class LoginView(View):
@@ -57,12 +55,15 @@ class LoginView(View):
             extra_links['account-reset_password_init'] = 'Reset your password'
         if Setting.get_bool('signup:enabled'):
             extra_links['account-signup'] = 'Sign up for an account'
+        # signin:enabled == False removes form
+        if not Setting.get_bool('signin:enabled'):
+            form = None
         return render(request, 'account/login.html', {
             'form': form,
             'title': _("SSO - Login"),
             'primary_action': _("Login"),
             'extra_links': extra_links
-            })
+        })
 
     def get(self, request: HttpRequest) -> HttpResponse:
         """Handle Get request
@@ -92,12 +93,13 @@ class LoginView(View):
                 password=form.cleaned_data.get('password'),
                 request=request)
             if user:
-                return self.handle_login(request, user, form.cleaned_data)
-            return self.handle_disabled_login(request, email=form.cleaned_data.get('email'))
+                return LoginView.handle_login(request, user, form.cleaned_data)
+            return LoginView.handle_disabled_login(request, email=form.cleaned_data.get('email'))
         LOGGER.debug("LoginForm invalid")
         return self.render(request, form=form)
 
-    def handle_login(self, request: HttpRequest, user: User, cleaned_data: Dict) -> HttpResponse:
+    @staticmethod
+    def handle_login(request: HttpRequest, user: User, cleaned_data: Dict) -> HttpResponse:
         """Handle actual login
 
         Actually logs user in, sets session expiry and redirects to ?next parameter
@@ -109,7 +111,8 @@ class LoginView(View):
         Returns:
             Either redirect to ?next or if not present to common-index
         """
-        assert user is not None
+        if user is None:
+            raise ValueError("User cannot be None")
         django_login(request, user)
         # Set updated password in user profile for PAM
         user.crypt6_password = \
@@ -119,11 +122,8 @@ class LoginView(View):
         if cleaned_data.get('remember') is True:
             request.session.set_expiry(settings.REMEMBER_SESSION_AGE)
         else:
-            request.session.set_expiry(0) # Expires when browser is closed
+            request.session.set_expiry(0)  # Expires when browser is closed
         messages.success(request, _("Successfully logged in!"))
-        # Send event that we're logged in now
-        user_logged_in.send(
-            sender=self, user=user, request=request)
         LOGGER.debug("Successfully logged in %s", user.username)
         # Check if there is a next GET parameter and redirect to that
         if 'next' in request.GET:
@@ -131,7 +131,8 @@ class LoginView(View):
         # Otherwise just index
         return redirect(reverse('common-index'))
 
-    def handle_disabled_login(self, request: HttpRequest, email: str) -> HttpResponse:
+    @staticmethod
+    def handle_disabled_login(request: HttpRequest, email: str) -> HttpResponse:
         """Handle login for disabled users
 
         This informs users that their email is not confirmed yet
@@ -163,9 +164,10 @@ class LoginView(View):
         LOGGER.debug("Failed to log in %s", email)
         return redirect(reverse('account-login'))
 
+
 @method_decorator(anonymous_required, name='dispatch')
 @method_decorator(require_setting('supervisr.core/signup:enabled', True), name='dispatch')
-class SignupView(View):
+class SignUpView(View):
     """View to handle Signup requests"""
 
     def render(self, request: HttpRequest, form: LoginForm) -> HttpResponse:
@@ -177,13 +179,15 @@ class SignupView(View):
         Returns:
             Login template
         """
-        return render(request, 'core/generic_form_login.html', {
+        return render(request, 'generic/form_login.html', {
             'form': form,
             'title': _("SSO - Signup"),
             'primary_action': _("Signup")
-            })
+        })
 
-    def create_user(self, data: Dict, request: HttpRequest = None) -> User:
+    @staticmethod
+    def create_user(data: Dict, request: HttpRequest = None,
+                    needs_confirmation: bool = True) -> User:
         """Create user from data
 
         Args:
@@ -203,24 +207,28 @@ class SignupView(View):
             first_name=data.get('name'),
             crypt6_password=sha512_crypt.hash(data.get('password')),
             unix_username=make_username(data.get('username'))
-            )
-        new_user.is_active = False
+        )
+        if needs_confirmation:
+            new_user.is_active = False
         new_user.set_password(data.get('password'))
         new_user.save()
         # Send signal for other auth sources
         try:
-            SIG_USER_SIGN_UP.send(
+            on_user_sign_up.send(
                 sender=None,
                 user=new_user,
-                req=request,
-                password=data.get('password'))
-            # Create Account Confirmation UUID
-            AccountConfirmation.objects.create(user=new_user)
+                request=request,
+                password=data.get('password'),
+                needs_confirmation=needs_confirmation)
+            if needs_confirmation:
+                # Create Account Confirmation UUID
+                AccountConfirmation.objects.create(user=new_user)
             # Send event for user creation
-            SIG_USER_POST_SIGN_UP.send(
+            on_user_sign_up_post.send(
                 sender=None,
                 user=new_user,
-                req=request)
+                request=request,
+                needs_confirmation=needs_confirmation)
         except SignalException as exception:
             LOGGER.warning("Failed to sign up user %s", exception)
             new_user.delete()
@@ -239,7 +247,7 @@ class SignupView(View):
         form = SignupForm(request.POST)
         if form.is_valid():
             try:
-                self.create_user(form.cleaned_data, request)
+                SignUpView.create_user(form.cleaned_data, request)
                 messages.success(request, _("Successfully signed up!"))
                 LOGGER.debug("Successfully signed up %s",
                              form.cleaned_data.get('email'))
@@ -260,97 +268,129 @@ class SignupView(View):
         form = SignupForm()
         return self.render(request, form)
 
-@login_required
-def change_password(req):
-    """
-    View to handle Browser change_password Requests
-    """
-    if req.method == 'POST':
-        form = ChangePasswordForm(req.POST)
-        if form.is_valid():
-            # Change Django password
-            req.user.set_password(form.cleaned_data.get('password'))
-            req.user.save()
-            try:
-                # Send signal for other auth sources
-                SIG_USER_CHANGE_PASS.send(
-                    sender=None,
-                    user=req.user,
-                    req=req,
-                    password=form.cleaned_data.get('password'))
-                # Trigger Event
-                SIG_USER_POST_CHANGE_PASS.send(
-                    sender=None,
-                    user=req.user,
-                    was_reset=False,
-                    req=req)
-                LOGGER.debug("Successfully updated password for %s", req.user.email)
-                messages.success(req, _("Successfully changed password!"))
-            except SignalException as exception:
-                messages.error(req, _("Failed to change password"))
-                LOGGER.warning(exception)
-            return redirect(reverse('common-index'))
-    else:
-        form = ChangePasswordForm()
-    return render(req, 'core/generic_form_login.html', {
-        'form': form,
-        'title': _("SSO - Change Password"),
-        'primary_action': _("Change Password")
+
+@method_decorator(login_required, name='dispatch')
+class ChangePasswordView(View):
+    """View to handle Browser change_password Requests"""
+
+    def render(self, request: HttpRequest, form: ChangePasswordForm) -> HttpResponse:
+        """Render Form"""
+        return render(request, 'generic/form_login.html', {
+            'form': form,
+            'title': _("SSO - Change Password"),
+            'primary_action': _("Change Password")
         })
 
-@login_required
-@require_GET
-def logout(req):
-    """
-    View to handle Browser logout Requests
-    """
-    # Send event first because we still have the user
-    user_logged_out.send(
-        sender=logout, user=req.user, request=req)
-    django_logout(req)
-    messages.success(req, _("Successfully logged out!"))
-    return redirect(reverse('common-index'))
+    def post(self, request: HttpRequest) -> HttpResponse:
+        """Validate data and set password if valid"""
+        form = ChangePasswordForm(request.POST)
+        form.request = request
+        form.is_valid()
+        if form.is_valid():
+            try:
+                # Check current password
+                user = authenticate(email=request.user.email,
+                                    password=form.cleaned_data.get('password_old'))
+                if user != request.user:
+                    raise ValidationError("Users don't match.")
+                ChangePasswordView.set_password(
+                    request, form.cleaned_data.get('password'))
+                messages.success(request, _("Successfully changed password!"))
+            except SignalException as exception:
+                messages.error(request, _("Failed to change password"))
+                LOGGER.warning(exception)
+            return redirect(reverse('common-index'))
+        return self.render(request, form)
 
-@anonymous_required
-@require_GET
-def confirm(req, uuid):
-    """
-    View to handle Browser account_confirm Requests
-    """
-    if AccountConfirmation.objects.filter(
-            pk=uuid,
-            kind=AccountConfirmation.KIND_SIGN_UP).exists():
-        acc_conf = AccountConfirmation.objects.get(pk=uuid)
-        if acc_conf.confirmed:
-            messages.error(req, _("Account already confirmed!"))
-            return redirect(reverse('account-login'))
-        if acc_conf.is_expired:
-            messages.error(req, _("Confirmation expired"))
-            return redirect(reverse('account-login'))
-        # activate django user
-        acc_conf.user.is_active = True
-        acc_conf.user.save()
-        # Send signal to other auth sources
-        SIG_USER_CONFIRM.send(
+    @staticmethod
+    def set_password(request: HttpRequest, password: str, was_reset=False):
+        """Change password"""
+        # Change Django password
+        request.user.set_password(password)
+        request.user.save()
+        # Send signal for other auth sources
+        on_user_change_password.send(
             sender=None,
-            user=acc_conf.user,
-            req=req)
-        # invalidate confirmation
-        acc_conf.confirmed = True
-        acc_conf.save()
-        messages.success(req, _("Account successfully activated!"))
-    else:
-        raise Http404
-    return redirect(reverse('account-login'))
+            user=request.user,
+            request=request,
+            password=password)
+        # Trigger Event
+        on_user_change_password_post.send(
+            sender=None,
+            user=request.user,
+            was_reset=was_reset,
+            request=request)
+        LOGGER.debug("Successfully updated password for %s", request.user.email)
 
-@anonymous_required
-@require_setting('supervisr.core/password_reset:enabled', True)
-def reset_password_init(req):
-    """
-    View to handle Browser account password reset initiation Requests
-    """
-    if req.method == 'POST':
-        form = PasswordResetInitForm(req.POST)
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Render empty form"""
+        form = ChangePasswordForm()
+        return self.render(request, form)
+
+
+@method_decorator(require_GET, name='dispatch')
+@method_decorator(login_required, name='dispatch')
+class LogoutView(View):
+    """View to handle Browser logout Requests"""
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Handle logout request"""
+        django_logout(request)
+        messages.success(request, _("Successfully logged out!"))
+        return redirect(reverse('common-index'))
+
+
+@method_decorator(require_GET, name='dispatch')
+@method_decorator(anonymous_required, name='dispatch')
+class AccountConfirmationView(View):
+    """View to handle Browser account_confirm Requests"""
+
+    def get(self, request: HttpRequest, uuid: str) -> HttpResponse:
+        """View to handle Browser account_confirm Requests"""
+        if AccountConfirmation.objects.filter(
+                pk=uuid,
+                kind=AccountConfirmation.KIND_SIGN_UP).exists():
+            acc_conf = AccountConfirmation.objects.get(pk=uuid)
+            if acc_conf.confirmed:
+                messages.error(request, _("Account already confirmed!"))
+                return redirect(reverse('account-login'))
+            if acc_conf.is_expired:
+                messages.error(request, _("Confirmation expired"))
+                return redirect(reverse('account-login'))
+            # activate django user
+            acc_conf.user.is_active = True
+            acc_conf.user.save()
+            # Send signal to other auth sources
+            on_user_confirmed.send(
+                sender=None,
+                user=acc_conf.user,
+                request=request)
+            # invalidate confirmation
+            acc_conf.confirmed = True
+            acc_conf.save()
+            messages.success(request, _("Account successfully activated!"))
+        else:
+            raise Http404
+        return redirect(reverse('account-login'))
+
+
+@method_decorator(anonymous_required, name='dispatch')
+@method_decorator(require_GET, name='dispatch')
+@method_decorator(require_setting('supervisr.core/password_reset:enabled', True), name='dispatch')
+class PasswordResetInitView(View):
+    """View to handle Browser account password reset initiation Requests"""
+
+    def render(self, request: HttpRequest, form: PasswordResetInitForm) -> HttpResponse:
+        """render Form"""
+        return render(request, 'generic/form_login.html', {
+            'form': form,
+            'title': _("SSO - Reset your password - Step 1/3"),
+            'primary_action': _("Send confirmation Email")
+        })
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        """Validate data and send email"""
+        form = PasswordResetInitForm(request.POST)
         if form.is_valid():
             users = User.objects.filter(email=form.cleaned_data.get('email'))
             if users.exists():
@@ -358,25 +398,34 @@ def reset_password_init(req):
                 AccountConfirmation.objects.create(
                     user=r_user,
                     kind=AccountConfirmation.KIND_PASSWORD_RESET)
-                SIG_USER_PASS_RESET_INIT.send(
-                    sender=reset_password_init, user=r_user)
-            messages.success(req, _('Reset link sent successfully if user exists.'))
-    else:
+                on_user_password_reset_init.send(
+                    sender=self, user=r_user)
+            messages.success(request, _('Reset link sent successfully if user exists.'))
+        return self.render(request, form)
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Get empty form"""
         form = PasswordResetInitForm()
-    return render(req, 'core/generic_form_login.html', {
-        'form': form,
-        'title': _("SSO - Reset your password - Step 1/3"),
-        'primary_action': _("Send confirmation Email")
+        return self.render(request, form)
+
+
+@method_decorator(anonymous_required, name='dispatch')
+@method_decorator(require_GET, name='dispatch')
+@method_decorator(require_setting('supervisr.core/password_reset:enabled', True), name='dispatch')
+class PasswordResetFinishView(View):
+    """View to handle Browser account password reset confirmation Requests"""
+
+    def render(self, request: HttpRequest, form: PasswordResetFinishForm) -> HttpResponse:
+        """Render form"""
+        return render(request, 'generic/form_login.html', {
+            'form': form,
+            'title': _("SSO - Reset your Password - Step 3/3"),
+            'primary_action': _("Reset your Password")
         })
 
-@anonymous_required
-@require_setting('supervisr.core/password_reset:enabled', True)
-def reset_password_confirm(req, uuid):
-    """
-    View to handle Browser account password reset confirmation Requests
-    """
-    if req.method == 'POST':
-        form = PasswordResetFinishForm(req.POST)
+    def post(self, request: HttpRequest, uuid: str) -> HttpResponse:
+        """Validate and handle data"""
+        form = PasswordResetFinishForm(request.POST)
         if form.is_valid():
             password = form.cleaned_data.get('password')
             if AccountConfirmation.objects.filter(
@@ -384,101 +433,97 @@ def reset_password_confirm(req, uuid):
                     kind=AccountConfirmation.KIND_PASSWORD_RESET).exists():
                 pass_conf = AccountConfirmation.objects.get(pk=uuid)
                 if pass_conf.confirmed:
-                    messages.error(req, _("Link already used!"))
+                    messages.error(request, _("Link already used!"))
                     return redirect(reverse('account-login'))
                 if pass_conf.is_expired:
-                    messages.error(req, _("Link expired!"))
+                    messages.error(request, _("Link expired!"))
                     return redirect(reverse('account-login'))
-                # Change Django password
-                pass_conf.user.set_password(password)
-                pass_conf.user.save()
                 try:
-                    # Send signal for other auth sources
-                    SIG_USER_CHANGE_PASS.send(
-                        sender=None,
-                        user=pass_conf.user,
-                        req=req,
-                        password=password)
-                    # Trigger Event
-                    SIG_USER_POST_CHANGE_PASS.send(
-                        sender=None,
-                        user=pass_conf.user,
-                        was_reset=True,
-                        req=req)
+                    ChangePasswordView.set_password(
+                        request, password, was_reset=True)
                     LOGGER.debug("Successfully updated password for %s", pass_conf.user.email)
-                    messages.success(req, _("Account successfully reset!"))
+                    messages.success(request, _("Account successfully reset!"))
                     # invalidate confirmation
                     pass_conf.confirmed = True
                     pass_conf.save()
                 except SignalException as exception:
                     LOGGER.warning(exception)
-                    messages.error(req, _("Failed to reset Password. Please try again later."))
+                    messages.error(request, _("Failed to reset Password. Please try again later."))
             else:
                 raise Http404
             return redirect(reverse('account-login'))
-    else:
+        return self.render(request, form)
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Render empty form"""
         form = PasswordResetFinishForm()
-    return render(req, 'core/generic_form_login.html', {
-        'form': form,
-        'title': _("SSO - Reset your Password - Step 3/3"),
-        'primary_action': _("Reset your Password")
+        return self.render(request, form)
+
+
+@method_decorator(require_GET, name='dispatch')
+@method_decorator(anonymous_required, name='dispatch')
+class ConfirmationResendView(View):
+    """View to resend E-Mail confirmation requests"""
+
+    def get(self, request: HttpRequest, email: str) -> HttpResponse:
+        """Handle request"""
+        users = User.objects.filter(email=email, is_active=False)
+        if users.exists():
+            # Invalidate all other links for this user
+            old_acs = AccountConfirmation.objects.filter(
+                user=users.first())
+            for old_ac in old_acs:
+                old_ac.confirmed = True
+                old_ac.save()
+            # Create Account Confirmation UUID
+            AccountConfirmation.objects.create(user=users.first())
+            on_user_confirm_resend.send(
+                sender=None,
+                user=users.first(),
+                request=request)
+            messages.success(request, _("Successfully resent confirmation email"))
+            return redirect(reverse('account-login'))
+        raise Http404
+
+
+@method_decorator(login_required, name='dispatch')
+class ReauthView(View):
+    """View to re-authenticate user before important actions"""
+
+    def render(self, request: HttpRequest, form: ReauthForm) -> HttpResponse:
+        """Render form"""
+        return render(request, 'generic/form_login.html', {
+            'form': form,
+            'title': _("SSO - Re-Authenticate"),
+            'primary_action': _("Login"),
         })
 
-@anonymous_required
-@require_GET
-def confirmation_resend(req, email):
-    """
-    View to handle Browser account confirmation resend Requests
-    """
-    users = User.objects.filter(email=email, is_active=False)
-    if users.exists():
-        # Invalidate all other links for this user
-        old_acs = AccountConfirmation.objects.filter(
-            user=users.first())
-        for old_ac in old_acs:
-            old_ac.confirmed = True
-            old_ac.save()
-        # Create Account Confirmation UUID
-        AccountConfirmation.objects.create(user=users.first())
-        SIG_USER_RESEND_CONFIRM.send(
-            sender=None,
-            user=users.first(),
-            req=req)
-        messages.success(req, _("Successfully resent confirmation email"))
-        return redirect(reverse('account-login'))
-    raise Http404
-
-@login_required
-def reauth(req):
-    """
-    Re-authenticate user before important actions
-    """
-    if req.method == 'POST':
-        form = ReauthForm(req.POST)
+    def post(self, request: HttpRequest) -> HttpResponse:
+        """Handle Post request to validate password"""
+        form = ReauthForm(request.POST)
         if form.is_valid():
             user = authenticate(
-                email=req.user.email,
+                email=request.user.email,
                 password=form.cleaned_data.get('password'),
-                request=req)
-            if user == req.user:
-                messages.success(req, _('Successfully Re-Authenticated'))
-                req.session['supervisr_require_reauth_done'] = time.time()
+                request=request)
+            if user == request.user:
+                messages.success(request, _('Successfully Re-Authenticated'))
+                request.session['supervisr_require_reauth_done'] = time.time()
                 # Check if there is a next GET parameter and redirect to that
-                if 'next' in req.GET:
-                    return redirect(req.GET.get('next'))
+                if 'next' in request.GET:
+                    return redirect(request.GET.get('next'))
                 # Otherwise just index
                 return redirect(reverse('common-index'))
-        messages.error(req, _('Failed to Re-Authenticate'))
-    else:
-        form = ReauthForm(initial={'email': req.user.email})
+        messages.error(request, _('Failed to Re-Authenticate'))
+        return self.render(request, form)
 
-    return render(req, 'core/generic_form_login.html', {
-        'form': form,
-        'title': _("SSO - Re-Authenticate"),
-        'primary_action': _("Login"),
-        })
+    def get(self, request: HttpRequest) -> HttpResponse:
+        """Show Form"""
+        form = ReauthForm(initial={'email': request.user.email})
+        return self.render(request, form)
 
-@method_decorator(anonymous_required, name='dispatch')
+
+@method_decorator(login_required, name='dispatch')
 class EmailMissingView(View):
     """View to ask user for missing email"""
 
@@ -491,11 +536,11 @@ class EmailMissingView(View):
         Returns:
             Login template
         """
-        return render(request, 'account/login.html', {
+        return render(request, 'generic/form_login.html', {
             'form': form,
             'title': _("SSO - Add missing E-Mail"),
             'primary_action': _("Add"),
-            })
+        })
 
     def get(self, request: HttpRequest) -> HttpResponse:
         """Handle Get request
@@ -525,12 +570,11 @@ class EmailMissingView(View):
             request.user.save()
             # Create new AccountConfirmation UUID set
             AccountConfirmation.objects.create(user=request.user)
-            SIG_USER_RESEND_CONFIRM.send(
+            on_user_confirm_resend.send(
                 sender=self,
                 user=request.user,
-                req=request
+                request=request
             )
             messages.success(request, _('Successfully sent confirmation E-Mail'))
-            django_logout(request)
-            return redirect(reverse('common-loign'))
+            return redirect(reverse(settings.LOGIN_URL))
         return self.render(request, form=form)

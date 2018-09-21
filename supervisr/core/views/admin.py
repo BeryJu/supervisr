@@ -1,113 +1,131 @@
-"""
-Supervisr Core Admin Views
-"""
-
+"""Supervisr Core Admin Views"""
 
 import platform
 import sys
 
+import celery
 from django import get_version as django_version
 from django.conf import settings as django_settings
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.shortcuts import render
+from django.contrib import messages
+from django.core.cache import cache
+from django.db.models.query import QuerySet
+from django.http import HttpRequest, HttpResponse
+from django.utils.translation import ugettext as _
+from django.views.generic.base import TemplateView
 
-from supervisr.core.models import Event, User, get_system_user
-from supervisr.core.signals import SIG_GET_MOD_INFO
+from supervisr.core.models import Event, Setting, Task, User, get_system_user
+from supervisr.core.signals import get_module_info, on_setting_update
+from supervisr.core.tasks import debug_progress_task
 from supervisr.core.utils import get_reverse_dns
+from supervisr.core.views.generic import AdminRequiredMixin, GenericIndexView
 
 
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def index(req):
-    """
-    Admin index
-    """
-    # Subtract the system user
-    user_count = User.objects.all().count() -1
-    return render(req, '_admin/index.html', {
-        'user_count': user_count,
-        })
+class IndexView(TemplateView, AdminRequiredMixin):
+    """Admin index"""
 
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def users(req):
-    """
-    Show a list of all users
-    """
-    users = User.objects.all().order_by('date_joined').exclude(pk=get_system_user())
-    paginator = Paginator(users, req.user.rows_per_page)
+    template_name = '_admin/index.html'
 
-    page = req.GET.get('page')
-    try:
-        accounts = paginator.page(page)
-    except PageNotAnInteger:
-        accounts = paginator.page(1)
-    except EmptyPage:
-        accounts = paginator.page(paginator.num_pages)
-    return render(req, '_admin/users.html', {
-        'users': accounts,
-        })
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_count'] = User.objects.all().count() - 1
+        context['celery_workers'] = celery.current_app.control.inspect().ping()
+        return context
 
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def info(req):
-    """
-    Show system information
-    """
-    info_data = {
-        'Version': {
-            'Python Version': sys.version_info.__repr__(),
-            'Django Version': django_version(),
-            'Supervisr Commit': django_settings.VERSION_HASH,
-        },
-        'System': {
-            'uname': platform.uname().__repr__(),
-        },
-        'Request': {
-            'url_name': req.resolver_match.url_name if req.resolver_match is not None else '',
-            'REMOTE_ADDR': req.META.get('REMOTE_ADDR'),
-            'REMOTE_ADDR PTR': get_reverse_dns(req.META.get('REMOTE_ADDR')),
-            'X-Forwarded-for': req.META.get('HTTP_X_FORWARDED_FOR'),
-            'X-Forwarded-for PTR': get_reverse_dns(req.META.get('HTTP_X_FORWARDED_FOR')),
-        },
-        'Settings': {
-            'Debug Enabled': django_settings.DEBUG,
-            'Authentication Backends': django_settings.AUTHENTICATION_BACKENDS,
+
+class UserIndexView(GenericIndexView, AdminRequiredMixin):
+    """show list of all users"""
+
+    template = '_admin/users.html'
+    model = User
+
+    def get_instance(self) -> QuerySet:
+        return self.model.objects.all().order_by('date_joined').exclude(pk=get_system_user().pk)
+
+
+class InfoView(TemplateView, AdminRequiredMixin):
+    """Admin Info view"""
+
+    template_name = '_admin/info.html'
+
+    def get_context_data(self, **kwargs):
+        """Show system information"""
+        context = super().get_context_data(**kwargs)
+        request = self.request
+        info_data = {
+            _('Version'): {
+                _('Python Version'): sys.version_info.__repr__(),
+                _('Django Version'): django_version(),
+                _('Supervisr Commit'): django_settings.VERSION,
+            },
+            _('System'): {
+                _('uname'): platform.uname().__repr__(),
+            },
+            _('Request'): {
+                _('url_name'): (
+                    request.resolver_match.url_name if request.resolver_match is not None
+                    else ''),
+                _('REMOTE_ADDR'): request.META.get('REMOTE_ADDR'),
+                _('REMOTE_ADDR PTR'): get_reverse_dns(request.META.get('REMOTE_ADDR')),
+                _('X-Forwarded-for'): request.META.get('HTTP_X_FORWARDED_FOR'),
+                _('X-Forwarded-for PTR'): get_reverse_dns(request.META.get('HTTP_X_FORWARDED_FOR')),
+            },
+            _('Settings'): {
+                _('Debug Enabled'): django_settings.DEBUG,
+                _('Authentication Backends'): django_settings.AUTHENTICATION_BACKENDS,
+            }
         }
-    }
-    results = SIG_GET_MOD_INFO.send(sender=None)
-    for handler, mod_info in results:
-        # Get the handler's root module
-        info_data[handler.__module__.split('.')[0]] = mod_info
-    return render(req, '_admin/info.html', {'info': info_data})
+        results = get_module_info.send(sender=None)
+        for handler, mod_info in results:
+            # Get the handler's root module
+            info_data[handler.__module__] = mod_info
+        context['info'] = info_data
+        return context
 
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def events(req):
-    """
-    Show paginated list of all events
-    """
-    event_list = Event.objects.all().order_by('-create_date')
-    paginator = Paginator(event_list, req.user.rows_per_page)
 
-    page = req.GET.get('page')
-    try:
-        event_page = paginator.page(page)
-    except PageNotAnInteger:
-        event_page = paginator.page(1)
-    except EmptyPage:
-        event_page = paginator.page(paginator.num_pages)
+class EventView(GenericIndexView, AdminRequiredMixin):
+    """show list of all events"""
 
-    return render(req, '_admin/events.html', {'events': event_page})
+    template = '_admin/events.html'
+    model = Event
 
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def debug(req):
-    """
-    Show some misc debug buttons
-    """
-    if req.method == 'POST':
-        if 'raise_error' in req.POST:
+    def get_instance(self) -> QuerySet:
+        return self.model.objects.all().order_by('-create_date')
+
+
+class DebugView(TemplateView, AdminRequiredMixin):
+    """Show misc debug buttons"""
+
+    template_name = '_admin/debug.html'
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        """Run actions"""
+        if 'raise_error' in request.POST:
             raise RuntimeError('test error')
-    return render(req, '_admin/debug.html')
+        elif 'clear_cache' in request.POST:
+            cache.clear()
+            messages.success(request, _('Successfully cleared Cache'))
+        elif 'update_settings' in request.POST:
+            setting = Setting.get('domain')
+            on_setting_update.send(sender=setting)
+            messages.success(request, _('Successfully updated settings.'))
+        elif 'start_task' in request.POST:
+            seconds = int(request.POST.get('start_task_sec'))
+            result = request.user.task_apply_async(debug_progress_task, seconds)
+            messages.success(request, _('Started Task, ID: %(id)s' % {'id': result.id}))
+        return super(DebugView, self).get(request)
+
+
+class FlowerView(TemplateView, AdminRequiredMixin):
+    """View to show iframe with flower"""
+
+    template_name = '_admin/flower.html'
+
+
+class TasksView(GenericIndexView, AdminRequiredMixin):
+    """Show list of all tasks and their current status"""
+
+    template_name = '_admin/tasks.html'
+    model = Task
+
+    def get_instance(self) -> QuerySet:
+        return self.model.objects.all().order_by('-created')

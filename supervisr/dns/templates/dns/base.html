@@ -1,25 +1,46 @@
 {% extends "core/base.html" %}
 
 {% load i18n %}
-{% load related_products %}
-{% load is_active %}
-{% load is_active_url %}
+{% load supervisr_utils %}
+{% load supervisr_is_active %}
 
 {% block sidenav %}
 <nav class="sidenav clr-nav-level-2">
   <section class="sidenav-content">
     <section class="nav-group">
-      <a href="{% url 'supervisr/dns:dns-index' %}" class="nav-link {% is_active 'dns-index' %}">{% trans "Zones" %}</a>
+      <a href="{% url 'supervisr_dns:index' %}" class="nav-link {% is_active 'index' %}">{% trans "Zones" %}</a>
       <ul class="nav-list">
-        {% related_products 'supervisr.dns.models.Zone' as zones %}
-        {% for z in zones %}
-        <li><a href="{% url 'supervisr/dns:dns-record-list' zone=z.domain %}" class="nav-link {% is_active_url 'supervisr/dns:dns-record-list' zone=z.domain %}">{{ z.domain }}</a></li>
+        {% related_models 'supervisr.dns.models.Zone' as zones %}
+        {% for zone in zones %}
+        <li>
+          <a href="{% url 'supervisr_dns:record-list' zone_uuid=zone.uuid %}" class="nav-link {% is_active_url 'supervisr_dns:record-list' zone_uuid=zone.uuid %}">{{ zone.domain }}</a>
+        </li>
         {% endfor %}
       </ul>
     </section>
-    <a href="" class="nav-link">
-    {% trans "TSIG" %}
-    </a>
+    <section class="nav-group">
+      <a href="{% url 'supervisr_dns:reverse-zone-index' %}" class="nav-link {% is_active 'reverse-zone-index' %}">{% trans "Reverse Zones" %}</a>
+      <ul class="nav-list">
+        {% related_models 'supervisr.dns.models.ReverseZone' as zones %}
+        {% for zone in zones %}
+        <li>
+          <a href="" class="nav-link">{{ zone.zone_ip }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    <section class="nav-group">
+      <a href="{% url 'supervisr_dns:record-set-create' %}" class="nav-link {% is_active 'record-set-create' %}">{% trans "Sets" %}</a>
+      <ul class="nav-list">
+        {% related_models 'supervisr.dns.models.SetRecord' as set_records %}
+        {% for set in set_records %}
+        <li>
+          <a href="{% url 'supervisr_dns:record-set-view' record_uuid=set.uuid %}" class="nav-link {% is_active_url 'supervisr_dns:record-set-view' record_uuid=set.uuid %}">{{ set.name }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
   </section>
+  {% include 'blocks/sidebar_footer.html' %}
 </nav>
 {% endblock %}

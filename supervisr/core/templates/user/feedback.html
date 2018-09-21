@@ -1,11 +1,11 @@
 {% extends "user/base.html" %}
 
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load i18n %}
 {% load gravatar %}
 
 {% block title %}
-{% supervisr_title "Feedback" %}
+{% title "Feedback" %}
 {% endblock %}
 
 {% block content %}
@@ -14,7 +14,7 @@
   <div class="panel-body">
     <div class="row">
       <div class="col-md-8">
-        {% include 'blocks/block_form_card.html' with card_title='Send Feedback' form_update='Send' %}
+        {% include 'blocks/form_card.html' with card_title='Send Feedback' form_update='Send' %}
       </div>
       <div class="col-md-4">
         <div class="card">

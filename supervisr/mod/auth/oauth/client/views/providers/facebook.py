@@ -21,6 +21,7 @@ class FacebookOAuthRedirect(OAuthRedirect):
             'scope': 'email',
         }
 
+
 class FacebookOAuth2Callback(OAuthCallback):
     """
     Facebook OAuth2 Callback

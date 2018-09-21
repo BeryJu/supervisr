@@ -1,10 +1,10 @@
 {% extends "common/base.html" %}
 
-{% load supervisr_title %}
+{% load supervisr_utils %}
 {% load i18n %}
 
 {% block title %}
-{% supervisr_title "Domains" %}
+{% title "Domains" %}
 {% endblock %}
 
 {% block content %}
@@ -24,30 +24,16 @@
   <thead>
     <tr>
       <th>{% trans 'Domain' %}</th>
-      <th>{% trans 'Provider (Registrar)' %}</th>
-      <th>{% trans 'Is Managed?' %}</th>
-      <th>{% trans 'Is Subdomain?' %}</th>
+      <th>{% trans 'Provider' %}</th>
+      <th>{% trans 'Description' %}</th>
     </tr>
   </thead>
   <tbody>
-    {% for domain in domains %}
-      <tr data-selectable data-ctx-edit="{% url 'domain-edit' domain=domain.domain %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'domain-delete' domain=domain.domain %}?back={{ request.get_full_path }}">
-        <td>{{ domain.domain }}</td>
-        <td>{{ domain.provider.name }}</td>
-        <td>
-          {% if domain.managed %}
-          <clr-icon shape="check"></clr-icon>
-          {% else %}
-          <clr-icon shape="times"></clr-icon>
-          {% endif %}
-        </td>
-        <td>
-          {% if domain.is_sub %}
-          <clr-icon shape="check"></clr-icon>
-          {% else %}
-          <clr-icon shape="times"></clr-icon>
-          {% endif %}
-        </td>
+    {% for domain in instances %}
+      <tr data-selectable data-ctx-edit="{% url 'domain-edit' domain=domain.domain_name %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'domain-delete' domain=domain.domain_name %}?back={{ request.get_full_path }}">
+        <td>{{ domain.domain_name }}</td>
+        <td>{{ domain.provider_instance.name }}</td>
+        <td>{{ domain.description }}</td>
       </tr>
     {% endfor %}
   </tbody>
@@ -55,6 +41,7 @@
 {% endblock %}
 
 {% block scripts %}
+{{ block.super }}
 <script>
 clrTableSelect('');
 </script>
