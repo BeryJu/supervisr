@@ -1,0 +1,34 @@
+{% extends "core/base.html" %}
+
+{% load i18n %}
+{% load supervisr_utils %}
+
+{% block title %}
+{% title 'Provider update' %}
+{% endblock %}
+
+{% block content %}
+<div class="modal">
+  <div class="modal-dialog {% if size %}modal-{{ size }}{% endif %}" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a aria-label="Close" class="close" class="btn btn-link" href="{% back %}">
+          <clr-icon aria-hidden="true" shape="close"></clr-icon>
+        </a>
+        <h3 class="modal-title">{% trans 'Provider update' %}</h3>
+      </div>
+      <form role="form" method="POST">
+        {% csrf_token %}
+        <input type="number" name="action">
+        <div class="modal-body">
+          {{ instance }}
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">{% trans primary_action|default:'Apply' %}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop" aria-hidden="true"></div>
+{% endblock %}

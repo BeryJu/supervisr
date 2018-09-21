@@ -2,10 +2,11 @@
 from logging import getLogger
 from typing import Union
 
+from celery import group
 from django.db.models import Model
 
 from supervisr.core.celery import CELERY_APP
-from supervisr.core.models import ProviderTriggerMixin, get_system_user
+from supervisr.core.models import ProviderTriggerMixin
 from supervisr.core.providers.base import BaseProvider
 from supervisr.core.providers.objects import (ProviderAction,
                                               ProviderObjectTranslator)
@@ -20,7 +21,7 @@ class ProviderMultiplexer(SupervisrTask):
 
     name = 'supervisr.core.providers.multiplexer.ProviderMultiplexer'
 
-    def run(self, action: ProviderAction, model: str, model_pk, **kwargs) -> int:
+    def run(self, action: ProviderAction, model: str, model_pk, **kwargs):
         """Main Provider handler. This function is called as a task from `post_save`,
         `pre_delete` and `m2m_changed`. Function uses `ProviderMultiplexer`
 
@@ -31,13 +32,12 @@ class ProviderMultiplexer(SupervisrTask):
         """
         from supervisr.core.providers.tasks import get_instance
         self.prepare(**kwargs)
-        del kwargs['invoker']
         model_class = path_to_class(model)
         instance = get_instance(model_class, model_pk)
-        system_user = get_system_user()
 
-        LOGGER.debug("provider_signal_handler %s", action)
-        return self.model_modify_handler(action, system_user, instance, **kwargs)
+        LOGGER.debug("provider_signal_handler %r", action)
+        task_group = group(self.get_model_handlers(action, instance, **kwargs))
+        return task_group()
 
     def get_translator(self, instance: Model, root_provider: BaseProvider,
                        iteration=0) -> Union[ProviderObjectTranslator, None]:
@@ -65,8 +65,8 @@ class ProviderMultiplexer(SupervisrTask):
             return translator(provider_instance=root_provider)
         return None
 
-    def model_modify_handler(self, action: ProviderAction, invoker: 'User',
-                             instance: ProviderTriggerMixin, **kwargs) -> int:
+    def get_model_handlers(self, action: ProviderAction,
+                           instance: ProviderTriggerMixin, **kwargs) -> int:
         """Notify providers that model was saved/deleted so translation can start
 
         Args:
@@ -76,18 +76,13 @@ class ProviderMultiplexer(SupervisrTask):
         """
         from supervisr.core.providers.tasks import provider_do_work
         LOGGER.debug("instance %r, action %r", instance, action)
-        provider_count = 0
         for provider in instance.provider_instances:
             LOGGER.debug("\tprovider_instance %r", provider)
             class_path = class_to_path(instance.__class__)
             args = (action, provider.pk, class_path, instance.pk)
             CELERY_APP.control.add_consumer(class_path)
-            invoker.task_apply_async(provider_do_work, *args, celery_kwargs={
-                'queue': class_path
-            }, users=provider.users.all(), **kwargs)
             LOGGER.debug("\tstarted task provider_do_work")
-            provider_count += 1
-        return provider_count
+            yield provider_do_work.signature(args, kwargs).set(queue=class_path)
 
 
 CELERY_APP.tasks.register(ProviderMultiplexer())

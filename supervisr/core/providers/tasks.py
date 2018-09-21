@@ -53,25 +53,26 @@ def provider_resolve_helper(provider_pk: int, model_path: str, model_pk) -> Iter
 @CELERY_APP.task(bind=True, max_retries=10, base=SupervisrTask)
 def provider_do_work(self, action: ProviderAction, provider_pk: int,
                      model: str, model_pk, **kwargs):
-    """Run the actual saving procedure and keep trying on failure"""
+    """Run the actual saving procedure of a single provider and keep trying on failure"""
     self.prepare(**kwargs)
-    del kwargs['invoker']
     LOGGER.debug("Starting provider_do_work %r", action)
     try:
         self.progress.set(1)
         count = 0
-        result = 0
+        results = []
         provider_object_generator = provider_resolve_helper(provider_pk, model, model_pk)
         for provider_object in provider_object_generator:
+            result = None
             if action == ProviderAction.SAVE:
-                result |= provider_object.save(**kwargs)
+                result = provider_object.save(**kwargs)
             elif action == ProviderAction.DELETE:
-                result |= provider_object.delete()
+                result = provider_object.delete(**kwargs)
             count += 1
+            results.append((provider_object.__class__.__name__, result))
             self.progress.set(count)
             LOGGER.debug("\tUpdated instance %r", provider_object)
         self.progress.set(100)
-        return result
+        return {provider_pk: results}
     except ProviderRetryException as exc:
         LOGGER.warning(exc)
         raise self.retry(args=[action, provider_pk, model, model_pk], kwargs=kwargs,

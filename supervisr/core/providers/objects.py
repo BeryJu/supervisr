@@ -40,7 +40,7 @@ class ProviderObject(object):
             setattr(self, key, value)
 
     # pylint: disable=unused-argument
-    def save(self, created: bool) -> ProviderResult:
+    def save(self, **kwargs) -> ProviderResult:
         """Save this instance to provider. Should return True if a new object was saved
         and False if an existing object was modified
 
@@ -52,7 +52,8 @@ class ProviderObject(object):
         """
         return ProviderResult.NOT_IMPLEMENTED
 
-    def delete(self) -> ProviderResult:
+    # pylint: disable=unused-argument
+    def delete(self, **kwargs) -> ProviderResult:
         """Delete this instance from provider
 
         Returns:
