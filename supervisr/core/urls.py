@@ -14,7 +14,8 @@ from supervisr.core.utils import get_apps
 from supervisr.core.utils.constants import (DOMAIN_REGEX, EMAIL_REGEX,
                                             MOD_REGEX, UUID_REGEX)
 from supervisr.core.views import (accounts, admin, common, domains, products,
-                                  providers, search, settings, setup, users)
+                                  search, settings, setup, users)
+from supervisr.core.views.providers import actions, credentials, instances
 
 LOGGER = logging.getLogger(__name__)
 
@@ -59,23 +60,26 @@ urlpatterns = [
         domains.DomainEditView.as_view(), name='domain-edit'),
     url(r'^domains/(?P<domain>%s)/delete/$' % DOMAIN_REGEX,
         domains.DomainDeleteView.as_view(), name='domain-delete'),
-    # Provider
-    url(r'^providers/instances/$', providers.ProviderIndexView.as_view(), name='instance-index'),
-    url(r'^providers/instances/new/$', providers.ProviderCreateView.as_view(),
+    # Provider - Instances
+    url(r'^providers/instances/$', instances.ProviderIndexView.as_view(), name='instance-index'),
+    url(r'^providers/instances/new/$', instances.ProviderCreateView.as_view(),
         name='instance-new'),
     url(r'^providers/instances/(?P<uuid>%s)/edit/$' % UUID_REGEX,
-        providers.ProviderUpdateView.as_view(), name='instance-edit'),
+        instances.ProviderUpdateView.as_view(), name='instance-edit'),
     url(r'^providers/instances/(?P<uuid>%s)/delete/$' % UUID_REGEX,
-        providers.ProviderDeleteView.as_view(), name='instance-delete'),
-    # Credentials
+        instances.ProviderDeleteView.as_view(), name='instance-delete'),
+    # Provider - Credentials
     url(r'^providers/credentials/$',
-        providers.CredentialIndexView.as_view(), name='credential-index'),
-    url(r'^providers/credentials/new/$', providers.CredentialNewView.as_view(),
+        credentials.CredentialIndexView.as_view(), name='credential-index'),
+    url(r'^providers/credentials/new/$', credentials.CredentialNewView.as_view(),
         name='credential-new'),
     url(r'^providers/credentials/(?P<name>[a-zA-Z0-9\-\.\_\s]+)/edit/$',
-        providers.CredentialUpdateView.as_view(), name='credential-edit'),
+        credentials.CredentialUpdateView.as_view(), name='credential-edit'),
     url(r'^providers/credentials/(?P<name>[a-zA-Z0-9\-\.\_\s]+)/delete/$',
-        providers.CredentialDeleteView.as_view(), name='credential-delete'),
+        credentials.CredentialDeleteView.as_view(), name='credential-delete'),
+    # Provider - Actions
+    url(r'^providers/actions/$',
+        actions.ProviderUpdateViewTest.as_view(), name='provider-action'),
     # User views
     url(r'^user/$', users.index, name='user-index'),
     url(r'^user/events/$', users.events, name='user-events'),

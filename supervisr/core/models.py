@@ -313,6 +313,20 @@ class Setting(CreatedUpdatedModel):
         return str(value).lower() == 'true'
 
     @staticmethod
+    def get_int(*args, **kwargs) -> int:
+        """Return value cast to int
+
+        This is wrapper around `Setting.get`, which returns a boolean.
+
+        Returns:
+            True if the Setting's value in lowercase is equal to 'true'. Otherwise False.
+        """
+        value = Setting.get(*args, inspect_offset=2, **kwargs)
+        if not isinstance(value, str):
+            value = str(value)
+        return int(value)
+
+    @staticmethod
     def set(key: str, value: str, namespace='', inspect_offset=1) -> bool:
         """Set value, when Setting doesn't exist, it's created with value
 

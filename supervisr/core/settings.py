@@ -257,6 +257,7 @@ SESSION_CACHE_ALIAS = "default"
 
 CELERY_TASK_DEFAULT_QUEUE = 'supervisr'
 CELERY_BROKER_URL = 'redis://%s' % CONFIG.get('redis')
+CELERY_RESULT_BACKEND = 'redis://%s' % CONFIG.get('redis')
 
 with CONFIG.cd('email'):
     EMAIL_HOST = CONFIG.get('host', default='localhost')
