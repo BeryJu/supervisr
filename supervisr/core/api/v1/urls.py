@@ -2,7 +2,7 @@
 
 from django.conf.urls import url
 
-from supervisr.core.api.v1.accounts import AccountAPI
+from supervisr.core.api.v1.accounts import AccountAPI, http_basic_auth
 from supervisr.core.api.v1.credentials import CredentialAPI
 from supervisr.core.api.v1.domains import DomainAPI
 from supervisr.core.api.v1.events import EventAPI
