@@ -3,6 +3,7 @@ from ipaddress import ip_address
 from typing import Generator
 
 from django.db import models
+from django.utils.translation import ugettext as _
 
 from supervisr.core.models import (CastableModel, Domain, ProviderAcquirable,
                                    ProviderTriggerMixin, UserAcquirable,
@@ -54,8 +55,8 @@ RECORD_TYPES = (
 class BaseZone(UUIDModel, CastableModel):
     """Base Zone fields"""
 
-    soa_mname = models.TextField()
-    soa_rname = models.TextField()
+    soa_mname = models.TextField(help_text=_("Primary Nameserver's Address"))
+    soa_rname = models.EmailField()
     soa_serial = models.IntegerField()
     soa_refresh = models.IntegerField(default=86400)
     soa_retry = models.IntegerField(default=7200)
@@ -73,6 +74,11 @@ class Zone(BaseZone, ProviderAcquirable, UserAcquirable):
     """DNS Zone"""
 
     domain = models.ForeignKey(Domain, on_delete=models.CASCADE)
+
+    @property
+    def zone_name(self):
+        """Get domain name"""
+        return self.domain.domain_name
 
     def __str__(self):
         return self.domain.domain_name
