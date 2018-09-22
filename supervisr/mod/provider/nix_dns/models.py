@@ -1,6 +1,8 @@
 """supervisr powerdns models"""
+from datetime import datetime
 
 from django.db import models
+from django.utils.timezone import utc
 
 
 class Comment(models.Model):
@@ -64,10 +66,14 @@ class Record(models.Model):
     content = models.TextField(blank=True, null=True)
     ttl = models.IntegerField(blank=True, null=True)
     prio = models.IntegerField(blank=True, null=True)
-    change_date = models.IntegerField(blank=True, null=True) # TODO: Automatically set this on save
-    disabled = models.IntegerField(blank=True, null=True)
+    change_date = models.IntegerField(blank=True, null=True)
+    disabled = models.BooleanField(default=False)
     ordername = models.CharField(max_length=255, blank=True, null=True)
     auth = models.IntegerField(blank=True, null=True)
+
+    def save(self, **kwargs):
+        self.change_date = int(datetime.utcnow().replace(tzinfo=utc).timestamp())
+        super().save(**kwargs)
 
     class Meta:
         db_table = 'records'

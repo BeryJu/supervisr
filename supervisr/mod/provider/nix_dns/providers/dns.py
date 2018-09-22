@@ -1,4 +1,5 @@
 """Supervisr PowerDNS Domain Provider"""
+from logging import getLogger
 
 from supervisr.core.providers.base import ProviderObjectTranslator
 from supervisr.dns.models import ReverseZone, Zone
@@ -8,6 +9,7 @@ from supervisr.mod.provider.nix_dns.providers.translators.record import \
 from supervisr.mod.provider.nix_dns.providers.translators.zone import \
     PowerDNSZoneTranslator
 
+LOGGER = getLogger(__name__)
 
 class NixDNSProvider(CompatDNSProvider):
     """PowerDNS provider"""
@@ -15,6 +17,7 @@ class NixDNSProvider(CompatDNSProvider):
     parent = None
 
     def get_translator(self, data_type) -> ProviderObjectTranslator:
+        LOGGER.warning(data_type)
         if data_type == Zone or data_type == ReverseZone:
             return PowerDNSZoneTranslator
         elif data_type == CompatDNSRecord:

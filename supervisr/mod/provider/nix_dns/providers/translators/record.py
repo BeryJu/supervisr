@@ -64,6 +64,7 @@ class PowerDNSRecordTranslator(ProviderObjectTranslator[CompatDNSRecord]):
 
     def to_external(self, internal: CompatDNSRecord) -> Generator[PowerDNSRecordObject, None, None]:
         """Convert Record to PDNS Record"""
+        LOGGER.warning(internal)
         yield PowerDNSRecordObject(
             translator=self,
             internal=internal
