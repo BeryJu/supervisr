@@ -37,7 +37,7 @@ class PowerDNSRecordObject(ProviderObject):
             disabled=not self.internal.enabled,
             ttl=self.internal.ttl,
             prio=self.internal.priority,
-        )
+            auth=1)
         if updated:
             return ProviderResult.SUCCESS_UPDATED
         return ProviderResult.SUCCESS_CREATED
@@ -51,9 +51,10 @@ class PowerDNSRecordObject(ProviderObject):
             domain=self.domain,
             type=self.internal.type,
             content=self.internal.content,
+            disabled=not self.internal.enabled,
             ttl=self.internal.ttl,
             prio=self.internal.priority,
-            disabled=not self.internal.enabled).delete()
+            auth=1).delete()
         if delete_count == 1:
             return ProviderResult.SUCCESS
         return ProviderResult.OTHER_ERROR
@@ -64,7 +65,6 @@ class PowerDNSRecordTranslator(ProviderObjectTranslator[CompatDNSRecord]):
 
     def to_external(self, internal: CompatDNSRecord) -> Generator[PowerDNSRecordObject, None, None]:
         """Convert Record to PDNS Record"""
-        LOGGER.warning(internal)
         yield PowerDNSRecordObject(
             translator=self,
             internal=internal

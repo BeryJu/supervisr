@@ -17,7 +17,6 @@ class NixDNSProvider(CompatDNSProvider):
     parent = None
 
     def get_translator(self, data_type) -> ProviderObjectTranslator:
-        LOGGER.warning(data_type)
         if data_type == Zone or data_type == ReverseZone:
             return PowerDNSZoneTranslator
         elif data_type == CompatDNSRecord:
