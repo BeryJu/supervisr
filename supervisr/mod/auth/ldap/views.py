@@ -8,10 +8,10 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from supervisr.mod.auth.ldap.forms.settings import (AuthenticationBackendSettings,
-                                                    ConnectionSettings,
-                                                    CreateUsersSettings,
-                                                    GeneralSettingsForm)
+from supervisr.mod.auth.ldap.forms import (AuthenticationBackendSettings,
+                                           ConnectionSettings,
+                                           CreateUsersSettings,
+                                           GeneralSettingsForm)
 
 
 @login_required

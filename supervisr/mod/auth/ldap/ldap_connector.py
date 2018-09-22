@@ -10,7 +10,7 @@ from passlib.hash import sha512_crypt
 
 from supervisr.core.decorators import time
 from supervisr.core.models import Setting, User, make_username
-from supervisr.mod.auth.ldap.forms.settings import GeneralSettingsForm
+from supervisr.mod.auth.ldap.forms import GeneralSettingsForm
 from supervisr.mod.auth.ldap.models import LDAPGroupMapping, LDAPModification
 
 LOGGER = logging.getLogger(__name__)
@@ -31,9 +31,9 @@ class LDAPConnector(object):
 
     @time(statistic_key='ldap.ldap_connector.init')
     def __init__(self, mock=False, con_args=None, server_args=None):
-        super(LDAPConnector, self).__init__()
+        super().__init__()
         if LDAPConnector.enabled() is False:
-            LOGGER.warning("LDAP not Enabled")
+            LOGGER.debug("LDAP not Enabled")
             return
         mode = Setting.get('mode')
         if mode == GeneralSettingsForm.MODE_AUTHENTICATION_BACKEND:
@@ -101,9 +101,7 @@ class LDAPConnector(object):
 
     @staticmethod
     def handle_ldap_error(object_dn, action, data):
-        """
-        Custom Handler for LDAP methods to write LDIF to DB
-        """
+        """Custom Handler for LDAP methods to write LDIF to DB"""
         LDAPModification.objects.create(
             dn=object_dn,
             action=action,
@@ -112,31 +110,23 @@ class LDAPConnector(object):
     # Switch so we can easily disable LDAP
     @staticmethod
     def enabled():
-        """
-        Returns whether LDAP is enabled or not
-        """
+        """Returns whether LDAP is enabled or not"""
         return Setting.get_bool('enabled') or 'test' in sys.argv
 
     @staticmethod
     def get_server():
-        """
-        Return the saved LDAP Server
-        """
+        """Return the saved LDAP Server"""
         return Setting.get(key='server')
 
     @staticmethod
     def encode_pass(password):
-        """
-        Encodes a plain-text password so it can be used by AD
-        """
+        """Encodes a plain-text password so it can be used by AD"""
         return '"{}"'.format(password).encode('utf-16-le')
 
     @time(statistic_key='ldap.ldap_connector.lookup')
     def lookup(self, generate_only=False, **fields):
-        """
-        Search email in LDAP and return the DN.
-        Returns False if nothing was found.
-        """
+        """Search email in LDAP and return the DN.
+        Returns False if nothing was found."""
         filters = []
         for item, value in fields.items():
             filters.append("(%s=%s)" % (item, value))
@@ -159,8 +149,7 @@ class LDAPConnector(object):
 
     def _get_or_create_user(self, user_data, password):
         """Returns a Django user for the given LDAP user data.
-        If the user does not exist, then it will be created.
-        """
+        If the user does not exist, then it will be created."""
         attributes = user_data.get("attributes")
         if attributes is None:
             LOGGER.warning("LDAP user attributes empty")
@@ -200,10 +189,8 @@ class LDAPConnector(object):
         return user
 
     def auth_user(self, password, **filters):
-        """
-        Try to bind as either user_dn or mail with password.
-        Returns True on success, otherwise False
-        """
+        """Try to bind as either user_dn or mail with password.
+        Returns True on success, otherwise False"""
         if not self.authbackend_enabled:
             return None
         filters.pop('request')
@@ -239,23 +226,19 @@ class LDAPConnector(object):
         return None
 
     def is_email_used(self, mail):
-        """
-        Checks whether an email address is already registered in LDAP
-        """
+        """Checks whether an email address is already registered in LDAP"""
         if self.create_users_enabled:
             return self.lookup(mail=mail)
         return False
 
     @time(statistic_key='ldap.ldap_connector.create_ldap_user')
     def create_ldap_user(self, user, raw_password):
-        """
-        Creates a new LDAP User from a django user and raw_password.
-        Returns True on success, otherwise False
-        """
+        """Creates a new LDAP User from a django user and raw_password.
+        Returns True on success, otherwise False"""
         if not self.create_users_enabled:
             return False
         # The dn of our new entry/object
-        username = 'c_' + str(user.id) + '_' + user.username
+        username = str(user.id) + '_' + user.username
         # sAMAccountName is limited to 20 chars
         # https://msdn.microsoft.com/en-us/library/ms679635.aspx
         username_trunk = username[:20] if len(username) > 20 else username
@@ -285,9 +268,7 @@ class LDAPConnector(object):
 
     @time(statistic_key='ldap.ldap_connector._do_modify')
     def _do_modify(self, diff, **fields):
-        """
-        Do the LDAP modification itself
-        """
+        """Do the LDAP modification itself"""
         user_dn = self.lookup(**fields)
         try:
             self.con.modify(user_dn, diff)
