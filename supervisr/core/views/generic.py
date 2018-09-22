@@ -156,7 +156,6 @@ class GenericReadView(GenericModelView):
         return self.render(render_kwargs)
 
 
-# pylint: disable=abstract-method
 class GenericUpdateView(GenericModelView):
     """Generic view to edit an object instance"""
 
@@ -213,7 +212,6 @@ class GenericUpdateView(GenericModelView):
         return self.render(form)
 
 
-# pylint: disable=abstract-method
 class GenericDeleteView(GenericModelView):
     """Generic View to delete model instances"""
 
