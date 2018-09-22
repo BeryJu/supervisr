@@ -53,7 +53,7 @@ recommonmark
 autopep8
 pycodestyle<2.4.0,>=2.0.0
 -e git+https://github.com/BeryJu/pdoc.git@ebb38ec5d2a023a31442757bba697c60d315578f#egg=pdoc
-markdown
+markdown<3.0
 mkdocs
 mkdocs-material
 tornado>=5.0
