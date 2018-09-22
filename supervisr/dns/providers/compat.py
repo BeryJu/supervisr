@@ -101,6 +101,9 @@ class CompatDNSTranslator(ProviderObjectTranslator):
                     del compat_record.name_parts[at_index:]
                 # Append domain so we can use join for everything
                 compat_record.name_parts.append(compat_record.domain)
+                # Replace spaces with dashes to make valid records
+                compat_record.name_parts = [label.replace(
+                    ' ', '-') for label in compat_record.name_parts]
                 # Join them with . and add domain to end
                 compat_record.name = '.'.join(compat_record.name_parts)
                 all_records.append(compat_record)

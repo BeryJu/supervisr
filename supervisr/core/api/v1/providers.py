@@ -1,5 +1,6 @@
 """Supervisr Core Provider APIv1"""
 
+from celery.result import GroupResult
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
@@ -39,4 +40,6 @@ class ProviderAPI(UserAcquirableModelAPI):
         group_result = request.user.task_apply_async(ProviderMultiplexer(), *args)
         group_result.wait()
         result = group_result.children[0]
-        return result.join()
+        if isinstance(result, GroupResult):
+            return result.join()
+        return result.get()
