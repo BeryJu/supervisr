@@ -31,7 +31,7 @@ class ProviderAPI(UserAcquirableModelAPI):
         """Trigger provider update"""
         instance_class = data.get('instance_class')
         instance_pk = data.get('instance_pk')
-        action = ProviderAction(data.get('provider_action', 1))
+        action = ProviderAction(int(data.get('provider_action', 1)))
         model = path_to_class(instance_class)
         if not issubclass(model, ProviderTriggerMixin):
             raise Http404
