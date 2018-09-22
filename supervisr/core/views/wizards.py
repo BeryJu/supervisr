@@ -58,7 +58,7 @@ class BaseWizardView(SessionWizardView):
             return self._handle_request_res
         return super().render(form, **kwargs)
 
-    def finish(self, form_list) -> HttpResponse:
+    def finish(self, *forms) -> HttpResponse:
         """Wrapper for done with an actual list as param"""
         raise NotImplementedError()
 
@@ -71,11 +71,11 @@ class BaseWizardView(SessionWizardView):
         _form_list = []
         for form in form_list:
             _form_list.append(form)
-        return self.finish(_form_list)
+        return self.finish(*_form_list)
 
 
 class NamedWizard(BaseWizardView, NamedUrlSessionWizardView):
     """Same as BaseWizardView except with named steps"""
 
-    def finish(self, form_list) -> HttpResponse:
+    def finish(self, *forms) -> HttpResponse:
         raise NotImplementedError()

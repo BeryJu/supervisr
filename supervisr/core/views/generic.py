@@ -49,6 +49,7 @@ class GenericModelView(LoginRequiredMixin):
     model_verbose_name = ''
     template = None
     template_name = None
+    redirect_view = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -86,14 +87,17 @@ class GenericModelView(LoginRequiredMixin):
         string into a HttpRedirectResponse."""
         if 'back' in self.request.GET:
             return redirect(self.request.GET.get('back'))
+        if self.redirect_view is not None:
+            return redirect(reverse(self.redirect_view))
         response = self.redirect(*args, **kwargs)
         if isinstance(response, str):
             return redirect(reverse(response))
         return response
 
+    # pylint: disable=unused-argument
     def redirect(self, instance) -> Union[HttpResponse, str]:
         """Redirect after a successful write operation"""
-        raise NotImplementedError()
+        return ''
 
 
 class GenericIndexView(GenericModelView):

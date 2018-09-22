@@ -177,7 +177,7 @@ class TFASetupView(BaseWizardView):
             form.fields['tokens'].choices = tokens
         return form
 
-    def finish(self, form_list):
+    def finish(self, *forms):
         # Save device as confirmed
         self.totp_device.confirmed = True
         self.totp_device.save()

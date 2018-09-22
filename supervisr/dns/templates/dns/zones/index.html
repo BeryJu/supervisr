@@ -40,8 +40,8 @@
   </thead>
   <tbody>
     {% for zone in instances %}
-    <tr data-selectable data-ctx-edit="{% url 'supervisr_dns:zone-update' zone_uuid=zone.uuid %}?back={{ request.get_full_path }}"
-      data-ctx-trash="{% url 'supervisr_dns:zone-delete' zone_uuid=zone.uuid %}?back={{ request.get_full_path }}">
+    <tr data-selectable data-ctx-edit="{% url 'supervisr_dns:zone-update' uuid=zone.uuid %}?back={{ request.get_full_path }}"
+      data-ctx-trash="{% url 'supervisr_dns:zone-delete' uuid=zone.uuid %}?back={{ request.get_full_path }}">
       <td>{{ zone.domain }}</td>
       <td>{{ zone.users.all|join:"," }}</td>
       <td>{{ zone.records.all|length }}</td>

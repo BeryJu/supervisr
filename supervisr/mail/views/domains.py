@@ -54,10 +54,10 @@ class MailDomainNewWizard(BaseWizardView):
             form.fields['providers'].queryset = provider_instance
         return form
 
-    def finish(self, form_list):
-        mail_domain = form_list[0].save(commit=False)
+    def finish(self, form):
+        mail_domain = form.save(commit=False)
         mail_domain.save()
-        mail_domain.update_provider_m2m(form_list[0].cleaned_data.get('providers'))
+        mail_domain.update_provider_m2m(form.cleaned_data.get('providers'))
         UserAcquirableRelationship.objects.create(
             model=mail_domain,
             user=self.request.user)

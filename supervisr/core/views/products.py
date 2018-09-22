@@ -66,6 +66,6 @@ class ProductNewWizard(BaseWizardView):
     title = _("New Product")
     form_list = [ProductForm]
 
-    def finish(self, form_list) -> HttpResponse:
+    def finish(self, form) -> HttpResponse:
         """stuff"""
         pass

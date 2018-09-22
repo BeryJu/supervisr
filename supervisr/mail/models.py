@@ -1,6 +1,4 @@
-"""
-Supervisr Web Models
-"""
+"""Supervisr Mail Models"""
 import logging
 
 from django.db import models

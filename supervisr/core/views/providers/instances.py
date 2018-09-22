@@ -72,17 +72,17 @@ class ProviderCreateView(BaseWizardView):
     def get_template_names(self):
         return [PROVIDER_TEMPLATES[self.steps.current]]
 
-    def finish(self, form_list):
-        credentials = form_list[0].cleaned_data.get('credentials')
+    def finish(self, form):
+        credentials = form.cleaned_data.get('credentials')
         if not credentials.owner == self.request.user:
             raise Http404
 
         r_credentials = credentials.cast()
 
         prov_inst = ProviderInstance.objects.create(
-            name=form_list[0].cleaned_data.get('name'),
+            name=form.cleaned_data.get('name'),
             credentials=r_credentials,
-            provider_path=form_list[0].cleaned_data.get('provider_path'))
+            provider_path=form.cleaned_data.get('provider_path'))
 
         UserAcquirableRelationship.objects.create(
             model=prov_inst,

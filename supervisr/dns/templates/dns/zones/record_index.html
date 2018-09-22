@@ -33,9 +33,9 @@
       <clr-icon shape="caret down"></clr-icon>
     </button>
     <div class="dropdown-menu">
-      <a href="{% url 'supervisr_dns:record-data-create' %}?zone_uuid={{ zone.uuid }}" class="dropdown-item">{% trans 'Create new Data Record and attach to Zone' %}</a>
-      <a href="{% url 'supervisr_dns:record-set-create' %}?zone_uuid={{ zone.uuid }}" class="dropdown-item">{% trans 'Create new Set and attach to Zone' %}</a>
-      <a href="{% url 'supervisr_dns:record-set-create' %}?zone_uuid={{ zone.uuid }}" class="dropdown-item">{% trans 'Attach existing Set' %}</a>
+      <a href="{% url 'supervisr_dns:record-data-create' %}?uuid={{ zone.uuid }}" class="dropdown-item">{% trans 'Create new Data Record and attach to Zone' %}</a>
+      <a href="{% url 'supervisr_dns:record-set-create' %}?uuid={{ zone.uuid }}" class="dropdown-item">{% trans 'Create new Set and attach to Zone' %}</a>
+      <a href="{% url 'supervisr_dns:record-set-create' %}?uuid={{ zone.uuid }}" class="dropdown-item">{% trans 'Attach existing Set' %}</a>
     </div>
   </div>
   <a data-ctx-name="edit" class="btn">

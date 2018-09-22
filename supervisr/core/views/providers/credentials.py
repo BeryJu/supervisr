@@ -58,10 +58,10 @@ class CredentialNewView(BaseWizardView):
                 self.form_list.update({str(int(self.steps.current) + 1): _form_class})
         return self.get_form_step_data(form)
 
-    def finish(self, form_list):
-        if len(form_list) < 2:
+    def finish(self, *forms):
+        if len(forms) < 2:
             raise ValidationError(_('No type selected'))
-        cred = form_list[1].save(commit=False)
+        cred = forms[1].save(commit=False)
         cred.owner = self.request.user
         cred.save()
         messages.success(self.request, _('Credentials successfully created'))

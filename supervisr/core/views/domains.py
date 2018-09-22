@@ -47,8 +47,8 @@ class DomainNewView(BaseWizardView):
             form.request = self.request
         return form
 
-    def finish(self, form_list) -> HttpResponse:
-        domain = form_list[0].save()
+    def finish(self, form) -> HttpResponse:
+        domain = form.save()
         UserAcquirableRelationship.objects.create(
             model=domain,
             user=self.request.user)
