@@ -1,20 +1,12 @@
-@angular/platform-browser@6.0.9
-MIT
-MIT
-
 @angular/core@6.0.9
 MIT
 MIT
 
-@angular/forms@6.0.9
+@clr/angular@0.13.2
 MIT
 MIT
 
 @angular/common@6.0.9
-MIT
-MIT
-
-@clr/angular@0.13.2
 MIT
 MIT
 
@@ -67,6 +59,14 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+@angular/platform-browser@6.0.9
+MIT
+MIT
+
+@angular/forms@6.0.9
+MIT
+MIT
 
 @angular/animations@6.0.9
 MIT
