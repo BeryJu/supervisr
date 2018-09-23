@@ -22,7 +22,6 @@ class ProviderAPI(UserAcquirableModelAPI):
         super().__init__(*args, **kwargs)
         self.ALLOWED_VERBS['GET'].extend(['get_all', 'trigger_update'])
 
-    # pylint: disable=unused-argument
     def get_all(self, request, data):
         """Return list of all possible providers"""
         return get_providers(path=True)

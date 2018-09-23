@@ -33,7 +33,6 @@ class EmailBackend(ModelBackend):
 class APIKeyBackend(ModelBackend):
     """Authenticate user by API Key"""
 
-    # pylint: disable=unused-argument
     def authenticate(self, request, **creds):
         """Authenticate based on API Key in request"""
         if not request:

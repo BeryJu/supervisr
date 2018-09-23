@@ -67,7 +67,6 @@ class TestDecorators(TestCase):
     def test_basic_auth(self):
         """test http basic auth"""
         @logged_in_or_basicauth(realm='testrealm')
-        # pylint: disable=unused-argument
         def _view(request):
             """ user has gotten through so everything's fine """
             return HttpResponse(status=204)
@@ -94,7 +93,6 @@ class TestDecorators(TestCase):
     def test_require_setting(self):
         """Test require_setting decorator"""
         @require_setting('supervisr.core/test', True)
-        # pylint: disable=unused-argument
         def view(request):
             """dummy view"""
             return HttpResponse('success')

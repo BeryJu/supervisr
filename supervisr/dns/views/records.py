@@ -9,7 +9,8 @@ from django.utils.translation import ugettext as _
 
 from supervisr.core.models import UserAcquirableRelationship
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
-                                          GenericUpdateView)
+                                          GenericUpdateView,
+                                          LoginRequiredMixin)
 from supervisr.core.views.wizards import BaseWizardView
 from supervisr.dns.forms.records import DataRecordForm, SetRecordForm
 from supervisr.dns.models import BaseRecord, DataRecord, SetRecord, Zone
@@ -49,7 +50,7 @@ class SetRecordView(GenericIndexView):
 
 
 # pylint: disable=too-many-ancestors
-class DataRecordWizard(BaseWizardView):
+class DataRecordWizard(LoginRequiredMixin, BaseWizardView):
     """Wizard to create a new DataRecord"""
 
     title = _('New Data Record')
@@ -75,7 +76,7 @@ class DataRecordWizard(BaseWizardView):
 
 
 # pylint: disable=too-many-ancestors
-class SetRecordWizard(BaseWizardView):
+class SetRecordWizard(LoginRequiredMixin, BaseWizardView):
     """Wizard to create a new SetRecord"""
 
     title = _('New Set Record')
@@ -115,7 +116,7 @@ class RecordUpdateView(GenericUpdateView):
         instance = instance.cast()
         if isinstance(instance, DataRecord):
             return DataRecordForm(*args, instance=instance, **kwargs)
-        elif isinstance(instance, SetRecord):
+        if isinstance(instance, SetRecord):
             return SetRecordForm(*args, instance=instance, **kwargs)
         raise ValueError('instance must be either DataRecord or SetRecord')
 

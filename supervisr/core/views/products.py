@@ -9,7 +9,8 @@ from django.utils.translation import ugettext as _
 from supervisr.core.decorators import ifapp
 from supervisr.core.forms.products import ProductForm
 from supervisr.core.models import Product, UserAcquirableRelationship
-from supervisr.core.views.generic import AdminRequiredMixin, GenericIndexView
+from supervisr.core.views.generic import (AdminRequiredMixin, GenericIndexView,
+                                          LoginRequiredMixin)
 from supervisr.core.views.wizards import BaseWizardView
 
 
@@ -60,7 +61,7 @@ class ProductAdminIndex(GenericIndexView, AdminRequiredMixin):
 
 
 @method_decorator(permission_required('supervisr_core.core_product_can_create'), name='dispatch')
-class ProductNewWizard(BaseWizardView):
+class ProductNewWizard(LoginRequiredMixin, BaseWizardView):
     """Wizard to create a Product"""
 
     title = _("New Product")

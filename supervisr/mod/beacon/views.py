@@ -18,6 +18,9 @@ from supervisr.mod.beacon.sender import Sender
 def admin_settings(request: HttpRequest) -> HttpResponse:
     """Default view for modules without admin view"""
     is_master = len(Pulse.objects.all()) > 0 or settings.DEBUG
+    # Disable no-else-return because otherwise form is reset on
+    # successful update
+    # pylint: disable=no-else-return
     if request.method == 'POST':
         form = BeaconSettingsForm(request.POST)
         if form.is_valid():

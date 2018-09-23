@@ -32,14 +32,12 @@ def check_key(view_function):
 
 
 @check_key
-# pylint: disable=unused-argument
 def module_list(request: HttpRequest) -> HttpResponse:
     """Return a list of modules"""
     return HttpResponse('Not Implemented yet!', status=501)
 
 
 @check_key
-# pylint: disable=unused-argument
 def module(request: HttpRequest, user: str, module: str) -> HttpResponse:
     """Return information about module <module>"""
     users = User.objects.filter(username=user)
@@ -56,14 +54,12 @@ def module(request: HttpRequest, user: str, module: str) -> HttpResponse:
 
 
 @check_key
-# pylint: disable=unused-argument
 def user_list(request: HttpRequest) -> HttpResponse:
     """Return user list"""
     return HttpResponse('Not Implemented yet!', status=501)
 
 
 @check_key
-# pylint: disable=unused-argument
 def user(request: HttpRequest, user: str) -> HttpResponse:
     """Return user information"""
     return HttpResponse('Not Implemented yet!', status=501)
@@ -96,7 +92,6 @@ def release_list(request: HttpRequest) -> HttpResponse:
 
 
 @check_key
-# pylint: disable=unused-argument
 def release(request: HttpRequest, user: str, module: str, version: str) -> HttpResponse:
     """Return list of releases for module"""
     users = User.objects.filter(username=user)
@@ -118,7 +113,6 @@ def release(request: HttpRequest, user: str, module: str, version: str) -> HttpR
 
 
 @check_key
-# pylint: disable=unused-argument
 def file(request: HttpRequest, user: str, module: str, version: str) -> HttpResponse:
     """Return file for release"""
     p_user = User.objects.get(username=user)

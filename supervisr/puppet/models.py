@@ -59,10 +59,7 @@ class PuppetModuleRelease(models.Model):
                 if file.lower().endswith('metadata.json'):
                     self.metadata = tar.extractfile(file).read().decode('utf-8')
                     LOGGER.debug("%s: Added 'metadata' from targz", self.module.name)
-                    try:
-                        json.loads(self.metadata)
-                    except ValueError:
-                        raise
+                    json.loads(self.metadata)
                 meta_keys = ['readme', 'changelog', 'license']
                 for key in meta_keys:
                     if file.lower().endswith('%s.md' % key):

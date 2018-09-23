@@ -1,18 +1,22 @@
 coverage
 isort
-pylint<2.0.0
-astroid<2.0,>=1.6
-pylint-django<=0.9.4
-prospector<1.0
+# pylint<2.0.0
+# astroid<2.0,>=1.6
+# pylint-django<=0.9.4
+# prospector<1.0
+pylint
+pylint-django
+prospector
 django-debug-toolbar
 recommonmark
 autopep8
-pycodestyle<2.4.0,>=2.0.0
+# pycodestyle<2.4.0,>=2.0.0
 -e git+https://github.com/BeryJu/pdoc.git@ebb38ec5d2a023a31442757bba697c60d315578f#egg=pdoc
 mkdocs
 mkdocs-material
 tornado>=5.0
-pyroma<2.4
+# pyroma<2.4
+pyroma
 safety
 bandit<1.5.0
 unittest-xml-reporting

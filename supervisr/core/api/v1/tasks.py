@@ -18,7 +18,6 @@ class TaskAPI(API):
         """This method is used to check if the user has access"""
         return True
 
-    # pylint: disable=unused-argument
     def progress(self, request: HttpRequest, data: dict) -> dict:
         """Get Progress info for task_id"""
         progress = Progress(data.get('id'))

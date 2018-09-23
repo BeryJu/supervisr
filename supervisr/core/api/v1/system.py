@@ -26,7 +26,6 @@ class SystemAPI(API):
             return False
         return True
 
-    # pylint: disable=unused-argument
     def health(self, request, data):
         """Return Status"""
         data = {

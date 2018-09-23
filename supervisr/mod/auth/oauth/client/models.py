@@ -83,7 +83,7 @@ class AccountAccess(models.Model):
 
     objects = AccountAccessManager()
 
-    class Meta(object):
+    class Meta:
         unique_together = ('identifier', 'provider')
 
     def __str__(self):

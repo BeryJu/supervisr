@@ -13,7 +13,7 @@ class JSONField(models.TextField):
     """Field to save json in DB, works on non-postgres"""
 
     # pylint: disable=unused-argument
-    def from_db_value(self, value, experssion, connection, context):
+    def from_db_value(self, value, expression, connection, context):
         """Convert JSON String to object"""
         if value is None:
             return value
@@ -37,7 +37,7 @@ class SignatureException(Exception):
     pass
 
 
-class SignedAESEncryption(object):
+class SignedAESEncryption:
     """AES sign helper"""
     cipher_class = Crypto.Cipher.AES
     mode = Crypto.Cipher.AES.MODE_SIV

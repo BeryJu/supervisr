@@ -13,7 +13,8 @@ from supervisr.core.models import (BaseCredential, ProviderInstance,
 from supervisr.core.providers.base import get_providers
 from supervisr.core.utils import class_to_path
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
-                                          GenericUpdateView)
+                                          GenericUpdateView,
+                                          LoginRequiredMixin)
 from supervisr.core.views.wizards import BaseWizardView
 
 
@@ -34,7 +35,7 @@ PROVIDER_TEMPLATES = {
 
 
 # pylint: disable=too-many-ancestors
-class ProviderCreateView(BaseWizardView):
+class ProviderCreateView(LoginRequiredMixin, BaseWizardView):
     """Wizard to create a Domain"""
 
     title = _("New Provider")

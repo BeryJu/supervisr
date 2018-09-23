@@ -183,7 +183,7 @@ class GenericUpdateView(GenericModelView):
         form_instance = self.form(*args, instance=instance, **kwargs)
         if getattr(self, 'update_form', False):
             warnings.warn('GenericUpdateView.update_form is deprecated in favor of get_form.')
-            return self.update_form(form_instance)
+            return getattr(self, 'update_form')(form_instance)
         return form_instance
 
     def save(self, form: ModelForm) -> models.Model:

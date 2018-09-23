@@ -8,7 +8,8 @@ from supervisr.core.models import (Domain, ProviderInstance,
                                    UserAcquirableRelationship)
 from supervisr.core.providers.base import get_providers
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
-                                          GenericUpdateView)
+                                          GenericUpdateView,
+                                          LoginRequiredMixin)
 from supervisr.core.views.graph import GraphView
 from supervisr.core.views.wizards import BaseWizardView
 from supervisr.dns.forms.reverse_zones import ReverseZoneForm
@@ -48,7 +49,7 @@ class ZoneGraphView(GraphView):
             return 'Zone | %s' % str(model)
         if isinstance(model, SetRecord):
             return 'Set | Name "%s"' % model.name
-        elif isinstance(model, DataRecord):
+        if isinstance(model, DataRecord):
             return 'Data | Name "%s" | Type "%s" | Content "%s"' % \
                     (model.name, model.type, model.content)
         return super().get_label(model)
@@ -75,7 +76,7 @@ class ReverseZoneIndexView(GenericIndexView):
 
 
 # pylint: disable=too-many-ancestors
-class ReverseZoneNewView(BaseWizardView):
+class ReverseZoneNewView(LoginRequiredMixin, BaseWizardView):
     """Wizard to create a blank Zone"""
 
     title = _('New Zone')
@@ -107,7 +108,7 @@ class ReverseZoneNewView(BaseWizardView):
 
 
 # pylint: disable=too-many-ancestors
-class ZoneNewView(BaseWizardView):
+class ZoneNewView(LoginRequiredMixin, BaseWizardView):
     """Wizard to create a blank Zone"""
 
     title = _('New Zone')

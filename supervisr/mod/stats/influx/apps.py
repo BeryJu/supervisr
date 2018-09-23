@@ -20,4 +20,4 @@ class SupervisrModStatInfluxConfig(SupervisrAppConfig):
         settings.add(key='database', value='supervisr')
         settings.add(key='username', value='root')
         settings.add(key='password', value='root')
-        return settings,
+        return (settings, )

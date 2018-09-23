@@ -1,7 +1,7 @@
 """Supervisr PowerDNS DB Router"""
 
 
-class PowerDNSRouter(object):
+class PowerDNSRouter:
     """
     A router to control all database operations on models in the
     PowerDNS application.

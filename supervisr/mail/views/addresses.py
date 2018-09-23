@@ -9,7 +9,8 @@ from django.utils.translation import ugettext as _
 from supervisr.core.models import ProviderInstance, UserAcquirableRelationship
 from supervisr.core.providers.base import get_providers
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
-                                          GenericReadView, GenericUpdateView)
+                                          GenericReadView, GenericUpdateView,
+                                          LoginRequiredMixin)
 from supervisr.core.views.wizards import BaseWizardView
 from supervisr.mail.forms.addresses import AddressForm
 from supervisr.mail.models import Address, MailDomain
@@ -26,7 +27,7 @@ class AddressIndexView(GenericIndexView):
 
 
 # pylint: disable=too-many-ancestors
-class AddressNewWizard(BaseWizardView):
+class AddressNewWizard(LoginRequiredMixin, BaseWizardView):
     """Wizard to create Address"""
 
     title = _('New Mail address')

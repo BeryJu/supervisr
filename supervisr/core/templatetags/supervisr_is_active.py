@@ -27,7 +27,7 @@ def is_active(context, *args, **kwargs):
                 request.resolver_match.app_name = 'supervisr_core'
             if app_name and request.resolver_match.app_name == app_name:
                 return 'active'
-            elif app_name is None:
+            if app_name is None:
                 return 'active'
     return ''
 

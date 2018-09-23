@@ -17,9 +17,9 @@ class NixDNSProvider(CompatDNSProvider):
     parent = None
 
     def get_translator(self, data_type) -> ProviderObjectTranslator:
-        if data_type == Zone or data_type == ReverseZone:
+        if data_type in [Zone, ReverseZone]:
             return PowerDNSZoneTranslator
-        elif data_type == CompatDNSRecord:
+        if data_type == CompatDNSRecord:
             return PowerDNSRecordTranslator
         # DataRecord and SetRecord is handeled by Compat
         return super().get_translator(data_type)

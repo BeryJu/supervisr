@@ -19,7 +19,7 @@ USERNAME_FIELD = 'sAMAccountName'
 LOGIN_FIELD = 'userPrincipalName'
 
 
-class LDAPConnector(object):
+class LDAPConnector:
     """Wrapper for ldap3 to easily manage user"""
 
     con = None

@@ -7,6 +7,7 @@ from django.utils.translation import ugettext as _
 from supervisr.core.models import (Domain, ProviderInstance,
                                    UserAcquirableRelationship)
 from supervisr.core.providers.base import get_providers
+from supervisr.core.views.generic import LoginRequiredMixin
 from supervisr.core.views.wizards import BaseWizardView
 from supervisr.dns.forms.migrate import ZoneImportForm, ZoneImportPreviewForm
 from supervisr.dns.forms.zones import ZoneForm
@@ -21,7 +22,7 @@ TEMPLATES = {
 
 
 # pylint: disable=too-many-ancestors
-class BindZoneImportWizard(BaseWizardView):
+class BindZoneImportWizard(LoginRequiredMixin, BaseWizardView):
     """Import DNS records from bind zone"""
 
     title = _('Import Bind Zone')

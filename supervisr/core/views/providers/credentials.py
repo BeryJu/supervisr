@@ -13,7 +13,8 @@ from supervisr.core.forms.providers import CredentialForm
 from supervisr.core.models import BaseCredential
 from supervisr.core.utils import path_to_class
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
-                                          GenericUpdateView)
+                                          GenericUpdateView,
+                                          LoginRequiredMixin)
 from supervisr.core.views.wizards import BaseWizardView
 
 
@@ -28,7 +29,7 @@ class CredentialIndexView(GenericIndexView):
 
 
 # pylint: disable=too-many-ancestors
-class CredentialNewView(BaseWizardView):
+class CredentialNewView(LoginRequiredMixin, BaseWizardView):
     """Wizard to create a Domain"""
 
     title = _("New Credentials")
