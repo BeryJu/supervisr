@@ -9,7 +9,17 @@
 
 {% block content %}
 <h1><clr-icon shape="vmw-app" size="48"></clr-icon>{% trans "Provider Instances" %}</h1>
-<div class="btn-group btn-link btn-icon-link">
+<datagrid
+    data-header-columns='["Name", "UUID", "Provider Path"]'
+    data-body-columns='["name", "uuid", "provider_path"]'
+    data-api-component="core"
+    data-api-part="providers"
+    data-api-action="read"
+    data-add-view="instance-new"
+    data-edit-view="instance-edit"
+    data-delete-view="instance-delete">
+</datagrid>
+<!-- <div class="btn-group btn-link btn-icon-link">
   <a href="{% url 'instance-new' %}" class="btn">
     <clr-icon shape="add"></clr-icon>
   </a>
@@ -52,12 +62,6 @@
     </tr>
     {% endfor %}
   </tbody>
-</table>
+</table> -->
 {% endblock %}
 
-{% block scripts %}
-{{ block.super }}
-<script>
-clrTableSelect('.container');
-</script>
-{% endblock %}
