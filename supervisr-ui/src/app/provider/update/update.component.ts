@@ -24,7 +24,8 @@ export class ProviderUpdateComponent {
             .component('core')
             .part('providers')
             .action('trigger_update')
-            .request('GET', {'uuid': this.provider})
+            .queryString('uuid', this.provider)
+            .request()
             .subscribe(
                 data => { console.log(data) },
                 err => console.error(err),
