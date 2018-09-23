@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Functions for creating XML output.
-"""
+"""Functions for creating XML output."""
 from __future__ import absolute_import
 
 import logging
@@ -16,14 +14,12 @@ LOGGER = logging.getLogger(__name__)
 
 
 def _get_attribute_statement(params):
-    """
-    Inserts AttributeStatement, if we have any attributes.
+    """Inserts AttributeStatement, if we have any attributes.
     Modifies the params dict.
     PRE-REQ: params['SUBJECT'] has already been created (usually by a call to
-    _get_subject().
-    """
+    _get_subject()."""
     attributes = params.get('ATTRIBUTES', [])
-    if len(attributes) < 1:
+    if not attributes:
         params['ATTRIBUTE_STATEMENT'] = ''
         return
     # Build complete AttributeStatement.
@@ -32,10 +28,8 @@ def _get_attribute_statement(params):
 
 
 def _get_in_response_to(params):
-    """
-    Insert InResponseTo if we have a RequestID.
-    Modifies the params dict.
-    """
+    """Insert InResponseTo if we have a RequestID.
+    Modifies the params dict."""
     # NOTE: I don't like this. We're mixing templating logic here, but the
     # current design requires this; maybe refactor using better templates, or
     # just bite the bullet and use elementtree to produce the XML; see comments
@@ -48,17 +42,12 @@ def _get_in_response_to(params):
 
 
 def _get_subject(params):
-    """
-    Insert Subject.
-    Modifies the params dict.
-    """
+    """Insert Subject. Modifies the params dict."""
     params['SUBJECT_STATEMENT'] = render_to_string('saml/xml/subject.xml', params)
 
 
 def get_assertion_xml(template, parameters, signed=False):
-    """
-    Get XML for Assertion
-    """
+    """Get XML for Assertion"""
     # Reset signature.
     params = {}
     params.update(parameters)
@@ -80,9 +69,7 @@ def get_assertion_xml(template, parameters, signed=False):
 
 
 def get_response_xml(parameters, signed=False, assertion_id=''):
-    """
-    Returns XML for response, with signatures, if signed is True.
-    """
+    """Returns XML for response, with signatures, if signed is True."""
     # Reset signatures.
     params = {}
     params.update(parameters)

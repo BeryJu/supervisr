@@ -15,4 +15,4 @@ class SupervisrPuppetConfig(SupervisrAppConfig):
         from supervisr.core.models import get_random_string
         settings = SettingBootstrapper()
         settings.add(key='url_key', value=get_random_string(20))
-        return settings,
+        return (settings, )

@@ -3,8 +3,6 @@ import os
 
 from setuptools import find_packages, setup
 
-from supervisr import __version__
-
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 def read_simple(path, mode='r'):
@@ -16,9 +14,10 @@ def read_simple(path, mode='r'):
                 lines.remove(line)
         return lines
 
+
 setup(
     name='supervisr',
-    version=__version__,
+    version='0.2.1-alpha',
     description='supervisr your IT.',
     long_description='\n'.join(read_simple('README.md')),
     author='BeryJu.org',
@@ -31,15 +30,16 @@ setup(
     },
     test_suite='supervisr.cli.test_runner.test_runner',
     keywords='supervisr sso server management web hosting dns mail email',
-    license='Other/Proprietary License',
+    license='MIT',
     classifiers=[
         'Development Status:: 3 - Alpha',
         'Framework :: Django :: 2.0',
         'Intended Audience :: System Administrators',
-        'License :: Other/Proprietary License',
+        'License :: MIT',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: Unix',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: System :: Clustering',
         'Topic :: System :: Installation/Setup',

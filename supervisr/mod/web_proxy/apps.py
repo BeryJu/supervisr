@@ -26,4 +26,4 @@ class SupervisrModWebProxyConfig(SupervisrAppConfig):
         wap_bootstrapper.add(name='supervisr Flower',
                              access_slug='supervisr_flower',
                              upstream='http://localhost:5555')
-        return wap_bootstrapper,
+        return (wap_bootstrapper, )

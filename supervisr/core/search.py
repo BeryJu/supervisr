@@ -8,7 +8,6 @@ from supervisr.core.views.search import DefaultSearchHandler
 
 
 @receiver(on_search)
-# pylint: disable=unused-argument
 def search_handler(sender, query, request, *args, **kwargs):
     """Inbuilt search handler for core models"""
 

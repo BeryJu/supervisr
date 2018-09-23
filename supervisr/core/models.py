@@ -285,10 +285,9 @@ class Setting(CreatedUpdatedModel):
             if namespace.startswith(name):
                 namespace = name
         namespace_matches = get_close_matches(namespace, Setting._ALLOWED_NAMESPACES)
-        if len(namespace_matches) < 1:
+        if not namespace_matches:
             return default
-        else:
-            namespace = namespace_matches[0]
+        namespace = namespace_matches[0]
         try:
             setting = Setting.objects.get_or_create(
                 key=key,
@@ -364,9 +363,8 @@ class Setting(CreatedUpdatedModel):
             return False
 
     def save(self, *args, **kwargs):
-        result = super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
         on_setting_update.send(sender=self, setting=self)
-        return result
 
     class Meta:
 
@@ -672,7 +670,7 @@ class Event(CreatedUpdatedModel):
         minutes = int(math.ceil(diff.seconds / 60))
         if diff.days > 0:
             return _("%(days)d day(s) ago" % {'days': diff.days})
-        elif hours > 0:
+        if hours > 0:
             return _("%(hours)d hour(s) ago" % {'hours': hours})
         return _("%(minutes)d minute(s) ago" % {'minutes': minutes})
 

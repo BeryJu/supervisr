@@ -23,4 +23,4 @@ class SupervisrModAuthLDAPConfig(SupervisrAppConfig):
         settings.add(key='bind:user', value='')
         settings.add(key='bind:password', value='')
         settings.add(key='domain', value='')
-        return settings,
+        return (settings, )

@@ -1,6 +1,4 @@
-"""
-OAuth Client settings
-"""
+"""OAuth Client settings"""
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -12,7 +10,6 @@ from supervisr.mod.auth.oauth.client.models import Provider
 def user_settings(request):
     """Show user settings"""
     provider_state = []
-    # pylint: disable=not-an-iterable
     for prov in Provider.objects.all():
         provider_state.append({
             'provider': prov,

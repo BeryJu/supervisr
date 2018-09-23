@@ -17,4 +17,4 @@ class SupervisrModBeaconConfig(SupervisrAppConfig):
         settings = SettingBootstrapper()
         settings.add(key='enabled', value=True)
         settings.add(key='endpoint', value='https://my.beryju.org')
-        return settings,
+        return (settings, )

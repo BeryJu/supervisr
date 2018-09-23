@@ -43,7 +43,6 @@ class TestManagementCommands(TestCase):
                                           '--module', 'wrong_name'),
                          'Module supervisr-wrong_name doesn\'t exist!\n')
 
-    # pylint: disable=invalid-name
     def test_puppet_debug_build_inv_json(self):
         """Test puppet module build with invalid metadata json"""
         pass

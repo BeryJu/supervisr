@@ -10,7 +10,8 @@ from supervisr.core.models import (Domain, ProviderInstance,
                                    UserAcquirableRelationship)
 from supervisr.core.providers.base import get_providers
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
-                                          GenericReadView, GenericUpdateView)
+                                          GenericReadView, GenericUpdateView,
+                                          LoginRequiredMixin)
 from supervisr.core.views.wizards import BaseWizardView
 from supervisr.mail.forms.domains import MailDomainForm
 from supervisr.mail.models import MailDomain
@@ -26,10 +27,9 @@ class MailDomainIndexView(GenericIndexView):
         return self.model.objects.filter(users__in=[self.request.user]) \
                                  .order_by('domain__domain_name')
 
+
 # pylint: disable=too-many-ancestors
-
-
-class MailDomainNewWizard(BaseWizardView):
+class MailDomainNewWizard(LoginRequiredMixin, BaseWizardView):
     """Wizard to create MailDomain"""
 
     title = _('New Mail Domain')
@@ -54,10 +54,10 @@ class MailDomainNewWizard(BaseWizardView):
             form.fields['providers'].queryset = provider_instance
         return form
 
-    def finish(self, form_list):
-        mail_domain = form_list[0].save(commit=False)
+    def finish(self, form):
+        mail_domain = form.save(commit=False)
         mail_domain.save()
-        mail_domain.update_provider_m2m(form_list[0].cleaned_data.get('providers'))
+        mail_domain.update_provider_m2m(form.cleaned_data.get('providers'))
         UserAcquirableRelationship.objects.create(
             model=mail_domain,
             user=self.request.user)

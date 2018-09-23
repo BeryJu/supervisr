@@ -72,12 +72,10 @@ def send_message(
         if settings.DEBUG:
             LOGGER.warning("Failed to send emails %r", exc)
             return True
-        else:
-            raise
+        raise
 
 
 @receiver(on_user_sign_up_post)
-# pylint: disable=unused-argument
 def mail_handle_user_signed_up(sender, signal, user, request, needs_confirmation, **kwargs):
     """Send the user a confirmation email"""
     if not needs_confirmation:

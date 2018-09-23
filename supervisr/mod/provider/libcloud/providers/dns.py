@@ -35,9 +35,9 @@ class LibCloudDNSProvider(CompatDNSProvider):
         )
 
     def get_translator(self, data_type) -> ProviderObjectTranslator:
-        if data_type == Zone or data_type == ReverseZone:
+        if data_type in [Zone, ReverseZone]:
             return LCloudZoneTranslator
-        elif data_type == CompatDNSRecord:
+        if data_type == CompatDNSRecord:
             return LCloudRecordTranslator
         return super().get_translator(data_type)
 

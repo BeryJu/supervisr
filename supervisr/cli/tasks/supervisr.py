@@ -48,7 +48,7 @@ def run(ctx, pidfile='', listen=None, port=None):
     import cherrypy
 
     # pylint: disable=too-few-public-methods
-    class NullObject(object):
+    class NullObject:
         """empty class to serve static files with cherrypy"""
 
     cherrypy.config.update({

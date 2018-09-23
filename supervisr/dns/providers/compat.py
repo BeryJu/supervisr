@@ -13,11 +13,14 @@ from supervisr.dns.models import BaseRecord, DataRecord, SetRecord
 LOGGER = getLogger(__name__)
 
 class CompatDNSRecord:
-    """Compatibility Class used to store DNS data in a more traditional way"""
+    """Compatibility Class used to store DNS data in a more traditional way.
+
+    Since some DNS backends require empty non-terminal names, we use an Instance of
+    CompatDNSRecord with type set to None"""
 
     domain = ''
     name = ''
-    type = ''
+    type = None
     content = ''
     ttl = 3600
     priority = 0
@@ -75,7 +78,14 @@ class CompatDNSTranslator(ProviderObjectTranslator):
                 ))
             elif isinstance(record, SetRecord) and record.enabled:
                 # Check for record.append_name
-                name_parts.append(record.name)
+                if record.append_name:
+                    name_parts.append(record.name)
+                    # add empty record, this is only required if this SetRecord has append_name set
+                    compat_records.append(CompatDNSRecord(
+                        name_parts=name_parts,
+                        type=None,
+                        enabled=record.enabled
+                    ))
                 for sub_record in record.records.all():
                     compat_records += walk_records(sub_record.cast(), name_parts=name_parts)
             return compat_records
@@ -95,12 +105,15 @@ class CompatDNSTranslator(ProviderObjectTranslator):
                 compat_record.domain = str(zone)
                 # Reverse all name parts since we reverse-walked them
                 compat_record.name_parts.reverse()
-                # If there is an @ in the names, truncate parts until that and remove @ aswell
+                # If there is an @ in the names, truncate parts until that and remove @ as well
                 if '@' in compat_record.name_parts:
-                    at_index = compat_record.name_parts.index('@') - 1
-                    del compat_record.name_parts[at_index:]
+                    at_index = compat_record.name_parts.index('@') + 1
+                    compat_record.name_parts = compat_record.name_parts[at_index:]
                 # Append domain so we can use join for everything
                 compat_record.name_parts.append(compat_record.domain)
+                # Replace spaces with dashes to make valid records
+                compat_record.name_parts = [label.replace(
+                    ' ', '-') for label in compat_record.name_parts]
                 # Join them with . and add domain to end
                 compat_record.name = '.'.join(compat_record.name_parts)
                 all_records.append(compat_record)

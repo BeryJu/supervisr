@@ -14,7 +14,7 @@ from requests_oauthlib import OAuth1
 LOGGER = logging.getLogger(__name__)
 
 
-class BaseOAuthClient(object):
+class BaseOAuthClient:
     """Base OAuth Client"""
 
     _session = None
@@ -150,11 +150,8 @@ class OAuthClient(BaseOAuthClient):
 
 
 class OAuth2Client(BaseOAuthClient):
-    """
-    OAuth2 Client
-    """
+    """OAuth2 Client"""
 
-    # pylint: disable=unused-argument
     def check_application_state(self, request, callback):
         "Check optional state parameter."
         stored = request.session.get(self.session_key, None)
@@ -196,7 +193,6 @@ class OAuth2Client(BaseOAuthClient):
         else:
             return response.text
 
-    # pylint: disable=unused-argument
     def get_application_state(self, request, callback):
         "Generate state optional parameter."
         return get_random_string(32)

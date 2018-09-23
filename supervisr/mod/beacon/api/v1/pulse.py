@@ -15,7 +15,6 @@ class PulseAPI(ModelAPI):
         'POST': ['send'],
     }
 
-    # pylint: disable=unused-argument
     def send(self, request, data):
         """Create pulse with modules from data"""
         modules = data.pop('modules')

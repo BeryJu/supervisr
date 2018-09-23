@@ -1,8 +1,4 @@
-"""
-Core Oauth Views
-"""
-
-from __future__ import unicode_literals
+"""Core Oauth Views"""
 
 import base64
 import hashlib
@@ -29,7 +25,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 # pylint: disable=too-few-public-methods, too-many-locals
-class OAuthClientMixin(object):
+class OAuthClientMixin:
     "Mixin for getting OAuth client for a provider."
 
     client_class = None
@@ -80,11 +76,9 @@ class OAuthCallback(OAuthClientMixin, View):
     provider_id = None
     provider = None
 
-    # pylint: disable=unused-argument, too-many-return-statements
+    # pylint: disable=too-many-return-statements
     def get(self, request, *args, **kwargs):
-        """
-        View Get handler
-        """
+        """View Get handler"""
         name = kwargs.get('provider', '')
         try:
             self.provider = Provider.objects.get(name=name)
@@ -137,7 +131,7 @@ class OAuthCallback(OAuthClientMixin, View):
     # pylint: disable=unused-argument
     def get_callback_url(self, provider):
         "Return callback url if different than the current url."
-        return None
+        return False
 
     # pylint: disable=unused-argument
     def get_error_redirect(self, provider, reason):

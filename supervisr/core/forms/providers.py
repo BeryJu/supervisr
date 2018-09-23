@@ -19,6 +19,7 @@ class ProviderForm(forms.ModelForm):
     """Form create/edit a new Provider"""
 
     title = 'General Information'
+    request = None
 
     name = forms.CharField(required=True, label=_('Instance Name'))
     provider_path = forms.ChoiceField(choices=[], required=True, label=_('Provider'))

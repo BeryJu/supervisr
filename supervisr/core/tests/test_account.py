@@ -212,7 +212,6 @@ class TestAccount(TestCase):
     def test_reauth(self):
         """Test reauth_required decorator"""
         @reauth_required
-        # pylint: disable=unused-argument
         def test_view(request: HttpRequest):
             """Test view"""
             pass

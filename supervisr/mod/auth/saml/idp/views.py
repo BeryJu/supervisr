@@ -135,16 +135,15 @@ def login_process(request):
             acs_url=request.POST.get('ACSUrl'),
             saml_response=request.POST.get('SAMLResponse'),
             relay_state=request.POST.get('RelayState'))
-    else:
-        try:
-            full_res = _generate_response(request, proc, remote)
-            if not access:
-                LOGGER.warning("User '%s' has no invitation to '%s'", request.user, product)
-                messages.error(request, "You have no access to '%s'" % product.name)
-                raise Http404
-            return full_res
-        except exceptions.CannotHandleAssertion as exc:
-            return ErrorResponseView.as_view()(request, str(exc))
+    try:
+        full_res = _generate_response(request, proc, remote)
+        if not access:
+            LOGGER.warning("User '%s' has no invitation to '%s'", request.user, product)
+            messages.error(request, "You have no access to '%s'" % product.name)
+            raise Http404
+        return full_res
+    except exceptions.CannotHandleAssertion as exc:
+        return ErrorResponseView.as_view()(request, str(exc))
 
 
 @csrf_exempt

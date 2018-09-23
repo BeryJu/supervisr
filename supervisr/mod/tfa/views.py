@@ -53,8 +53,7 @@ def verify(request: HttpRequest) -> HttpResponse:
                     return redirect(request.GET.get('next'))
                 # Otherwise just index
                 return redirect(reverse('common-index'))
-            else:
-                messages.error(request, _('Invalid 2-Factor Token.'))
+            messages.error(request, _('Invalid 2-Factor Token.'))
     else:
         form = TFAVerifyForm()
 
@@ -105,9 +104,8 @@ def disable(request: HttpRequest) -> HttpResponse:
         send_notification=True)
     return redirect(reverse('common-index'))
 
+
 # pylint: disable=too-many-ancestors
-
-
 @method_decorator([login_required, reauth_required], name="dispatch")
 class TFASetupView(BaseWizardView):
     """Wizard to create a Mail Account"""
@@ -177,7 +175,7 @@ class TFASetupView(BaseWizardView):
             form.fields['tokens'].choices = tokens
         return form
 
-    def finish(self, form_list):
+    def finish(self, *forms):
         # Save device as confirmed
         self.totp_device.confirmed = True
         self.totp_device.save()

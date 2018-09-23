@@ -116,7 +116,7 @@ class SupervisrAppConfig(AppConfig):
             pass  # ignore non-existant modules
 
 
-class Bootstrapper(object):
+class Bootstrapper:
     """Class to help with ensuring certain Model instances exist on startup"""
 
     rows = []

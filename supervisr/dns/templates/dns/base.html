@@ -13,7 +13,7 @@
         {% related_models 'supervisr.dns.models.Zone' as zones %}
         {% for zone in zones %}
         <li>
-          <a href="{% url 'supervisr_dns:record-list' zone_uuid=zone.uuid %}" class="nav-link {% is_active_url 'supervisr_dns:record-list' zone_uuid=zone.uuid %}">{{ zone.domain }}</a>
+          <a href="{% url 'supervisr_dns:record-list' uuid=zone.uuid %}" class="nav-link {% is_active_url 'supervisr_dns:record-list' uuid=zone.uuid %}">{{ zone.domain }}</a>
         </li>
         {% endfor %}
       </ul>

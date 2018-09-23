@@ -18,7 +18,7 @@ from supervisr.mod.beacon.models import Pulse, PulseModule
 LOGGER = logging.getLogger(__name__)
 
 
-class Sender(object):
+class Sender:
     """Class that sends anonymized"""
 
     _enabled = True

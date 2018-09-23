@@ -46,7 +46,6 @@ class SetRecordSearchHandler(DefaultSearchHandler):
 
 
 @receiver(on_search)
-# pylint: disable=unused-argument
 def search_handler(sender, query, request, *args, **kwargs):
     """Inbuilt search handler for DNS models"""
     return DefaultSearchHandler.combine(handlers=[ZoneSearchHandler,

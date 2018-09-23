@@ -17,7 +17,7 @@ class AccountAPI(ModelAPI):
         'GET': ['me', 'has_product']
     }
 
-    # pylint: disable=invalid-name,unused-argument
+    # pylint: disable=invalid-name
     def me(self, request, data):
         """Return ourselves as dict"""
         user_data = {}
@@ -41,7 +41,6 @@ class AccountAPI(ModelAPI):
         return {'result': False}
 
 
-# pylint: disable=unused-argument
 @logged_in_or_basicauth('Supervisr Auth')
 def http_basic_auth(request: HttpRequest) -> HttpResponse:
     """simply return 'ok' if authentication was successful"""

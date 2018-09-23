@@ -194,18 +194,15 @@ class DefaultSearchHandler:
         setattr(special, '__special', True)
         return special
 
-    # pylint: disable=unused-argument
     def get_label(self, instance, request: HttpRequest) -> str:
         """Return label for SearchResult."""
         return getattr(instance, self.label_field, 'N/A')
 
-    # pylint: disable=unused-argument
     def get_icon(self, instance, request: HttpRequest) -> str:
         """Return icon name for SearchResult.
         Reference: https://vmware.github.io/clarity/icons/icon-sets"""
         return self.icon
 
-    # pylint: disable=unused-argument
     def get_url(self, instance, request: HttpRequest) -> str:
         """Return full URL for SearchResult."""
         if self.view_kwarg_name:

@@ -9,7 +9,8 @@ from django.utils.translation import ugettext as _
 
 from supervisr.core.models import UserAcquirableRelationship
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
-                                          GenericUpdateView)
+                                          GenericUpdateView,
+                                          LoginRequiredMixin)
 from supervisr.core.views.wizards import BaseWizardView
 from supervisr.dns.forms.records import DataRecordForm, SetRecordForm
 from supervisr.dns.models import BaseRecord, DataRecord, SetRecord, Zone
@@ -19,11 +20,11 @@ def redirect_back(request: HttpRequest) -> HttpResponse:
     """Redirect back based on URL parameters"""
     if 'zone_uuid' in request.GET:
         return redirect(reverse('supervisr_dns:record-list', kwargs={
-            'zone_uuid': request.GET.get('zone_uuid')
+            'uuid': request.GET.get('zone_uuid')
         }))
     if 'record_uuid' in request.GET:
         return redirect(reverse('supervisr_dns:record-set-view', kwargs={
-            'record_uuid': request.GET.get('record_uuid')
+            'uuid': request.GET.get('record_uuid')
         }))
     if 'back' in request.GET:
         return redirect(request.GET.get('back'))
@@ -38,7 +39,7 @@ class SetRecordView(GenericIndexView):
 
     def get_instance(self) -> QuerySet:
         self.instance = get_object_or_404(SetRecord,
-                                          uuid=self.kwargs.get('record_uuid'),
+                                          uuid=self.kwargs.get('uuid'),
                                           users__in=[self.request.user])
         return self.instance.records.filter(users__in=[self.request.user]).order_by('name')
 
@@ -49,14 +50,14 @@ class SetRecordView(GenericIndexView):
 
 
 # pylint: disable=too-many-ancestors
-class DataRecordWizard(BaseWizardView):
+class DataRecordWizard(LoginRequiredMixin, BaseWizardView):
     """Wizard to create a new DataRecord"""
 
     title = _('New Data Record')
     form_list = [DataRecordForm]
 
-    def finish(self, form_list):
-        record = form_list[0].save()
+    def finish(self, form):
+        record = form.save()
         UserAcquirableRelationship.objects.create(
             model=record,
             user=self.request.user)
@@ -75,14 +76,14 @@ class DataRecordWizard(BaseWizardView):
 
 
 # pylint: disable=too-many-ancestors
-class SetRecordWizard(BaseWizardView):
+class SetRecordWizard(LoginRequiredMixin, BaseWizardView):
     """Wizard to create a new SetRecord"""
 
     title = _('New Set Record')
     form_list = [SetRecordForm]
 
-    def finish(self, form_list):
-        record = form_list[0].save()
+    def finish(self, form):
+        record = form.save()
         UserAcquirableRelationship.objects.create(
             model=record,
             user=self.request.user)
@@ -107,10 +108,6 @@ class RecordUpdateView(GenericUpdateView):
     form = DataRecordForm
     zone = None
 
-    def get_instance(self) -> QuerySet:
-        return self.model.objects.filter(users__in=[self.request.user],
-                                         uuid=self.kwargs.get('record_uuid'))
-
     def redirect(self, instance: DataRecord) -> HttpResponse:
         return redirect_back(self.request)
 
@@ -119,7 +116,7 @@ class RecordUpdateView(GenericUpdateView):
         instance = instance.cast()
         if isinstance(instance, DataRecord):
             return DataRecordForm(*args, instance=instance, **kwargs)
-        elif isinstance(instance, SetRecord):
+        if isinstance(instance, SetRecord):
             return SetRecordForm(*args, instance=instance, **kwargs)
         raise ValueError('instance must be either DataRecord or SetRecord')
 
@@ -129,10 +126,6 @@ class RecordDeleteView(GenericDeleteView):
 
     model = BaseRecord
     zone = None
-
-    def get_instance(self) -> QuerySet:
-        return self.model.objects.filter(users__in=[self.request.user],
-                                         uuid=self.kwargs.get('record_uuid'))
 
     def redirect(self, instance: DataRecord) -> HttpResponse:
         return redirect_back(self.request)

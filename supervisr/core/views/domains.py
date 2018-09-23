@@ -12,7 +12,8 @@ from supervisr.core.models import (Domain, ProviderInstance,
                                    UserAcquirableRelationship)
 from supervisr.core.providers.base import get_providers
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
-                                          GenericUpdateView)
+                                          GenericUpdateView,
+                                          LoginRequiredMixin)
 from supervisr.core.views.wizards import BaseWizardView
 
 
@@ -27,7 +28,7 @@ class DomainIndexView(GenericIndexView):
 
 
 # pylint: disable=too-many-ancestors
-class DomainNewView(BaseWizardView):
+class DomainNewView(LoginRequiredMixin, BaseWizardView):
     """Wizard to create a Domain"""
 
     title = _("New Domain")
@@ -47,8 +48,8 @@ class DomainNewView(BaseWizardView):
             form.request = self.request
         return form
 
-    def finish(self, form_list) -> HttpResponse:
-        domain = form_list[0].save()
+    def finish(self, form) -> HttpResponse:
+        domain = form.save()
         UserAcquirableRelationship.objects.create(
             model=domain,
             user=self.request.user)

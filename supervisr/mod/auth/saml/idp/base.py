@@ -36,7 +36,7 @@ def get_time_string(delta=0):
 # so that your sub-classes have access to all information: use wisely.
 # Formatting note: These methods are alphabetized.
 # pylint: disable=too-many-instance-attributes
-class Processor(object):
+class Processor:
     """
     Base SAML 2.0 AuthnRequest to Response Processor.
     Sub-classes should provide Service Provider-specific functionality.

@@ -1,5 +1,6 @@
 """Supervisr Core Provider APIv1"""
 
+from celery.result import GroupResult
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
@@ -21,7 +22,6 @@ class ProviderAPI(UserAcquirableModelAPI):
         super().__init__(*args, **kwargs)
         self.ALLOWED_VERBS['GET'].extend(['get_all', 'trigger_update'])
 
-    # pylint: disable=unused-argument
     def get_all(self, request, data):
         """Return list of all possible providers"""
         return get_providers(path=True)
@@ -30,7 +30,7 @@ class ProviderAPI(UserAcquirableModelAPI):
         """Trigger provider update"""
         instance_class = data.get('instance_class')
         instance_pk = data.get('instance_pk')
-        action = ProviderAction(data.get('provider_action', 1))
+        action = ProviderAction(int(data.get('provider_action', 1)))
         model = path_to_class(instance_class)
         if not issubclass(model, ProviderTriggerMixin):
             raise Http404
@@ -39,4 +39,6 @@ class ProviderAPI(UserAcquirableModelAPI):
         group_result = request.user.task_apply_async(ProviderMultiplexer(), *args)
         group_result.wait()
         result = group_result.children[0]
-        return result.join()
+        if isinstance(result, GroupResult):
+            return result.join()
+        return result.get()

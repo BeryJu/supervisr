@@ -7,7 +7,7 @@ from supervisr.core.providers.objects import ProviderObjectTranslator
 from supervisr.core.utils import class_to_path
 
 
-class ProviderMetadata(object):
+class ProviderMetadata:
     """This is a class to store metadata like ui_name etc about a provider"""
 
     selectable = True
@@ -29,7 +29,7 @@ class ProviderMetadata(object):
         """Return Provider Author"""
         return 'BeryJu.org'
 
-class BaseProvider(object):
+class BaseProvider:
     """Generic Interface as base for GenericManagedProvider and GenericUserProvider"""
 
     credentials = None

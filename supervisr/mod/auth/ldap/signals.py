@@ -21,9 +21,7 @@ if LDAPConnector.enabled():
 @receiver(on_user_sign_up)
 # pylint: disable=unused-argument
 def ldap_handle_user_sign_up(sender, signal, user, password, **kwargs):
-    """
-    Create LDAP user if LDAP is active
-    """
+    """Create LDAP user if LDAP is active"""
     if LDAP and LDAP.create_users_enabled:
         # Returns false if user could not be created
         if not LDAP.create_ldap_user(user, password):
@@ -38,9 +36,7 @@ def ldap_handle_user_sign_up(sender, signal, user, password, **kwargs):
 @receiver(on_user_change_password)
 # pylint: disable=unused-argument
 def ldap_handle_change_pass(sender, signal, user, password, **kwargs):
-    """
-    Update ldap password if LDAP is enabled
-    """
+    """Update ldap password if LDAP is enabled"""
     if LDAP and LDAP.create_users_enabled:
         LDAP.change_password(password, mail=user.email)
 
@@ -48,19 +44,15 @@ def ldap_handle_change_pass(sender, signal, user, password, **kwargs):
 @receiver(on_user_confirmed)
 # pylint: disable=unused-argument
 def ldap_handle_user_confirm(sender, signal, user, **kwargs):
-    """
-    activate LDAP user
-    """
+    """activate LDAP user"""
     if LDAP and LDAP.create_users_enabled:
         LDAP.enable_user(mail=user.email)
 
 
 @receiver(on_user_acquirable_relationship_created)
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 def ldap_handle_relationship_created(sender, signal, relationship, **kwargs):
-    """
-    Handle creation of user_product_relationship, add to ldap group if needed
-    """
+    """Handle creation of user_product_relationship, add to ldap group if needed"""
     if LDAP and LDAP.create_users_enabled:
         exts = relationship.model.extensions.filter(productextensionldap__isnull=False)
         if exts.exists():
@@ -70,11 +62,9 @@ def ldap_handle_relationship_created(sender, signal, relationship, **kwargs):
 
 
 @receiver(on_user_acquirable_relationship_deleted)
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 def ldap_handle_relationship_deleted(sender, signal, relationship, **kwargs):
-    """
-    Handle deletion of user_product_relationship, remove from group if needed
-    """
+    """Handle deletion of user_product_relationship, remove from group if needed"""
     if LDAP and LDAP.create_users_enabled:
         exts = relationship.model.extensions.filter(productextensionldap__isnull=False)
         if exts.exists():
@@ -86,9 +76,7 @@ def ldap_handle_relationship_deleted(sender, signal, relationship, **kwargs):
 @receiver(on_check_user_exists)
 # pylint: disable=unused-argument
 def ldap_handle_check_user(sender, signal, email, **kwargs):
-    """
-    Check if user exists in LDAP
-    """
+    """Check if user exists in LDAP"""
     if LDAP and LDAP.create_users_enabled:
         try:
             if LDAP.is_email_used(email) and not settings.TEST:
@@ -101,9 +89,7 @@ def ldap_handle_check_user(sender, signal, email, **kwargs):
 @receiver(get_module_info)
 # pylint: disable=unused-argument
 def ldap_handle_get_mod_info(sender, signal, **kwargs):
-    """
-    Return some infos about this module
-    """
+    """Return some infos about this module"""
     return {
         'LDAP3 Version': ldap3_version.__version__,
         'LDAP Enabled': LDAPConnector.enabled(),
@@ -114,9 +100,7 @@ def ldap_handle_get_mod_info(sender, signal, **kwargs):
 @receiver(get_module_health)
 # pylint: disable=unused-argument
 def ldap_handle_get_mod_health(sender, signal, **kwargs):
-    """
-    Return LDAP health
-    """
+    """Return LDAP health"""
     try:
         if LDAPConnector.enabled():
             LDAPConnector()

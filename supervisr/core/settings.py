@@ -130,13 +130,6 @@ LOGIN_URL = 'account-login'
 
 REDIS = 'localhost'
 
-# Celery settings
-# Add a 10 minute timeout to all Celery tasks.
-CELERY_TASK_SOFT_TIME_LIMIT = 600
-CELERY_TIMEZONE = TIME_ZONE
-CELERY_BEAT_SCHEDULE = {}
-CELERY_CREATE_MISSING_QUEUES = True
-
 # Settings are taken from DB, these are dev keys as per
 # https://developers.google.com/recaptcha/docs/faq
 RECAPTCHA_PUBLIC_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
@@ -255,9 +248,17 @@ DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS = True
 
 SESSION_CACHE_ALIAS = "default"
 
+
+# Celery settings
+# Add a 10 minute timeout to all Celery tasks.
+CELERY_TASK_SOFT_TIME_LIMIT = 600
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULE = {}
+CELERY_CREATE_MISSING_QUEUES = True
 CELERY_TASK_DEFAULT_QUEUE = 'supervisr'
 CELERY_BROKER_URL = 'redis://%s' % CONFIG.get('redis')
 CELERY_RESULT_BACKEND = 'redis://%s' % CONFIG.get('redis')
+
 
 with CONFIG.cd('email'):
     EMAIL_HOST = CONFIG.get('host', default='localhost')

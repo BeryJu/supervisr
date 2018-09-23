@@ -1,9 +1,8 @@
 """Supervisr Core Base Wizard Views"""
-import warnings
+from typing import Union
 
 from django.forms import Form
 from django.http import HttpRequest, HttpResponse
-from django.utils.decorators import classonlymethod
 from formtools.wizard.views import NamedUrlSessionWizardView, SessionWizardView
 
 
@@ -13,20 +12,12 @@ class BaseWizardView(SessionWizardView):
 
     template_name = 'generic/wizard.html'
     wizard_size = 'lg'
+    title = ''
     _handle_request_res = None
     _referer = ''
     _request = None
 
-    def __init__(self, *args, **kwargs):
-        warnings.warn("BaseWizardView no longer inherits LoginRequiredView", DeprecationWarning)
-        super().__init__(*args, **kwargs)
-
-    @classonlymethod
-    def as_view(cls, *args, **kwargs) -> HttpResponse:
-        warnings.warn("BaseWizardView no longer inherits LoginRequiredView", DeprecationWarning)
-        return super(BaseWizardView, cls).as_view(*args, **kwargs)
-
-    def handle_request(self, request: HttpRequest):
+    def handle_request(self, request: HttpRequest) -> Union[HttpResponse, bool]:
         """Do things with data from request and save to self"""
         self._request = request
         # Check if this is the first call
@@ -37,6 +28,7 @@ class BaseWizardView(SessionWizardView):
                 request.session['%s_referer' % self.__class__.__name__] = self._referer
         if '%s_referer' % self.__class__.__name__ in request.session:
             self._referer = request.session.get('%s_referer' % self.__class__.__name__)
+        return True
 
     def get(self, request: HttpRequest, *args, **kwargs):
         self._handle_request_res = self.handle_request(request)
@@ -58,7 +50,7 @@ class BaseWizardView(SessionWizardView):
             return self._handle_request_res
         return super().render(form, **kwargs)
 
-    def finish(self, form_list) -> HttpResponse:
+    def finish(self, *forms) -> HttpResponse:
         """Wrapper for done with an actual list as param"""
         raise NotImplementedError()
 
@@ -71,11 +63,11 @@ class BaseWizardView(SessionWizardView):
         _form_list = []
         for form in form_list:
             _form_list.append(form)
-        return self.finish(_form_list)
+        return self.finish(*_form_list)
 
 
 class NamedWizard(BaseWizardView, NamedUrlSessionWizardView):
     """Same as BaseWizardView except with named steps"""
 
-    def finish(self, form_list) -> HttpResponse:
+    def finish(self, *forms) -> HttpResponse:
         raise NotImplementedError()

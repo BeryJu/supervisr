@@ -78,8 +78,7 @@ class ConfigLoader:
             default = self.__context_default
         config_copy = self.__config
         for sub in self.__sub_dicts:
-            if sub in config_copy:
-                config_copy = config_copy[sub]
+            config_copy = config_copy.get(sub, None)
         return config_copy.get(key, default)
 
     @property

@@ -1,7 +1,6 @@
 """Supervisr DNS Views"""
 from django.contrib import messages
 from django.db.models import Model, QuerySet
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.utils.translation import ugettext as _
 
@@ -9,9 +8,11 @@ from supervisr.core.models import (Domain, ProviderInstance,
                                    UserAcquirableRelationship)
 from supervisr.core.providers.base import get_providers
 from supervisr.core.views.generic import (GenericDeleteView, GenericIndexView,
-                                          GenericUpdateView)
+                                          GenericUpdateView,
+                                          LoginRequiredMixin)
 from supervisr.core.views.graph import GraphView
 from supervisr.core.views.wizards import BaseWizardView
+from supervisr.dns.forms.reverse_zones import ReverseZoneForm
 from supervisr.dns.forms.zones import ZoneForm
 from supervisr.dns.models import (BaseRecord, DataRecord, ReverseZone,
                                   SetRecord, Zone)
@@ -26,7 +27,7 @@ class RecordIndexView(GenericIndexView):
 
     def get_instance(self) -> QuerySet:
         self.zone = get_object_or_404(Zone,
-                                      uuid=self.kwargs.get('zone_uuid'),
+                                      uuid=self.kwargs.get('uuid'),
                                       users__in=[self.request.user])
         # TODO: Check this zone=self.zone for validity
         return self.model.objects.filter(zone=self.zone,
@@ -48,7 +49,7 @@ class ZoneGraphView(GraphView):
             return 'Zone | %s' % str(model)
         if isinstance(model, SetRecord):
             return 'Set | Name "%s"' % model.name
-        elif isinstance(model, DataRecord):
+        if isinstance(model, DataRecord):
             return 'Data | Name "%s" | Type "%s" | Content "%s"' % \
                     (model.name, model.type, model.content)
         return super().get_label(model)
@@ -61,12 +62,53 @@ class ZoneIndexView(GenericIndexView):
     template = 'dns/zones/index.html'
 
     def get_instance(self):
-        return self.model.objects.filter(users__in=[self.request.user]) \
-                                 .order_by('domain__domain_name')
+        return super().get_instance().order_by('domain__domain_name')
+
+
+class ReverseZoneIndexView(GenericIndexView):
+    """Show list of user's ReverseZone's"""
+
+    model = ReverseZone
+    template = 'dns/zones_reverse/index.html'
+
+    def get_instance(self):
+        return super().get_instance().order_by('zone_ip')
 
 
 # pylint: disable=too-many-ancestors
-class ZoneNewView(BaseWizardView):
+class ReverseZoneNewView(LoginRequiredMixin, BaseWizardView):
+    """Wizard to create a blank Zone"""
+
+    title = _('New Zone')
+    form_list = [ReverseZoneForm]
+
+    def get_form(self, step=None, data=None, files=None):
+        form = super().get_form(step, data, files)
+        if step is None:
+            step = self.steps.current
+        if step == '0':
+            providers = get_providers(capabilities=['dns'], path=True)
+            provider_instance = ProviderInstance.objects.filter(
+                provider_path__in=providers,
+                useracquirablerelationship__user__in=[self.request.user])
+
+            form.fields['providers'].queryset = provider_instance
+        return form
+
+    def finish(self, form):
+        zone = form.save(commit=False)
+        zone.save()
+        zone.update_provider_m2m(form.cleaned_data.get('providers'))
+        zone.save(force_update=True)
+        UserAcquirableRelationship.objects.create(
+            model=zone,
+            user=self.request.user)
+        messages.success(self.request, _('Reverse DNS Zone successfully created'))
+        return redirect(reverse('supervisr_dns:index'))
+
+
+# pylint: disable=too-many-ancestors
+class ZoneNewView(LoginRequiredMixin, BaseWizardView):
     """Wizard to create a blank Zone"""
 
     title = _('New Zone')
@@ -90,10 +132,10 @@ class ZoneNewView(BaseWizardView):
             form.fields['providers'].queryset = provider_instance
         return form
 
-    def finish(self, form_list):
-        zone = form_list[0].save(commit=False)
+    def finish(self, form):
+        zone = form.save(commit=False)
         zone.save()
-        zone.update_provider_m2m(form_list[0].cleaned_data.get('providers'))
+        zone.update_provider_m2m(form[0].cleaned_data.get('providers'))
         zone.save(force_update=True)
         UserAcquirableRelationship.objects.create(
             model=zone,
@@ -107,10 +149,7 @@ class ZoneUpdateView(GenericUpdateView):
 
     model = Zone
     form = ZoneForm
-
-    def get_instance(self) -> QuerySet:
-        return self.model.objects.filter(uuid=self.kwargs.get('zone_uuid'),
-                                         users__in=[self.request.user])
+    redirect_view = 'supervisr_dns:index'
 
     def get_form(self, *args, instance, **kwargs) -> ZoneForm:
         form = super().get_form(*args, instance=instance, **kwargs)
@@ -128,18 +167,9 @@ class ZoneUpdateView(GenericUpdateView):
         zone.update_provider_m2m(form.cleaned_data.get('providers'))
         return zone
 
-    def redirect(self, instance: Zone) -> HttpResponse:
-        return redirect(reverse('supervisr_dns:index'))
-
 
 class ZoneDeleteView(GenericDeleteView):
     """Delete a Zone"""
 
     model = Zone
-
-    def get_instance(self) -> QuerySet:
-        return self.model.objects.filter(uuid=self.kwargs.get('zone_uuid'),
-                                         users__in=[self.request.user])
-
-    def redirect(self, instance: Zone) -> HttpResponse:
-        return redirect(reverse('supervisr_dns:index'))
+    redirect_view = 'supervisr_dns:index'

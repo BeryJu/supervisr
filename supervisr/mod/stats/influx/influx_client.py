@@ -12,7 +12,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 # pylint: disable=too-many-instance-attributes
-class InfluxClient(object):
+class InfluxClient:
     """Simple Write-only Influx CLient"""
 
     host = ''

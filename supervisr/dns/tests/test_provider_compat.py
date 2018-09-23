@@ -69,6 +69,9 @@ class TestProviderCompat(TestCase):
         provider = CompatDNSProvider(None)
         translator = CompatDNSTranslator(provider)
         compat_records = list(translator.to_external(self.set_record))
+        compat_records = sorted(compat_records, key=lambda x: x.name)
+        # List is only 2 entires despite us creating 3 records
+        # since self.set_record's name is @ and append_names is set to false
         self.assertEqual(len(compat_records), 2)
-        self.assertEqual(compat_records[0].name, TEST_DOMAIN)
-        self.assertEqual(compat_records[1].name, TEST_DOMAIN)
+        self.assertEqual(compat_records[0].name, self.data_record_a.name + '.' + TEST_DOMAIN)
+        self.assertEqual(compat_records[1].name, self.data_record_b.name + '.' + TEST_DOMAIN)

@@ -13,7 +13,7 @@ LOGGER = getLogger(__name__)
 
 
 # pylint: disable=too-few-public-methods
-class BaseRecorder(object):
+class BaseRecorder:
     """Base ProgressRecorder. Does nothing."""
 
     total = 100
@@ -91,7 +91,7 @@ class SupervisrTask(Task):
 
 
 # pylint: disable=too-few-public-methods
-class Progress(object):
+class Progress:
     """Get progress from Task_ID"""
 
     STATE_PROGRESS = 'PROGRESS'
@@ -114,13 +114,13 @@ class Progress(object):
                     'percent': 100,
                 }
             }
-        elif self.result.state == Progress.STATE_PROGRESS:
+        if self.result.state == Progress.STATE_PROGRESS:
             return {
                 'complete': False,
                 'success': None,
                 'progress': self.result.info,
             }
-        elif self.result.state in [Progress.STATE_PENDING, Progress.STATE_STARTED]:
+        if self.result.state in [Progress.STATE_PENDING, Progress.STATE_STARTED]:
             return {
                 'complete': False,
                 'success': None,

@@ -28,7 +28,7 @@ def stats_influx_handle_health(sender, **kwargs):
 
 
 @receiver(on_user_acquirable_relationship_created)
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 def stats_influx_handle_releationship_created(sender, relationship, **kwargs):
     """Handle stats for SIG_USER_ACQUIRABLE_RELATIONSHIP_CREATED"""
     if Setting.get_bool('enabled'):
@@ -44,7 +44,7 @@ def stats_influx_handle_releationship_created(sender, relationship, **kwargs):
 
 
 @receiver(on_user_acquirable_relationship_deleted)
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 def stats_influx_handle_releationship_deleted(sender, relationship, **kwargs):
     """Handle stats for SIG_USER_ACQUIRABLE_RELATIONSHIP_DELETED"""
     if Setting.get_bool('enabled'):
@@ -60,7 +60,7 @@ def stats_influx_handle_releationship_deleted(sender, relationship, **kwargs):
 
 
 @receiver(on_user_sign_up_post)
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 def stats_influx_handle_user_post_sign_up(sender, user, **kwargs):
     """Handle stats for SIG_USER_POST_SIGN_UP"""
     if Setting.get_bool('enabled'):
@@ -75,7 +75,7 @@ def stats_influx_handle_user_post_sign_up(sender, user, **kwargs):
 
 
 @receiver(on_user_change_password_post)
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 def stats_influx_handle_user_post_change_pass(sender, user, **kwargs):
     """Handle stats for SIG_USER_POST_CHANGE_PASS"""
     if Setting.get_bool('enabled'):
@@ -90,7 +90,7 @@ def stats_influx_handle_user_post_change_pass(sender, user, **kwargs):
 
 
 @receiver(on_user_password_reset_finish)
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 def stats_influx_handle_user_pass_reset_fin(sender, user, **kwargs):
     """Handle stats for SIG_USER_PASS_RESET_FIN"""
     if Setting.get_bool('enabled'):
@@ -105,7 +105,7 @@ def stats_influx_handle_user_pass_reset_fin(sender, user, **kwargs):
 
 
 @receiver(on_user_confirmed)
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 def stats_influx_handle_user_confirm(sender, user, **kwargs):
     """Handle stats for SIG_USER_CONFIRM"""
     if Setting.get_bool('enabled'):
@@ -150,7 +150,7 @@ def stats_influx_handle_user_logout(sender, user, **kwargs):
 
 
 @receiver(on_user_confirm_resend)
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 def stats_influx_handle_user_resend_confirm(sender, user, **kwargs):
     """Handle stats for SIG_USER_RESEND_CONFIRM"""
     if Setting.get_bool('enabled'):
@@ -165,7 +165,7 @@ def stats_influx_handle_user_resend_confirm(sender, user, **kwargs):
 
 
 @receiver(on_domain_created)
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 def stats_influx_handle_domain_create(sender, **kwargs):
     """Handle stats for SIG_DOMAIN_CREATE"""
     if Setting.get_bool('enabled'):

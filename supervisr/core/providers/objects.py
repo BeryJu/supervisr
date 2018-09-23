@@ -3,6 +3,7 @@ from typing import Generator, Generic, TypeVar
 
 from aenum import IntFlag
 
+# pylint: disable=invalid-name
 T = TypeVar('T')
 
 
@@ -25,7 +26,7 @@ class ProviderResult(IntFlag):
     OTHER_ERROR = 1024
 
 
-class ProviderObject(object):
+class ProviderObject:
     """This class defines properties that should be returned from queries.
 
     Custom fields can be added in subclasses"""
@@ -86,11 +87,3 @@ class ProviderObjectTranslator(Generic[T]):
             Generator[ProviderObject, None, None]: Yield ProviderObject instances
         """
         raise NotImplementedError()
-
-    # def query_external(self, **kwargs) -> Generator[ProviderObject, None, None]:
-    #     """Query external Provider with **kwargs"""
-    #     raise NotImplementedError()
-
-    # def to_internal(self, query_result: ProviderObject) -> T:
-    #     """Convert external object to T"""
-    #     raise NotImplementedError()

@@ -14,7 +14,6 @@ from supervisr.core.signals import (on_user_acquirable_relationship_created,
 
 
 @receiver(on_user_sign_up_post)
-# pylint: disable=unused-argument
 def event_handle_user_signed_up(sender, signal, user, request, **kwargs):
     """Create an Event when a user signed up"""
     Event.create(
@@ -25,7 +24,6 @@ def event_handle_user_signed_up(sender, signal, user, request, **kwargs):
 
 
 @receiver(on_user_change_password_post)
-# pylint: disable=unused-argument
 def event_handle_user_changed_pass(signal, user, request, was_reset, **kwargs):
     """Create an Event when a user changes their password"""
     Event.create(
@@ -38,7 +36,7 @@ def event_handle_user_changed_pass(signal, user, request, was_reset, **kwargs):
 
 
 @receiver(on_user_acquirable_relationship_created)
-# pylint: disable=unused-argument, invalid-name
+# pylint: disable=unused-argument
 def event_handle_relationship_created(sender, signal, relationship, **kwargs):
     """Create an Event when a User was created"""
     name = str(relationship.model)
@@ -54,7 +52,7 @@ def event_handle_relationship_created(sender, signal, relationship, **kwargs):
 
 
 @receiver(on_user_acquirable_relationship_deleted)
-# pylint: disable=unused-argument, invalid-name
+# pylint: disable=unused-argument
 def event_handle_relationship_deleted(sender, signal, relationship, **kwargs):
     """Create an Event to let users know that they lost access to a Model"""
     name = str(relationship.model)
@@ -69,7 +67,6 @@ def event_handle_relationship_deleted(sender, signal, relationship, **kwargs):
 
 
 @receiver(user_logged_in)
-# pylint: disable=unused-argument
 def event_handler_user_login(sender, signal, user, request, **kwargs):
     """Create a hidden event when a user logs in"""
     Event.create(
@@ -81,7 +78,6 @@ def event_handler_user_login(sender, signal, user, request, **kwargs):
 
 
 @receiver(user_logged_out)
-# pylint: disable=unused-argument
 def event_handler_user_logout(sender, signal, user, request, **kwargs):
     """Create a hidden event when a user logs out"""
     Event.create(

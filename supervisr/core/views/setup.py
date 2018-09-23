@@ -105,7 +105,7 @@ class SetupWizard(AnonymousRequiredMixin, NamedWizard):
                 return redirect(reverse('common-index'))
         return super().dispatch(request, *args, **kwargs)
 
-    def finish(self, form_list) -> HttpResponse:
+    def finish(self, *form_list) -> HttpResponse:
         # Get AdminUserForm
         user_form = next(iter([form for form in form_list if isinstance(form, AdminUserForm)]),
                          None)

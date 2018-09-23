@@ -32,4 +32,4 @@ class SupervisrModAuthSAMLProvider(SupervisrAppConfig):
         settings.add(key='signing', value=True)
         settings.add(key='autosubmit', value=True)
         settings.add(key='assertion_valid_for', value=1)
-        return settings,
+        return (settings, )
