@@ -35,7 +35,7 @@
         {% related_models 'supervisr.dns.models.SetRecord' as set_records %}
         {% for set in set_records %}
         <li>
-          <a href="{% url 'supervisr_dns:record-set-view' record_uuid=set.uuid %}" class="nav-link {% is_active_url 'supervisr_dns:record-set-view' record_uuid=set.uuid %}">{{ set.name }}</a>
+          <a href="{% url 'supervisr_dns:record-set-view' uuid=set.uuid %}" class="nav-link {% is_active_url 'supervisr_dns:record-set-view' uuid=set.uuid %}">{{ set.name }}</a>
         </li>
         {% endfor %}
       </ul>

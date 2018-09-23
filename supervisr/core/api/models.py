@@ -57,13 +57,15 @@ class ModelAPI(CRUDAPI):
             raise PermissionDenied
         return queryset
 
-    def model_to_dict(self, qs):
+    def model_to_dict(self, queryset):
         """Convert queryset to dict"""
         final_arr = []
-        for m_inst in qs:
-            inst_dict = {'pk': m_inst.pk}
+        for model_instance in queryset:
+            inst_dict = {'pk': model_instance.pk}
+            if getattr(model_instance, 'uuid'):
+                inst_dict['uuid'] = model_instance.uuid
             for field in self.viewable_fields:
-                data = getattr(m_inst, field, None)
+                data = getattr(model_instance, field, None)
                 if isinstance(data, models.Model):
                     data = data.pk
                 inst_dict[field] = data
@@ -174,3 +176,8 @@ class UserAcquirableModelAPI(ModelAPI):
             model=model,
             user=request.user)
         return original
+
+    @staticmethod
+    def user_filter(queryset, user):
+        """This method is used to check if the user has access"""
+        return queryset.objects.filter(users__in=[user])

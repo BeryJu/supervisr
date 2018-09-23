@@ -1,0 +1,14 @@
+<div class="modal-body">
+  <form clrForm>
+    <clr-select-container>
+      <label>I've got some options</label>
+      <select clrSelect name="options" [(ngModel)]="provider">
+        <option *ngFor="let provider of providers" value="{{provider.uuid}}">{{provider.name}}</option>
+      </select>
+    </clr-select-container>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="update()">Update</button>
+</div>

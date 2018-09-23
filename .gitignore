@@ -183,3 +183,14 @@ debian/supervisr.substvars
 debian/supervisr/
 
 unittest.xml
+
+coverage/
+dist/
+html-report/
+node_modules/
+typings/
+**/*npm-debug.log.*
+**/*yarn-error.log.*
+.idea/
+.DS_Store
+.npmrc

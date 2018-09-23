@@ -1,6 +1,6 @@
 """Supervisr Core API Utils"""
-
 from datetime import date, datetime, timezone
+from uuid import UUID
 
 from django.http import HttpResponse, JsonResponse
 
@@ -51,6 +51,8 @@ def api_response_json(code, data):
             obj = datetime.combine(obj, datetime.min.time())
         if isinstance(obj, datetime):
             return obj.replace(tzinfo=timezone.utc).timestamp()
+        if isinstance(obj, UUID):
+            return obj.hex
 
         raise TypeError("Type %s not serializable" % type(obj))
 

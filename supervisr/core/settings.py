@@ -114,7 +114,7 @@ MEDIA_ROOT = BASE_DIR + "/data/media"
 SECRET_KEY = CONFIG.get('secret_key',
                         '_k*@6h2u2@q-dku57hhgzb7tnx*ba9wodcb^s9g0j59@=y(@_o') # noqa Debug
 DEBUG = CONFIG.get('debug', True)
-CORS_ORIGIN_ALLOW_ALL = not DEBUG
+CORS_ORIGIN_ALLOW_ALL = DEBUG
 CORS_ORIGIN_WHITELIST = CONFIG.get('domains')
 ALLOWED_HOSTS = CONFIG.get('domains')
 

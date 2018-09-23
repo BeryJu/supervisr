@@ -1,0 +1,67 @@
+$fa-font-path : '../node_modules/font-awesome/fonts';
+@import '~font-awesome/scss/font-awesome.scss';
+@import "supervisr/index.scss";
+@import "clarity/index.scss";
+@import "django/index.scss";
+
+.home-cards .home-cards-container {
+    background-color: #22343c !important;
+}
+
+// django admin sidebar
+#content-related {
+    background-color: #22343c !important;
+}
+
+#content-related .module h2 {
+    color: #e9ecef !important;
+}
+
+.apps ul {
+    background: initial !important;
+}
+
+.apps ul li a {
+    color: #e9ecef !important;
+}
+
+select[multiple] option, select[size] option {
+    color: #e9ecef;
+}
+
+// custom scrollbar theme
+html {
+    scrollbar-face-color: #324f61;
+    scrollbar-base-color: #324f61;
+    scrollbar-3dlight-color: #324f61;
+    scrollbar-highlight-color: #324f61;
+    scrollbar-track-color: #1b2a32;
+    scrollbar-arrow-color: #1b2a32;
+    scrollbar-shadow-color: #324f61;
+    scrollbar-dark-shadow-color: #324f61;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 3px;
+}
+::-webkit-scrollbar-button {
+     background-color: #324f61;
+}
+::-webkit-scrollbar-track {
+     background-color: #324f61;
+}
+::-webkit-scrollbar-track-piece {
+    background-color: #1b2a32;
+}
+::-webkit-scrollbar-thumb {
+    height: 50px;
+    background-color: #324f61;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-corner {
+    background-color: #324f61;
+}
+::-webkit-resizer {
+    background-color: #324f61;
+}

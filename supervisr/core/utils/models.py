@@ -51,6 +51,9 @@ def walk_m2m(root: Model,
                 (only_classes and root.__class__ in only_classes) or \
                 (only_classes == exclude_classes == []):
             models.append(root)
+        # Also add if subclass of only_classes
+        if any([issubclass(root.__class__, x) for x in only_classes]):
+            models.append(root)
         # Keep a second list with all models so we can check for duplicates,
         # even if class would normally be filtered out
         all_model_list.append(root)
