@@ -22,6 +22,7 @@
         "../scss/dark.theme.scss"
       ],
       "scripts": [
+        "../node_modules/raven-js/dist/raven.js",
         "../node_modules/core-js/client/shim.min.js",
         "../node_modules/mutationobserver-shim/dist/mutationobserver.min.js",
         "../node_modules/@webcomponents/custom-elements/custom-elements.min.js",

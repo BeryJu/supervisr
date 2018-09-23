@@ -4,7 +4,7 @@
   "description": "Frontend components for supervisr",
   "angular-cli": {},
   "scripts": {
-    "build": "npx ng build --prod --output-hashing none",
+    "build": "npx ng build --prod --output-hashing none && ../manage.py collectstatic --no-input",
     "start": "npx ng serve --proxy-config proxy.conf.json"
   },
   "private": true,
