@@ -4,6 +4,7 @@ import collections
 from django import forms
 from django.core.exceptions import PermissionDenied
 from django.db import models
+from django.db.models import QuerySet, Q
 from django.db.models.fields import NOT_PROVIDED
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -57,7 +58,25 @@ class ModelAPI(CRUDAPI):
             raise PermissionDenied
         return queryset
 
-    def model_to_dict(self, queryset):
+    def apply_meta(self, request, queryset: QuerySet) -> QuerySet:
+        """Apply request options like __order_by, __reverse, __from, __to and more"""
+        if any([key.startswith('__filter__') for key in request.GET]):
+            query = Q()
+            for key, value in request.GET.items():
+                if key.startswith('__filter__'):
+                    field_name = key.replace('__filter__', '') + '__contains'
+                    query |= Q(**{field_name: value})
+            queryset = queryset.filter(query)
+        if '__order_by' in request.GET:
+            queryset = queryset.order_by(request.GET.get('__order_by'))
+        if '__reverse' in request.GET and request.GET.get('__reverse') == 'true':
+            queryset = queryset.reverse()
+        if '__from' in request.GET and '__to' in request.GET:
+            start, end = int(request.GET.get('__from')), int(request.GET.get('__to'))
+            queryset = queryset[start:end]
+        return queryset
+
+    def model_to_dict(self, queryset: QuerySet):
         """Convert queryset to dict"""
         final_arr = []
         for model_instance in queryset:
@@ -132,6 +151,7 @@ class ModelAPI(CRUDAPI):
         all_instances = self.model.objects.filter(**sanitized)
         # Filter after user
         filtered = ModelAPI.user_filter(all_instances, request.user)
+        filtered = self.apply_meta(request, filtered)
         return self.model_to_dict(filtered)
 
     def update(self, request, data):

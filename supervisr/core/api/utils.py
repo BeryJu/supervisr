@@ -52,7 +52,7 @@ def api_response_json(code, data):
         if isinstance(obj, datetime):
             return obj.replace(tzinfo=timezone.utc).timestamp()
         if isinstance(obj, UUID):
-            return obj.hex
+            return str(obj)
 
         raise TypeError("Type %s not serializable" % type(obj))
 
