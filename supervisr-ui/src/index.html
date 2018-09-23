@@ -1,12 +1,22 @@
 <!doctype html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <title>Clarity Seed App</title>
-    <base href="/">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-<provider-update>Loading...</provider-update>
-</body>
+    <head>
+        <meta charset="utf-8">
+        <title>Supervisr-UI KS</title>
+        <base href="/">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+    <provider-update>Loading...</provider-update>
+    <datagrid
+        data-header-columns='["Name", "UUID", "Provider Path"]'
+        data-body-columns='["name", "uuid", "provider_path"]'
+        data-api-component="core"
+        data-api-part="providers"
+        data-api-action="read"
+        data-add-view="instance-new"
+        data-edit-view="instance-edit"
+        data-delete-view="instance-delete">
+    </datagrid>
+    </body>
 </html>
