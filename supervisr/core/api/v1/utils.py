@@ -1,0 +1,19 @@
+"""Supervisr Core Utils APIv1"""
+
+from django.http import HttpRequest
+
+from supervisr.core.api.base import API
+from django.shortcuts import reverse
+
+
+class UtilAPI(API):
+    """Utils API"""
+
+    ALLOWED_VERBS = {
+        'GET': ['reverse']
+    }
+
+    def reverse(self, request: HttpRequest, data: dict) -> dict:
+        """Get reversed URL"""
+        view_name = data.pop('__view_name')
+        return reverse(view_name, kwargs=data)
