@@ -108,9 +108,9 @@ INSTALLED_APPS = [
 ] + CONFIG.get('installed_apps', [])
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(
-    os.path.abspath(__file__)))) + "/static"
-MEDIA_ROOT = BASE_DIR + "/data/media"
+DATA_DIR = BASE_DIR + '/data'
+STATIC_ROOT = DATA_DIR + '/static'
+MEDIA_ROOT = DATA_DIR + "/media"
 SECRET_KEY = CONFIG.get('secret_key',
                         '_k*@6h2u2@q-dku57hhgzb7tnx*ba9wodcb^s9g0j59@=y(@_o') # noqa Debug
 DEBUG = CONFIG.get('debug', True)
