@@ -4,7 +4,7 @@ import collections
 from django import forms
 from django.core.exceptions import PermissionDenied
 from django.db import models
-from django.db.models import QuerySet, Q
+from django.db.models import Q, QuerySet
 from django.db.models.fields import NOT_PROVIDED
 from django.http import Http404
 from django.shortcuts import get_object_or_404

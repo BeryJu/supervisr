@@ -1,9 +1,9 @@
 """Supervisr Core Utils APIv1"""
 
 from django.http import HttpRequest
+from django.shortcuts import reverse
 
 from supervisr.core.api.base import API
-from django.shortcuts import reverse
 
 
 class UtilAPI(API):
