@@ -1,6 +1,6 @@
 """Supervisr Core API Utils"""
-from uuid import UUID
 from datetime import date, datetime, timezone
+from uuid import UUID
 
 from django.http import HttpResponse, JsonResponse
 

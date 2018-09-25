@@ -6,7 +6,8 @@ import os
 from django.conf import settings
 from django.db import models
 
-from supervisr.core.models import CastableModel, CreatedUpdatedModel, Product, UUIDModel
+from supervisr.core.models import (CastableModel, CreatedUpdatedModel, Product,
+                                   UUIDModel)
 
 LOGGER = logging.getLogger(__name__)
 

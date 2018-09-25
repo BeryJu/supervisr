@@ -6,7 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 from passlib.hash import sha512_crypt
 
 from supervisr.core.models import (CreatedUpdatedModel, Domain, Event,
-                                   ProviderAcquirable, User, UserAcquirable, UUIDModel)
+                                   ProviderAcquirable, User, UserAcquirable,
+                                   UUIDModel)
 
 LOGGER = logging.getLogger(__name__)
 

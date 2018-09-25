@@ -3,8 +3,8 @@
 from django.conf import settings
 from django.db import models
 
-from supervisr.core.models import UUIDModel, CreatedUpdatedModel
 from supervisr.core.fields import EncryptedField
+from supervisr.core.models import CreatedUpdatedModel, UUIDModel
 from supervisr.mod.auth.oauth.client.clients import get_client
 
 

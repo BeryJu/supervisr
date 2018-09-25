@@ -15,7 +15,8 @@ from django.utils.translation import ugettext as _
 from django.views import View
 
 from supervisr.core.decorators import anonymous_required
-from supervisr.core.models import CastableModel, UserAcquirable, CreatedUpdatedModel
+from supervisr.core.models import (CastableModel, CreatedUpdatedModel,
+                                   UserAcquirable)
 
 
 class LoginRequiredMixin(View):
