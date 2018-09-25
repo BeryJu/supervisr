@@ -1,3 +1,5 @@
+@import '../variables.scss';
+
 .nav-link img.branding {
     min-width: 60px;
     padding: 0 !important;
@@ -89,11 +91,6 @@ th.header {
 /* tr selected */
 tr.selected {
     background-color: #E1F1F6 !important;
-}
-
-.btn-group {
-    margin-top: 24px !important;
-    margin-bottom: -12px !important;
 }
 
 .login-group .btn-group {
@@ -199,22 +196,6 @@ section[role=tabpanel] {
     width: 100%;
 }
 
-/* resets for sentry */
-
-.sentry-error-embed header {
-    display: block !important;
-    height: initial !important;
-}
-
-.sentry-error-embed * {
-    font-family: initial !important;
-}
-
-.sentry-error-embed .form-submit .btn {
-    height: initial !important;
-    line-height: initial !important;
-}
-
 .nav-group-children-hidden {
     height: 0px;
     overflow-y: hidden;
@@ -227,5 +208,5 @@ section[role=tabpanel] {
 }
 
 .branding-color {
-    color: #3625b7 !important;
+    color: $branding-color !important;
 }

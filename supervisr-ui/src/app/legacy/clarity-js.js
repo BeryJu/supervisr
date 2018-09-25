@@ -228,3 +228,5 @@ var clrSidenav = function (containerSelector) {
         container.toggleClass('is-expanded');
     });
 };
+
+window['clrTabs'] = clrTabs;

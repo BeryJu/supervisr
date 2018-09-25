@@ -5,10 +5,17 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ClarityModule, ClrFormsNextModule } from '@clr/angular';
 import { ProviderUpdateComponent } from './provider/update/update.component';
+import { ProviderStatusComponent } from './provider/status/status.component';
 import { DatagridComponent } from './datagrid/datagrid.component';
 import { API } from './services/api';
+import './legacy/clarity-js';
+import './legacy/supervisr.js';
 
-const COMPONENTS = [ProviderUpdateComponent, DatagridComponent];
+const COMPONENTS = [
+    DatagridComponent,
+    ProviderUpdateComponent,
+    ProviderStatusComponent,
+];
 
 @NgModule({
     declarations: COMPONENTS,
@@ -23,7 +30,7 @@ const COMPONENTS = [ProviderUpdateComponent, DatagridComponent];
     providers: [
         API
     ],
-    entryComponents: COMPONENTS
+    entryComponents: COMPONENTS,
 })
 export class AppModule {
 

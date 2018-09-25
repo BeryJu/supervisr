@@ -1,0 +1,15 @@
+/* resets for sentry */
+
+.sentry-error-embed header {
+    display: block !important;
+    height: initial !important;
+}
+
+.sentry-error-embed * {
+    font-family: initial !important;
+}
+
+.sentry-error-embed .form-submit .btn {
+    height: initial !important;
+    line-height: initial !important;
+}
