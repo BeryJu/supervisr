@@ -82,15 +82,7 @@
               <td><span>{{ instance.name }}</span></td>
               <td><span>{{ instance.provider.get_meta.ui_name|default:'Error' }}</span></td>
               <td>
-                {% with status=instance.provider.check_status %}
-                  {% if status == True %}
-                    <span class="label label-success">{% trans "OK" %}</span>
-                  {% elif status == False or instance.provider == None %}
-                    <span class="label label-danger">{% trans 'Error' %}</span>
-                  {% else %}
-                    <span class="label">{{ status }}</span>
-                  {% endif %}
-                {% endwith %}
+                <provider-status data-uuid="{{ instance.uuid }}" />
               </td>
             </tr>
             {% endfor %}

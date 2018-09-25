@@ -19,9 +19,14 @@ class ProviderAPI(UserAcquirableModelAPI):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.ALLOWED_VERBS['GET'].extend(['get_all', 'trigger_update'])
+        self.ALLOWED_VERBS['GET'].extend(['all', 'status', 'trigger_update'])
 
-    def get_all(self, request, data):
+    def status(self, request, data):
+        """Get status of provider"""
+        provider = get_object_or_404(ProviderInstance, uuid=data.get('provider_uuid')).provider
+        return provider.check_status()
+
+    def all(self, request, data):
         """Return list of all possible providers"""
         return get_providers(path=True)
 
