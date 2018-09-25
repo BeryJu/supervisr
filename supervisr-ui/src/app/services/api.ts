@@ -86,6 +86,22 @@ export class API {
         return this.request();
     }
 
+    public translate(message: string, kwargs?: object) {
+        this.component('core')
+            .part('utils')
+            .action('gettext')
+            .queryString('__message', message);
+        if (kwargs !== undefined) {
+            for (const key in kwargs) {
+                if (kwargs.hasOwnProperty(key)) {
+                    const element = kwargs[key];
+                    this.queryString(key, element);
+                }
+            }
+        }
+        return this.request();
+    }
+
     public request(method: string = 'GET') {
         var url = this.buildUrl(this._component, this._part, this._action);
         if (this._query) {
