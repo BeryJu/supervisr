@@ -21,9 +21,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Max
-from django.db.models.signals import post_save, pre_delete
 from django.db.utils import OperationalError, ProgrammingError
-from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils import timezone
@@ -34,10 +32,6 @@ from supervisr.core import fields
 from supervisr.core.decorators import database_catchall
 from supervisr.core.decorators import time as time_method
 from supervisr.core.providers.base import BaseProvider
-from supervisr.core.signals import (on_domain_created, on_setting_update,
-                                    on_user_acquirable_relationship_created,
-                                    on_user_acquirable_relationship_deleted,
-                                    on_user_sign_up_post)
 from supervisr.core.tasks import Progress
 from supervisr.core.utils import get_remote_ip, get_reverse_dns
 
@@ -139,7 +133,7 @@ class CreatedUpdatedModel(models.Model):
         abstract = True
 
 
-class User(AbstractUser):
+class User(UUIDModel, AbstractUser):
     """Custom Usermodel which has a few extra fields"""
 
     crypt6_password = models.CharField(max_length=128, blank=True, default='')
@@ -218,20 +212,19 @@ class GlobalPermission(Permission):
         super().save(*args, **kwargs)
 
 
-class Setting(CreatedUpdatedModel):
+class Setting(UUIDModel, CreatedUpdatedModel):
     """Save key-value settings to db"""
 
-    setting_id = models.AutoField(primary_key=True)
     key = models.CharField(max_length=255)
     namespace = models.CharField(max_length=255)
     value = models.TextField(null=True, blank=True)
 
-    _ALLOWED_NAMESPACES = []
+    __ALLOWED_NAMESPACES = []
 
     @staticmethod
     def _init_allowed():
         from supervisr.core.utils import get_apps
-        Setting._ALLOWED_NAMESPACES = [x.name for x in get_apps(exclude=[])]
+        Setting.__ALLOWED_NAMESPACES = [x.name for x in get_apps(exclude=[])]
 
     @property
     def value_bool(self) -> bool:
@@ -277,14 +270,14 @@ class Setting(CreatedUpdatedModel):
         Returns:
             The data currently saved if the Setting exists. Otherwise `default` is returned.
         """
-        if not Setting._ALLOWED_NAMESPACES:
+        if not Setting.__ALLOWED_NAMESPACES:
             Setting._init_allowed()
         if namespace == '':
             namespace = inspect.getmodule(inspect.stack()[inspect_offset][0]).__name__
-        for name in Setting._ALLOWED_NAMESPACES:
+        for name in Setting.__ALLOWED_NAMESPACES:
             if namespace.startswith(name):
                 namespace = name
-        namespace_matches = get_close_matches(namespace, Setting._ALLOWED_NAMESPACES)
+        namespace_matches = get_close_matches(namespace, Setting.__ALLOWED_NAMESPACES)
         if not namespace_matches:
             return default
         namespace = namespace_matches[0]
@@ -341,15 +334,15 @@ class Setting(CreatedUpdatedModel):
         Returns:
             True if saving the Setting succeeded, otherwise False.
         """
-        if not Setting._ALLOWED_NAMESPACES:
+        if not Setting.__ALLOWED_NAMESPACES:
             Setting._init_allowed()
         if namespace == '':
             namespace = inspect.getmodule(
                 inspect.stack()[inspect_offset][0]).__name__
-        for name in Setting._ALLOWED_NAMESPACES:
+        for name in Setting.__ALLOWED_NAMESPACES:
             if namespace.startswith(name):
                 namespace = name
-        namespace = get_close_matches(namespace, Setting._ALLOWED_NAMESPACES)[0]
+        namespace = get_close_matches(namespace, Setting.__ALLOWED_NAMESPACES)[0]
         try:
             setting, created = Setting.objects.get_or_create(
                 key=key,
@@ -362,16 +355,12 @@ class Setting(CreatedUpdatedModel):
         except OperationalError:
             return False
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        on_setting_update.send(sender=self, setting=self)
-
     class Meta:
 
         unique_together = (('key', 'namespace'), )
 
 
-class Task(CreatedUpdatedModel):
+class Task(UUIDModel, CreatedUpdatedModel):
     """Model to associate users with tasks"""
 
     task_uuid = models.UUIDField()
@@ -417,21 +406,9 @@ class AccountConfirmation(UUIDModel, CreatedUpdatedModel):
             (self.user.email, self.is_expired)
 
 
-@receiver(pre_delete)
-# pylint: disable=unused-argument
-def relationship_pre_delete(sender, instance, **kwargs):
-    """Send signal when relationship is deleted"""
-    if sender == UserAcquirableRelationship:
-        # Send signal to we are going to be deleted
-        on_user_acquirable_relationship_deleted.send(
-            sender=UserAcquirableRelationship,
-            relationship=instance)
-
-
-class ProductExtension(CreatedUpdatedModel, CastableModel):
+class ProductExtension(UUIDModel, CreatedUpdatedModel, CastableModel):
     """This class can be used by extension to associate Data with a Product"""
 
-    product_extension_id = models.AutoField(primary_key=True)
     extension_name = models.TextField(default='')
     form = 'supervisr.core.forms.products.ProductExtensionForm'
 
@@ -453,7 +430,7 @@ class URLProductExtension(ProductExtension):
 class UserAcquirable(CastableModel):
     """Base Class for Models that should have an N-M relationship with Users"""
 
-    user_acquirable_id = models.AutoField(primary_key=True)
+    user_acquirable_id = models.UUIDField(editable=False, default=uuid.uuid4, primary_key=True)
     users = models.ManyToManyField('User', through='UserAcquirableRelationship')
 
     def has_user(self, user: User) -> bool:
@@ -470,22 +447,11 @@ class UserAcquirable(CastableModel):
             )
 
 
-class UserAcquirableRelationship(models.Model):
+class UserAcquirableRelationship(UUIDModel):
     """Relationship between User and any Class subclassing UserAcquirable"""
 
     user = models.ForeignKey('User', on_delete=models.CASCADE)
     model = models.ForeignKey('UserAcquirable', on_delete=models.CASCADE)
-
-    def save(self, *args, **kwargs):
-        first_save = False
-        if self.pk is None:
-            first_save = True
-        super().save(*args, **kwargs)
-        if first_save:
-            # Trigger event that we were saved
-            on_user_acquirable_relationship_created.send(
-                sender=UserAcquirableRelationship,
-                relationship=self)
 
     def __str__(self):
         return "User '%s' <=> UserAcquirable '%s'" % (self.user, self.model.cast())
@@ -497,7 +463,7 @@ class UserAcquirableRelationship(models.Model):
 class ProviderAcquirable(ProviderTriggerMixin, CastableModel):
     """Base Class for Models that should have an N-M relationship with ProviderInstance"""
 
-    provider_acquirable_id = models.AutoField(primary_key=True)
+    provider_acquirable_id = models.UUIDField(editable=False, default=uuid.uuid4, primary_key=True)
     providers = models.ManyToManyField('ProviderInstance',
                                        through='ProviderAcquirableRelationship', blank=True)
 
@@ -524,7 +490,8 @@ class ProviderAcquirable(ProviderTriggerMixin, CastableModel):
 class ProviderAcquirableSingle(ProviderTriggerMixin, CastableModel):
     """Base Class for Models that should have an N-1 relationship with ProviderInstance"""
 
-    provider_acquirable_single_id = models.AutoField(primary_key=True)
+    provider_acquirable_single_id = models.UUIDField(
+        editable=False, default=uuid.uuid4, primary_key=True)
     provider_instance = models.ForeignKey('ProviderInstance', on_delete=models.CASCADE)
 
     @property
@@ -533,7 +500,7 @@ class ProviderAcquirableSingle(ProviderTriggerMixin, CastableModel):
         yield self.provider_instance
 
 
-class ProviderAcquirableRelationship(models.Model):
+class ProviderAcquirableRelationship(UUIDModel):
     """Relationship between ProviderInstance and any Class subclassing ProviderAcquirable"""
 
     provider_instance = models.ForeignKey('ProviderInstance', on_delete=models.CASCADE)
@@ -592,7 +559,7 @@ class Product(UUIDModel, CreatedUpdatedModel, UserAcquirable, CastableModel):
                     model=self)
 
 
-class Domain(ProviderAcquirableSingle, UserAcquirable, CreatedUpdatedModel):
+class Domain(UUIDModel, ProviderAcquirableSingle, UserAcquirable, CreatedUpdatedModel):
     """Information about a Domain, which is used for other sub-apps."""
 
     domain_name = models.CharField(max_length=253, unique=True)
@@ -623,8 +590,9 @@ class Event(CreatedUpdatedModel):
         (EVENT_IMPORTANCE_INFORMATION, _('Information'))
     )
 
-    event_id = models.AutoField(primary_key=True)
+    # This model uses a classic AutoField primary key for performance reasons
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    uuid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4)
     glyph = models.CharField(max_length=200, default='envelope')
     message = models.TextField()
     current = models.BooleanField(default=True)
@@ -688,8 +656,9 @@ class Event(CreatedUpdatedModel):
         return "Event '%s' '%s'" % (self.user.username, self.message)
 
 
-class BaseCredential(CreatedUpdatedModel, CastableModel):
+class BaseCredential(UUIDModel, CreatedUpdatedModel, CastableModel):
     """Basic set of credentials"""
+
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     form = ''  # form class which is used for setup
@@ -761,11 +730,10 @@ class UserPasswordServerCredential(BaseCredential):
         return _("Username, Password and Server")
 
 
-class ProviderInstance(CreatedUpdatedModel, UserAcquirable):
+class ProviderInstance(UUIDModel, CreatedUpdatedModel, UserAcquirable):
     """Basic Provider Instance"""
 
     name = models.TextField()
-    uuid = models.UUIDField(default=uuid.uuid4)
     provider_path = models.TextField()
     credentials = models.ForeignKey('BaseCredential', on_delete=models.CASCADE)
     _class = None
@@ -787,25 +755,3 @@ class ProviderInstance(CreatedUpdatedModel, UserAcquirable):
 
     def __str__(self):
         return self.name
-
-
-@receiver(on_user_sign_up_post)
-# pylint: disable=unused-argument
-def product_handle_post_signup(sender, signal, user, **kwargs):
-    """Auto-associates Product with new users. We have a separate function for
-    this since we use the default Django User Model."""
-    to_add = Product.objects.filter(auto_add=True)
-    for product in to_add:
-        UserAcquirableRelationship.objects.create(
-            user=user,
-            model=product)
-
-
-@receiver(post_save, sender=Domain)
-# pylint: disable=unused-argument
-def send_domain_create(sender, signal, instance, created, **kwargs):
-    """Send Domain creation signal"""
-    if created:
-        on_domain_created.send(
-            sender=Domain,
-            domain=instance)

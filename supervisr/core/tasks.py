@@ -66,7 +66,7 @@ class SupervisrTask(Task):
         from supervisr.core.models import User
         # Get Invoker if possible
         if 'invoker' in kwargs:
-            users = User.objects.filter(pk=int(kwargs.get('invoker')))
+            users = User.objects.filter(pk=kwargs.get('invoker'))
             if users.exists():
                 self._invoker = users.first()
         # Create a ProgressRecorder

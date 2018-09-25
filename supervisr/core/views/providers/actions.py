@@ -5,12 +5,11 @@ from typing import Union
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
-from supervisr.core.models import CastableModel, ProviderTriggerMixin
+from supervisr.core.models import CastableModel, Domain, ProviderTriggerMixin
 from supervisr.core.providers.multiplexer import ProviderMultiplexer
 from supervisr.core.providers.objects import ProviderAction
 from supervisr.core.utils import class_to_path
 from supervisr.core.views.generic import GenericModelView
-from supervisr.dns.models import Zone
 
 LOGGER = getLogger(__name__)
 
@@ -50,4 +49,4 @@ class ProviderUpdateView(GenericModelView):
 class ProviderUpdateViewTest(ProviderUpdateView):
     """Test class"""
 
-    model = Zone
+    model = Domain

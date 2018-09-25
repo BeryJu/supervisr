@@ -134,3 +134,45 @@ def provider_m2m(sender, instance, action, **kwargs):
         elif action == 'pre_remove':
             LOGGER.debug("m2m pre_delete (sender=%r, instance=%r)", sender, instance)
             provider_pre_delete(sender, instance, **kwargs)
+
+
+@receiver(pre_delete)
+# pylint: disable=unused-argument
+def relationship_pre_delete(sender, instance, **kwargs):
+    """Send signal when relationship is deleted"""
+    from supervisr.core.models import UserAcquirableRelationship
+    if sender == UserAcquirableRelationship:
+        # Send signal to we are going to be deleted
+        on_user_acquirable_relationship_deleted.send(
+            sender=UserAcquirableRelationship,
+            relationship=instance)
+
+
+@receiver(on_user_sign_up_post)
+# pylint: disable=unused-argument
+def product_handle_post_sign_up(sender, signal, user, **kwargs):
+    """Auto-associates Product with new users. We have a separate function for
+    this since we use the default Django User Model."""
+    from supervisr.core.models import Product, UserAcquirableRelationship
+    to_add = Product.objects.filter(auto_add=True)
+    for product in to_add:
+        UserAcquirableRelationship.objects.create(
+            user=user,
+            model=product)
+
+
+@receiver(post_save)
+# pylint: disable=unused-argument
+def send_create(sender, signal, instance, created, **kwargs):
+    """Send Model creation signal"""
+    from supervisr.core.models import Domain, UserAcquirableRelationship, Setting
+    if sender == Domain and created:
+        on_domain_created.send(
+            sender=Domain,
+            domain=instance)
+    elif sender == UserAcquirableRelationship and created:
+        on_user_acquirable_relationship_created.send(
+            sender=UserAcquirableRelationship,
+            relationship=instance)
+    elif sender == Setting:
+        on_setting_update.send(sender=Setting, setting=instance)

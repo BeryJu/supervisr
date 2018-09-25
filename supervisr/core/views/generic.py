@@ -15,7 +15,8 @@ from django.utils.translation import ugettext as _
 from django.views import View
 
 from supervisr.core.decorators import anonymous_required
-from supervisr.core.models import CastableModel, UserAcquirable
+from supervisr.core.models import (CastableModel, CreatedUpdatedModel,
+                                   UserAcquirable)
 
 
 class LoginRequiredMixin(View):
@@ -79,7 +80,12 @@ class GenericModelView(LoginRequiredMixin):
             query &= Q(users__in=[self.request.user])
 
         if query:
-            return self.model.objects.filter(query).order_by('pk')
+            query_set = self.model.objects.filter(query)
+            if hasattr(self.model, 'name'):
+                return query_set.order_by('name')
+            if issubclass(self.model, CreatedUpdatedModel):
+                return query_set.order_by('last_updated')
+            return query_set.order_by('pk')
         raise NotImplementedError()
 
     def _redirect_helper(self, *args, **kwargs) -> HttpResponse:

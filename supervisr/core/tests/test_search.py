@@ -62,10 +62,11 @@ class TestSearchView(TestCase):
         query = SearchQuery()
         query.query = 'supervisr.beryju.org'
         results = view_instance.search(query)
+        domain_results = results['Supervisr Core'][Domain]
         self.assertIn('Supervisr Core', results)
         self.assertIn(Domain, results['Supervisr Core'])
         self.assertEqual(len(results['Supervisr Core'][Domain]), 3)
-        self.assertEqual(results['Supervisr Core'][Domain][0].label, 'dom1.supervisr.beryju.org')
+        self.assertTrue(any([x.label == 'dom1.supervisr.beryju.org' for x in domain_results]))
 
     def test_default_search_handler(self):
         """Test default search algorithm"""
@@ -107,4 +108,5 @@ class TestSearchView(TestCase):
         query.query = 'supervisr.beryju.org'
         results = handler.search(query, request)
         self.assertEqual(len(results[Domain]), 3)
-        self.assertEqual(results[Domain][0].label, 'dom1.supervisr.beryju.org')
+        self.assertTrue(
+            any([x.label == 'dom1.supervisr.beryju.org' for x in results[Domain]]))

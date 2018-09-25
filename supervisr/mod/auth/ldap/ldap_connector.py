@@ -238,7 +238,7 @@ class LDAPConnector:
         if not self.create_users_enabled:
             return False
         # The dn of our new entry/object
-        username = str(user.id) + '_' + user.username
+        username = user.pk.hex # UUID without dashes
         # sAMAccountName is limited to 20 chars
         # https://msdn.microsoft.com/en-us/library/ms679635.aspx
         username_trunk = username[:20] if len(username) > 20 else username
@@ -252,7 +252,7 @@ class LDAPConnector:
             'description': str('t=' + str(py_time.time())),
             'sAMAccountName': str(username_trunk),
             'givenName': str(user.first_name),
-            'displayName': str(user.first_name),
+            'displayName': str(user.username),
             'name': str(user.first_name),
             'mail': str(user.email),
             'userPrincipalName': str(username + '@' + self.domain),

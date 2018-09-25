@@ -72,29 +72,24 @@ class CredentialNewView(LoginRequiredMixin, BaseWizardView):
 class CredentialUpdateView(GenericUpdateView):
     """Update Credential"""
 
-    model = BaseCredential
     form = ModelForm
+    model = BaseCredential
+    redirect_view = 'credential-index'
 
     def get_instance(self) -> QuerySet:
-        query_set = self.model.objects.filter(name=self.kwargs.get('name'),
+        query_set = self.model.objects.filter(uuid=self.kwargs.get('uuid'),
                                               owner=self.request.user)
         # Get form class from credential instance
         self.form = path_to_class(query_set.first().cast().form)
         return query_set
-
-    def redirect(self, instance: BaseCredential) -> HttpResponse:
-        return redirect(reverse('credential-index'))
 
 
 class CredentialDeleteView(GenericDeleteView):
     """View to delete Credential"""
 
     model = BaseCredential
-
-    def redirect(self, instance: BaseCredential) -> HttpResponse:
-        return redirect(reverse('credential-index'))
+    redirect_view = 'credential-index'
 
     def get_instance(self) -> QuerySet:
-        """Get domain from name"""
-        return self.model.objects.filter(name=self.kwargs.get('name'),
+        return self.model.objects.filter(uuid=self.kwargs.get('uuid'),
                                          owner=self.request.user)

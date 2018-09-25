@@ -1,8 +1,7 @@
 """Supervisr Core Provider Views"""
 
 from django.contrib import messages
-from django.db.models import QuerySet
-from django.http import Http404, HttpResponse
+from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import ugettext as _
@@ -23,9 +22,6 @@ class ProviderIndexView(GenericIndexView):
 
     model = ProviderInstance
     template = 'provider/instance-index.html'
-
-    def get_instance(self) -> QuerySet:
-        return self.model.objects.filter(users__in=[self.request.user]).order_by('name')
 
 
 PROVIDER_TEMPLATES = {
@@ -97,10 +93,7 @@ class ProviderUpdateView(GenericUpdateView):
 
     model = ProviderInstance
     form = ProviderForm
-
-    def get_instance(self) -> QuerySet:
-        return self.model.objects.filter(uuid=self.kwargs.get('uuid'),
-                                         users__in=[self.request.user])
+    redirect_view = 'instance-index'
 
     def get_form(self, *args, instance: ProviderInstance, **kwargs) -> ProviderForm:
         form = super().get_form(*args, instance=instance, **kwargs)
@@ -115,18 +108,9 @@ class ProviderUpdateView(GenericUpdateView):
         form.fields['credentials'].queryset = credentials
         return form
 
-    def redirect(self, instance: ProviderInstance) -> HttpResponse:
-        return redirect(reverse('instance-index'))
-
 
 class ProviderDeleteView(GenericDeleteView):
     """Delete instance"""
 
     model = ProviderInstance
-
-    def get_instance(self) -> QuerySet:
-        return self.model.objects.filter(uuid=self.kwargs.get('uuid'),
-                                         useracquirablerelationship__user__in=[self.request.user])
-
-    def redirect(self, instance: ProviderInstance) -> HttpResponse:
-        return redirect(reverse('instance-index'))
+    redirect_view = 'instance-index'

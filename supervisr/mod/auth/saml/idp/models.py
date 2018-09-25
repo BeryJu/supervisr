@@ -2,12 +2,13 @@
 
 from django.db import models
 
-from supervisr.core.models import CreatedUpdatedModel, ProductExtension
+from supervisr.core.models import (CreatedUpdatedModel, ProductExtension,
+                                   UUIDModel)
 from supervisr.core.utils import class_to_path
 from supervisr.mod.auth.saml.idp.base import Processor
 
 
-class SAMLRemote(CreatedUpdatedModel):
+class SAMLRemote(UUIDModel, CreatedUpdatedModel):
     """Model to save information about a Remote SAML Endpoint"""
 
     name = models.CharField(max_length=255, unique=True)

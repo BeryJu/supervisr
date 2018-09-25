@@ -26,7 +26,7 @@ class LDAPModification(UUIDModel, CreatedUpdatedModel):
         return "LDAPModification %d from %s" % (self.pk, self.created)
 
 
-class LDAPGroupMapping(CreatedUpdatedModel):
+class LDAPGroupMapping(UUIDModel, CreatedUpdatedModel):
     """Model to map an LDAP Group to a supervisr group"""
 
     ldap_dn = models.TextField()

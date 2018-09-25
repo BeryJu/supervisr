@@ -1,13 +1,10 @@
-"""
-OAuth Client models
-"""
-
-from __future__ import unicode_literals
+"""OAuth Client models"""
 
 from django.conf import settings
 from django.db import models
 
 from supervisr.core.fields import EncryptedField
+from supervisr.core.models import CreatedUpdatedModel, UUIDModel
 from supervisr.mod.auth.oauth.client.clients import get_client
 
 
@@ -16,13 +13,11 @@ class ProviderManager(models.Manager):
     "Additional manager methods for Providers."
 
     def get_by_natural_key(self, name):
-        """
-        Get Neutral Keys
-        """
+        """Get Neutral Keys"""
         return self.get(name=name)
 
 
-class Provider(models.Model):
+class Provider(UUIDModel, CreatedUpdatedModel):
     "Configuration for OAuth provider."
 
     name = models.CharField(max_length=50, unique=True)
@@ -45,15 +40,11 @@ class Provider(models.Model):
         super(Provider, self).save(*args, **kwargs)
 
     def natural_key(self):
-        """
-        Get Neutral Key
-        """
+        """Get Neutral Key"""
         return (self.name, )
 
     def enabled(self):
-        """
-        Get enabled state
-        """
+        """Get enabled state"""
         return self.consumer_key is not None and self.consumer_secret is not None
     enabled.boolean = True
 
@@ -63,14 +54,12 @@ class AccountAccessManager(models.Manager):
     "Additional manager for AccountAccess models."
 
     def get_by_natural_key(self, identifier, provider):
-        """
-        Get neutral key
-        """
+        """Get neutral key"""
         provider = Provider.objects.get_by_natural_key(provider)
         return self.get(identifier=identifier, provider=provider)
 
 
-class AccountAccess(models.Model):
+class AccountAccess(UUIDModel, CreatedUpdatedModel):
     "Authorized remote OAuth provider."
 
     identifier = models.CharField(max_length=255)
@@ -94,15 +83,11 @@ class AccountAccess(models.Model):
         super(AccountAccess, self).save(*args, **kwargs)
 
     def natural_key(self):
-        """
-        Get Neutral Keys
-        """
+        """Get Neutral Keys"""
         return (self.identifier, ) + self.provider.natural_key()
     natural_key.dependencies = ['supervisr_mod_auth_oauth_client.provider']
 
     @property
     def api_client(self):
-        """
-        Get API Client
-        """
+        """Get API Client"""
         return get_client(self.provider, self.access_token or '')
