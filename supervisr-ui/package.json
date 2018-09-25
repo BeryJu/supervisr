@@ -5,7 +5,7 @@
   "angular-cli": {},
   "scripts": {
     "build": "npx ng build --prod --output-hashing none && ../manage.py collectstatic --no-input",
-    "start": "npx ng serve --proxy-config proxy.conf.json"
+    "start": "npx ng serve --proxy-config proxy.conf.json --live-reload-client http://localhost:4200/"
   },
   "private": true,
   "dependencies": {
