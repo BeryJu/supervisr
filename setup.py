@@ -17,7 +17,7 @@ def read_simple(path, mode='r'):
 
 setup(
     name='supervisr',
-    version='0.2.1-alpha',
+    version='0.3.0-alpha',
     description='supervisr your IT.',
     long_description='\n'.join(read_simple('README.md')),
     author='BeryJu.org',
