@@ -12,7 +12,7 @@ from supervisr.core.views.wizards import BaseWizardView
 from supervisr.dns.forms.migrate import ZoneImportForm, ZoneImportPreviewForm
 from supervisr.dns.forms.zones import ZoneForm
 from supervisr.dns.models import Zone
-from supervisr.dns.utils import zone_to_rec
+from supervisr.dns.utils import import_bind
 
 TEMPLATES = {
     '0': 'generic/wizard.html',
@@ -48,7 +48,7 @@ class BindZoneImportWizard(LoginRequiredMixin, BaseWizardView):
             form.fields['providers'].queryset = provider_instance
         elif step == '2':
             if '1-zone_data' in self.request.POST:
-                form.records = zone_to_rec(self.request.POST['1-zone_data'])
+                form.records = import_bind(self.request.POST['1-zone_data'])
         return form
 
     def get_template_names(self):
@@ -56,7 +56,7 @@ class BindZoneImportWizard(LoginRequiredMixin, BaseWizardView):
 
     def finish(self, zone_form, zone_data_form, accept_form):
         if accept_form.cleaned_data.get('accept'):
-            records = zone_to_rec(zone_data_form.cleaned_data.get('zone_data'),
+            records = import_bind(zone_data_form.cleaned_data.get('zone_data'),
                                   root_zone=zone_form.cleaned_data.get('domain').domain)
             m_dom = Zone.objects.create(
                 name=zone_form.cleaned_data.get('domain'),

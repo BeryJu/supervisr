@@ -20,7 +20,7 @@ def date_to_soa(_date: date = date.today()) -> int:
     return int("%04d%02d%02d" % (_date.year, _date.month, _date.day))
 
 
-def zone_to_rec(data, root_zone=''):
+def import_bind(data, root_zone=''):
     """Convert BIND zone to DB records"""
     # TODO: Make algorithm to create resource_set for each unique set of records with common name
     records = []
