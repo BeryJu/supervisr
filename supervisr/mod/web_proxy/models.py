@@ -2,10 +2,10 @@
 
 from django.db import models
 
-from supervisr.core.models import UserAcquirable
+from supervisr.core.models import UserAcquirable, UUIDModel
 
 
-class WebApplication(UserAcquirable):
+class WebApplication(UUIDModel, UserAcquirable):
     """A webapplication we should proxy for"""
 
     name = models.TextField()

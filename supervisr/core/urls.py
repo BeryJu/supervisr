@@ -73,9 +73,9 @@ urlpatterns = [
         credentials.CredentialIndexView.as_view(), name='credential-index'),
     url(r'^providers/credentials/new/$', credentials.CredentialNewView.as_view(),
         name='credential-new'),
-    url(r'^providers/credentials/(?P<name>[a-zA-Z0-9\-\.\_\s]+)/edit/$',
+    url(r'^providers/credentials/(?P<uuid>%s)/edit/$' % UUID_REGEX,
         credentials.CredentialUpdateView.as_view(), name='credential-edit'),
-    url(r'^providers/credentials/(?P<name>[a-zA-Z0-9\-\.\_\s]+)/delete/$',
+    url(r'^providers/credentials/(?P<uuid>%s)/delete/$' % UUID_REGEX,
         credentials.CredentialDeleteView.as_view(), name='credential-delete'),
     # Provider - Actions
     url(r'^providers/actions/$',

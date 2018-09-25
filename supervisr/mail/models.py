@@ -6,12 +6,12 @@ from django.utils.translation import ugettext_lazy as _
 from passlib.hash import sha512_crypt
 
 from supervisr.core.models import (CreatedUpdatedModel, Domain, Event,
-                                   ProviderAcquirable, User, UserAcquirable)
+                                   ProviderAcquirable, User, UserAcquirable, UUIDModel)
 
 LOGGER = logging.getLogger(__name__)
 
 
-class MailDomain(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
+class MailDomain(UUIDModel, CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
     """Stores information about a MailDomain"""
 
     domain = models.OneToOneField(Domain, on_delete=models.CASCADE)
@@ -22,13 +22,11 @@ class MailDomain(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
 
     @property
     def has_catchall(self):
-        """
-        Return true if this domain has a catch all account
-        """
+        """Return true if this domain has a catch all account"""
         return self.mailaccount_set.filter(is_catchall=True).exists()
 
 
-class MailDomainAddressRelationship(CreatedUpdatedModel, UserAcquirable):
+class MailDomainAddressRelationship(UUIDModel, CreatedUpdatedModel, UserAcquirable):
     """Store relationship between Address and MailDomains"""
 
     mail_domain = models.ForeignKey('MailDomain', on_delete=models.CASCADE)
@@ -37,7 +35,7 @@ class MailDomainAddressRelationship(CreatedUpdatedModel, UserAcquirable):
     enabled = models.BooleanField(default=True)
 
 
-class Address(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
+class Address(UUIDModel, CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
     """Single Mail address"""
 
     mail_address = models.CharField(max_length=64)
@@ -48,7 +46,7 @@ class Address(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
         return "Address %s" % self.mail_address
 
 
-class Forwarder(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
+class Forwarder(UUIDModel, CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
     """Forwader from an address to a target"""
 
     source_address = models.ForeignKey('Address', on_delete=models.CASCADE)
@@ -58,7 +56,7 @@ class Forwarder(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
         return "Forwarder '%s' => '%s'" % (self.source_address, self.destination_address)
 
 
-class AccountAddressRelationship(CreatedUpdatedModel, UserAcquirable):
+class AccountAddressRelationship(UUIDModel, CreatedUpdatedModel, UserAcquirable):
     """Store relationship between Account and Address"""
 
     mail_account = models.ForeignKey('Account', on_delete=models.CASCADE)
@@ -67,7 +65,7 @@ class AccountAddressRelationship(CreatedUpdatedModel, UserAcquirable):
     can_receive = models.BooleanField(default=True)
 
 
-class Account(CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
+class Account(UUIDModel, CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
     """Mail Account that stores mail"""
 
     name = models.TextField()

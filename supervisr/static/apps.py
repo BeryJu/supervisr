@@ -20,8 +20,8 @@ class FilePageBootstrapper(Bootstrapper):
                 path=entry.get('path'),
                 title=entry.get('title'),
                 language=entry.get('language', 'en'),
+                author=get_system_user(),
                 defaults={
-                    'author': get_system_user(),
                     'slug': entry.get('slug', slugify(entry.get('title'))),
                     'content': '',
                     'published': True,

@@ -3,7 +3,7 @@ from logging import getLogger
 from typing import Iterable
 
 from celery.exceptions import Ignore
-from django.core.exceptions import MultipleObjectsReturned
+from django.core.exceptions import MultipleObjectsReturned, ValidationError
 from django.db.models import Model
 
 from supervisr.core.celery import CELERY_APP
@@ -22,7 +22,7 @@ def get_instance(model: Model, model_pk) -> Model:
     """Get Model instance from DB"""
     try:
         return model.objects.get(pk=model_pk)
-    except (MultipleObjectsReturned, model.DoesNotExist) as exc:
+    except (MultipleObjectsReturned, model.DoesNotExist, ValidationError) as exc:
         raise SupervisrProviderException from exc
 
 
