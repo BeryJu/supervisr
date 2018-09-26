@@ -9,7 +9,8 @@
 
 {% block content %}
 <h1><clr-icon shape="vmw-app" size="48"></clr-icon>{% trans "Provider Instances" %}</h1>
-<datagrid
+<angular
+    data-component="datagrid"
     data-header-columns='["Name", "UUID", "Provider Path"]'
     data-body-columns='["name", "uuid", "provider_path"]'
     data-api-component="core"

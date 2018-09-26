@@ -4,12 +4,12 @@ import { API, Actions } from '../../services/api';
 @Component({
     selector: 'provider-update',
     templateUrl: './update.component.html',
-    // styleUrls: ['./app.component.scss']
 })
 export class ProviderUpdateComponent {
 
     providers: Array<object> = [];
     result_data: object = null;
+
     provider: string = '';
 
     constructor(private api: API) {

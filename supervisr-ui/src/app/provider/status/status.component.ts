@@ -7,9 +7,9 @@ import { API } from '../../services/api';
 })
 export class ProviderStatusComponent {
 
-    private providerUUID: string = '';
+    providerUUID: string = '';
 
-    status: any = null;
+    status: boolean | string = null;
     loading: boolean = true;
 
     constructor(private api: API, private element: ElementRef) {

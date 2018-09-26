@@ -1,6 +1,6 @@
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, ApplicationRef } from '@angular/core';
+import { NgModule, ApplicationRef, Injector, ComponentFactoryResolver } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ClarityModule, ClrFormsNextModule } from '@clr/angular';
@@ -10,6 +10,7 @@ import { DatagridComponent } from './datagrid/datagrid.component';
 import { API } from './services/api';
 import './legacy/clarity-js';
 import './legacy/supervisr.js';
+import * as $ from 'jquery';
 
 const COMPONENTS = [
     DatagridComponent,
@@ -34,14 +35,19 @@ const COMPONENTS = [
 })
 export class AppModule {
 
+    constructor(
+        private injector: Injector,
+        private componentFactoryResolver: ComponentFactoryResolver) { }
+
     ngDoBootstrap(app: ApplicationRef) {
         COMPONENTS.forEach((component) => {
-            try {
-                app.bootstrap(<any>component);
-            } catch (error) {
-                // Empty catch since we anticipate selectors not existing
-            }
-        });
+            const widgetCompFactory = this.componentFactoryResolver.resolveComponentFactory(<any>component);
+            var selector = "angular[data-component=" + widgetCompFactory.selector;
+            $(selector).each((_, el) => {
+                var compRef = widgetCompFactory.create(this.injector, [], el);
+                app.attachView(compRef.hostView);
+            });
+        })
     }
 
  }
