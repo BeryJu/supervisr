@@ -65,6 +65,7 @@ class API(View):
             return api_response(request, {'data': {'error': 'not found'}}, code=404)
         except Exception: # pylint: disable=broad-except
             return api_response(request, {'data': {'error': 'unknown error'}}, code=500)
+        return api_response(request, {'data': {'error': 'unknown error'}}, code=500)
 
     def pre_handler(self, handler, request):
         """Optional Handler, which is run before the chosen handler is run"""
