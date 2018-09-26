@@ -1,11 +1,22 @@
 """supervisr core model utils"""
 from typing import Iterable, List
 
-from django.db.models import ManyToManyField, ManyToOneRel, Model
+from django.db.models import Field, ManyToManyField, ManyToOneRel, Model
 
 from supervisr.core.decorators import time
 from supervisr.core.models import CastableModel
 
+
+def get_walkable_field_names(model: Model, field_types: List[Field] = None) -> List[str]:
+    """Get a list with names of all fields that can be walked"""
+    if not field_types:
+        field_types = [ManyToManyField, ManyToOneRel]
+    fields_to_walk = []
+    fields = getattr(model, '_meta').get_fields()
+    for field in fields:
+        if isinstance(field, field_types):
+            fields_to_walk.append(field.name)
+    return fields_to_walk
 
 @time('supervisr.core.utils.models.walk_m2m')
 def walk_m2m(root: Model,
@@ -30,15 +41,6 @@ def walk_m2m(root: Model,
         only_classes = []
     models = []
     all_model_list = []
-
-    def get_walkable_field_names(model: Model) -> List[str]:
-        """Get a list with names of all fields that can be walked"""
-        fields_to_walk = []
-        fields = getattr(model, '_meta').get_fields()
-        for field in fields:
-            if isinstance(field, (ManyToManyField, ManyToOneRel)):
-                fields_to_walk.append(field.name)
-        return fields_to_walk
 
     def walk(root: Model):
         """Walk through root, adding it itself and setting up edges"""
