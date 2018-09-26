@@ -1,5 +1,6 @@
 import { Component, ElementRef } from '@angular/core';
-import { API, Actions } from '../services/api';
+import { API, APIPath } from '../services/api';
+import { HTMLChildrenComponent } from '../base';
 import { ClrDatagridStateInterface } from "@clr/angular";
 
 function sleep(time) {
@@ -10,7 +11,7 @@ function sleep(time) {
     selector: 'datagrid',
     templateUrl: './datagrid.component.html'
 })
-export class DatagridComponent {
+export class DatagridComponent extends HTMLChildrenComponent {
 
     loading: boolean = true;
 
@@ -23,15 +24,27 @@ export class DatagridComponent {
     editView: string = '';
     deleteView: string = '';
 
-    attributes: object = {};
+    private apiPath: APIPath = null;
 
     constructor(private api: API, private element: ElementRef) {
-        this.attributes = element.nativeElement.dataset;
-        this.headerColumns = JSON.parse(this.attributes['headerColumns']);
-        this.bodyColumns = JSON.parse(this.attributes['bodyColumns']);
-        this.addView = this.attributes['addView'];
-        this.editView = this.attributes['editView'];
-        this.deleteView = this.attributes['deleteView'];
+        super();
+        this.apiPath = APIPath.fromString(element.nativeElement.attributes.getNamedItem('api-path').value);
+    }
+
+    onChildren() {
+        this.children.forEach(element => {
+            var tagName = element.tagName.toLowerCase();
+            if (tagName === 'clr-header-column') {
+                // Column Declaration, append to headerColumns and bodyColumns
+                this.headerColumns.push(element.innerText);
+                this.bodyColumns.push(element.attributes.getNamedItem('field').value);
+            } else if (tagName === 'clr-action') {
+                // Action bar declaration
+                this.addView = element.attributes.getNamedItem('add-view').value;
+                this.editView = element.attributes.getNamedItem('edit-view').value;
+                this.deleteView = element.attributes.getNamedItem('delete-view').value;
+            }
+        });
     }
 
     action(action: string) {
@@ -60,9 +73,7 @@ export class DatagridComponent {
     refresh(state: ClrDatagridStateInterface) {
         this.loading = true;
         this.api
-            .component(this.attributes['apiComponent'])
-            .part(this.attributes['apiPart'])
-            .action(this.attributes['apiAction'])
+            .path(this.apiPath)
             .filter(state.filters)
             .sort(<{ by: string, reverse: boolean }>state.sort)
             .paginate(state.page.from, state.page.size)

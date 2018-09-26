@@ -13,10 +13,10 @@ export class ProviderStatusComponent {
     loading: boolean = true;
 
     constructor(private api: API, private element: ElementRef) {
-        this.providerUUID = element.nativeElement.dataset['uuid'];
+        this.providerUUID = element.nativeElement.attributes.getNamedItem('uuid').value;
         this.api
-            .component('core')
-            .part('providers')
+            .app('core')
+            .component('providers')
             .action('status')
             .queryString('provider_uuid', this.providerUUID)
             .request().subscribe(

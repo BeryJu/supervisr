@@ -10,14 +10,14 @@
 {% block content %}
 <h1><clr-icon shape="vmw-app" size="48"></clr-icon>{% trans "Provider Instances" %}</h1>
 <angular
-    data-component="datagrid"
-    data-header-columns='["Name", "UUID", "Provider Path"]'
-    data-body-columns='["name", "uuid", "provider_path"]'
-    data-api-component="core"
-    data-api-part="providers"
-    data-api-action="read"
-    data-add-view="instance-new"
-    data-edit-view="instance-edit"
-    data-delete-view="instance-delete" />
+    component="datagrid"
+    api-path="core::providers::read">
+    <clr-action add-view="instance-new"
+                edit-view="instance-edit"
+                delete-view="instance-delete"></clr-action>
+    <clr-header-column field="name">{% trans 'Name' %}</clr-header-column>
+    <clr-header-column field="uuid">{% trans 'UUID' %}</clr-header-column>
+    <clr-header-column field="provider_path">{% trans 'Provider Path' %}</clr-header-column>
+</angular>
 {% endblock %}
 

@@ -82,7 +82,7 @@
               <td><span>{{ instance.name }}</span></td>
               <td><span>{{ instance.provider.get_meta.ui_name|default:'Error' }}</span></td>
               <td>
-                <angular data-component="provider-status" data-uuid="{{ instance.uuid }}" />
+                <angular component="provider-status" uuid="{{ instance.uuid }}" />
               </td>
             </tr>
             {% endfor %}

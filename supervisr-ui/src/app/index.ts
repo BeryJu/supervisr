@@ -1,6 +1,6 @@
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, ApplicationRef, Injector, ComponentFactoryResolver } from '@angular/core';
+import { NgModule, ApplicationRef, Injector, ComponentFactoryResolver, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ClarityModule, ClrFormsNextModule } from '@clr/angular';
@@ -8,6 +8,7 @@ import { ProviderUpdateComponent } from './provider/update/update.component';
 import { ProviderStatusComponent } from './provider/status/status.component';
 import { DatagridComponent } from './datagrid/datagrid.component';
 import { API } from './services/api';
+import { HTMLChildrenComponent } from './base';
 import './legacy/clarity-js';
 import './legacy/supervisr.js';
 import * as $ from 'jquery';
@@ -42,9 +43,16 @@ export class AppModule {
     ngDoBootstrap(app: ApplicationRef) {
         COMPONENTS.forEach((component) => {
             const widgetCompFactory = this.componentFactoryResolver.resolveComponentFactory(<any>component);
-            var selector = "angular[data-component=" + widgetCompFactory.selector;
-            $(selector).each((_, el) => {
+            var selector = "angular[component=" + widgetCompFactory.selector;
+            $(selector).each((_: number, el: HTMLElement) => {
+                var copy = Object.assign([], el.children);
                 var compRef = widgetCompFactory.create(this.injector, [], el);
+                var instance = <Component>compRef.instance;
+                if (instance instanceof HTMLChildrenComponent) {
+                    // Set children and trigger onChildren
+                    instance.children = copy;
+                    instance.onChildren();
+                }
                 app.attachView(compRef.hostView);
             });
         })

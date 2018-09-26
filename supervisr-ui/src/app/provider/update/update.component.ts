@@ -13,7 +13,7 @@ export class ProviderUpdateComponent {
     provider: string = '';
 
     constructor(private api: API) {
-        this.api.component('core').part('providers').action(Actions.Read).request().subscribe(
+        this.api.app('core').component('providers').action(Actions.Read).request().subscribe(
             data => { this.providers = data['data'] },
             err => console.error(err)
         );
@@ -21,8 +21,8 @@ export class ProviderUpdateComponent {
 
     public update() {
         this.api
-            .component('core')
-            .part('providers')
+            .app('core')
+            .component('providers')
             .action('trigger_update')
             .queryString('uuid', this.provider)
             .request()

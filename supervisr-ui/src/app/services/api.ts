@@ -9,6 +9,23 @@ export enum Actions {
     Delete = 'delete'
 }
 
+export class APIPath {
+
+    app: string = '';
+    component: string = '';
+    action: Actions | string = '';
+
+    static fromString(source: string): APIPath {
+        var parts = source.split('::');
+        var path = new APIPath();
+        path.app = parts[0];
+        path.component = parts[1];
+        path.action = parts[2];
+        return path;
+    }
+
+}
+
 @Injectable()
 export class API {
 
@@ -18,12 +35,21 @@ export class API {
     constructor(private http: HttpClient) { }
 
     private _component: string;
-    private _part: string;
+    private _app: string;
     private _action: Actions | string;
     private _query: object = {};
 
-    private buildUrl(component: string, part: string, action: string): string {
-        return `${this.baseUrl}api/${component}/v${this.version}/${part}/${action}/`;
+    private buildUrl(app: string, component: string, action: string): string {
+        return `${this.baseUrl}api/${app}/v${this.version}/${component}/${action}/`;
+    }
+
+    // Chainable functions
+
+    public path(path: APIPath) {
+        this._app = path.app;
+        this._component = path.component;
+        this._action = path.action;
+        return this;
     }
 
     public component(component: string) {
@@ -31,8 +57,8 @@ export class API {
         return this;
     }
 
-    public part(part: string) {
-        this._part = part;
+    public app(app: string) {
+        this._app = app;
         return this;
     }
 
@@ -70,9 +96,28 @@ export class API {
         return this;
     }
 
+    // Start request
+
+    public request(method: string = 'GET') {
+        var url = this.buildUrl(this._app, this._component, this._action);
+        if (this._query) {
+            url += '?';
+            var query = Object.keys(this._query)
+                .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(this._query[key]))
+                .join('&');
+            url += query;
+        }
+        var response = this.http.request(method, url);
+        this._component = this._action = this._app = null;
+        this._query = {};
+        return response;
+    }
+
+    // Shortcut functions
+
     public reverse(viewName: string, kwargs?: object) {
-        this.component('core')
-            .part('utils')
+        this.app('core')
+            .component('utils')
             .action('reverse')
             .queryString('__view_name', viewName);
         if (kwargs !== undefined) {
@@ -84,37 +129,6 @@ export class API {
             }
         }
         return this.request();
-    }
-
-    public translate(message: string, kwargs?: object) {
-        this.component('core')
-            .part('utils')
-            .action('gettext')
-            .queryString('__message', message);
-        if (kwargs !== undefined) {
-            for (const key in kwargs) {
-                if (kwargs.hasOwnProperty(key)) {
-                    const element = kwargs[key];
-                    this.queryString(key, element);
-                }
-            }
-        }
-        return this.request();
-    }
-
-    public request(method: string = 'GET') {
-        var url = this.buildUrl(this._component, this._part, this._action);
-        if (this._query) {
-            url += '?';
-            var query = Object.keys(this._query)
-                .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(this._query[key]))
-                .join('&');
-            url += query;
-        }
-        var response = this.http.request(method, url);
-        this._component = this._action = this._part = null;
-        this._query = {};
-        return response;
     }
 
 }
