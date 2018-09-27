@@ -68,6 +68,7 @@ pylint:
 
 # UI Tests
 tslint:
+  before_script: []
   image: node:10
   except:
     - prod
