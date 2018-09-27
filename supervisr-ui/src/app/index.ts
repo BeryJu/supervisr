@@ -43,11 +43,11 @@ export class AppModule {
     ngDoBootstrap(app: ApplicationRef) {
         COMPONENTS.forEach((component) => {
             const widgetCompFactory = this.componentFactoryResolver.resolveComponentFactory(<any>component);
-            var selector = "angular[component=" + widgetCompFactory.selector;
+            let selector = "angular[component=" + widgetCompFactory.selector;
             $(selector).each((_: number, el: HTMLElement) => {
-                var copy = Object.assign([], el.children);
-                var compRef = widgetCompFactory.create(this.injector, [], el);
-                var instance = <Component>compRef.instance;
+                let copy = Object.assign([], el.children);
+                let compRef = widgetCompFactory.create(this.injector, [], el);
+                let instance = <Component>compRef.instance;
                 if (instance instanceof HTMLChildrenComponent) {
                     // Set children and trigger onChildren
                     instance.children = copy;

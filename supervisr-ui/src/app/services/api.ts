@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { ClrDatagridFilterInterface } from '@clr/angular';
 
 export enum Actions {
@@ -16,8 +16,8 @@ export class APIPath {
     action: Actions | string = '';
 
     static fromString(source: string): APIPath {
-        var parts = source.split('::');
-        var path = new APIPath();
+        let parts = source.split('::');
+        let path = new APIPath();
         path.app = parts[0];
         path.component = parts[1];
         path.action = parts[2];
@@ -32,12 +32,12 @@ export class API {
     version = 1;
     baseUrl = '/';
 
-    constructor(private http: HttpClient) { }
-
     private _component: string;
     private _app: string;
     private _action: Actions | string;
     private _query: object = {};
+
+    constructor(private http: HttpClient) { }
 
     private buildUrl(app: string, component: string, action: string): string {
         return `${this.baseUrl}api/${app}/v${this.version}/${component}/${action}/`;
@@ -68,7 +68,9 @@ export class API {
     }
 
     public filter(filters: ({ property: string; value: string; } | ClrDatagridFilterInterface<any>)[]) {
-        if (!filters) return this;
+        if (!filters) {
+            return this;
+        }
         filters.forEach((filter) => {
             if (filter.hasOwnProperty('property')) {
                 this._query[`__filter__${filter['property']}`] = filter['value'];
@@ -99,15 +101,15 @@ export class API {
     // Start request
 
     public request(method: string = 'GET') {
-        var url = this.buildUrl(this._app, this._component, this._action);
+        let url = this.buildUrl(this._app, this._component, this._action);
         if (this._query) {
             url += '?';
-            var query = Object.keys(this._query)
+            let query = Object.keys(this._query)
                 .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(this._query[key]))
                 .join('&');
             url += query;
         }
-        var response = this.http.request(method, url);
+        let response = this.http.request(method, url);
         this._component = this._action = this._app = null;
         this._query = {};
         return response;

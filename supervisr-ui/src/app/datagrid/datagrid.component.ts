@@ -26,14 +26,14 @@ export class DatagridComponent extends HTMLChildrenComponent {
 
     private apiPath: APIPath = null;
 
-    constructor(private api: API, private element: ElementRef) {
+    constructor(private api: API, element: ElementRef) {
         super();
         this.apiPath = APIPath.fromString(element.nativeElement.attributes.getNamedItem('api-path').value);
     }
 
     onChildren() {
         this.children.forEach(element => {
-            var tagName = element.tagName.toLowerCase();
+            let tagName = element.tagName.toLowerCase();
             if (tagName === 'clr-header-column') {
                 // Column Declaration, append to headerColumns and bodyColumns
                 this.headerColumns.push(element.innerText);
@@ -50,8 +50,8 @@ export class DatagridComponent extends HTMLChildrenComponent {
     action(action: string) {
         if (action === 'edit' || action === 'delete') {
             // edit and delete can only be triggered when 1 item is selected
-            var item = this.selected[0];
-            var view = '';
+            let item = this.selected[0];
+            let view = '';
             if (action === 'edit') {
                 view = this.editView;
             } else if (action === 'delete') {

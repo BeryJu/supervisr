@@ -12,7 +12,7 @@ export class ProviderStatusComponent {
     status: boolean | string = null;
     loading: boolean = true;
 
-    constructor(private api: API, private element: ElementRef) {
+    constructor(private api: API, element: ElementRef) {
         this.providerUUID = element.nativeElement.attributes.getNamedItem('uuid').value;
         this.api
             .app('core')
