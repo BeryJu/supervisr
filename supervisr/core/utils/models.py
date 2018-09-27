@@ -9,12 +9,12 @@ from supervisr.core.models import CastableModel
 
 def get_walkable_field_names(model: Model, field_types: List[Field] = None) -> List[str]:
     """Get a list with names of all fields that can be walked"""
-    if not field_types:
+    if field_types is None:
         field_types = [ManyToManyField, ManyToOneRel]
     fields_to_walk = []
     fields = getattr(model, '_meta').get_fields()
     for field in fields:
-        if isinstance(field, field_types):
+        if isinstance(field, tuple(field_types)):
             fields_to_walk.append(field.name)
     return fields_to_walk
 
