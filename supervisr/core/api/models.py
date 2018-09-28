@@ -80,7 +80,7 @@ class ModelAPI(CRUDAPI):
         """Convert queryset to dict"""
         final_arr = []
         for model_instance in queryset:
-            inst_dict = {'pk': model_instance.pk}
+            inst_dict = {}
             if getattr(model_instance, 'uuid'):
                 inst_dict['uuid'] = model_instance.uuid
             for field in self.viewable_fields:
