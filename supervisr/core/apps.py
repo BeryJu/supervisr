@@ -174,6 +174,8 @@ class SupervisrCoreConfig(SupervisrAppConfig):
         'providers.domain',
         'providers.tasks',
         'search',
+        'api.serializers.base',
+        'api.serializers.core',
     ]
     navbar_title = 'Core'
     verbose_name = 'Supervisr Core'

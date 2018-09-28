@@ -64,6 +64,8 @@ class API(View):
         except Http404:
             return api_response(request, {'data': {'error': 'not found'}}, code=404)
         except Exception: # pylint: disable=broad-except
+            if settings.DEBUG:
+                raise
             return api_response(request, {'data': {'error': 'unknown error'}}, code=500)
         return api_response(request, {'data': {'error': 'unknown error'}}, code=500)
 
