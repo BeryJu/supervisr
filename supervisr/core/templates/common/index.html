@@ -90,7 +90,7 @@
         </table>
         {% else %}
         <div class="card-text">
-          <p>{% trans "No Provders yet!" %}</p>
+          <p>{% trans "No Providers yet!" %}</p>
         </div>
         {% endif %}
       </div>
@@ -100,36 +100,14 @@
         {% trans "Recent Events" %}
       </div>
       <div class="card-block">
-        {% if events and events|length > 0 %}
-        <table class="table table-noborder table-compact table-card">
-          <thead>
-            <th></th>
-            <th>{% trans "Description" %}</th>
-            <th>{% trans "Age" %}</th>
-            <th>{% trans "Action" %}</th>
-          </thead>
-          <tbody>
-            {% for event in events %}
-            <tr>
-              <td><span class="glyphicon glyphicon-{{ event.glyph }}" aria-hidden="true"></span></td>
-              <td>{% trans event.message %}</td>
-              <td>{{ event.get_localized_age }}</td>
-              <td>
-                {% if event.action_required %}
-                <a class="btn btn-primary btn-xs" href="{{ event.get_url }}"><clr-icon shape="pop-out"></clr-icon></a>
-                {% else %}
-                <clr-icon shape="times"></clr-icon>
-                {% endif %}
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% else %}
-        <div class="card-text">
-          <p>{% trans "No Current Events!" %}</p>
-        </div>
-        {% endif %}
+        <angular
+            component="datagrid"
+            api-path="core::events::read"
+            api-sort-by="created"
+            api-reverse="true">
+            <clr-header-column field="message">{% trans 'Message' %}</clr-header-column>
+            <clr-header-column field="created">{% trans 'Age' %}</clr-header-column>
+        </angular>
       </div>
     </div>
   </div>

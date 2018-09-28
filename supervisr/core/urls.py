@@ -142,7 +142,7 @@ for app in get_apps():
 
     # Only add if module could be loaded
     urlpatterns += get_patterns(r"^app/%s/" % mount_path, "%s.urls" % app.name, app.label)
-    urlpatterns += get_patterns(r"^api/app/%s/" % mount_path, "%s.api.urls" % app.name)
+    urlpatterns += get_patterns(r"^api/%s/" % mount_path, "%s.api.urls" % app.name)
 
 if django_settings.DEBUG:
     import debug_toolbar

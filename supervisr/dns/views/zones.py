@@ -135,7 +135,7 @@ class ZoneNewView(LoginRequiredMixin, BaseWizardView):
     def finish(self, form):
         zone = form.save(commit=False)
         zone.save()
-        zone.update_provider_m2m(form[0].cleaned_data.get('providers'))
+        zone.update_provider_m2m(form.cleaned_data.get('providers'))
         zone.save(force_update=True)
         UserAcquirableRelationship.objects.create(
             model=zone,
