@@ -33,7 +33,6 @@ class DomainSerializer(Serializer[Domain]):
 class EventSerializer(Serializer[Event]):
     """Serialize Event"""
 
-    # pylint: disable=unused-argument
     def serialize(self, instance: Event, parent: SerializerRegistry) -> dict:
         """Serialize Event"""
         return {
