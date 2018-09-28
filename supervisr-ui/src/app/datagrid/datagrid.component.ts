@@ -1,7 +1,9 @@
 import { Component, ElementRef } from '@angular/core';
-import { API, APIPath } from '../services/api';
-import { HTMLChildrenComponent } from '../base';
 import { ClrDatagridStateInterface } from "@clr/angular";
+import { API } from '../services/api';
+import { APIPath } from '../services/path';
+import { HTMLChildrenComponent } from '../base';
+import { Model } from '../services/model';
 
 function sleep(time) {
     return new Promise((resolve) => setTimeout(resolve, time));
@@ -15,20 +17,24 @@ export class DatagridComponent extends HTMLChildrenComponent {
 
     loading: boolean = true;
 
-    selected = [];
-    dataset: Array<any> = [];
+    selected: Array<object> = [];
+    dataset: Array<object> = [];
     headerColumns: Array<string> = [];
     bodyColumns: Array<string> = [];
 
-    addView: string = '';
-    editView: string = '';
-    deleteView: string = '';
+    addView: string = null;
+    editView: string = null;
+    deleteView: string = null;
 
     private apiPath: APIPath = null;
 
     constructor(private api: API, element: ElementRef) {
         super();
         this.apiPath = APIPath.fromString(element.nativeElement.attributes.getNamedItem('api-path').value);
+        // // Get sorting from attributes too
+        // if ('api-sorting' in element.nativeElement.attributes) {
+
+        // }
     }
 
     onChildren() {
@@ -81,7 +87,10 @@ export class DatagridComponent extends HTMLChildrenComponent {
             .subscribe(
                 data => {
                     sleep(500).then(() => {
-                        this.dataset = data['data'];
+                        this.dataset = [];
+                        data['data'].forEach(element => {
+                            this.dataset.push(new Model().fromObject(element));
+                        });
                         this.loading = false;
                     });
                 },

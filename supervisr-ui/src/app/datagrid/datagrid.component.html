@@ -1,5 +1,5 @@
-<clr-datagrid [(clrDgSelected)]="selected" [clrDgLoading]="loading" (clrDgRefresh)="refresh($event)">
-  <clr-dg-action-bar>
+<clr-datagrid class="datagrid-compact" [(clrDgSelected)]="selected" [clrDgLoading]="loading" (clrDgRefresh)="refresh($event)">
+  <clr-dg-action-bar *ngIf="addView !== null">
     <div class="btn-group">
       <button type="button" class="btn btn-sm btn-secondary" (click)="action('add')">
         <clr-icon shape="plus"></clr-icon> Add
@@ -13,7 +13,7 @@
     </div>
   </clr-dg-action-bar>
 
-  <clr-dg-placeholder>We couldn't find any users!</clr-dg-placeholder>
+  <clr-dg-placeholder>We couldn't find any items!</clr-dg-placeholder>
 
   <clr-dg-column *ngFor="let header of headerColumns; let i = index"
     [clrDgField]="bodyColumns[i]">

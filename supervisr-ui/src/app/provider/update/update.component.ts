@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { API, Actions } from '../../services/api';
+import { API } from '../../services/api';
+import { Actions } from '../../services/actions';
 
 @Component({
     selector: 'provider-update',
