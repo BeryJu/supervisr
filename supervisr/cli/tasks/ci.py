@@ -1,27 +1,14 @@
 """Supervisr Invoke CI tasks"""
 import logging
 import os
-from functools import wraps
+import sys
 
+import pymysql
 from invoke import task
-from invoke.terminals import WINDOWS
 
-if WINDOWS:
-    PYTHON_EXEC = 'python'
-else:
-    PYTHON_EXEC = 'python3'
 LOGGER = logging.getLogger(__name__)
+pymysql.install_as_MySQLdb()
 
-
-def shell(func):
-    """Fixes the Shell on Windows Systems"""
-    @wraps(func)
-    def wrapped(ctx, *args, **kwargs):
-        """Fixes the Shell on Windows Systems"""
-        if WINDOWS:
-            ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
-        return func(ctx, *args, **kwargs)
-    return wrapped
 
 
 @task
@@ -46,14 +33,12 @@ def pyroma(ctx):
 
 
 @task
-@shell
 def prospector(ctx):
     """Run prospector"""
     ctx.run("prospector")
 
 
 @task
-@shell
 def isort(ctx):
     """Run isort"""
     ctx.run("isort -c -sg env")
@@ -62,17 +47,18 @@ def isort(ctx):
 @task()
 def coverage(ctx, module='supervisr', post_action='report'):
     """Run Unittests and get coverage"""
-    if WINDOWS:
-        ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
     ctx.run("coverage run --source=%s manage.py test" % module)
     ctx.run("coverage %s" % post_action)
 
 
 @task
-@shell
+# pylint: disable=unused-argument
 def unittest(ctx):
     """Run Unittests"""
-    ctx.run("%s manage.py test" % PYTHON_EXEC)
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
+    os.environ.setdefault("SUPERVISR_ENV", "local")
+    from django.core.management import execute_from_command_line
+    execute_from_command_line(['', 'test'])
 
 
 @task(pre=[isort, coverage, lint, prospector])
@@ -84,13 +70,10 @@ def test(ctx):
 
 
 @task
-@shell
 def docs(ctx):
     """Build pdoc docs"""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'supervisr.core.settings')
     tool = 'pdoc'
-    if WINDOWS:
-        tool = 'python env\\Scripts\\pdoc'
     os.makedirs('docgen', exist_ok=True)
     ctx.run("%s supervisr --html --html-dir=\"docgen\""
             " --django  --overwrite --docstring-style=google" % tool)
