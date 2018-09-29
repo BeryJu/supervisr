@@ -2,6 +2,8 @@
 from datetime import timedelta
 from uuid import UUID
 
+from django.utils import timezone
+
 from supervisr.core.api.serializers.registry import (REGISTRY, Serializer,
                                                      SerializerRegistry)
 from supervisr.core.models import Domain, Event, User
@@ -39,7 +41,7 @@ class EventSerializer(Serializer[Event]):
             'user': parent.render(instance.user),
             'uuid': parent.annotate(instance.uuid, UUID),
             'message': instance.message,
-            'created': parent.annotate(instance.get_age, timedelta),
+            'created': parent.annotate(timezone.now() - instance.create_date, timedelta),
         }
 
 
