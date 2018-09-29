@@ -1,7 +1,6 @@
 """Supervisr Invoke CI tasks"""
 import logging
 import os
-import sys
 
 import pymysql
 from invoke import task
