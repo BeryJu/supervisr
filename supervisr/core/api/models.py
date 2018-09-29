@@ -4,11 +4,13 @@ import collections
 from django import forms
 from django.core.exceptions import PermissionDenied
 from django.db import models
+from django.db.models import Q, QuerySet
 from django.db.models.fields import NOT_PROVIDED
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
 from supervisr.core.api.crud import CRUDAPI
+from supervisr.core.api.serializers.registry import REGISTRY
 from supervisr.core.models import UserAcquirable, UserAcquirableRelationship
 
 
@@ -57,17 +59,37 @@ class ModelAPI(CRUDAPI):
             raise PermissionDenied
         return queryset
 
-    def model_to_dict(self, qs):
+    def apply_meta(self, request, queryset: QuerySet) -> QuerySet:
+        """Apply request options like __order_by, __reverse, __from, __to and more"""
+        if any([key.startswith('__filter__') for key in request.GET]):
+            query = Q()
+            for key, value in request.GET.items():
+                if key.startswith('__filter__'):
+                    field_name = key.replace('__filter__', '') + '__contains'
+                    query |= Q(**{field_name: value})
+            queryset = queryset.filter(query)
+        if '__order_by' in request.GET:
+            queryset = queryset.order_by(request.GET.get('__order_by'))
+        if '__reverse' in request.GET and request.GET.get('__reverse') == 'true':
+            queryset = queryset.reverse()
+        if '__from' in request.GET and '__to' in request.GET:
+            start, end = int(request.GET.get('__from')), int(request.GET.get('__to'))
+            queryset = queryset[start:end]
+        return queryset
+
+    def model_to_dict(self, queryset: QuerySet):
         """Convert queryset to dict"""
         final_arr = []
-        for m_inst in qs:
-            inst_dict = {'pk': m_inst.pk}
-            for field in self.viewable_fields:
-                data = getattr(m_inst, field, None)
-                if isinstance(data, models.Model):
-                    data = data.pk
-                inst_dict[field] = data
-            final_arr.append(inst_dict)
+        for model_instance in queryset:
+            # inst_dict = {}
+            # if getattr(model_instance, 'uuid'):
+            #     inst_dict['uuid'] = model_instance.uuid
+            # for field in self.viewable_fields:
+            #     data = getattr(model_instance, field, None)
+            #     if isinstance(data, models.Model):
+            #         data = data.pk
+            #     inst_dict[field] = data
+            final_arr.append(REGISTRY.render(model_instance))
         return final_arr
 
     @staticmethod
@@ -130,6 +152,7 @@ class ModelAPI(CRUDAPI):
         all_instances = self.model.objects.filter(**sanitized)
         # Filter after user
         filtered = ModelAPI.user_filter(all_instances, request.user)
+        filtered = self.apply_meta(request, filtered)
         return self.model_to_dict(filtered)
 
     def update(self, request, data):
@@ -174,3 +197,8 @@ class UserAcquirableModelAPI(ModelAPI):
             model=model,
             user=request.user)
         return original
+
+    @staticmethod
+    def user_filter(queryset, user):
+        """This method is used to check if the user has access"""
+        return queryset.objects.filter(users__in=[user])

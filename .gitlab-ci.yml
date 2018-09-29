@@ -12,6 +12,7 @@ before_script:
 
 stages:
   - test-static
+  - test-ui
   - test
   - test-db
   - build-release
@@ -64,6 +65,18 @@ pylint:
   script:
     - inv ci.lint
   stage: test-static
+
+# UI Tests
+tslint:
+  before_script: []
+  image: node:10
+  except:
+    - prod
+  script:
+    - cd supervisr/ui/
+    - npm install --dev
+    - npx tslint -c tslint.json --project src
+  stage: test-ui
 
 # Tests
 pip_install:

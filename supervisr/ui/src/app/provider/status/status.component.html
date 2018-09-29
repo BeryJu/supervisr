@@ -1,0 +1,17 @@
+<span class="spinner spinner-sm" *ngIf="loading == true"></span>
+<div *ngIf="loading == false">
+  <ng-container [ngSwitch]="true">
+    <div *ngSwitchCase="status == true">
+      <clr-icon size="24" shape="check-circle"></clr-icon>
+    </div>
+    <div *ngSwitchCase="status == false">
+      <clr-icon size="24" shape="exclamation-circle"></clr-icon>
+    </div>
+    <div *ngSwitchDefault>
+      <span role="tooltip" aria-haspopup="true" class="tooltip tooltip-sm">
+        <clr-icon size="24" shape="help"></clr-icon>
+        <span class="tooltip-content">{{ status }}</span>
+      </span>
+    </div>
+  </ng-container>
+</div>

@@ -80,7 +80,7 @@ class TestSearchView(TestCase):
         query.query = 'supervisr.beryju.org'
         results = handler.search(query, request)
         self.assertEqual(len(results[Domain]), 3)
-        self.assertEqual(results[Domain][0].label, 'dom1.supervisr.beryju.org')
+        self.assertTrue(any([x.label == 'dom1.supervisr.beryju.org' for x in results[Domain]]))
 
     def test_search_handler_empty(self):
         """Test default search algorithm"""

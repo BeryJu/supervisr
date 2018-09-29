@@ -1,0 +1,40 @@
+<clr-datagrid class="datagrid-compact" [(clrDgSelected)]="selected" [clrDgLoading]="loading" (clrDgRefresh)="refresh($event)">
+  <clr-dg-action-bar *ngIf="addView !== null">
+    <div class="btn-group">
+      <button type="button" class="btn btn-sm btn-secondary" (click)="action('add')">
+        <clr-icon shape="plus"></clr-icon> Add
+      </button>
+      <button type="button" class="btn btn-sm btn-secondary" (click)="action('edit')" *ngIf="selected.length == 1">
+      <clr-icon shape="pencil"></clr-icon> Edit
+      </button>
+      <button type="button" class="btn btn-sm btn-secondary" (click)="action('delete')" *ngIf="selected.length == 1">
+        <clr-icon shape="close"></clr-icon> Delete
+      </button>
+    </div>
+  </clr-dg-action-bar>
+
+  <clr-dg-placeholder>We couldn't find any items!</clr-dg-placeholder>
+
+  <clr-dg-column *ngFor="let header of headerColumns; let i = index"
+    [clrDgField]="bodyColumns[i]">
+    <ng-container *clrDgHideableColumn="{hidden: false}">
+      {{ header }}
+    </ng-container>
+  </clr-dg-column>
+
+  <clr-dg-row *clrDgItems="let row of dataset" [clrDgItem]="row">
+    <clr-dg-cell *ngFor="let col of bodyColumns">
+      {{ row[col] }}
+    </clr-dg-cell>
+  </clr-dg-row>
+
+  <clr-dg-footer>
+    <clr-dg-column-toggle>
+      <clr-dg-column-toggle-title>Choose columns</clr-dg-column-toggle-title>
+      <clr-dg-column-toggle-button>Select all!</clr-dg-column-toggle-button>
+    </clr-dg-column-toggle>
+    <clr-dg-pagination #pagination [clrDgPageSize]="10">
+      {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} of {{ pagination.totalItems }} items
+    </clr-dg-pagination>
+  </clr-dg-footer>
+</clr-datagrid>

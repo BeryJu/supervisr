@@ -9,55 +9,15 @@
 
 {% block content %}
 <h1><clr-icon shape="vmw-app" size="48"></clr-icon>{% trans "Provider Instances" %}</h1>
-<div class="btn-group btn-link btn-icon-link">
-  <a href="{% url 'instance-new' %}" class="btn">
-    <clr-icon shape="add"></clr-icon>
-  </a>
-  <a data-ctx-name="edit" class="btn">
-    <clr-icon shape="edit"></clr-icon>
-  </a>
-  <a data-ctx-name="trash" class="btn">
-    <clr-icon shape="trash"></clr-icon>
-  </a>
-  <a data-ctx-name="diff" class="btn">
-    <clr-icon shape="layers"></clr-icon>
-  </a>
-</div>
-<table class="table instances">
-  <thead>
-    <tr>
-      <th>{% trans 'Provider status' %}</th>
-      <th>{% trans 'Name' %}</th>
-      <th>{% trans 'Provider' %}</th>
-      <th>{% trans 'Credentials' %}</th>
-      <th>{% trans 'Capabilities' %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for instance in instances %}
-    <tr data-selectable data-ctx-edit="{% url 'instance-edit' uuid=instance.uuid %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'instance-delete' uuid=instance.uuid %}?back={{ request.get_full_path }}">
-      <td>
-        {% with status=instance.provider.check_status %}
-          {% if status == True %}
-            <span class="label label-success">{% trans "OK" %}</span>
-          {% else %}
-            <span class="label label-danger">{{ status }}</span>
-          {% endif %}
-        {% endwith %}
-      </td>
-      <td><span>{{ instance.name }}</span></td>
-      <td><span>{{ instance.provider.get_meta.ui_name|default:'Error!' }}</span></td>
-      <td><span>{{ instance.credentials.name }}</span></td>
-      <td><span>{{ instance.provider.get_meta.get_capabilities|join:', '|default:'-' }}</span></td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<angular
+    component="datagrid"
+    api-path="core::providers::read">
+    <clr-action add-view="instance-new"
+                edit-view="instance-edit"
+                delete-view="instance-delete"></clr-action>
+    <clr-header-column field="name">{% trans 'Name' %}</clr-header-column>
+    <clr-header-column field="uuid">{% trans 'UUID' %}</clr-header-column>
+    <clr-header-column field="provider_path">{% trans 'Provider Path' %}</clr-header-column>
+</angular>
 {% endblock %}
 
-{% block scripts %}
-{{ block.super }}
-<script>
-clrTableSelect('.container');
-</script>
-{% endblock %}

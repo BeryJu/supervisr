@@ -37,6 +37,7 @@ like so: `[core] [dns] test`. There are also some special tags which are defined
  - `[tasks]`: Use this tag if you modified files in `supervisr/cli/tasks`.
  - `[assets]`: Use this tag if you modified files in the `assets/` subdirectory.
  - `[<app>]`: Use this tag if you modified files for `<app>`.
+ - `[ui]`: Use this tag if you modified files in `supervisr-ui/`.
  - `[other]`: Use this tag as fallback, if none of the above apply.
 
 ## Code of Conduct

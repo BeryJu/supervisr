@@ -14,12 +14,15 @@ def api_response(request, data, code=200):
         if key in request.GET:
             selected_format = request.GET.get(key)
 
+    # Get a list of global vars in this module
     _globals = globals()
     handler_name = 'api_response_%s' % selected_format
+    # Wrap data into dict to make sure it aligns with schema
     if not isinstance(data, dict) or 'data' not in data:
         data = {'data': data, 'code': code}
     elif 'code' not in data:
         data['code'] = code
+    # Get the handler from globals in this module
     handler = _globals.get(handler_name, None)
     if handler is not None:
         return handler(data=data, code=code)
@@ -52,7 +55,8 @@ def api_response_json(code, data):
         if isinstance(obj, datetime):
             return obj.replace(tzinfo=timezone.utc).timestamp()
         if isinstance(obj, UUID):
-            return obj.hex
+            return str(obj)
+
         raise TypeError("Type %s not serializable" % type(obj))
 
     return JsonResponse(data, status=code, json_dumps_params={

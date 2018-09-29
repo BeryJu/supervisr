@@ -1,11 +1,22 @@
 """supervisr core model utils"""
 from typing import Iterable, List
 
-from django.db.models import ManyToManyField, ManyToOneRel, Model
+from django.db.models import Field, ManyToManyField, ManyToOneRel, Model
 
 from supervisr.core.decorators import time
 from supervisr.core.models import CastableModel
 
+
+def get_walkable_field_names(model: Model, field_types: List[Field] = None) -> List[str]:
+    """Get a list with names of all fields that can be walked"""
+    if field_types is None:
+        field_types = [ManyToManyField, ManyToOneRel]
+    fields_to_walk = []
+    fields = getattr(model, '_meta').get_fields()
+    for field in fields:
+        if isinstance(field, tuple(field_types)):
+            fields_to_walk.append(field.name)
+    return fields_to_walk
 
 @time('supervisr.core.utils.models.walk_m2m')
 def walk_m2m(root: Model,
@@ -31,15 +42,6 @@ def walk_m2m(root: Model,
     models = []
     all_model_list = []
 
-    def get_walkable_field_names(model: Model) -> List[str]:
-        """Get a list with names of all fields that can be walked"""
-        fields_to_walk = []
-        fields = getattr(model, '_meta').get_fields()
-        for field in fields:
-            if isinstance(field, (ManyToManyField, ManyToOneRel)):
-                fields_to_walk.append(field.name)
-        return fields_to_walk
-
     def walk(root: Model):
         """Walk through root, adding it itself and setting up edges"""
         if isinstance(root, CastableModel):
@@ -50,6 +52,9 @@ def walk_m2m(root: Model,
         if (exclude_classes and root.__class__ not in exclude_classes) or \
                 (only_classes and root.__class__ in only_classes) or \
                 (only_classes == exclude_classes == []):
+            models.append(root)
+        # Also add if subclass of only_classes
+        if any([issubclass(root.__class__, x) for x in only_classes]):
             models.append(root)
         # Keep a second list with all models so we can check for duplicates,
         # even if class would normally be filtered out

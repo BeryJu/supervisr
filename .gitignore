@@ -169,7 +169,10 @@ typings/
 # dotenv environment variables file
 .env
 
-supervisr/data/
+supervisr/data/ca/
+supervisr/data/media/
+supervisr/data/puppet/
+supervisr/data/temp/
 supervisr/cache/
 supervisr/core/templates/core/deploy.html
 docgen/supervisr/
@@ -183,3 +186,14 @@ debian/supervisr.substvars
 debian/supervisr/
 
 unittest.xml
+
+coverage/
+dist/
+html-report/
+node_modules/
+typings/
+**/*npm-debug.log.*
+**/*yarn-error.log.*
+.idea/
+.DS_Store
+.npmrc
