@@ -73,7 +73,7 @@ tslint:
   except:
     - prod
   script:
-    - cd supervisr-ui/
+    - cd supervisr/ui/
     - npm install --dev
     - npx tslint -c tslint.json --project src
   stage: test-ui
