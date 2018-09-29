@@ -1,4 +1,4 @@
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, ApplicationRef, Injector, ComponentFactoryResolver, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -43,11 +43,11 @@ export class AppModule {
     ngDoBootstrap(app: ApplicationRef) {
         COMPONENTS.forEach((component) => {
             const widgetCompFactory = this.componentFactoryResolver.resolveComponentFactory(<any>component);
-            let selector = "angular[component=" + widgetCompFactory.selector;
+            const selector = `angular[component=${widgetCompFactory.selector}]`;
             $(selector).each((_: number, el: HTMLElement) => {
-                let copy = Object.assign([], el.children);
-                let compRef = widgetCompFactory.create(this.injector, [], el);
-                let instance = <Component>compRef.instance;
+                const copy = Object.assign([], el.children);
+                const compRef = widgetCompFactory.create(this.injector, [], el);
+                const instance = <Component>compRef.instance;
                 if (instance instanceof HTMLChildrenComponent) {
                     // Set children and trigger onChildren
                     instance.children = copy;
@@ -55,7 +55,7 @@ export class AppModule {
                 }
                 app.attachView(compRef.hostView);
             });
-        })
+        });
     }
 
  }

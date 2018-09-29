@@ -1,5 +1,5 @@
 import { Component, ElementRef } from '@angular/core';
-import { ClrDatagridStateInterface } from "@clr/angular";
+import { ClrDatagridStateInterface } from '@clr/angular';
 import { API } from '../services/api';
 import { APIPath } from '../services/path';
 import { HTMLChildrenComponent } from '../base';
@@ -15,7 +15,7 @@ function sleep(time) {
 })
 export class DatagridComponent extends HTMLChildrenComponent {
 
-    loading: boolean = true;
+    loading = true;
 
     selected: Array<object> = [];
     dataset: Array<object> = [];
@@ -39,7 +39,7 @@ export class DatagridComponent extends HTMLChildrenComponent {
 
     onChildren() {
         this.children.forEach(element => {
-            let tagName = element.tagName.toLowerCase();
+            const tagName = element.tagName.toLowerCase();
             if (tagName === 'clr-header-column') {
                 // Column Declaration, append to headerColumns and bodyColumns
                 this.headerColumns.push(element.innerText);
@@ -56,7 +56,7 @@ export class DatagridComponent extends HTMLChildrenComponent {
     action(action: string) {
         if (action === 'edit' || action === 'delete') {
             // edit and delete can only be triggered when 1 item is selected
-            let item = this.selected[0];
+            const item = this.selected[0];
             let view = '';
             if (action === 'edit') {
                 view = this.editView;

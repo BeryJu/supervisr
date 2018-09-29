@@ -7,10 +7,10 @@ import { API } from '../../services/api';
 })
 export class ProviderStatusComponent {
 
-    providerUUID: string = '';
+    providerUUID = '';
 
     status: boolean | string = null;
-    loading: boolean = true;
+    loading = true;
 
     constructor(private api: API, element: ElementRef) {
         this.providerUUID = element.nativeElement.attributes.getNamedItem('uuid').value;

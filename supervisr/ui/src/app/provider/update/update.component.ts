@@ -11,11 +11,11 @@ export class ProviderUpdateComponent {
     providers: Array<object> = [];
     result_data: object = null;
 
-    provider: string = '';
+    provider = '';
 
     constructor(private api: API) {
         this.api.app('core').component('providers').action(Actions.Read).request().subscribe(
-            data => { this.providers = data['data'] },
+            data => { this.providers = data['data']; },
             err => console.error(err)
         );
     }
@@ -28,7 +28,7 @@ export class ProviderUpdateComponent {
             .queryString('uuid', this.provider)
             .request()
             .subscribe(
-                data => { console.log(data) },
+                data => { console.log(data); },
                 err => console.error(err),
                 () => console.log('we triggered')
             );

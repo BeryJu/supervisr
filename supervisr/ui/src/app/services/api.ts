@@ -82,12 +82,12 @@ export class API {
         let url = this.buildUrl(this._app, this._component, this._action);
         if (this._query) {
             url += '?';
-            let query = Object.keys(this._query)
+            const query = Object.keys(this._query)
                 .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(this._query[key]))
                 .join('&');
             url += query;
         }
-        let response = this.http.request(method, url);
+        const response = this.http.request(method, url);
         this._component = this._action = this._app = null;
         this._query = {};
         return response;

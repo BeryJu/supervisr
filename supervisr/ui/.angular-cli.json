@@ -6,7 +6,7 @@
   "apps": [
     {
       "root": "src",
-      "outDir": "../supervisr/core/static/",
+      "outDir": "../core/static/",
       "assets": [
         "assets"
       ],

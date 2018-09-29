@@ -3,7 +3,7 @@
     <clr-select-container>
       <label>I've got some options</label>
       <select clrSelect name="options" [(ngModel)]="provider">
-        <option *ngFor="let provider of providers" value="{{provider.uuid}}">{{provider.name}}</option>
+        <option *ngFor="let provider of providers" value="{{ provider.uuid }}">{{ provider.name }}</option>
       </select>
     </clr-select-container>
   </form>

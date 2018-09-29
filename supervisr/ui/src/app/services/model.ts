@@ -5,7 +5,7 @@ export class Model {
     private unravel(): void {
         // unravel builtin type-hints from API
         // like converting timestamp into Date() objects
-        let singleUnravel = (key, value, type) => {
+        const singleUnravel = (key, value, type) => {
             switch (type) {
                 case 'timedelta':
                     return moment().subtract(value, 'seconds').fromNow();
@@ -13,14 +13,14 @@ export class Model {
                     return value;
             }
         };
-        let walker = root => {
+        const walker = root => {
             for (const key in root) {
                 if (root.hasOwnProperty(key)) {
-                    let element = root[key];
-                    let typeKey = key + '__type';
+                    const element = root[key];
+                    const typeKey = key + '__type';
                     // Unravel single key
                     if (typeKey in root) {
-                        let type = root[typeKey];
+                        const type = root[typeKey];
                         root[key] = singleUnravel(key, element, type);
                     }
                     // Further walk objects
