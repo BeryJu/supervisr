@@ -75,7 +75,7 @@ tslint:
   script:
     - cd supervisr/ui/
     - yarn
-    - inv ui.lint
+    - npx tslint -c tslint.json --project src
   stage: test-ui
 
 # Tests
