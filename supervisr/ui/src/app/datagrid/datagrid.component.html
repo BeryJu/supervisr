@@ -24,7 +24,7 @@
 
   <clr-dg-row *clrDgItems="let row of dataset" [clrDgItem]="row">
     <clr-dg-cell *ngFor="let col of bodyColumns">
-      {{ row[col] }}
+      {{ getValue(row, col) }}
     </clr-dg-cell>
   </clr-dg-row>
 

@@ -9,8 +9,8 @@ import { ProviderStatusComponent } from './provider/status/status.component';
 import { DatagridComponent } from './datagrid/datagrid.component';
 import { API } from './services/api';
 import { HTMLChildrenComponent } from './base';
-import './legacy/clarity-js';
-import './legacy/supervisr.js';
+import './legacy/clarity';
+import './legacy/supervisr';
 import * as $ from 'jquery';
 
 const COMPONENTS = [

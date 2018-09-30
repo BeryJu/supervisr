@@ -31,10 +31,10 @@ export class DatagridComponent extends HTMLChildrenComponent {
     constructor(private api: API, element: ElementRef) {
         super();
         this.apiPath = APIPath.fromString(element.nativeElement.attributes.getNamedItem('api-path').value);
-        // // Get sorting from attributes too
-        // if ('api-sorting' in element.nativeElement.attributes) {
+    }
 
-        // }
+    getValue(obj: object, path: string) {
+        return path.split('.').reduce((o, i) => o[i], obj);
     }
 
     onChildren() {

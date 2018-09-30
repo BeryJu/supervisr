@@ -86,14 +86,6 @@ MIT
 MIT
 MIT
 
-@angular/platform-browser@6.0.9
-MIT
-MIT
-
-@angular/common@6.0.9
-MIT
-MIT
-
 jquery@3.3.1
 MIT
 Copyright JS Foundation and other contributors, https://js.foundation/
@@ -132,6 +124,14 @@ All files located in the node_modules and external directories are
 externally maintained libraries used by this software which have their
 own licenses; we recommend you read them, as their terms may differ from
 the terms above.
+
+@angular/platform-browser@6.0.9
+MIT
+MIT
+
+@angular/common@6.0.9
+MIT
+MIT
 
 util@0.10.4
 MIT
