@@ -23,7 +23,9 @@ class CredentialSerializer(Serializer[BaseCredential]):
         """Serialize CredentialModel"""
         return {
             'name': instance.name,
-            'owner': parent.render(instance.owner)
+            'owner': parent.render(instance.owner),
+            'used_by': [str(provider) for provider in instance.providerinstance_set.all()],
+            'type': instance.cast().type(),
         }
 
 class ProviderInstanceSerializer(Serializer[ProviderInstance]):
@@ -34,7 +36,9 @@ class ProviderInstanceSerializer(Serializer[ProviderInstance]):
         return {
             'name': instance.name,
             'provider_path': instance.provider_path,
-            'credentials': parent.render(instance.credentials)
+            'credentials': parent.render(instance.credentials),
+            'type': str(instance.provider.get_meta.ui_name),
+            'capabilities': instance.provider.get_meta.get_capabilities(),
         }
 
 class ProviderAcquirableSingleSerializer(Serializer[ProviderAcquirableSingle]):

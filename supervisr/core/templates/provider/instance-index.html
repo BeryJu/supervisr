@@ -7,8 +7,10 @@
 {% title "Providers" %}
 {% endblock %}
 
-{% block content %}
+{% block content_area %}
+<div class="container">
 <h1><clr-icon shape="vmw-app" size="48"></clr-icon>{% trans "Provider Instances" %}</h1>
+</div>
 <angular
     component="datagrid"
     api-path="core::providers::read">
@@ -16,6 +18,9 @@
                 edit-view="instance-edit"
                 delete-view="instance-delete"></clr-action>
     <clr-header-column field="name">{% trans 'Name' %}</clr-header-column>
+    <clr-header-column field="type">{% trans 'Provider Type' %}</clr-header-column>
+    <clr-header-column field="credentials.name">{% trans 'Credentials' %}</clr-header-column>
+    <clr-header-column field="capabilities">{% trans 'Capabilities' %}</clr-header-column>
     <clr-header-column field="uuid">{% trans 'UUID' %}</clr-header-column>
     <clr-header-column field="provider_path">{% trans 'Provider Path' %}</clr-header-column>
 </angular>
