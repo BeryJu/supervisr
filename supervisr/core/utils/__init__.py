@@ -158,7 +158,7 @@ def messages_add_once(request, level, text, **kwargs):
 
 
 def is_url_absolute(url):
-    """Check if domain is absolute to prevent user from being redirect somehwere else"""
+    """Check if domain is absolute to prevent user from being redirect somewhere else"""
     return bool(urlparse(url).netloc)
 
 

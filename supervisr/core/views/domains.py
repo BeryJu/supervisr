@@ -1,7 +1,6 @@
 """Supervisr Core Domain Views"""
 
 from django.contrib import messages
-from django.db.models import QuerySet
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -62,23 +61,17 @@ class DomainEditView(GenericUpdateView):
 
     model = Domain
     form = DomainForm
+    redirect_view = 'domain-index'
 
-    def redirect(self, instance: Domain) -> HttpResponse:
-        return redirect(reverse('domain-index'))
-
-    def get_instance(self) -> QuerySet:
-        """Get domain from name"""
-        return self.model.objects.filter(domain_name=self.kwargs.get('domain'),
-                                         users__in=[self.request.user])
-
-    def update_form(self, form: DomainForm) -> DomainForm:
+    def get_form(self, *args, instance: Domain, **kwargs) -> DomainForm:
         """Add providers to domainForm"""
+        form = super().get_form(*args, instance=instance, **kwargs)
         # Create list of all possible provider instances
         providers = get_providers(capabilities=['domain'], path=True)
         provider_instance = ProviderInstance.objects.filter(
             provider_path__in=providers,
             useracquirablerelationship__user__in=[self.request.user])
-        form.fields['provider'].queryset = provider_instance
+        form.fields['provider_instance'].queryset = provider_instance
         form.request = self.request
         return form
 
@@ -87,11 +80,4 @@ class DomainDeleteView(GenericDeleteView):
     """Delete domain"""
 
     model = Domain
-
-    def redirect(self, instance: Domain) -> HttpResponse:
-        return redirect(reverse('domain-index'))
-
-    def get_instance(self) -> QuerySet:
-        """Get domain from name"""
-        return self.model.objects.filter(domain_name=self.kwargs.get('domain'),
-                                         users__in=[self.request.user])
+    redirect_view = 'domain-index'

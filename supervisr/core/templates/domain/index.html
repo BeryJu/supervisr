@@ -9,33 +9,12 @@
 
 {% block content %}
 <h1><clr-icon shape="world" size="48"></clr-icon>{% trans "Domains" %}</h1>
-<div class="btn-group btn-link btn-icon-link">
-  <a href="{% url 'domain-new' %}" class="btn">
-    <clr-icon shape="add"></clr-icon>
-  </a>
-  <a data-ctx-name="edit" class="btn">
-    <clr-icon shape="edit"></clr-icon>
-  </a>
-  <a data-ctx-name="trash" class="btn">
-    <clr-icon shape="trash"></clr-icon>
-  </a>
-</div>
-<table class="table">
-  <thead>
-    <tr>
-      <th>{% trans 'Domain' %}</th>
-      <th>{% trans 'Provider' %}</th>
-      <th>{% trans 'Description' %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for domain in instances %}
-      <tr data-selectable data-ctx-edit="{% url 'domain-edit' domain=domain.domain_name %}?back={{ request.get_full_path }}" data-ctx-trash="{% url 'domain-delete' domain=domain.domain_name %}?back={{ request.get_full_path }}">
-        <td>{{ domain.domain_name }}</td>
-        <td>{{ domain.provider_instance.name }}</td>
-        <td>{{ domain.description }}</td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<angular
+    component="datagrid"
+    api-path="core::domains::read">
+    <clr-action add-view="domain-new"
+                edit-view="domain-edit"
+                delete-view="domain-delete"></clr-action>
+    <clr-header-column field="domain_name">{% trans 'Name' %}</clr-header-column>
+</angular>
 {% endblock %}

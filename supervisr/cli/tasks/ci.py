@@ -15,7 +15,7 @@ pymysql.install_as_MySQLdb()
 def lint(ctx, modules=None):
     """Run PyLint"""
     if modules is None:
-        modules = ['tasks.py', 'supervisr']
+        modules = ['tasks.py', 'supervisr', 'manage.py']
     elif isinstance(modules, str):
         modules = [modules]
 

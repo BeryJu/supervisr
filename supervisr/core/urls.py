@@ -11,8 +11,7 @@ from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
 from supervisr.core.utils import get_apps
-from supervisr.core.utils.constants import (DOMAIN_REGEX, EMAIL_REGEX,
-                                            MOD_REGEX, UUID_REGEX)
+from supervisr.core.utils.constants import EMAIL_REGEX, MOD_REGEX, UUID_REGEX
 from supervisr.core.views import (accounts, admin, common, domains, products,
                                   search, settings, setup, users)
 from supervisr.core.views.providers import actions, credentials, instances
@@ -56,9 +55,9 @@ urlpatterns = [
     # Domain views
     url(r'^domains/$', domains.DomainIndexView.as_view(), name='domain-index'),
     url(r'^domains/new/$', domains.DomainNewView.as_view(), name='domain-new'),
-    url(r'^domains/(?P<domain>%s)/edit/$' % DOMAIN_REGEX,
+    url(r'^domains/(?P<uuid>%s)/edit/$' % UUID_REGEX,
         domains.DomainEditView.as_view(), name='domain-edit'),
-    url(r'^domains/(?P<domain>%s)/delete/$' % DOMAIN_REGEX,
+    url(r'^domains/(?P<uuid>%s)/delete/$' % UUID_REGEX,
         domains.DomainDeleteView.as_view(), name='domain-delete'),
     # Provider - Instances
     url(r'^providers/instances/$', instances.ProviderIndexView.as_view(), name='instance-index'),
