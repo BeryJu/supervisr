@@ -64,13 +64,13 @@ export class DatagridComponent extends HTMLChildrenComponent {
                 view = this.deleteView;
             }
             this.api.reverse(view, { 'uuid': item['uuid'] }).subscribe(
-                data => window.location.href = data['data'] + '?back=' + window.location.href,
+                data => window.location.href = data['data'] + '?back=' + window.location.pathname,
                 err => console.error(err)
             );
         } else if (action === 'add') {
             // add things
             this.api.reverse(this.addView).subscribe(
-                data => window.location.href = data['data'] + '?back=' + window.location.href,
+                data => window.location.href = data['data'] + '?back=' + window.location.pathname,
                 err => console.error(err)
             );
         }
