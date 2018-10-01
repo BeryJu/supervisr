@@ -103,7 +103,7 @@ class TestSearchView(TestCase):
                                        fields=['domain_name', 'description'],
                                        label_field='domain_name', icon='world',
                                        view_name='domain-edit',
-                                       view_kwarg_name='domain')
+                                       view_kwarg_name='uuid')
         query = SearchQuery()
         query.query = 'supervisr.beryju.org'
         results = handler.search(query, request)
