@@ -39,7 +39,7 @@ class Uncaught404View(View):
         if 'api' in request.path:
             # return a json/xml/yaml message if this was an api call
             return api_response(request, {'message': 'not_found'})
-        return render(request, 'common/error.html', {'code': 404})
+        return render(request, 'common/error.html', {'code': 404}, status=404)
 
 
 class Uncaught500View(View):

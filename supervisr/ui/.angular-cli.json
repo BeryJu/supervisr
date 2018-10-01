@@ -6,7 +6,7 @@
   "apps": [
     {
       "root": "src",
-      "outDir": "../core/static/",
+      "outDir": "../data/static/",
       "assets": [
         "assets"
       ],
