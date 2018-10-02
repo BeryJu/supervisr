@@ -75,7 +75,7 @@ tslint:
   script:
     - cd supervisr/ui/
     - yarn
-    - npx tslint -c tslint.json --project src
+    - npx ng lint
   stage: test-ui
 
 # Tests
