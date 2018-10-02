@@ -1,6 +1,4 @@
 """Supervisr Mod Influx Views"""
-
-
 from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
 from django.utils.translation import ugettext as _
@@ -20,6 +18,6 @@ class SettingsView(GenericSettingView):
         if 'test' in request.POST:
             # Test button that sends a test message
             with InfluxClient() as client:
-                client.write("test", 128)
+                client.write("test", value=128)
             messages.success(request, _('Successfully Sent test message'))
-        return super(SettingsView, self).post(request)
+        return super().post(request)

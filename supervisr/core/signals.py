@@ -4,11 +4,13 @@ from logging import getLogger
 from django.db.models.signals import (m2m_changed, post_migrate, post_save,
                                       pre_delete)
 from django.dispatch import Signal, receiver
+from django.dispatch.dispatcher import NO_RECEIVERS
 from passlib.hash import sha512_crypt
 
 from supervisr.core.apps import SupervisrAppConfig
 from supervisr.core.exceptions import SignalException
 from supervisr.core.utils import class_to_path
+from supervisr.core.utils.statistics import StatisticType, set_statistic
 
 LOGGER = getLogger(__name__)
 
@@ -16,51 +18,96 @@ LOGGER = getLogger(__name__)
 class RobustSignal(Signal):
     """Signal Class that raises Exceptions in a child class"""
 
+    def __init__(self, stat_name=None, providing_args=None):
+        super().__init__(providing_args=providing_args)
+        self.stat_name = stat_name
+
     def send(self, sender, **named):
-        results = super(RobustSignal, self).send_robust(sender, **named)
-        for handler, result in results:
-            if isinstance(result, Exception):
+        if not self.receivers or self.sender_receivers_cache.get(sender) is NO_RECEIVERS:
+            return []
+        values = {}
+        values['sent'] = {
+            'value': 1,
+            'type': StatisticType.Counter,
+        }
+
+        # Call each receiver with whatever arguments it can accept.
+        # Return a list of tuple pairs [(receiver, response), ... ].
+        responses = []
+        for _receiver in self._live_receivers(sender):
+            try:
+                # We time the receiver call as well as count the call
+                values['receiver.%s.call' % _receiver.__name__] = {
+                    'value': 1,
+                    'type': StatisticType.Counter
+                }
+                response = _receiver(signal=self, sender=sender, **named)
+
+                if self.stat_name:
+                    set_statistic(self.stat_name, hints={'category': 'event'}, **values)
+            except Exception as err:
                 raise SignalException("Handler %s: %s" %
-                                      (handler.__name__, repr(result))) from result
-        return results
+                                      (_receiver.__name__, repr(err))) from err
+            else:
+                responses.append((_receiver, response))
+        return responses
 
 
-on_user_acquirable_relationship_created = RobustSignal(providing_args=['relationship'])
-on_user_acquirable_relationship_deleted = RobustSignal(providing_args=['relationship'])
+on_user_acquirable_relationship_created = RobustSignal(
+    stat_name="on_user_acquirable_relationship_created", providing_args=['relationship'])
+on_user_acquirable_relationship_deleted = RobustSignal(
+    stat_name="on_user_acquirable_relationship_deleted", providing_args=['relationship'])
 
 on_user_sign_up = RobustSignal(
+    stat_name="on_user_sign_up",
     providing_args=['user', 'request', 'password', 'needs_confirmation'])
-on_user_change_password = RobustSignal(providing_args=['user', 'request', 'password'])
-on_user_sign_up_post = RobustSignal(providing_args=['user', 'request', 'needs_confirmation'])
-on_user_change_password_post = RobustSignal(providing_args=['user', 'request', 'was_reset'])
-on_user_password_reset_init = RobustSignal(providing_args=['user'])
-on_user_password_reset_finish = RobustSignal(providing_args=['user'])
-on_user_confirmed = RobustSignal(providing_args=['user', 'request'])
-on_user_confirm_resend = RobustSignal(providing_args=['user', 'request'])
+on_user_change_password = RobustSignal(
+    stat_name="on_user_change_password", providing_args=['user', 'request', 'password'])
+on_user_sign_up_post = RobustSignal(
+    stat_name="on_user_sign_up_post", providing_args=['user', 'request', 'needs_confirmation'])
+on_user_change_password_post = RobustSignal(
+    stat_name="on_user_change_password_post", providing_args=['user', 'request', 'was_reset'])
+on_user_password_reset_init = RobustSignal(
+    stat_name="on_user_password_reset_init", providing_args=['user'])
+on_user_password_reset_finish = RobustSignal(
+    stat_name="on_user_password_reset_finish", providing_args=['user'])
+on_user_confirmed = RobustSignal(
+    stat_name="on_user_confirmed", providing_args=['user', 'request'])
+on_user_confirm_resend = RobustSignal(
+    stat_name="on_user_confirm_resend", providing_args=['user', 'request'])
+on_post_startup = RobustSignal(
+    stat_name="on_post_startup", providing_args=['pid'])
 
-on_domain_created = RobustSignal(providing_args=['domain'])
+on_domain_created = RobustSignal(
+    stat_name="on_domain_created", providing_args=['domain'])
 
 # Signal which can be subscribed to initialize things that take longer
 # and should not be run up on reboot of the app
-on_migration_post = RobustSignal(providing_args=['app_name'])
-on_setting_update = RobustSignal(providing_args=[])
+on_migration_post = RobustSignal(
+    stat_name="on_migration_post", providing_args=['app_name'])
+on_setting_update = RobustSignal(
+    stat_name="on_setting_update", providing_args=[])
 
 # on_check_* Signals return a boolean
 
 # Return wether user with `email` exists
-on_check_user_exists = RobustSignal(providing_args=['email'])
+on_check_user_exists = RobustSignal(
+    stat_name="on_check_user_exists", providing_args=['email'])
 
 # get_* Signals return something other than a boolean
 
 # Return a hash for the /about/info page
-get_module_info = RobustSignal(providing_args=[])
+get_module_info = RobustSignal(
+    stat_name="get_module_info", providing_args=[])
 # Get information for health status
-get_module_health = RobustSignal(providing_args=[])
+get_module_health = RobustSignal(
+    stat_name="get_module_health", providing_args=[])
 
-on_search = RobustSignal(providing_args=['query', 'request'])
+on_search = RobustSignal(
+    stat_name="on_search", providing_args=['query', 'request'])
 
 # Set a statistic
-on_set_statistic = RobustSignal(providing_args=['key', 'value', 'hints'])
+on_set_statistic = RobustSignal(providing_args=['name', 'values', 'hints'])
 
 
 @receiver(post_migrate)
@@ -84,9 +131,9 @@ def crypt6_handle_user_change_pass(signal, user, password, **kwargs):
 
 @receiver(on_set_statistic)
 # pylint: disable=unused-argument
-def stat_output_verbose(signal, key, hints, value, **kwargs):
+def stat_output_verbose(signal, name, values, hints, **kwargs):
     """Output stats to LOGGER"""
-    LOGGER.debug("Stats: '%s': %r (hints=%r)", key, value, hints)
+    LOGGER.debug("'%s': %r (hints=%r)", name, values, hints)
 
 
 @receiver(post_save)

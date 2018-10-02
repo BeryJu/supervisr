@@ -141,6 +141,7 @@ MIDDLEWARE = [
     'supervisr.core.middleware.permanent_message_middleware.permanent_message',
     'htmlmin.middleware.HtmlMinifyMiddleware',
     'htmlmin.middleware.MarkRequestMiddleware',
+    'supervisr.core.middleware.statistic_middleware.statistic_middleware'
 ]
 
 # Message Tag fix for bootstrap CSS Classes

@@ -2,6 +2,7 @@
 
 import base64
 import warnings
+from contextlib import contextmanager
 from datetime import datetime
 from time import time as timestamp
 
@@ -18,7 +19,7 @@ from django.utils.http import urlencode
 from django.utils.translation import ugettext_lazy as _
 
 from supervisr.core.utils import get_apps
-from supervisr.core.utils.statistics import set_statistic
+from supervisr.core.utils.statistics import StatisticType, set_statistic
 
 RE_AUTH_KEY = getattr(settings, 'RE_AUTH_KEY', 'supervisr_require_re_auth_done')
 RE_AUTH_MARGAIN = getattr(settings, 'RE_AUTH_MARGAIN', 300)
@@ -98,23 +99,24 @@ def reauth_required(view_function):
     return wrap
 
 
+@contextmanager
 def time(statistic_key):
     """Decorator to time a method call"""
-
-    def outer_wrapper(method):
-        """Decorator to time a method call"""
-
-        @wraps(method)
-        def timer(*args, **kwargs):
-            """Decorator to time a method call"""
-            time_start = datetime.now()
-            result = method(*args, **kwargs)
-            time_end = datetime.now()
-            delta = time_end - time_start
-            set_statistic(statistic_key, delta.total_seconds() * 1000, unit='millisecond')
-            return result
-        return timer
-    return outer_wrapper
+    # TODO: Use cProfile here
+    time_start = datetime.now()
+    try:
+        yield
+    finally:
+        time_end = datetime.now()
+        delta = time_end - time_start
+        set_statistic(statistic_key,
+                      value={
+                          'value': delta.total_seconds() * 1000,
+                          'type': StatisticType.Timing
+                      },
+                      hints={
+                          'unit': 'ms'
+                      })
 
 
 def require_setting(path, value, message=_('This function has been administratively disabled.')):

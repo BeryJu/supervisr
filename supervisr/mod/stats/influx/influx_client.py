@@ -1,14 +1,14 @@
 """Supervisr Stats Influx Client"""
-
-import logging
-import socket
+from collections import MutableMapping
+from logging import getLogger
+from socket import getfqdn
 
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
 
 from supervisr.core.models import Setting
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 # pylint: disable=too-many-instance-attributes
@@ -23,21 +23,21 @@ class InfluxClient:
 
     _fqdn = None
     _install_id = ''
-    _client = None
+    __client = None
 
     def __init__(self):
         """Load settings form DB"""
         self.host = Setting.get('host')
-        self.port = int(Setting.get('port'))
+        self.port = Setting.get_int('port')
         self.username = Setting.get('username')
         self.password = Setting.get('password')
         self.database = Setting.get('database')
-        self._fqdn = socket.getfqdn()
+        self._fqdn = getfqdn()
         self._install_id = Setting.get('install_id', namespace='supervisr.core')
 
     def connect(self):
         """create influxdbclient instance"""
-        self._client = InfluxDBClient(
+        self.__client = InfluxDBClient(
             host=self.host,
             port=self.port,
             username=self.username,
@@ -45,7 +45,18 @@ class InfluxClient:
             database=self.database,
             timeout=5)
 
-    def write(self, meas, tags=None, **fields):
+    def __flatten(self, source, parent_key='', sep='.'):
+        """Flatten dictionary from {'a': {'b': 'c'}} to {'a.b': 'c'}"""
+        items = []
+        for key, value in source.items():
+            new_key = parent_key + sep + key if parent_key else key
+            if isinstance(value, MutableMapping):
+                items.extend(self.__flatten(value, new_key, sep=sep).items())
+            else:
+                items.append((new_key, value))
+        return dict(items)
+
+    def write(self, measurement, tags=None, **values):
         """Write data to influx"""
         if not tags:
             tags = {}
@@ -53,21 +64,24 @@ class InfluxClient:
             'host': self._fqdn,
             'install_id': self._install_id,
         }
-        all_tags.update(tags)
+        all_tags.update(self.__flatten(tags))
         try:
-            return self._client.write_points([
+            result = self.__client.write_points([
                 {
-                    'measurement': meas,
+                    'measurement': measurement,
                     'tags': all_tags,
-                    'fields': fields
+                    'fields': values
                 }
             ])
-        except InfluxDBClientError:
+            LOGGER.debug('wrote %s', measurement)
+            return result
+        except InfluxDBClientError as exc:
+            LOGGER.debug(exc)
             return False
 
     def close(self):
         """Close socket"""
-        # self._client.close()
+        # self.__client.close()
 
     def __enter__(self):
         try:

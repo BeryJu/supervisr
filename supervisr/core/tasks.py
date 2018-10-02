@@ -1,13 +1,15 @@
 """supervisr core tasks"""
+import json
 import time
 from decimal import Decimal
 from logging import getLogger
 
 from celery import Task
 from celery.result import AsyncResult
+from django.conf import settings
 
 from supervisr.core.celery import CELERY_APP
-from supervisr.core.signals import on_set_statistic
+from supervisr.core.signals import StatisticType, on_set_statistic
 
 LOGGER = getLogger(__name__)
 
@@ -133,11 +135,80 @@ class Progress:
         return self.result.info
 
 
-@CELERY_APP.task(bind=True)
-def statistic_task(self, key, value, hints=None):
-    """Handle statistic sending in a task"""
-    on_set_statistic.send(key=key, value=value, hints=hints, sender=self)
+class StatisticTask(SupervisrTask):
+    """Task to save statistics. Also handles increasing and saving counter state"""
 
+    name = 'supervisr.core.tasks.StatisticTask'
+    __counters = None
+    __path = ''
+
+    # Count changes since last save
+    __changes = 0
+    # Time when last file was written
+    __last_save = 0
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__counters = {}
+        self.__path = settings.DATA_DIR + '/cache/counters.json'
+        self.__changes = 0
+        self.__last_save = 0
+        with open(self.__path, mode='a+') as _file:
+            try:
+                LOGGER.debug('Loaded counters.json')
+                self.__counters = json.loads(_file.read())
+            except json.decoder.JSONDecodeError:
+                LOGGER.debug('failed to load json, resetting')
+                self.__counters = {}
+
+    def save(self):
+        """Save counters to json file"""
+        now = time.time()
+        diff = now - self.__last_save
+        # Write file to disk if more than 30 changes or more than 600 ms passed
+        if self.__changes > 30 or diff > 600:
+            with open(self.__path, 'w') as _file:
+                self.__last_save = time.time()
+                self.__changes = 0
+                json.dump(self.__counters, _file)
+                LOGGER.debug("wrote counters.json file")
+
+    def run(self, name, values: dict, hints=None):
+        """[summary]
+
+        Args:
+            name (str): Name of statistic
+            values (dict): Dictionary of values. Structure:
+                           {'value_name': {'value': <value>, 'type': StatisticType }}
+            hints (dict, optional): Defaults to None. Optional dict of hints like units
+
+        Raises:
+            ValueError: [description]
+        """
+        # We differentiate between values based on statistic name and value name
+        if name not in self.__counters:
+            self.__counters[name] = {}
+        flat_values = {}
+        for value_name, value_body in values.items():
+            # Flatten values while iterating
+            flat_values[value_name] = value_body.get('value')
+            # Signal is called on worker
+            if value_body.get('type') == StatisticType.Counter:
+                # Check if value is a digit, if not raise an Error
+                if not str(value_body.get('value')).isdigit():
+                    raise ValueError("Value needs to be numerical if Type is set to Counter.")
+                if value_name not in self.__counters[name]:
+                    # Initialize in-memory counters with current values
+                    self.__counters[name][value_name] = value_body.get('value')
+                else:
+                    self.__counters[name][value_name] += value_body.get('value')
+                    flat_values[value_name] = self.__counters[name][value_name]
+                self.__changes += 1
+        on_set_statistic.send(name=name, values=flat_values, hints=hints, sender=self)
+        self.save()
+
+
+CELERY_APP.tasks.register(StatisticTask())
 
 @CELERY_APP.task(bind=True, base=SupervisrTask)
 def debug_progress_task(self, seconds, **kwargs):

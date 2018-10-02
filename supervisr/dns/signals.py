@@ -11,8 +11,10 @@ from supervisr.dns.models import BaseRecord, Zone
 
 LOGGER = logging.getLogger(__name__)
 
-on_dns_zone_update = RobustSignal(providing_args=['zone'])
-on_dns_record_update = RobustSignal(providing_args=['record', 'zones'])
+on_dns_zone_update = RobustSignal(
+    stat_name="on_dns_zone_update", providing_args=['zone'])
+on_dns_record_update = RobustSignal(
+    stat_name="on_dns_record_update", providing_args=['record', 'zones'])
 
 @receiver(post_save)
 # pylint: disable=unused-argument
