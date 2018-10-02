@@ -15,8 +15,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="#3625b7">
     {% setting 'DEBUG' as DEBUG %}
     {% if DEBUG %}
+    <link rel="apple-touch-icon" href="http://localhost:4200/assets/icon.png">
     <link rel="shortcut icon" type="image/png" href="http://localhost:4200/assets/icon.png" />
     {% else %}
+    <base href="/static">
+    <link rel="apple-touch-icon" href="{% static 'assets/icon.png' %}">
     <link rel="shortcut icon" type="image/png" href="{% static 'assets/icon.png' %}"/>
     <link rel="stylesheet" href="{% static 'styles.css' %}">
     {% endif %}

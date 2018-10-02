@@ -50,7 +50,7 @@ def web(ctx, pidfile='', auto_reload=True):
         'engine.autoreload_on': auto_reload,
     })
     # Mount NullObject to serve static files
-    cherrypy.tree.mount(None, '/assets', config={
+    cherrypy.tree.mount(None, '/static', config={
         '/': {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': settings.STATIC_ROOT,

@@ -3,7 +3,7 @@
   "version": "0.3.2-alpha",
   "description": "Frontend components for supervisr",
   "scripts": {
-    "build": "npx ng build --prod --output-hashing none && ../../manage.py collectstatic --no-input",
+    "build": "npx ng build --prod --output-hashing none --base-href /static/ && ../../manage.py collectstatic --no-input",
     "start": "npx ng serve --proxy-config proxy.conf.json --public-host http://localhost:4200/"
   },
   "private": true,

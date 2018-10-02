@@ -117,7 +117,7 @@ migration_mariadb:
   except:
     - prod
   script:
-    - inv supervisr.migrate
+    - inv run.migrate
   stage: test-db
 
 # Build releases

@@ -113,7 +113,7 @@ TIME_ZONE = CONFIG.get('timezone', 'UTC')
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-STATIC_URL = '/assets/'
+STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 LOGIN_REDIRECT_URL = 'user-index'
 LOGIN_URL = 'account-login'
@@ -285,16 +285,16 @@ with CONFIG.cd('log'):
         'disable_existing_loggers': True,
         'formatters': {
             'default': {
-                'format': ('[%(asctime)s] %(levelname)s '
+                'format': ('[%(asctime)s] %(levelname)s %(relativeCreated)d	'
                            '[%(name)s::%(funcName)s::%(lineno)s] %(message)s'),
             },
             'verbose': {
-                'format': ('%(process)-5d %(thread)d %(name)-45s '
+                'format': ('%(process)-5d %(relativeCreated)-10d %(name)-45s '
                            '%(levelname)-8s %(funcName)-20s %(message)s'),
             },
             'color': {
                 '()': 'colorlog.ColoredFormatter',
-                'format': ('%(log_color)s%(process)-5d %(thread)d %(name)-45s '
+                'format': ('%(log_color)s%(process)-5d %(relativeCreated)-10d %(name)-45s '
                            '%(levelname)-8s %(funcName)-20s %(message)s'),
                 'log_colors': {
                     'DEBUG': 'bold_black',
