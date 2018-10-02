@@ -56,6 +56,7 @@ def web(ctx, pidfile='', auto_reload=True):
             'tools.staticdir.dir': settings.STATIC_ROOT,
             'tools.expires.on': True,
             'tools.expires.secs': 86400,
+            'tools.gzip.on': True,
         }
     })
     cherrypy.tree.graft(WSGILogger(application), '/')

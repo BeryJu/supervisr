@@ -10,15 +10,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#313131">
-    <meta name="msapplication-navbutton-color" content="#313131">
-    <meta name="apple-mobile-web-app-status-bar-style" content="#313131">
+    <meta name="theme-color" content="#3625b7">
+    <meta name="msapplication-navbutton-color" content="#3625b7">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#3625b7">
     {% setting 'DEBUG' as DEBUG %}
     {% if DEBUG %}
     <link rel="shortcut icon" type="image/png" href="http://localhost:4200/assets/icon.png" />
     {% else %}
     <link rel="shortcut icon" type="image/png" href="{% static 'assets/icon.png' %}"/>
-    <link rel="stylesheet" href="{% static 'styles.bundle.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
     {% endif %}
     <title>
       {% block title %}
@@ -33,16 +33,16 @@
     {% endblock %}
     {% google_analytics %}
     {% if DEBUG %}
-      <script type="text/javascript" src="http://localhost:4200/inline.bundle.js"></script>
-      <script type="text/javascript" src="http://localhost:4200/styles.bundle.js"></script>
-      <script type="text/javascript" src="http://localhost:4200/scripts.bundle.js"></script>
-      <script type="text/javascript" src="http://localhost:4200/vendor.bundle.js"></script>
-      <script type="text/javascript" src="http://localhost:4200/main.bundle.js"></script>
+      <script type="text/javascript" src="http://localhost:4200/runtime.js"></script>
+      <script type="text/javascript" src="http://localhost:4200/styles.js"></script>
+      <script type="text/javascript" src="http://localhost:4200/scripts.js"></script>
+      <script type="text/javascript" src="http://localhost:4200/vendor.js"></script>
+      <script type="text/javascript" src="http://localhost:4200/main.js"></script>
     {% else %}
-      <script type="text/javascript" src="{% static 'inline.bundle.js' %}"></script>
+      <script type="text/javascript" src="{% static 'runtime.js' %}"></script>
       <script>Raven.config('{% sentry_public_dsn %}', { environment: '{% setting "ENVIRONMENT" %}', release: '{% setting "VERSION" %}', }).install()</script>
-      <script type="text/javascript" src="{% static 'scripts.bundle.js' %}"></script>
-      <script type="text/javascript" src="{% static 'main.bundle.js' %}"></script>
+      <script type="text/javascript" src="{% static 'scripts.js' %}"></script>
+      <script type="text/javascript" src="{% static 'main.js' %}"></script>
     {% endif %}
     {% block scripts %}
     {% endblock %}
