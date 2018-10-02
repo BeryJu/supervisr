@@ -1,13 +1,13 @@
 """Supervisr Core ManagementCommands Test"""
 
 from shutil import rmtree
-from unittest import expectedFailure
 
 from django.contrib.auth.models import Group
 
 from supervisr.core.utils.tests import TestCase, call_command_ret
 from supervisr.puppet.builder import ReleaseBuilder
 from supervisr.puppet.models import PuppetModule
+from supervisr.puppet.utils import ForgeNotFound
 
 
 class TestManagementCommands(TestCase):
@@ -56,12 +56,12 @@ class TestManagementCommands(TestCase):
     #     self.assertEqual(call_command_ret('puppet_import', '--module', 'beryju-windows_oem'),
     #                      'Done!\n')
 
-    @expectedFailure
     def test_puppet_import_invalid_user(self):
         """Test Invalid PuppetForge Import (wrong username)"""
-        call_command_ret('puppet_import', '--module', 'wrong_name-wrong_name')
+        with self.assertRaises(ForgeNotFound):
+            call_command_ret('puppet_import', '--module', 'wrong_name-wrong_name')
 
-    @expectedFailure
     def test_puppet_import_invalid_mod(self):
         """Test Invalid PuppetForge Import (wrong module)"""
-        call_command_ret('puppet_import', '--module', 'puppetlabs-wrong_name')
+        with self.assertRaises(ForgeNotFound):
+            call_command_ret('puppet_import', '--module', 'puppetlabs-wrong_name')

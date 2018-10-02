@@ -2,7 +2,6 @@
 
 import socket
 import sys
-from unittest import skipUnless
 
 from django.http import HttpResponseServerError
 from django.test import RequestFactory, TestCase
@@ -27,14 +26,7 @@ class TestUtils(TestCase):
         request2 = self.factory.get('/', REMOTE_ADDR='2.3.4.5')
         self.assertEqual(get_remote_ip(request2), '2.3.4.5')
 
-    @skipUnless(sys.platform.startswith('win'), 'requires Windows')
-    def test_reverse_dns_win(self):  # pragma: no cover
-        """Test reverse_dns (windows)"""
-        reverse = get_reverse_dns('127.0.0.1')
-        self.assertEqual(reverse, socket.getfqdn())
-
-    @skipUnless(sys.platform.endswith('nix'), 'requires Linux')
-    def test_reverse_dns_nix(self):  # pragma: no cover
+    def test_reverse_dns_nix(self):
         """Test reverse_dns (nix)"""
         reverse = get_reverse_dns('127.0.0.1')
         self.assertEqual(reverse, 'localhost')

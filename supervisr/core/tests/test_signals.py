@@ -8,8 +8,8 @@ class TestSignals(TestCase):
     """Supervisr Core Signals Test"""
 
     def setUp(self):
-        super(TestSignals, self).setUp()
-        self.sig_test = RobustSignal()  # This signal is only used during unit-tests
+        super().setUp()
+        self.sig_test = RobustSignal(stat_name='test')  # This signal is only used during unit-tests
 
     def test_robust_signal(self):
         """Test RobustSignal's error catching"""
