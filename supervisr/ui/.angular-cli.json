@@ -19,7 +19,7 @@
       "styles": [
         "../node_modules/@clr/icons/clr-icons.min.css",
         "../node_modules/@clr/ui/clr-ui-dark.min.css",
-        "../scss/dark.theme.scss"
+        "scss/main.scss"
       ],
       "scripts": [
         "../node_modules/raven-js/dist/raven.js",

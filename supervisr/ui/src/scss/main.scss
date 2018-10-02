@@ -1,0 +1,31 @@
+$fa-font-path : '../../node_modules/font-awesome/fonts';
+@import '~font-awesome/scss/font-awesome.scss';
+@import "supervisr/index.scss";
+@import "clarity/index.scss";
+@import "django/index.scss";
+@import 'scrollbar.scss';
+
+.home-cards .home-cards-container {
+    background-color: #22343c !important;
+}
+
+// django admin sidebar
+#content-related {
+    background-color: #22343c !important;
+}
+
+#content-related .module h2 {
+    color: #e9ecef !important;
+}
+
+.apps ul {
+    background: initial !important;
+}
+
+.apps ul li a {
+    color: #e9ecef !important;
+}
+
+select[multiple] option, select[size] option {
+    color: #e9ecef;
+}

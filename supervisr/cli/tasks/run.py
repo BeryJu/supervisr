@@ -47,9 +47,9 @@ def web(ctx, pidfile='', auto_reload=True):
     from supervisr.core.wsgi import application
     # Get default config from django settings
     cherrypy.config.update(settings.CHERRYPY_SERVER)
-    # cherrypy.config.update({
-    #     'engine.autoreload_on': auto_reload,
-    # })
+    cherrypy.config.update({
+        'engine.autoreload_on': auto_reload,
+    })
     # Mount NullObject to serve static files
     cherrypy.tree.mount(None, '/static', config={
         '/': {
