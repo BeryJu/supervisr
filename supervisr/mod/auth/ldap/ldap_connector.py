@@ -36,6 +36,8 @@ class LDAPConnector:
             LOGGER.debug("LDAP not Enabled")
             return
         mode = Setting.get('mode')
+        # print(mode)
+        # print(GeneralSettingsForm.MODE_CREATE_USERS)
         if mode == GeneralSettingsForm.MODE_AUTHENTICATION_BACKEND:
             self.authbackend_enabled = True
             self.create_users_enabled = False
@@ -50,8 +52,9 @@ class LDAPConnector:
         # Either use mock argument or test is in argv
         self.domain = Setting.get('domain')
         self.base_dn = Setting.get('base')
-        if mock or 'test' in sys.argv:
+        if mock or any('test' in arg for arg in sys.argv):
             self.mock = True
+            self.create_users_enabled = True
             con_args['client_strategy'] = ldap3.MOCK_SYNC
             server_args['get_info'] = ldap3.OFFLINE_AD_2012_R2
 
@@ -111,7 +114,7 @@ class LDAPConnector:
     @staticmethod
     def enabled():
         """Returns whether LDAP is enabled or not"""
-        return Setting.get_bool('enabled') or 'test' in sys.argv
+        return Setting.get_bool('enabled') or any('test' in arg for arg in sys.argv)
 
     @staticmethod
     def get_server():
