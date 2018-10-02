@@ -12,6 +12,9 @@ import { HTMLChildrenComponent } from './base';
 import './legacy/clarity';
 import './legacy/supervisr';
 import * as $ from 'jquery';
+import * as Raven from 'raven-js';
+
+window['Raven'] = Raven;
 
 const COMPONENTS = [
     DatagridComponent,

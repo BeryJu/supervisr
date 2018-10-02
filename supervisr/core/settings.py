@@ -284,18 +284,14 @@ with CONFIG.cd('log'):
         'version': 1,
         'disable_existing_loggers': True,
         'formatters': {
-            'default': {
-                'format': ('[%(asctime)s] %(levelname)s %(relativeCreated)d	'
-                           '[%(name)s::%(funcName)s::%(lineno)s] %(message)s'),
-            },
             'verbose': {
-                'format': ('%(process)-5d %(relativeCreated)-10d %(name)-45s '
-                           '%(levelname)-8s %(funcName)-20s %(message)s'),
+                'format': ('%(asctime)s %(levelname)-8s %(name)-45s '
+                           '%(funcName)-20s %(message)s'),
             },
             'color': {
                 '()': 'colorlog.ColoredFormatter',
-                'format': ('%(log_color)s%(process)-5d %(relativeCreated)-10d %(name)-45s '
-                           '%(levelname)-8s %(funcName)-20s %(message)s'),
+                'format': ('%(log_color)s%(asctime)s %(levelname)-8s %(name)-45s '
+                           '%(funcName)-20s %(message)s'),
                 'log_colors': {
                     'DEBUG': 'bold_black',
                     'INFO': 'white',
