@@ -100,7 +100,7 @@ unittest:
   except:
     - prod
   script:
-    - inv ci.unittest
+    - inv ci.test
   stage: test
   artifacts:
     reports:

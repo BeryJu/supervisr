@@ -230,7 +230,7 @@ class SignUpView(View):
                 request=request,
                 needs_confirmation=needs_confirmation)
         except SignalException as exception:
-            LOGGER.warning("Failed to sign up user %s", exception)
+            LOGGER.warning("Failed to sign up user %s", exception, exc_info=exception)
             new_user.delete()
             raise
         return new_user

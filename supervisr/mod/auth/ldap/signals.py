@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from ldap3 import version as ldap3_version
 from ldap3.core.exceptions import LDAPCommunicationError, LDAPException
 
+from supervisr.core.models import Product
 from supervisr.core.signals import (get_module_health, get_module_info,
                                     on_check_user_exists,
                                     on_user_acquirable_relationship_created,
@@ -53,7 +54,7 @@ def ldap_handle_user_confirm(sender, signal, user, **kwargs):
 # pylint: disable=unused-argument
 def ldap_handle_relationship_created(sender, signal, relationship, **kwargs):
     """Handle creation of user_product_relationship, add to ldap group if needed"""
-    if LDAP and LDAP.create_users_enabled:
+    if LDAP and LDAP.create_users_enabled and isinstance(relationship.model, Product):
         exts = relationship.model.extensions.filter(productextensionldap__isnull=False)
         if exts.exists():
             LDAP.add_to_group(
@@ -65,7 +66,7 @@ def ldap_handle_relationship_created(sender, signal, relationship, **kwargs):
 # pylint: disable=unused-argument
 def ldap_handle_relationship_deleted(sender, signal, relationship, **kwargs):
     """Handle deletion of user_product_relationship, remove from group if needed"""
-    if LDAP and LDAP.create_users_enabled:
+    if LDAP and LDAP.create_users_enabled and isinstance(relationship.model, Product):
         exts = relationship.model.extensions.filter(productextensionldap__isnull=False)
         if exts.exists():
             LDAP.remove_from_group(

@@ -114,7 +114,7 @@ class LDAPConnector:
     @staticmethod
     def enabled():
         """Returns whether LDAP is enabled or not"""
-        return Setting.get_bool('enabled') or any('test' in arg for arg in sys.argv)
+        return Setting.get_bool('enabled')
 
     @staticmethod
     def get_server():
@@ -144,9 +144,10 @@ class LDAPConnector:
                 if 'dn' in results[0]:
                     return str(results[0]['dn'])
         except ldap3.core.exceptions.LDAPNoSuchObjectResult as exc:
-            LOGGER.debug(exc)
+            LOGGER.warning(exc)
             return False
-        except ldap3.core.exceptions.LDAPInvalidDnError:
+        except ldap3.core.exceptions.LDAPInvalidDnError as exc:
+            LOGGER.warning(exc)
             return False
         return False
 
