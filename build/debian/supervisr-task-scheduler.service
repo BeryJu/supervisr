@@ -8,7 +8,7 @@ User=supervisr
 Group=supervisr
 WorkingDirectory=/usr/share/supervisr
 Type=simple
-ExecStart=/usr/bin/supervisr-ctl supervisr.run-celery-beat
+ExecStart=/usr/bin/supervisr-ctl run.worker-scheduler
 
 [Install]
 WantedBy=multi-user.target

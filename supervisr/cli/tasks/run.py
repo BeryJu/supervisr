@@ -13,7 +13,7 @@ def migrate(ctx):
 
 
 @task
-def run_celery(ctx, debug=False):
+def worker(ctx, debug=False):
     """Run Celery worker"""
     if debug and WINDOWS:
         # Workaround since celery is not supported on windows since version 4
@@ -26,13 +26,13 @@ def run_celery(ctx, debug=False):
 
 
 @task
-def run_celery_beat(ctx):
+def worker_scheduler(ctx):
     """Run Celery beat worker"""
     ctx.run("celery -A supervisr.core beat")
 
 
 @task
-def run_celery_flower(ctx):
+def worker_monitor(ctx):
     """Run Celery flower"""
     ctx.run(("celery -A supervisr.core flower --address=127.0.0.1 --logging=none "
              "--url_prefix=/app/mod/web/proxy/supervisr_flower"))
@@ -40,7 +40,7 @@ def run_celery_flower(ctx):
 
 @task
 # pylint: disable=unused-argument
-def run(ctx, pidfile='', listen=None, port=None):
+def web(ctx, pidfile='', listen=None, port=None):
     """Run CherryPY-based application server"""
     from django.conf import settings
     from supervisr.core.wsgi import application

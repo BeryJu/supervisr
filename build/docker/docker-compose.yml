@@ -15,7 +15,7 @@ services:
     build:
       context: ../..
       dockerfile: build/docker/Dockerfile
-    command: supervisr-ctl supervisr.run
+    command: supervisr-ctl run.web
     restart: always
     ports:
       - "8000:8000"
@@ -29,7 +29,7 @@ services:
     build:
       context: ../..
       dockerfile: build/docker/Dockerfile
-    command: supervisr-ctl supervisr.run-celery-flower
+    command: supervisr-ctl run.worker-monitor
     restart: always
     depends_on:
       - db
@@ -41,7 +41,7 @@ services:
     build:
       context: ../..
       dockerfile: build/docker/Dockerfile
-    command: supervisr-ctl supervisr.run-celery
+    command: supervisr-ctl run.worker
     restart: always
     depends_on:
       - db
@@ -51,7 +51,7 @@ services:
     build:
       context: ../..
       dockerfile: build/docker/Dockerfile
-    command: supervisr-ctl supervisr.run-celery-beat
+    command: supervisr-ctl run.worker-scheduler
     restart: always
     depends_on:
       - db
