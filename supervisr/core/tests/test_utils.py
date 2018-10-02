@@ -1,8 +1,5 @@
 """Supervisr Core Utils Test"""
 
-import socket
-import sys
-
 from django.http import HttpResponseServerError
 from django.test import RequestFactory, TestCase
 
