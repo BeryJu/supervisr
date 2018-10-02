@@ -32,9 +32,6 @@ class LDAPConnector:
     @time(statistic_key='ldap.ldap_connector.init')
     def __init__(self, mock=False, con_args=None, server_args=None):
         super().__init__()
-        if LDAPConnector.enabled() is False:
-            LOGGER.debug("LDAP not Enabled")
-            return
         mode = Setting.get('mode')
         # print(mode)
         # print(GeneralSettingsForm.MODE_CREATE_USERS)
@@ -44,6 +41,9 @@ class LDAPConnector:
         elif mode == GeneralSettingsForm.MODE_CREATE_USERS:
             self.authbackend_enabled = False
             self.create_users_enabled = True
+
+        if LDAPConnector.enabled() is False:
+            LOGGER.debug("LDAP not Enabled")
 
         if not con_args:
             con_args = {}
@@ -240,6 +240,7 @@ class LDAPConnector:
         """Creates a new LDAP User from a django user and raw_password.
         Returns True on success, otherwise False"""
         if not self.create_users_enabled:
+            LOGGER.debug("User creation not enabled")
             return False
         # The dn of our new entry/object
         username = user.pk.hex # UUID without dashes
