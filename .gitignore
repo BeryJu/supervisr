@@ -173,7 +173,7 @@ supervisr/data/ca/
 supervisr/data/media/
 supervisr/data/puppet/
 supervisr/data/temp/
-supervisr/cache/
+supervisr/data/cache/
 supervisr/core/templates/core/deploy.html
 docgen/supervisr/
 .sass-cache
