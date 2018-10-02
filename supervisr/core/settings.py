@@ -113,7 +113,7 @@ TIME_ZONE = CONFIG.get('timezone', 'UTC')
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-STATIC_URL = '/static/'
+STATIC_URL = '/assets/'
 MEDIA_URL = '/media/'
 LOGIN_REDIRECT_URL = 'user-index'
 LOGIN_URL = 'account-login'
@@ -374,7 +374,7 @@ TEST_OUTPUT_VERBOSE = 2
 
 TEST_OUTPUT_FILE_NAME = 'unittest.xml'
 
-if 'test' in sys.argv:
+if any('test' in arg for arg in sys.argv):
     LOGGING = None
     TEST = True
 

@@ -52,7 +52,7 @@ def coverage(ctx, module='supervisr', post_action='report'):
 
 @task
 # pylint: disable=unused-argument
-def unittest(ctx):
+def test(ctx):
     """Run Unittests"""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
     os.environ.setdefault("SUPERVISR_ENV", "local")
@@ -60,10 +60,10 @@ def unittest(ctx):
     execute_from_command_line(['', 'test'])
 
 
-@task(pre=[isort, coverage, lint, prospector])
+@task(pre=[isort, coverage, lint, prospector, test])
 # Some tasks to make full testing easier
 # pylint: disable=unused-argument
-def test(ctx):
+def test_complete(ctx):
     """Run all tests"""
     pass
 
