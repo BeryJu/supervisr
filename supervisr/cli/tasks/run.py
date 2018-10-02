@@ -1,4 +1,5 @@
 """supervisr tasks"""
+import cherrypy
 
 from invoke import task
 from invoke.terminals import WINDOWS
@@ -40,45 +41,26 @@ def worker_monitor(ctx):
 
 @task
 # pylint: disable=unused-argument
-def web(ctx, pidfile='', listen=None, port=None):
+def web(ctx, pidfile='', auto_reload=True):
     """Run CherryPY-based application server"""
     from django.conf import settings
     from supervisr.core.wsgi import application
-    from cherrypy.process.plugins import PIDFile
-    import cherrypy
-
-    # pylint: disable=too-few-public-methods
-    class NullObject:
-        """empty class to serve static files with cherrypy"""
-
-    cherrypy.config.update({
-        'log.screen': False,
-        'log.access_file': '',
-        'log.error_file': ''
-    })
-    cherrypy.tree.graft(application, '/')
+    # Get default config from django settings
+    cherrypy.config.update(settings.CHERRYPY_SERVER)
+    # cherrypy.config.update({
+    #     'engine.autoreload_on': auto_reload,
+    # })
     # Mount NullObject to serve static files
-    cherrypy.tree.mount(NullObject(), '/static', config={
+    cherrypy.tree.mount(None, '/static', config={
         '/': {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': settings.STATIC_ROOT,
+            'tools.expires.on': True,
+            'tools.expires.secs': 86400,
         }
     })
-    cherrypy.server.unsubscribe()
-    # pylint: disable=protected-access
-    server = cherrypy._cpserver.Server()
-
-    server.thread_pool = 30
-    for key, value in settings.CHERRYPY_SERVER.items():
-        setattr(server, key, value)
-    if listen:
-        server.socket_host = listen
-    if port:
-        server.socket_port = port
-    server.subscribe()
-
+    cherrypy.tree.graft(application, '/')
     if pidfile != '':
-        PIDFile(cherrypy.engine, pidfile).subscribe()
-
+        cherrypy.process.plugins.PIDFile(cherrypy.engine, pidfile).subscribe()
     cherrypy.engine.start()
     cherrypy.engine.block()

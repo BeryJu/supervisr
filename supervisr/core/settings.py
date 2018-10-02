@@ -60,12 +60,7 @@ from supervisr.core.utils.config import CONFIG
 SYSTEM_USER_NAME = 'supervisr'
 USER_PROFILE_ID_START = 5000
 FOOTER_EXTRA_LINKS = CONFIG.get('footer')
-# Structure of
-# {
-# text: "",
-# view: "",
-# url: "",
-# }
+# Structure: see default.yml
 
 REMEMBER_SESSION_AGE = 60 * 60 * 24 * 30  # One Month
 
@@ -73,11 +68,15 @@ NOCAPTCHA = True
 
 REQUEST_APPROVAL_PROMPT = 'auto'
 
-CHERRYPY_SERVER = {
-    'socket_host': '0.0.0.0', # nosec
-    'socket_port': 8000,
-    'thread_pool': 30
-}
+with CONFIG.cd('web'):
+    CHERRYPY_SERVER = {
+        'server.socket_host': CONFIG.get('listen', '0.0.0.0'), # nosec
+        'server.socket_port': CONFIG.get('port', 8000),
+        'server.thread_pool': CONFIG.get('threads', 30),
+        'log.screen': False,
+        'log.access_file': '',
+        'log.error_file': '',
+    }
 
 INSTALLED_APPS = [
     'django.contrib.auth',
@@ -96,7 +95,12 @@ INSTALLED_APPS = [
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = BASE_DIR + '/data'
 STATIC_ROOT = DATA_DIR + '/static'
-MEDIA_ROOT = DATA_DIR + "/media"
+MEDIA_ROOT = DATA_DIR + '/media'
+CACHE_DIR = DATA_DIR + '/cache'
+# Make sure all needed directories exist
+os.makedirs(DATA_DIR, exist_ok=True)
+os.makedirs(MEDIA_ROOT, exist_ok=True)
+os.makedirs(CACHE_DIR, exist_ok=True)
 SECRET_KEY = CONFIG.get('secret_key',
                         '_k*@6h2u2@q-dku57hhgzb7tnx*ba9wodcb^s9g0j59@=y(@_o') # noqa Debug
 DEBUG = CONFIG.get('debug', True)
@@ -375,6 +379,7 @@ if 'test' in sys.argv:
     TEST = True
 
 if DEBUG is True:
+    ALLOWED_HOSTS += ['127.0.0.1']
     RAVEN_CONFIG['dsn'] = ''
     INSTALLED_APPS.append('debug_toolbar')
     MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')

@@ -1,21 +1,23 @@
 django>=2.0
-invoke
-cherrypy<=11.0.0
-pymysql
-packaging
 django-formtools
 django-recaptcha
+django-htmlmin
+django-redis
+invoke
+# cherrypy<=11.0.0
+cherrypy
+pymysql
+packaging
 docutils
 pyyaml
 passlib
 Pillow
 raven
-django-htmlmin
 celery
 redis
-django-redis
 flower
-urllib3<1.23,>=1.21.1
+# urllib3<1.23,>=1.21.1
+urllib3
 pip>=10
 pycryptodome
 colorlog

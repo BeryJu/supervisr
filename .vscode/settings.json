@@ -23,8 +23,9 @@
   "editor.wordWrap": "on",
   "files.insertFinalNewline": true,
   "cSpell.words": [
-    "supervisr",
-    "pylint"
+    "cherrypy",
+    "pylint",
+    "supervisr"
   ],
   "autoDocstring.docstringFormat": "google",
 }
