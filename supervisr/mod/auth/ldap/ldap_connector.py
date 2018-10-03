@@ -33,8 +33,6 @@ class LDAPConnector:
     def __init__(self, mock=False, con_args=None, server_args=None):
         super().__init__()
         mode = Setting.get('mode')
-        # print(mode)
-        # print(GeneralSettingsForm.MODE_CREATE_USERS)
         if mode == GeneralSettingsForm.MODE_AUTHENTICATION_BACKEND:
             self.authbackend_enabled = True
             self.create_users_enabled = False

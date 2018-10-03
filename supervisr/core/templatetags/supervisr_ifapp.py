@@ -1,5 +1,5 @@
 """Supervisr Core navbar Templatetag"""
-import logging
+from logging import getLogger
 
 from django import template
 
@@ -7,7 +7,7 @@ from supervisr.core.utils import get_apps
 
 register = template.Library()
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 @register.simple_tag()

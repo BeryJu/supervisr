@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.core.cache import cache
 from django.db.models.query import QuerySet
 from django.http import HttpRequest, HttpResponse
+from django.shortcuts import render
 from django.utils.translation import ugettext as _
 from django.views.generic.base import TemplateView
 
@@ -119,6 +120,8 @@ class DebugView(TemplateView, AdminRequiredMixin):
                 recipients=[request.user.email],
                 subject=_("Debug"),
                 template='email/account_confirm.html')
+        elif 'render_email' in request.POST:
+            return render(request, 'email/account_confirm.html')
         return super().get(request)
 
 
