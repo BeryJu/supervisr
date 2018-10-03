@@ -13,6 +13,7 @@ from django.http import HttpRequest, HttpResponse
 from django.utils.translation import ugettext as _
 from django.views.generic.base import TemplateView
 
+from supervisr.core.mailer import send_message
 from supervisr.core.models import Event, Setting, Task, User, get_system_user
 from supervisr.core.signals import get_module_info, on_setting_update
 from supervisr.core.tasks import debug_progress_task
@@ -112,7 +113,13 @@ class DebugView(TemplateView, AdminRequiredMixin):
             seconds = int(request.POST.get('start_task_sec'))
             result = request.user.task_apply_async(debug_progress_task, seconds)
             messages.success(request, _('Started Task, ID: %(id)s' % {'id': result.id}))
-        return super(DebugView, self).get(request)
+        elif 'send_email' in request.POST:
+            request.user.task_apply_async(
+                send_message,
+                recipients=[request.user.email],
+                subject=_("Debug"),
+                template='email/account_confirm.html')
+        return super().get(request)
 
 
 class FlowerView(TemplateView, AdminRequiredMixin):

@@ -43,7 +43,7 @@ def send_message(
 
     # If we don't have text and template, return now.
     if not text and not template:
-        return False
+        raise ValueError("Either text or template must be supplied.")
 
     for recipient in recipients:
         # Create a separate email for each recipient
