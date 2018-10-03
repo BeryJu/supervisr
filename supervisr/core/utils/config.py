@@ -1,5 +1,6 @@
 """supervisr core config loader"""
 import os
+from collections import Mapping
 from contextlib import contextmanager
 from glob import glob
 from logging import getLogger
@@ -49,11 +50,20 @@ class ConfigLoader:
                 with open(secret_key_file) as file:
                     self.__config['secret_key'] = file.read()
 
+    def update(self, root, updatee):
+        """Recursively update dictionary"""
+        for key, value in updatee.items():
+            if isinstance(value, Mapping):
+                root[key] = self.update(root.get(key, {}), value)
+            else:
+                root[key] = value
+        return root
+
     def update_from_file(self, path: str):
         """Update config from file contents"""
         with open(path) as file:
             try:
-                self.__config.update(yaml.safe_load(file))
+                self.update(self.__config, yaml.safe_load(file))
             except yaml.YAMLError as exc:
                 raise ImproperlyConfigured from exc
 
