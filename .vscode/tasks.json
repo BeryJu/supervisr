@@ -4,17 +4,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "type": "process",
-            "label": "Grunt build",
-            "command": "grunt",
-            "options": {
-                "cwd": "${workspaceFolder}/assets/",
-            }
-        },
-        {
             "type": "shell",
             "label": "supervist-ctl: CI.isort",
-            "command": "source env/bin/activate && supervisr-ctl ci.isort",
+            "command": "sv ci.isort",
             "options": {
                 "cwd": "${workspaceFolder}"
             }
@@ -22,7 +14,7 @@
         {
             "type": "shell",
             "label": "supervist-ctl: CI.lint",
-            "command": "source env/bin/activate && supervisr-ctl ci.lint",
+            "command": "sv ci.lint",
             "options": {
                 "cwd": "${workspaceFolder}"
             }

@@ -89,12 +89,12 @@ pip_install:
     - "source env/bin/activate"
     - "pip install git+${CI_REPOSITORY_URL}@${CI_COMMIT_REF_NAME}#egg=supervisr[dev]"
     - "cp -R ./env/lib/python*/site-packages/supervisr/cli/_seed/* ."
-    - "python manage.py migrate"
+    - "sv manage migrate"
 check_template_syntax:
   except:
     - prod
   script:
-    - ./manage.py check_template_syntax
+    - ./sv manage check_template_syntax
   stage: test
 unittest:
   except:
@@ -159,6 +159,13 @@ migration_mariadb:
 #     - tags
 #     - 229-appliance-packaging
 #   stage: build-release
+build-pypi:
+  script:
+    - ./sv build.pypi --no-test
+  only:
+    - tags
+    - /^version/.*$/
+  stage: build-release
 
 # Deploy documentation
 deploy-doc:

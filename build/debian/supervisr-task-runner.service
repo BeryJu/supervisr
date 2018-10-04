@@ -8,7 +8,7 @@ User=supervisr
 Group=supervisr
 WorkingDirectory=/usr/share/supervisr
 Type=simple
-ExecStart=/usr/bin/supervisr-ctl run.worker
+ExecStart=/usr/bin/sv run.worker
 
 [Install]
 WantedBy=multi-user.target

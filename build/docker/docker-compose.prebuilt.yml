@@ -12,7 +12,7 @@ services:
     image: redis:latest
   supervisr:
     image: beryjuorg/supervisr:latest
-    command: supervisr-ctl run.web
+    command: sv run.web
     restart: always
     ports:
       - "8000:8000"
@@ -21,21 +21,21 @@ services:
       - redis
   supervisr-task-monitor:
     image: beryjuorg/supervisr:latest
-    command: supervisr-ctl run.worker-monitor
+    command: sv run.worker-monitor
     restart: always
     depends_on:
       - db
       - redis
   supervisr-task-runner:
     image: beryjuorg/supervisr:latest
-    command: supervisr-ctl run.worker
+    command: sv run.worker
     restart: always
     depends_on:
       - db
       - redis
   supervisr-task-scheduler:
     image: beryjuorg/supervisr:latest
-    command: supervisr-ctl run.worker-scheduler
+    command: sv run.worker-scheduler
     restart: always
     depends_on:
       - db

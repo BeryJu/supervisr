@@ -11,7 +11,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    """Edit settings via manage.py"""
+    """Edit settings via sv manage"""
 
     help = 'Edit settings'
 

@@ -7,12 +7,10 @@
       "request": "launch",
       "stopOnEntry": true,
       "pythonPath": "${workspaceFolder}/env/bin/python",
-      "program": "${workspaceFolder}/manage.py",
+      "program": "${workspaceFolder}/env/bin/invoke",
       "cwd": "${workspaceFolder}",
       "args": [
-        "runserver",
-        "--noreload",
-        "--nothreading"
+        "run.web"
       ],
       "debugOptions": [
         "RedirectOutput",

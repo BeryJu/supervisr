@@ -38,7 +38,7 @@ pip install -U -r requirements.txt
 ## Installing Database Migrations
 
 ```bash
-python3 manage.py migrate
+./sv manage migrate
 ```
 
 ## Installing System Services and scripts
@@ -50,14 +50,7 @@ sudo vi /lib/systemd/system/supervisr*
 sudo systemctl daemon-reload
 sudo systemctl enable 'supervisr*'
 sudo systemctl start 'supervisr*'
-ln -s scripts/supervisr-ctl /usr/share/bin
-```
-
-## Initial Setup
-
-```bash
-# Create the initial admin user
-supervisr-ctl utils.create_superuser
+ln -s sv /usr/share/bin
 ```
 
 supervisr should now be listening on port 8000.

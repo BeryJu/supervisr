@@ -15,7 +15,7 @@ services:
     build:
       context: ../..
       dockerfile: build/docker/Dockerfile
-    command: supervisr-ctl run.web
+    command: sv run.web
     restart: always
     ports:
       - "8000:8000"
@@ -29,7 +29,7 @@ services:
     build:
       context: ../..
       dockerfile: build/docker/Dockerfile
-    command: supervisr-ctl run.worker-monitor
+    command: sv run.worker-monitor
     restart: always
     depends_on:
       - db
@@ -41,7 +41,7 @@ services:
     build:
       context: ../..
       dockerfile: build/docker/Dockerfile
-    command: supervisr-ctl run.worker
+    command: sv run.worker
     restart: always
     depends_on:
       - db
@@ -51,7 +51,7 @@ services:
     build:
       context: ../..
       dockerfile: build/docker/Dockerfile
-    command: supervisr-ctl run.worker-scheduler
+    command: sv run.worker-scheduler
     restart: always
     depends_on:
       - db

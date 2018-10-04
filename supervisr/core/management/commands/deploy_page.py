@@ -79,7 +79,7 @@ DEPLOY_PAGE_HTML = """
 
 
 class Command(BaseCommand):
-    """Turns deploy page on or off via manage.py"""
+    """Turns deploy page on or off via sv manage"""
 
     help = 'Turns deploy page on or off'
 

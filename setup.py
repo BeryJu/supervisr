@@ -5,6 +5,7 @@ from setuptools import find_packages, setup
 
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
+
 def read_simple(path, mode='r'):
     """Simple wrapper for file reading"""
     with open(path, mode) as file:
@@ -19,7 +20,8 @@ setup(
     name='supervisr',
     version='0.3.3-alpha',
     description='supervisr your IT.',
-    long_description='\n'.join(read_simple('README.md')),
+    long_description='\n'.join(read_simple('docs/index.md')),
+    long_description_content_type='text/markdown',
     author='BeryJu.org',
     author_email='supervisr@beryju.org',
     packages=find_packages(),
@@ -31,11 +33,15 @@ setup(
     test_suite='supervisr.cli.test_runner.test_runner',
     keywords='supervisr sso server management web hosting dns mail email',
     license='MIT',
+    python_requires='>=3.5',
+    scripts=['sv'],
+    url="https://supervisr.beryju.org/docs/",
+    zip_safe=False,
     classifiers=[
-        'Development Status:: 3 - Alpha',
+        'Development Status :: 3 - Alpha',
         'Framework :: Django :: 2.0',
         'Intended Audience :: System Administrators',
-        'License :: MIT',
+        'License :: OSI Approved :: MIT License',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: Unix',
         'Programming Language :: Python :: 3.5',
@@ -44,10 +50,6 @@ setup(
         'Topic :: System :: Clustering',
         'Topic :: System :: Installation/Setup',
         'Topic :: System :: Networking',
-        'Topic:: System:: Systems Administration',
+        'Topic :: System :: Systems Administration',
     ],
-    python_requires='>=3.5',
-    scripts=['scripts/supervisr-ctl'],
-    url="https://supervisr.beryju.org/docs/",
-    zip_safe=False,
 )

@@ -15,7 +15,7 @@ pymysql.install_as_MySQLdb()
 def lint(ctx, modules=None):
     """Run PyLint"""
     if modules is None:
-        modules = ['tasks.py', 'supervisr', 'manage.py']
+        modules = ['tasks.py', 'supervisr']
     elif isinstance(modules, str):
         modules = [modules]
 
@@ -46,7 +46,7 @@ def isort(ctx):
 @task()
 def coverage(ctx, module='supervisr', post_action='report'):
     """Run Unittests and get coverage"""
-    ctx.run("coverage run --source=%s manage.py test" % module)
+    ctx.run("coverage run --source=%s sv manage test" % module)
     ctx.run("coverage %s" % post_action)
 
 

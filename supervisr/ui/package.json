@@ -3,7 +3,7 @@
   "version": "0.3.3-alpha",
   "description": "Frontend components for supervisr",
   "scripts": {
-    "build": "FORCE_COLOR=1 npx ng build --prod --output-hashing none --base-href /static/ && ../../manage.py collectstatic --no-input",
+    "build": "FORCE_COLOR=1 npx ng build --prod --output-hashing none --base-href /static/ && ../../sv manage collectstatic --no-input",
     "start": "FORCE_COLOR=1 npx ng serve --proxy-config proxy.conf.json --public-host http://localhost:4200/"
   },
   "private": true,

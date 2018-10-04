@@ -18,3 +18,4 @@ def install(ctx, url):
     module_name = url.split('/')[-1].split('.git')[0]
     main(['install', '-e', 'git+%s#egg=%s' % (url, module_name)])
     logger.success('Successfully installed %s', module_name)
+    # TODO: Create .yml file to add module to INSTALLED_APPLICATIONS
