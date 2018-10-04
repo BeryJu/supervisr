@@ -10,6 +10,7 @@ from django.dispatch import receiver
 from django.template import loader
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from htmlmin.minify import html_minify
 
 from supervisr.core.celery import CELERY_APP
 from supervisr.core.models import AccountConfirmation, Setting, User
@@ -59,7 +60,11 @@ def send_message(
             users = User.objects.filter(email=recipient)
             if users.exists():
                 context['_user'] = users.first()
-            email.attach_alternative(_template.render(context), 'text/html')
+            # If debug is disabled, minify HTML to save bandwidth
+            html = _template.render(context)
+            if not settings.DEBUG:
+                html = html_minify(html)
+            email.attach_alternative(html, 'text/html')
         LOGGER.debug("Prepared E-Mail '%s' to %s", subject, recipient)
         emails.append(email)
 
