@@ -7,3 +7,5 @@ include .gitignore
 include .gitlab-ci.yml
 include .prospector.yaml
 include .pylintrc
+include tasks.py
+include supervisr/environments/*
