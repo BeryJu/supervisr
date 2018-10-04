@@ -1,4 +1,8 @@
 # This is the default configuration file
+databases:
+  default:
+    engine: 'django.db.backends.sqlite3'
+    name: 'supervisr_test'
 log:
   level:
     console: DEBUG
