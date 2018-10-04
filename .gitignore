@@ -197,3 +197,4 @@ typings/
 .idea/
 .DS_Store
 .npmrc
+build/scripts-*

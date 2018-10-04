@@ -5,7 +5,7 @@ from socket import getfqdn
 
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError  # pylint: disable=redefined-builtin
 
 from supervisr.core.models import Setting
 
