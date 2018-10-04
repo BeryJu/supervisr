@@ -17,3 +17,4 @@ bandit<1.5.0
 unittest-xml-reporting
 bumpversion
 -e git+https://github.com/BeryJu/pdoc.git@ebb38ec5d2a023a31442757bba697c60d315578f#egg=pdoc
+twine
