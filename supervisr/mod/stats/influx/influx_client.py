@@ -5,6 +5,7 @@ from socket import getfqdn
 
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
+from requests.exceptions import ConnectionError
 
 from supervisr.core.models import Setting
 
@@ -75,8 +76,8 @@ class InfluxClient:
             ])
             LOGGER.debug('wrote %s', measurement)
             return result
-        except InfluxDBClientError as exc:
-            LOGGER.debug(exc)
+        except (ConnectionError, InfluxDBClientError) as exc:
+            LOGGER.warning(exc)
             return False
 
     def close(self):
