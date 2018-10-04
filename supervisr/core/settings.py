@@ -192,7 +192,7 @@ for db_alias, db_config in CONFIG.get('databases').items():
         'NAME': db_config.get('name'),
         'USER': db_config.get('user'),
         'PASSWORD': db_config.get('password'),
-        'OPTIONS': db_config.get('options'),
+        'OPTIONS': db_config.get('options', {}),
     }
 
 AUTH_USER_MODEL = 'supervisr_core.User'
