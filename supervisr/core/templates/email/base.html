@@ -1,9 +1,7 @@
+{% load supervisr_inline %}
 {% load supervisr_utils %}
 {% load static %}
 {% load i18n %}
-
-{% load supervisr_inline %}
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -62,50 +60,50 @@
             margin: 0 !important;
         }
     </style>
-</head>
+    </head>
 
-<body style="background-color: #1b2a32; margin: 0 !important; padding: 0 !important;">
+    <body style="background-color: #1b2a32; margin: 0 !important; padding: 0 !important;">
 
-    <!-- HIDDEN PREHEADER TEXT -->
-    <div style="display: none; font-size: 1px; color: #fefefe; line-height: 1px; font-family: 'Metropolis', Helvetica, Arial, sans-serif; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
-        {% block pre_header %}
-        {% endblock %}
-    </div>
+        <!-- HIDDEN PREHEADER TEXT -->
+        <div style="display: none; font-size: 1px; color: #fefefe; line-height: 1px; font-family: 'Metropolis', Helvetica, Arial, sans-serif; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
+            {% block pre_header %}
+            {% endblock %}
+        </div>
 
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-        <!-- LOGO -->
-        <tr>
-            <td bgcolor="#3625b7" align="center">
-                <table border="0" cellpadding="0" cellspacing="0" width="480">
-                    <tr>
-                        <td align="center" valign="top" style="padding: 40px 10px 40px 10px;">
-                            <a href="http://litmus.com" target="_blank">
-                                <img alt="Logo" src="{% inline_static 'assets/dark.svg' %}" width="64" height="64"
-                                style="display: block; width: 64px; max-width: 64px; min-width: 64px; font-family: 'Metropolis', Helvetica, Arial, sans-serif; color: #ffffff; font-size: 18px;"
-                                border="0">
-                            </a>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        {% block content %}
-        {% endblock %}
-        <!-- SUPPORT CALLOUT -->
-        <tr>
-            <td bgcolor="#1b2a32" align="center" style="padding: 30px 10px 0px 10px;">
-                <table border="0" cellpadding="0" cellspacing="0" width="480">
-                    <!-- HEADLINE -->
-                    <tr>
-                        <td bgcolor="#566572" align="center" style="padding: 30px 30px 30px 30px; border-radius: 4px 4px 4px 4px; color: #E9ECEF; font-family: 'Metropolis', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
-                            <h2 style="font-size: 20px; font-weight: 400; color: ##E9ECEF; margin: 0;">Need more help?</h2>
-                            <p style="margin: 0;"><a href="http://litmus.com" target="_blank" style="color: #3625b7;">We&rsquo;re
-                                here, ready to talk</a></p>
+        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+            <!-- LOGO -->
+            <tr>
+                <td bgcolor="#3625b7" align="center">
+                    <table border="0" cellpadding="0" cellspacing="0" width="480">
+                        <tr>
+                            <td align="center" valign="top" style="padding: 40px 10px 40px 10px;">
+                                <a href="{% supervisr_setting 'domain' %}" target="_blank">
+                                    <img alt="Logo" src="{% inline_static 'assets/dark.svg' %}" width="64" height="64"
+                                    style="display: block; width: 64px; max-width: 64px; min-width: 64px; font-family: 'Metropolis', Helvetica, Arial, sans-serif; color: #ffffff; font-size: 18px;"
+                                    border="0">
+                                </a>
                             </td>
                         </tr>
                     </table>
                 </td>
             </tr>
+            {% block content %}
+            {% endblock %}
+            <!-- SUPPORT CALLOUT -->
+            <!-- <tr>
+                <td bgcolor="#1b2a32" align="center" style="padding: 30px 10px 0px 10px;">
+                    <table border="0" cellpadding="0" cellspacing="0" width="480">
+                        HEADLINE
+                        <tr>
+                            <td bgcolor="#566572" align="center" style="padding: 30px 30px 30px 30px; border-radius: 4px 4px 4px 4px; color: #E9ECEF; font-family: 'Metropolis', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
+                                <h2 style="font-size: 20px; font-weight: 400; color: ##E9ECEF; margin: 0;">Need more help?</h2>
+                                <p style="margin: 0;"><a href="http://litmus.com" target="_blank" style="color: #3625b7;">We&rsquo;re
+                                    here, ready to talk</a></p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr> -->
             <!-- FOOTER -->
             <tr>
                 <td bgcolor="#1b2a32" align="center" style="padding: 0px 10px 0px 10px;">
@@ -114,40 +112,36 @@
                         <tr>
                             <td bgcolor="#1b2a32" align="left" style="padding: 30px 30px 30px 30px; color: #E9ECEF; font-family: 'Metropolis', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 18px;">
                                 <p style="margin: 0;">
-                                    <a href="http://litmus.com" target="_blank" style="color: #8F9BA3; font-weight: 700;">Dashboard</a>
+                                    <a href="{% supervisr_setting 'domain' %}" target="_blank" style="color: #8F9BA3; font-weight: 700;">{% trans 'Dashboard' %}</a>
                                     -
-                                    <a href="http://litmus.com" target="_blank" style="color: #8F9BA3; font-weight: 700;">Billing</a>
-                                    -
-                                    <a href="http://litmus.com" target="_blank" style="color: #8F9BA3; font-weight: 700;">Help</a>
+                                    <a href="https://supervisr.beryju.org/docs/master/" target="_blank" style="color: #8F9BA3; font-weight: 700;">{% trans 'Help' %}</a>
                                 </p>
                             </td>
                         </tr>
                         <!-- PERMISSION REMINDER -->
-                        <tr>
+                        <!-- <tr>
                             <td bgcolor="#1b2a32" align="left" style="padding: 0px 30px 30px 30px; color: #E9ECEF; font-family: 'Metropolis', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 18px;">
                                 <p style="margin: 0;">You received this email because you just signed up for a new account.
-                                    If it looks
-                                    weird, <a href="http://litmus.com" target="_blank" style="color: #8F9BA3; font-weight: 700;">view
-                                        it in
-                                        your browser</a>.</p>
-                                    </td>
-                                </tr>
-                                <!-- UNSUBSCRIBE -->
-                                <tr>
-                                    <td bgcolor="#1b2a32" align="left" style="padding: 0px 30px 30px 30px; color: #E9ECEF; font-family: 'Metropolis', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 18px;">
-                                        <p style="margin: 0;">If these emails get annoying, please feel free to <a href="http://litmus.com"
-                                            target="_blank" style="color: #8F9BA3; font-weight: 700;">unsubscribe</a>.</p>
-                                        </td>
-                                    </tr>
-                                    <!-- ADDRESS -->
-                                    <tr>
-                                        <td bgcolor="#1b2a32" align="left" style="padding: 0px 30px 30px 30px; color: #E9ECEF; font-family: 'Metropolis', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 18px;">
-                                            <p style="margin: 0;"><a href="{% supervisr_setting 'domain' %}">{% supervisr_setting 'domain' %}</a></p>
-                                        </td>
-                                    </tr>
-                                </table>
+                                    If it looks weird, <a href="http://litmus.com" target="_blank" style="color: #8F9BA3; font-weight: 700;">view it in your browser</a>.
+                                </p>
+                            </td>
+                        </tr> -->
+                        <!-- UNSUBSCRIBE -->
+                        <!-- <tr>
+                            <td bgcolor="#1b2a32" align="left" style="padding: 0px 30px 30px 30px; color: #E9ECEF; font-family: 'Metropolis', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 18px;">
+                                <p style="margin: 0;">If these emails get annoying, please feel free to <a href="http://litmus.com"
+                                    target="_blank" style="color: #8F9BA3; font-weight: 700;">unsubscribe</a>.</p>
+                            </td>
+                        </tr> -->
+                        <!-- ADDRESS -->
+                        <tr>
+                            <td bgcolor="#1b2a32" align="left" style="padding: 0px 30px 30px 30px; color: #E9ECEF; font-family: 'Metropolis', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 18px;">
+                                <p style="margin: 0;"><a href="{% supervisr_setting 'domain' %}">{% supervisr_setting 'domain' %}</a></p>
                             </td>
                         </tr>
                     </table>
-                </body>
-                </html>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
