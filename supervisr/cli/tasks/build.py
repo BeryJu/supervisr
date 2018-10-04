@@ -33,3 +33,13 @@ def docker(ctx):
     ctx.run('docker-compose --file build/docker/docker-compose.yml build supervisr')
     ctx.run(('docker-compose --file build/docker/docker-compose.debug.yml run supervisr '
              'build/docker/start_wrapper.sh "inv ci.unittest"'))
+
+@task
+def pypi(ctx, test=True):
+    """Build dist and egg packages and upload them."""
+    ctx.run('rm -f dist/*')
+    ctx.run('python setup.py sdist bdist_wheel')
+    if test:
+        ctx.run('twine upload --repository-url https://test.pypi.org/legacy/ dist/*')
+    else:
+        ctx.run('twine upload dist/*')
