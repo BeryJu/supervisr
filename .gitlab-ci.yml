@@ -33,13 +33,13 @@ isort:
   except:
     - prod
   script:
-    - inv ci.isort
+    - ./sv ci.isort
   stage: test-static
 pyroma:
   except:
     - prod
   script:
-    - inv ci.pyroma
+    - ./sv ci.pyroma
   stage: test-static
 safety:
   except:
@@ -51,7 +51,7 @@ prospector:
   except:
     - prod
   script:
-    - inv ci.prospector
+    - ./sv ci.prospector
   stage: test-static
 bandit:
  except:
@@ -63,7 +63,7 @@ pylint:
   except:
     - prod
   script:
-    - inv ci.lint
+    - ./sv ci.lint
   stage: test-static
 
 # UI Tests
@@ -100,7 +100,7 @@ unittest:
   except:
     - prod
   script:
-    - inv ci.test
+    - ./sv ci.test
   stage: test
   artifacts:
     reports:
@@ -109,7 +109,7 @@ coverage:
   except:
     - prod
   script:
-    - inv ci.coverage
+    - ./sv ci.coverage
   stage: test
 
 # Test Database migrations
@@ -117,7 +117,7 @@ migration_mariadb:
   except:
     - prod
   script:
-    - inv run.migrate
+    - ./sv run.migrate
   stage: test-db
 
 # Build releases
@@ -130,7 +130,7 @@ migration_mariadb:
 #     - curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 #     - chmod +x /usr/local/bin/docker-compose
 #     - docker-compose --file build/docker/docker-compose.yml build supervisr
-#     - docker-compose --file build/docker/docker-compose.yml run supervisr build/docker/start_wrapper.sh "inv ci.unittest"
+#     - docker-compose --file build/docker/docker-compose.yml run supervisr build/docker/start_wrapper.sh "./sv ci.unittest"
 #   only:
 #     - tags
 #     - 229-appliance-packaging
@@ -138,7 +138,7 @@ migration_mariadb:
 # build-debian:
 #   script:
 #     - apt-get update && apt-get install -y libncurses5-dev libglib2.0-dev libgeoip-dev libtokyocabinet-dev zlib1g-dev libncursesw5-dev build-essential libbz2-dev dh-autoreconf dh-python dh-systemd dh-virtualenv dpkg-dev debhelper dh-exec
-#     - inv build.debian
+#     - ./sv build.debian
 #   only:
 #     - tags
 #     - 229-appliance-packaging
@@ -150,7 +150,7 @@ migration_mariadb:
 #     - apt-get update && apt-get install -y puppet-agent unzip
 #     - wget https://releases.hashicorp.com/packer/1.2.5/packer_1.2.5_linux_amd64.zip
 #     - unzip packer_1.2.5_linux_amd64.zip -d /bin
-#     - inv build.appliance
+#     - ./sv build.appliance
 #   artifacts:
 #     paths:
 #       - build/packer/output-supervisr-debian/packer-supervisr-debian.ova
@@ -197,7 +197,7 @@ deploy-dev-docs:
     - 'rm -rf docgen/'
     - "eval $(ssh-agent -s)"
     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
-    - 'inv ci.docs'
+    - './sv ci.docs'
     - 'rsync -avh --delete docgen/supervisr/* "beryjuorg@ory1-web-prod-1.ory1.beryju.org:supervisr.beryju.org/dev-docs/${CI_COMMIT_REF_NAME}"'
 
 

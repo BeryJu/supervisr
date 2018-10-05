@@ -30,6 +30,22 @@ def bootstrap_django():
     os.environ.setdefault("SUPERVISR_ENV", "local")
 
 
+def django(*args):
+    """Run args with django"""
+    from django.core.management import execute_from_command_line
+    args = list(args)
+    args[0] = 'sv manage'
+    return execute_from_command_line(args)
+
+
+def pip(*args):
+    """Run args with pip"""
+    from pip._internal import main  # noqa
+    # Patch command output from pip
+    sys.argv[0] = 'sv pip'
+    return main(list(args))
+
+
 # Check if this file is a symlink, and if so change to real base dir
 base_dir = os.path.dirname(os.path.realpath(__file__))
 if base_dir != os.getcwd() and not base_dir.endswith('%s/bin' % virtual_env_name):
@@ -42,17 +58,19 @@ if len(sys.argv) < 2:
     # No Arguments passed, show list of all possible arguments
     command = 'invoke --list'
 else:
+    args = sys.argv.copy()[1:]
     # If first argument is 'manage', launch that during django so manage.py isn't needed
     if sys.argv[1] == 'manage':
         # Remove first two argument since that's `sv manage`
-        args = sys.argv.copy()[1:]
         activate_virtual_env()
         bootstrap_django()
-        from django.core.management import execute_from_command_line
-        sys.exit(execute_from_command_line(args))
+        sys.exit(django(*args))
+    # If first argument is pip, launch pip after removing first arg
+    elif sys.argv[1] == 'pip':
+        activate_virtual_env()
+        # Remove first argument since pip doesnt expect the first argument to be `pip`
+        sys.exit(pip(*args[1:]))
     # Pass commands to invoke
-    # Remove first argument since that's `sv`
-    args = sys.argv.copy()[1:]
     command = 'invoke %s' % ' '.join(args)
 
 if is_packaged:
