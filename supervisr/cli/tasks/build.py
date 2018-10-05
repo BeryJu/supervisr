@@ -43,3 +43,10 @@ def pypi(ctx, test=True):
         ctx.run('twine upload --repository-url https://test.pypi.org/legacy/ dist/*')
     else:
         ctx.run('twine upload dist/*')
+
+@task
+def ui(context):
+    """Build Angular App with webpack"""
+    from django.conf import settings
+    with context.cd(settings.BASE_DIR + '/ui'):
+        context.run('npm run-script build')

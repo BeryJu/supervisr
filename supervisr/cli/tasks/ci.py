@@ -22,6 +22,12 @@ def lint(ctx, modules=None):
     from pylint.lint import Run
     Run(modules)
 
+@task
+def lint_ui(context):
+    """Run TSLint"""
+    from django.conf import settings
+    with context.cd(settings.BASE_DIR + '/ui'):
+        context.run('npx tslint -c tslint.json --project src')
 
 @task
 # pylint: disable=unused-argument

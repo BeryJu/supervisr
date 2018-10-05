@@ -64,3 +64,10 @@ def web(ctx, pidfile='', auto_reload=True):
         cherrypy.process.plugins.PIDFile(cherrypy.engine, pidfile).subscribe()
     cherrypy.engine.start()
     cherrypy.engine.block()
+
+@task
+def ui(context):
+    """Run Angular CLI debug server"""
+    from django.conf import settings
+    with context.cd(settings.BASE_DIR + '/ui'):
+        context.run('npm start')
