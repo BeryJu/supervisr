@@ -88,7 +88,7 @@ pip_install:
     - "virtualenv env"
     - "source env/bin/activate"
     - "pip install git+${CI_REPOSITORY_URL}@${CI_COMMIT_REF_NAME}#egg=supervisr[dev]"
-    - "cp -R ./env/lib/python*/site-packages/supervisr/cli/_seed/* ."
+    - "cp -R ./env/lib/python*/site-packages/supervisr/cli/seed/* ."
     - "sv manage migrate"
 check_template_syntax:
   except:

@@ -20,15 +20,19 @@ LOGGER = logging.getLogger(__name__)
 class ForgeNotFound(requests.exceptions.HTTPError):
     """PuppetForge returned a 404 error"""
 
+class ForgeConnectionError(requests.exceptions.ConnectionError):
+    """PuppetForge connection failed (BASE_URL is down or no internet)"""
+
+
 class ForgeImporter(SupervisrTask):
     """Helper class to import users, modules and releases from PuppetForge"""
 
     name = 'supervisr.puppet.utils.ForgeImporter'
     BASE_URL = 'https://forgeapi.puppetlabs.com'
-    output_base = os.path.join(settings.MEDIA_ROOT, 'puppet', 'modules')
+    output_base = os.path.join(settings.DATA_DIR, 'puppet', 'modules')
 
     def __init__(self):
-        super(ForgeImporter, self).__init__()
+        super().__init__()
         if settings.TEST:
             self.output_base = os.path.join(self.output_base, 'test')
         os.makedirs(self.output_base, exist_ok=True)
@@ -48,10 +52,13 @@ class ForgeImporter(SupervisrTask):
         """Shortcut to get json data"""
         f_url = '%s/%s' % (self.BASE_URL, url)
         LOGGER.debug("About to GET %s", f_url)
-        response = requests.get(f_url).json()
-        if 'errors' in response:
-            raise ForgeNotFound()
-        return response
+        try:
+            response = requests.get(f_url).json()
+            if 'errors' in response:
+                raise ForgeNotFound()
+            return response
+        except requests.exceptions.ConnectionError as exc:
+            raise ForgeConnectionError from exc
 
     def get_user_info(self, username):
         """Get user information and create in DB if non existant"""

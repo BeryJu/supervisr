@@ -37,10 +37,12 @@ class ConfigLoader:
                 self.update_from_file(path)
             elif os.path.isdir(path) and os.path.exists(path):
                 # Path is an existing dir, so we try to read the env config from it
-                env_path = os.path.join(path, ENVIRONMENT+'.yml')
-                if os.path.isfile(env_path) and os.path.exists(env_path):
-                    # Update config with env file
-                    self.update_from_file(env_path)
+                env_paths = [os.path.join(path, ENVIRONMENT+'.yml'),
+                             os.path.join(path, ENVIRONMENT+'.env.yml')]
+                for env_file in env_paths:
+                    if os.path.isfile(env_file) and os.path.exists(env_file):
+                        # Update config with env file
+                        self.update_from_file(env_file)
 
     def handle_secret_key(self):
         """Handle `secret_key_file`"""
