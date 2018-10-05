@@ -66,6 +66,7 @@ def web(ctx, pidfile='', auto_reload=True):
     cherrypy.engine.block()
 
 @task
+# pylint: disable=invalid-name
 def ui(context):
     """Run Angular CLI debug server"""
     from django.conf import settings

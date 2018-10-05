@@ -45,6 +45,7 @@ def pypi(ctx, test=True):
         ctx.run('twine upload dist/*')
 
 @task
+# pylint: disable=invalid-name
 def ui(context):
     """Build Angular App with webpack"""
     from django.conf import settings
