@@ -23,7 +23,7 @@ All imports should be absolute.
 
 Python code should be indented with 4 spaces, HTML and JavaScript should be indented with 2 spaces.
 
-To test if code follows these standards, run `invoke ci.test` to run all tests.
+To test if code follows these standards, run `invoke env.env.test-complete` to run all tests.
 
 ## Commit Style
 

@@ -78,7 +78,6 @@ def test_complete(ctx):
 def docs(ctx):
     """Build pdoc docs"""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'supervisr.core.settings')
-    tool = 'pdoc'
     os.makedirs('docgen', exist_ok=True)
-    ctx.run("%s supervisr --html --html-dir=\"docgen\""
-            " --django  --overwrite --docstring-style=google" % tool)
+    ctx.run("pdoc supervisr --html --html-dir=\"docgen\""
+            " --django  --overwrite --docstring-style=google")

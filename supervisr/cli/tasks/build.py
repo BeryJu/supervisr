@@ -32,7 +32,7 @@ def docker(ctx):
     """Build debian package"""
     ctx.run('docker-compose --file build/docker/docker-compose.yml build supervisr')
     ctx.run(('docker-compose --file build/docker/docker-compose.debug.yml run supervisr '
-             'build/docker/start_wrapper.sh "inv ci.unittest"'))
+             'build/docker/start_wrapper.sh "inv env.unittest"'))
 
 @task
 def pypi(ctx, test=True):

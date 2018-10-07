@@ -5,16 +5,16 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "supervist-ctl: CI.isort",
-            "command": "sv ci.isort",
+            "label": "supervist-ctl: env.isort",
+            "command": "sv env.isort",
             "options": {
                 "cwd": "${workspaceFolder}"
             }
         },
         {
             "type": "shell",
-            "label": "supervist-ctl: CI.lint",
-            "command": "sv ci.lint",
+            "label": "supervist-ctl: env.lint",
+            "command": "sv env.lint",
             "options": {
                 "cwd": "${workspaceFolder}"
             }

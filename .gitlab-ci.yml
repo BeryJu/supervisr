@@ -33,13 +33,13 @@ isort:
   except:
     - prod
   script:
-    - ./sv ci.isort
+    - ./sv env.isort
   stage: test-static
 pyroma:
   except:
     - prod
   script:
-    - ./sv ci.pyroma
+    - ./sv env.pyroma
   stage: test-static
 safety:
   except:
@@ -51,7 +51,7 @@ prospector:
   except:
     - prod
   script:
-    - ./sv ci.prospector
+    - ./sv env.prospector
   stage: test-static
 bandit:
  except:
@@ -63,7 +63,7 @@ pylint:
   except:
     - prod
   script:
-    - ./sv ci.lint
+    - ./sv env.lint
   stage: test-static
 
 # UI Tests
@@ -100,7 +100,7 @@ unittest:
   except:
     - prod
   script:
-    - ./sv ci.test
+    - ./sv env.test
   stage: test
   artifacts:
     reports:
@@ -109,7 +109,7 @@ coverage:
   except:
     - prod
   script:
-    - ./sv ci.coverage
+    - ./sv env.coverage
   stage: test
 
 # Test Database migrations
@@ -130,7 +130,7 @@ migration_mariadb:
 #     - curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 #     - chmod +x /usr/local/bin/docker-compose
 #     - docker-compose --file build/docker/docker-compose.yml build supervisr
-#     - docker-compose --file build/docker/docker-compose.yml run supervisr build/docker/start_wrapper.sh "./sv ci.unittest"
+#     - docker-compose --file build/docker/docker-compose.yml run supervisr build/docker/start_wrapper.sh "./sv env.unittest"
 #   only:
 #     - tags
 #     - 229-appliance-packaging
@@ -197,7 +197,7 @@ deploy-dev-docs:
     - 'rm -rf docgen/'
     - "eval $(ssh-agent -s)"
     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
-    - './sv ci.docs'
+    - './sv env.docs'
     - 'rsync -avh --delete docgen/supervisr/* "beryjuorg@ory1-web-prod-1.ory1.beryju.org:supervisr.beryju.org/dev-docs/${CI_COMMIT_REF_NAME}"'
 
 
