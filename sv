@@ -40,10 +40,7 @@ def django(*args):
 
 def pip(*args):
     """Run args with pip"""
-    from pip._internal import main  # noqa
-    # Patch command output from pip
-    sys.argv[0] = 'sv pip'
-    return main(list(args))
+    return call('source %s/bin/activate && pip %s' % (virtual_env_name, ' '.join(args)))
 
 
 # Check if this file is a symlink, and if so change to real base dir
