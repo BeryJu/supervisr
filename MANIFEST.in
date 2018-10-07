@@ -3,9 +3,14 @@ include requirements-dev.txt
 include README.md
 include ATTRIBUTIONS.md
 include CHANGELOG.md
+include LICENSE
 include .gitignore
 include .gitlab-ci.yml
 include .prospector.yaml
 include .pylintrc
 include tasks.py
-include supervisr/environments/*
+graft supervisr/environments
+graft supervisr/data/static
+global-exclude local.yml
+global-exclude __pycache__
+global-exclude *.py[co]

@@ -20,7 +20,7 @@ setup(
     name='supervisr',
     version='0.3.4-alpha',
     description='supervisr your IT.',
-    long_description='\n'.join(read_simple('docs/index.md')),
+    long_description='\n'.join(read_simple('docs/index.md')[2:]),
     long_description_content_type='text/markdown',
     author='BeryJu.org',
     author_email='supervisr@beryju.org',
