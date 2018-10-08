@@ -1,0 +1,321 @@
+supervisr (0.3.4-alpha) unstable; urgency=medium
+
+  * [*] bump version: 0.3.3-alpha -> 0.3.4-alpha
+  * [core] fix database settings without options
+  * [core] add sqlite database to default env
+  * [build] include environments in package
+  * [core] add twine to dev requirements
+  * [ci] add pypi build command
+  * [mod/stats/influx] fix imports
+  * [core] rewrite supervisr-ctl to sv, add usage of manage.py
+  * [mod/stats/influx] add import pylint
+  * [mod/stats/influx] better catch influx connection errors
+  * [core] cleanup E-Mail templates
+  * [core] minify HTML E-Mails in production
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Fri, 5 Oct 2018 07:01:23 +0000
+
+supervisr (0.3.3-alpha) unstable; urgency=medium
+
+  * [*] bump version: 0.3.2-alpha -> 0.3.3-alpha
+  * [core] rewrite E-Mail templates based on https://github.com/rodriguezcommaj/ceej
+  * [ui] fix li:pre for footer card
+  * [ui] rebuild assets, add dark logo for emails
+  * [core] add debug mail button to admin
+  * [core] update environment config recursively
+  * [build/debian] add source format
+  * [core] pad logger name to 55 chars
+  * [ui] fix `Raven is not defined` in production
+  * [ui] fix wrong path for assets
+  * [ui] finalise upgrade to angular 6 and webpack 4
+  * [mod/auth/ldap] fix LDAP unit tests again again
+  * [ui] update angular-cli to 6.x.x
+  * [mod/auth/ldap] fix unit tests…again
+  * [core] add WSGI Logger for cherrypy server
+  * [mod/auth/ldap] fix LDAP unit tests failing sometimes
+  * [ui] fix assets path for login background
+  * [core] update cherrypy version, make needed directories on startup
+  * [core] fix unused-imports
+  * [core] re-write Statistics Component, better handle counters and adjust influxdb client
+  * [core] simplify invoke commands
+  * [*] add better sidebar templates
+  * [core] [puppet] cleanup unit tests
+  * [core] fix unit tests for search
+  * [core] get rid of duplicate static files
+  * [core] switch credentials to datagrid
+  * [ui[ switch clarity helper to typescript, datagrid columns now support dotted path
+  * [ui] change ?back parameter to relative URL
+  * [core] switch Domain list to datagrid
+  * [mod/auth/ldap] fix unittests
+  * [ci] run tslint directly
+  * [ci[ don’t manually install yarn in tslint step
+  * [ci] install apt-transport-https before adding yarn
+  * [ci] remove sudo
+  * [ci] fix unused import warningz
+  * [ci] cleanup tasks, add UI tasks to invoke
+  * [core] fix Events API
+  * Merge branch 'new-api-ui' into 'master'
+  * [ci] fix path for UI lint
+  * [ui] move ui to supervisr/ui
+  * [core] fix prospector message
+  * [ui] add unravel from received data, switch data grid to compact
+  * [core] switch index events to angular
+  * [core] add API Serializers to easily convert Model Instance into dict
+  * [core] don’t show pk by default
+  * [ci] disable before_script for tslint task
+  * [ui] apply tslint rules, add tslint to CI
+  * [core] fix field_list not being a tuple
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Wed, 3 Oct 2018 14:43:07 +0000
+
+supervisr (0.3.2-alpha) unstable; urgency=medium
+
+  * [*] bump version: 0.3.1-alpha -> 0.3.2-alpha
+  * [core] separate get_walkable_field_names function
+  * [ui] allow Angular components to access children before angular deletes them
+  * [core] fix prospector error
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Thu, 27 Sep 2018 00:39:06 +0000
+
+supervisr (0.3.1-alpha) unstable; urgency=medium
+
+  * [*] bump version: 0.3.0-alpha -> 0.3.1-alpha
+  * [ui] fix multiple instances of same angular component on single page not working
+  * [core] fix unittest failing sometimes
+  * [core] add gettext api endpoint
+  * [ui] add provider-status element to show provider status via API
+  * [core] add provider api to get status, fix branding color in base template
+  * Merge branch 'master' into new-api-ui
+  * [*] fix import order
+  * Merge branch 'master' into new-api-ui
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Wed, 26 Sep 2018 22:12:48 +0000
+
+supervisr (0.3.0-alpha) unstable; urgency=medium
+
+  * [*] bump version: 0.2.1-alpha -> 0.3.0-alpha
+  * [*] [BREAKING] migrate all models to have UUIDs as Primary Keys
+  * [core] remove dependency on dns, move default apps to default.yml instead of settings file
+  * [misc] add ui to CONTRIBUTING
+  * [ui] explicitly add port so live reload works
+  * [dns] validate dns zone in import view
+  * [core] cleanup provider instance template
+  * [core] fix wizard display with new clarity version
+  * [core] move static folder from root to supervisr/data/static
+  * [core] fix import order
+  * [core] fix loading of env files not working when launching manage.py from a subdirectory
+  * [core] include raven in web pack build
+  * [core] switch provider-instances to angular
+  * [ui] update build
+  * [ui] dynamically bootstrap components
+  * [ui] add data grid component, add more methods to API
+  * [core] ModelAPI supports __x QueryString parameters
+  * [core] add utils API to expose reverse method
+  * [ui] add experimental Angular6 UI with clarity and angular cli
+  * Merge branch 'master' into new-api-ui
+  * [core] auto commit when bumping version
+  * [*] adjust code style to latest pylon and prospector
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Tue, 25 Sep 2018 13:19:28 +0000
+
+supervisr (0.2.1-alpha) unstable; urgency=medium
+
+  * [*] bump version: 0.2.0-alpha -> 0.2.1-alpha
+  * [core] auto commit when bumping version
+  * [*] adjust code style to latest pylon and prospector
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Sun, 23 Sep 2018 10:25:14 +0000
+
+supervisr (0.2.0-alpha) unstable; urgency=medium
+
+  * [core] implement bumpversion to automate versioning, start with 0.2.0-alpha
+  * [core] fix prospector messages
+  * [core] add redirect_view var to GenericModelView, change BaseWizardView’s finish to *forms
+  * [dns] add empty non-terminal names
+  * [mod/provider/nix_dns] set auth = 1 on records
+  * [core] remove duplicate requirements
+  * [core] lock markdown to <3 so pdoc works
+  * [mod/provider/nix_dns] create SOA record when domain is created
+  * [dns] change BaseZone’s soa_rname to EmailField
+  * [dns] replace spaces with dashes for DNS names in CompatProvider
+  * [core] fix supervisr_statistics queue not being created
+  * [mod/auth/ldap] cleanup LDAP module
+  * [core] fix API issues
+  * Merge branch 'master' into new-api-ui
+  * [core] fix unittests
+  * Merge branch 'master' into new-api-ui
+  * [mod/provider/*] adjust method signatures
+  * [mod/provider/debug] cleanup debug provider, add sleep
+  * [dns] fix index page
+  * [core] run statistic task in separate queue
+  * [core] add view and API endpoint to force provider update
+  * [core] move logger and statistics into utils package
+  * [core] fix walk_m2m not returning anything with no additional params
+  * [core] add unit tests for walk_m2m
+  * [core] cleanup walk_m2m, reduce complexity
+  * [core] add supervisr.core.utils.models, walk_m2m method which walks Many2Many Models
+  * [core] switch @time decorator to use milliseconds, add support for hints to stats
+  * [core] cleanup core models, add abstract UUIDModel with a uuid as primary key
+  * [ci] run apt-get update before install
+  * [ci] install OS graphviz package for unittests
+  * [build] add data-volume to docker build
+  * [core] fix import order
+  * [core] update requirements and switch to defusedxml
+  * [dns] add ZoneGraphView to show record structure
+  * [core] add GraphView which shows relation between models as SVG diagram
+  * [core] change title parameters to accept any count of objects
+  * [core] unify test_view_ modules
+  * [mod/provider/*] update to new DNS spec
+  * [dns] rewrite model structure again
+  * [core] GenericUpdateView: Change update_form to get_form to allow dynamic form changing
+  * [assets] downgrade to clarity 0.11.19 to postpone wizard changes
+  * [assets] migrate to single illustrator file, new filenames, new color
+  * [core] fix settings not being extendable by yml, change colors a bit, fix User view
+  * [core] fix database load error for tests
+  * [core] finish migrating to SUPERVISR_ENV for CI and docker
+  * [core] fix potential unsafe yaml.load
+  * [core] rewrite config system as yml based config loader
+  * [core] add more provider unittests
+  * [core] cleanup provider related tasks, move from task -> class -> tasks to task -> tasks
+  * [core] [dns] add mostly working Provider Implementation
+  * [core] cleanup logger imports
+  * [core] update ProviderObject specification to use generators
+  * [core] fix templatetags not working with instances
+  * [core] fix requirements
+  * [ci] fix supervisr_core doc generation
+  * [core] fix added query for users__in in search
+  * [cli] revert to print in generate_secret_key
+  * [core] fix DefaultSearchHandler's combine and show Model's verbose_name
+  * Merge branch '40-search' into 'master'
+  * Merge branch 'master' of git.beryju.org:BeryJu.org/supervisr into 40-search
+  * [core] rewrite search function from scratch, based on signals
+  * [core] [mod/stat/influx] clean up debug output
+  * [core] automatically create ProviderInstance and EmptyCredentials for TestCase
+  * [core] cleanup utils, remove do_404
+  * [cli] cleanup tasks and only output with logger
+  * [mod/web_proxy] remove logging from test server
+  * [ci] fix yaml syntax
+  * [ci] only update docs in master branch
+  * [mod/auth/saml/idp] fix display of metadata in settings form
+  * [dns] cleanup views
+  * [core] allow GenericModelView's redirect to return the name of a view instead of an HttpResponse
+  * [assets] fix invalid cookie name
+  * [core] add cookie disclaimer to all pages, update assets
+  * [core] fix import loops
+  * [core] merge supervisr.core.progress and supervisr.core.tasks, fix typos
+  * [core] better upgrade template, rename SignupView to SignUpView
+  * [ci] add junit-style xml reports for unit-tests
+  * [ci] remove sudo form docker-compose, install unzip for packer
+  * [ci] install docker-compose and use packer directly from hashicorp
+  * [ci] install puppet on appliance build, empty before_script for docker
+  * [ci] only run docker info on build-docker
+  * [ci] fix .gitlab-ci.yml syntax
+  * [ci] add docker image build, fix path for packer build
+  * [ci] move coverage to test, fix duplicate names
+  * [ci] separate static and non-static tests
+  * [build] add dockerfile and new build commands for debian and packer
+  * Merge branch 'master' into 229-appliance-packaging
+  * [ci] fix mkdocs dependencies
+  * [ci] fix requirements for mkdocs, force bandit <1.5
+  * [*] rename signals from SIG_* to on_* and all lowercase
+  * [ci] disable bandit because https://github.com/PyCQA/bandit/issues/344
+  * [core] cleanup, add unittest for SetupWizard
+  * [*] clean up LC_MESSAGES without locale
+  * [core] add setup wizard to check system requirements, apply database migrations and create initial admin user
+  * [cli] add task to run django's makemessages on every app
+  * [core] add created argument to ProviderMultiplexer so objects dont get duplicated
+  * [mod/provider/libcloud] fix bandit issues
+  * [*] run bandit security checks, add bandit to CI, implement bandit suggested settings
+  * [core] add custom logger with success method for CLI interaction
+  * [appliance] add updated packer metadata and temporary prepare script
+  * [core] add celery_debug management command which runs celery worker with autoreload
+  * [ci] fix manage.py command
+  * [*] refactor templatetags (consolidate into 3 main files)
+  * [ci] add safety CI task to check requirements
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Sun, 23 Sep 2018 08:46:23 +0000
+
+supervisr (0.02) stable; urgency=medium
+
+  * [docs] fix path typo
+  * [ci] automatically build and upload docs in CI
+  * [ci] create ssh dir before adding known_host
+  * [ci] disable services for docs, fix requirements
+  * [ci] install rsync for doc uploading
+  * [ci] switch doc images back to python:3.6
+  * [ci] run apt update before installing rsync
+  * [ci] fix host_key verification issue
+  * [ci] import SSH key before running rsync
+  * [ci] initialise SSH-Agent before importing key...
+  * [core] [cli] cleanup
+  * [core] fix Provider Base Class declaration
+  * [*] unify test and tests module into tests for every app
+  * [*] finish cleanup
+  * [core] more style cleanup
+  * [mod/web_proxy] add web_proxy as a module, using django-revproxy
+  * [core] add missing dependency on colorlog
+  * [core] cleanup provider creation, enable isort and prospector in CI again
+  * [mod/stats/influx] migrate settings to GenericSettingsView
+  * [ci] show python version
+  * [*] fix import order, again
+  * [core] rewrite Admin views to CBV
+  * [assets] fix sidebar nav-link highlight
+  * [core] better handle Provider Results and exceptions
+  * [core] set dependency on prospector to <1.0 for pylint-django
+  * [puppet] rewrote ReleaseBuilder and ForgeImporter to Celery tasks
+  * [core] fix wrong view for admin product index
+  * [mod/provider/libcloud] add basic libcloud provider for DNS
+  * [mod/provider/libcloud] add missing provider files
+  * [core] ask for current password change_password view
+  * [core] show red asterisk on forms when field is required
+  * [core] add view to list all tasks
+  * [core] API now returns 401 if user is not authenticated
+  * [core] apply red asterik to every label on forms
+  * [core] change template to template_name on GenericViews to match Django (template still works but throws deprecation warning)
+  * [puppet] fix linting errors
+  * [core] fix validation in ChangePassword Form
+  * [dns] rewrite DNS Zone Model with SOA Data integrated
+  * [core] add http_basic_auth API endpoint
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Fri, 27 Jul 2018 10:54:52 +0000
+
+supervisr (0.01) stable; urgency=medium
+
+  * [pack] add basic packer template and debian preseed
+  * Revert "Merge branch 'master' into 728-dns-resourceset"
+  * [other] Add contribution guide
+  * [other] fix wrong CONTRIBUITING path
+  * [tasks] add url_prefix to flower task
+  * [mod/beacon] no longer create a new pulse instance, simply update existing one
+  * [core] add sentry to celery, save connection user -> task in db, require invoker for certain actions
+  * [*] fix all unittests/style issues
+  * [ci] replace mysql:latest with mariadb:latest
+  * [ci] update mysql hostname as well
+  * [core] update decorators to use django's wraps
+  * [core] fix import order
+  * [ci] fix yaml syntax
+  * [ci] don't run deactivate first on pip_install
+  * [ci] install virtualenv in pip_install
+  * [ci] pip install from correct branch
+  * [core] add mod _seed again
+  * [seed] move _seed to seed so it's seen by setup.py
+  * [ci] fix pip_install copy path, cleanup
+  * [core] fix encryption not working with pycryptodome
+  * [core] fix email_missing_middleware redirect looping
+  * [mod/auth/oauth/client] add reddit provider
+  * [core] fix whitespace error
+  * [core] add footer block to sidebar, with custom links from SETTINGS
+  * [static] add FilePageBootstrapper, re-add filepages
+  * [core] update requirements
+  * [assets] fix light theme for footer-card
+  * [*] cleanup imports
+  * [core] fix unittests
+  * [tasks] fix tasks.py styling
+  * [tasks] fix celery output when running with invoke
+  * [mod/auth/tfa] disable autocomplete on TFA Verify Form
+  * [core] [puppet] Clean up after unittests
+  * [*] we open source now!
+  * [ci] temporarily disable isort
+  * Initial release.
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Sat, 23 Jun 2018 14:03:08 +0000
