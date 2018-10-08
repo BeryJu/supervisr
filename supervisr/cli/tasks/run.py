@@ -20,9 +20,9 @@ def worker(ctx, debug=False):
         # https://github.com/celery/celery/issues/4178
         ctx.run("celery -A supervisr.core worker -l info -Ofair -c 1 --pool=solo", pty=True)
     elif debug:
-        ctx.run("celery -A supervisr.core worker -l debug -Ofair -c 1", pty=True)
+        ctx.run("celery -A supervisr.core worker -l debug -Ofair --autoscale=10,3 -E", pty=True)
     else:
-        ctx.run("celery -A supervisr.core worker -l info -Ofair", pty=True)
+        ctx.run("celery -A supervisr.core worker -l info -Ofair --autoscale=10,3", pty=True)
 
 
 @task

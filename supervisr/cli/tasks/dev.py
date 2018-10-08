@@ -18,14 +18,6 @@ def init(ctx, name):
     execute_from_command_line(['', 'startapp', name])
     LOGGER.info("Started Django App")
 
-# @task
-# def bumpversion(ctx, level):
-#     """Run bumpversion, update build/debian/changelog with `gbp dch` and edit changelog"""
-#     bump_out = ctx.run("bumpversion --allow-dirty --dry-run --list %s" % level, hide=True).stdout
-#     new = next(line for line in bump_out.split('\n')
-#                if line.startswith('new_version')).split('=')[1]
-#     with ctx.cd('')
-
 @task
 # pylint: disable=unused-argument
 def makemessages(ctx, locale='en'):
