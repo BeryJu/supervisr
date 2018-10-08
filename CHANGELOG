@@ -1,3 +1,20 @@
+supervisr (0.3.5-alpha) unstable; urgency=medium
+
+  * [*] bump version: 0.3.4-alpha -> 0.3.5-alpha
+  * [cli] copy changelog to Debian directory
+  * [cli] improve utils.bumpversion task
+  * [core] rewrite changelog from git commits
+  * [build] fix static files not being included in pypi package
+  * [bin] call pip ass external tool
+  * [core] switch inv ci.* to inv env.*
+  * [core] add pip passthrough support to ./sv
+  * [cli] fix naming for UI tasks
+  * [core] support env files with <name>.env.yml
+  * [cli] merge ui commands into build, ci and run namespace
+  * [cli] cleanup seed project (_seed -> seed)
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Mon, 08 Oct 2018 23:52:20 +0000
+
 supervisr (0.3.4-alpha) unstable; urgency=medium
 
   * [*] bump version: 0.3.3-alpha -> 0.3.4-alpha
