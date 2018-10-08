@@ -19,6 +19,7 @@ def appliance(ctx):
 @task
 def debian(ctx, signed=False, cleanup=True):
     """Build debian package"""
+    ctx.run('CHANGELOG build/debian/changelog')
     ctx.run("cp -R build/debian .")
     if signed:
         ctx.run('dpkg-buildpackage')
