@@ -16,9 +16,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "supervisr.core.settings")
 os.environ.setdefault("SUPERVISR_ENV", "local")
 
 namespace = Collection()
-for submod in dir(tasks):
-    if not submod.startswith('_'):
-        if 'ci' in submod and os.getenv('SUPERVISR_PACKAGED', "False").title() == 'True':
-            continue
+for component in tasks.__all__:
+    if not component.startswith('_'):
         namespace.add_collection(
-            Collection.from_module(import_module('supervisr.cli.tasks.%s' % submod)))
+            Collection.from_module(import_module('supervisr.cli.tasks.%s' % component)))
