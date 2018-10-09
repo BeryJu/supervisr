@@ -35,18 +35,18 @@ domains:
 timezone: UTC
 redis: localhost
 installed_apps:
-  - supervisr.puppet.apps.SupervisrPuppetConfig
-  - supervisr.dns.apps.SupervisrDNSConfig
-  - supervisr.mod.provider.nix_dns.apps.SupervisrModProviderNixDNSConfig
-  - supervisr.mod.provider.debug.apps.SupervisrModProviderDebugConfig
-  - supervisr.mail.apps.SupervisrMailConfig
-  - supervisr.static.apps.SupervisrStaticConfig
-  - supervisr.mod.web_proxy.apps.SupervisrModWebProxyConfig
-  - supervisr.mod.beacon.apps.SupervisrModBeaconConfig
-  - supervisr.mod.auth.ldap.apps.SupervisrModAuthLDAPConfig
-  - supervisr.mod.auth.saml.idp.apps.SupervisrModAuthSAMLProvider
-  - supervisr.mod.auth.oauth.provider.apps.SupervisrModAuthOAuthProviderConfig
-  - supervisr.mod.auth.oauth.client.apps.SupervisrModAuthOAuthClientConfig
-  - supervisr.mod.tfa.apps.SupervisrModTFAConfig
-  - supervisr.mod.stats.influx.apps.SupervisrModStatInfluxConfig
-  - supervisr.mod.provider.libcloud.apps.SupervisrModProviderLibcloud
+  - supervisr.puppet
+  - supervisr.dns
+  - supervisr.mod.provider.nix_dns
+  - supervisr.mod.provider.debug
+  - supervisr.mail
+  - supervisr.static
+  - supervisr.mod.web_proxy
+  - supervisr.mod.beacon
+  - supervisr.mod.auth.ldap
+  - supervisr.mod.auth.saml.idp
+  - supervisr.mod.auth.oauth.provider
+  - supervisr.mod.auth.oauth.client
+  - supervisr.mod.tfa
+  - supervisr.mod.stats.influx
+  - supervisr.mod.provider.libcloud

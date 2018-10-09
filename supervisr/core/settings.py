@@ -85,7 +85,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'captcha',
-    'supervisr.core.apps.SupervisrCoreConfig',
+    'supervisr.core',
     'formtools',
     'django.contrib.admin',
     'django.contrib.admindocs',
@@ -384,14 +384,15 @@ if DEBUG is True:
 # Load subapps's INSTALLED_APPS
 for _app in INSTALLED_APPS:
     if _app.startswith('supervisr') and \
-            not _app.startswith('supervisr.core.'):
-        _app_package = '.'.join(_app.split('.')[:-2])
+            not _app.startswith('supervisr.core'):
+        if 'apps' in _app:
+            _app = '.'.join(_app.split('.')[:-2])
         try:
-            app_settings = importlib.import_module("%s.settings" % _app_package)
+            app_settings = importlib.import_module("%s.settings" % _app)
             INSTALLED_APPS.extend(getattr(app_settings, 'INSTALLED_APPS', []))
             MIDDLEWARE.extend(getattr(app_settings, 'MIDDLEWARE', []))
             AUTHENTICATION_BACKENDS.extend(getattr(app_settings, 'AUTHENTICATION_BACKENDS', []))
             DATABASE_ROUTERS.extend(getattr(app_settings, 'DATABASE_ROUTERS', []))
             CELERY_BEAT_SCHEDULE.update(getattr(app_settings, 'CELERY_BEAT_SCHEDULE', {}))
         except ImportError:
-            pass
+            print('failed to load %s' % _app)

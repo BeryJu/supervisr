@@ -1,6 +1,5 @@
 """Supervisr 2FA AppConfig"""
 
-
 from supervisr.core.apps import SupervisrAppConfig
 
 
