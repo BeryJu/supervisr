@@ -14,9 +14,9 @@ Supervisr is a python application which requires Python 3.5. To keep dependencie
 # Change to whatever folder you plan to install supervisr to
 # cd /opt/
 git clone https://git.beryju.org/BeryJu.org/supervisr.git
-cp supervisr/local_settings_example.py supervisr/local_settings.py
+cp supervisr/environments/default.yml supervisr/environments/local.yml
 # Adjust install settings, DB type, etc
-vi supervisr/local_settings.py
+vi supervisr/environments/local.yml
 ```
 
 ## Installation of Python dependencies
@@ -44,7 +44,7 @@ pip install -U -r requirements.txt
 ## Installing System Services and scripts
 
 ```bash
-sudo cp debian/*.service /lib/systemd/system/
+sudo cp build/debian/*.service /lib/systemd/system/
 # Adjust the path to whatever path you installed supervisr in.
 sudo vi /lib/systemd/system/supervisr*
 sudo systemctl daemon-reload
