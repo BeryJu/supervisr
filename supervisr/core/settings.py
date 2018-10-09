@@ -395,4 +395,4 @@ for _app in INSTALLED_APPS:
             DATABASE_ROUTERS.extend(getattr(app_settings, 'DATABASE_ROUTERS', []))
             CELERY_BEAT_SCHEDULE.update(getattr(app_settings, 'CELERY_BEAT_SCHEDULE', {}))
         except ImportError:
-            print('failed to load %s' % _app)
+            pass
