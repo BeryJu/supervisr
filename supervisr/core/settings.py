@@ -118,8 +118,6 @@ MEDIA_URL = '/media/'
 LOGIN_REDIRECT_URL = 'user-index'
 LOGIN_URL = 'account-login'
 
-REDIS = 'localhost'
-
 # Settings are taken from DB, these are dev keys as per
 # https://developers.google.com/recaptcha/docs/faq
 RECAPTCHA_PUBLIC_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
