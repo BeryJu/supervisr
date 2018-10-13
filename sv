@@ -9,6 +9,7 @@ import sys
 virtual_env_name = 'env'
 is_packaged = False
 command = ""
+in_virtualenv = os.path.exists('%s/bin/activate' % virtual_env_name)
 
 def call(command):
     """Call command, redirect stdout and stderr"""
@@ -17,8 +18,9 @@ def call(command):
 
 def activate_virtual_env():
     """Load virtualenv"""
-    activate_this_file = os.path.realpath('%s/bin/activate_this.py' % virtual_env_name)
-    exec(open(activate_this_file).read(), dict(__file__=activate_this_file))
+    if in_virtualenv:
+        activate_this_file = os.path.realpath('%s/bin/activate_this.py' % virtual_env_name)
+        exec(open(activate_this_file).read(), dict(__file__=activate_this_file))
 
 
 def bootstrap_django():
@@ -38,9 +40,21 @@ def django(*args):
     return execute_from_command_line(args)
 
 
+def wrap_virtualenv(command):
+    """Wrap command with `source ...activate`, but only if virtualenv is used."""
+    # If we're packaged, change to correct directory first
+    prefix = ''
+    if is_packaged:
+        prefix = 'cd %s &&' % base_dir
+    if in_virtualenv:
+        return '/bin/bash -c "%s source %s/bin/activate && %s && deactivate"' % (prefix,
+                                                                                 virtual_env_name,
+                                                                                 command)
+    return '/bin/bash -c "%s"' % command
+
 def pip(*args):
     """Run args with pip"""
-    return call('source %s/bin/activate && pip %s' % (virtual_env_name, ' '.join(args)))
+    return call(wrap_virtualenv('pip %s' % ' '.join(args)))
 
 
 # Check if this file is a symlink, and if so change to real base dir
@@ -77,12 +91,11 @@ if is_packaged:
         sys.stderr.flush()
         sys.exit(1)
     # We are root so we can change users
-    call('/bin/su -s /bin/bash -c "'
-         'cd %s && source env/bin/activate && %s && deactivate'
-         '" supervisr' % (base_dir, command))
+    inner_command = wrap_virtualenv(command)
+    call('/bin/su -s %s supervisr' % inner_command)
 else:
     if 'VIRTUAL_ENV' in os.environ:
         # Virtualenv is already enabled, just execute command
         call(command)
     else:
-        call('source env/bin/activate && %s && deactivate' % command)
+        call(wrap_virtualenv(command))
