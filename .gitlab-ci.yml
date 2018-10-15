@@ -181,6 +181,7 @@ deploy-doc:
     - 'apt install -y rsync'
     - "eval $(ssh-agent -s)"
     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
+    - 'pip install -U pymdown-extensions'
     - 'mkdocs build'
     - 'rsync -avh --delete site/* "beryjuorg@ory1-web-prod-1.ory1.beryju.org:supervisr.beryju.org/docs/${CI_COMMIT_REF_NAME}"'
 deploy-dev-docs:
