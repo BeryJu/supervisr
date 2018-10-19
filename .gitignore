@@ -181,10 +181,8 @@ site/
 
 # Debian package exclusions
 *debhelper*
-debian/files
-debian/supervisr.substvars
-debian/supervisr/
-
+debian/
+build/debian/changelog
 unittest.xml
 
 coverage/

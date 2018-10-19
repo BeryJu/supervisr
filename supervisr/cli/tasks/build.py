@@ -35,7 +35,7 @@ def debian(ctx, signed=False, cleanup=True, upload=False):
         nexus_user = os.environ.get('NEXUS_USER')
         nexus_pass = os.environ.get('NEXUS_PASS')
         requests.post('https://%s/repository/apt/' % nexus_url,
-                      data=open('../supervisr_%s_amd64.deb' % __version__, mode='rb'),
+                      data=open('../supervisr_%s_all.deb' % __version__, mode='rb'),
                       auth=(nexus_user, nexus_pass))
 
 @task

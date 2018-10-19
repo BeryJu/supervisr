@@ -1,7 +1,6 @@
 supervisr		/usr/share/supervisr/
 sv				/usr/share/supervisr/
 tasks.py		/usr/share/supervisr/
-static			/usr/share/supervisr/
 ATTRIBUTIONS.md		/usr/share/supervisr/
 
 debian/etc/supervisr	/etc/
