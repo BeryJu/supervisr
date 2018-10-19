@@ -1,6 +1,8 @@
 """supervisr build tasks"""
+import os
 from logging import getLogger
 
+import requests
 from invoke import task
 
 LOGGER = getLogger(__name__)
@@ -17,9 +19,9 @@ def appliance(ctx):
         ctx.run('packer build packer.json')
 
 @task
-def debian(ctx, signed=False, cleanup=True):
+def debian(ctx, signed=False, cleanup=True, upload=False):
     """Build debian package"""
-    ctx.run('CHANGELOG build/debian/changelog')
+    ctx.run('cp CHANGELOG build/debian/changelog')
     ctx.run("cp -R build/debian .")
     if signed:
         ctx.run('dpkg-buildpackage')
@@ -27,6 +29,14 @@ def debian(ctx, signed=False, cleanup=True):
         ctx.run('dpkg-buildpackage -us -uc')
     if cleanup:
         ctx.run('rm -rf debian/')
+    if upload:
+        from supervisr import __version__
+        nexus_url = os.environ.get('NEXUS_URL')
+        nexus_user = os.environ.get('NEXUS_USER')
+        nexus_pass = os.environ.get('NEXUS_PASS')
+        requests.post('https://%s/repository/apt/' % nexus_url,
+                      data=open('../supervisr_%s_amd64.deb' % __version__, mode='rb'),
+                      auth=(nexus_user, nexus_pass))
 
 @task
 def docker(ctx):
