@@ -38,7 +38,7 @@ pip install -U -r requirements.txt
 ## Installing Database Migrations
 
 ```bash
-./sv manage migrate
+./sv manage migrate session
 ```
 
 ## Installing System Services and scripts
