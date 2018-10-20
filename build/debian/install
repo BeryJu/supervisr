@@ -3,4 +3,5 @@ sv				/usr/share/supervisr/
 tasks.py		/usr/share/supervisr/
 ATTRIBUTIONS.md		/usr/share/supervisr/
 
-debian/etc/supervisr	/etc/
+debian/etc/supervisr				/etc/
+debian/templates/database.yml		/usr/share/supervisr/

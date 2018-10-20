@@ -8,6 +8,6 @@ Standards-Version: 3.9.6
 
 Package: supervisr
 Architecture: all
-Depends: python3 (>= 3.5), dbconfig-mysql | dbconfig-no-thanks, redis-server, ${misc:Depends}
+Recommends: redis-server
+Depends: python3 (>= 3.5), dbconfig-mysql | dbconfig-no-thanks, ${misc:Depends}
 Description: Supervise your IT
-
