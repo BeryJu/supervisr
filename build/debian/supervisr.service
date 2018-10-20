@@ -8,8 +8,7 @@ User=supervisr
 Group=supervisr
 WorkingDirectory=/usr/share/supervisr
 Type=simple
-ExecStart=/usr/bin/sv run.web
+ExecStart=/usr/bin/sv run.web --no-auto-reload
 
 [Install]
 WantedBy=multi-user.target
-

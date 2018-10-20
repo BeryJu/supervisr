@@ -9,7 +9,6 @@ import sys
 virtual_env_name = 'env'
 is_packaged = False
 command = ""
-in_virtualenv = os.path.exists('%s/bin/activate' % virtual_env_name)
 
 def call(command):
     """Call command, redirect stdout and stderr"""
@@ -63,6 +62,7 @@ if base_dir != os.getcwd() and not base_dir.endswith('%s/bin' % virtual_env_name
     os.chdir(base_dir)
     is_packaged = True
 
+in_virtualenv = os.path.exists('%s/bin/activate' % virtual_env_name)
 os.environ['SUPERVISR_PACKAGED'] = str(is_packaged)
 
 if len(sys.argv) < 2:

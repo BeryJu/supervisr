@@ -8,7 +8,7 @@ from django.core.management.sql import emit_post_migrate_signal
 from django.db import DEFAULT_DB_ALIAS, connections
 from django.db.migrations.executor import MigrationExecutor
 from django.db.migrations.state import ModelState
-from django.db.utils import OperationalError
+from django.db.utils import OperationalError, ProgrammingError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, reverse
 from django.utils.translation import ugettext as _
@@ -32,7 +32,7 @@ def user_step_condition(wizard):
     # This errors out on first install as there are no tables yet, so we catch that as well
     try:
         return len(User.objects.all()) == 1
-    except OperationalError:
+    except (OperationalError, ProgrammingError):
         return True
 
 class SetupWizard(AnonymousRequiredMixin, NamedWizard):

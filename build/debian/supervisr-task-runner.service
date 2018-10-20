@@ -12,4 +12,3 @@ ExecStart=/usr/bin/sv run.worker
 
 [Install]
 WantedBy=multi-user.target
-

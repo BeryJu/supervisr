@@ -12,4 +12,3 @@ ExecStart=/usr/bin/sv run.worker-monitor
 
 [Install]
 WantedBy=multi-user.target
-

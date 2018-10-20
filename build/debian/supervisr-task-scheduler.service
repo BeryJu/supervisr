@@ -12,4 +12,3 @@ ExecStart=/usr/bin/sv run.worker-scheduler
 
 [Install]
 WantedBy=multi-user.target
-

@@ -320,6 +320,7 @@ with CONFIG.cd('log'):
             'file': {
                 'level': CONFIG.get('level').get('file'),
                 'class': 'logging.FileHandler',
+                'formatter': 'verbose',
                 'filename': CONFIG.get('file'),
             },
         },
