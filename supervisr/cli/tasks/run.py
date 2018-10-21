@@ -40,15 +40,19 @@ def worker_monitor(ctx):
 
 @task
 # pylint: disable=unused-argument
-def web(ctx, pidfile='', auto_reload=True):
+def web(ctx, pidfile='', production=False):
     """Run CherryPY-based application server"""
     from django.conf import settings
     from supervisr.core.wsgi import application, WSGILogger
     # Get default config from django settings
     cherrypy.config.update(settings.CHERRYPY_SERVER)
-    cherrypy.config.update({
-        'engine.autoreload_on': auto_reload,
-    })
+    if production:
+        cherrypy.config.update({
+            'global': {
+                'engine.autoreload.on': False,
+                'environment': 'production'
+            }
+        })
     # Mount NullObject to serve static files
     cherrypy.tree.mount(None, '/static', config={
         '/': {
