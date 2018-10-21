@@ -1,3 +1,28 @@
+supervisr (0.3.6-alpha) unstable; urgency=medium
+
+  * [*] bump version: 0.3.5-alpha -> 0.3.6-alpha
+  * [build] log different services to separate files
+  * [build] fix pastiest again and fix default values for web config
+  * [build] Fix CherryPy error from autoreload, add —production flag
+  * [build] run session migrations after install
+  * [build] fix minor issues with Debian package
+  * [build] Debian add db config tremplate
+  * [build] fix Debian package db config template
+  * [build] fix Debian build task and upload
+  * [build] build Debian package on version tags
+  * [core] fix dependency issues (hopefully)
+  * [build] integrate sonatype nexus upload on Debian package build
+  * [ci] fix dependencies for mkdocs
+  * [bin] make sv compatible with docker
+  * [build] cleanup docker file and docker-compose file
+  * [mod/provider/nix_dns] fix missing default_app_config
+  * [*] switch from explicit AppConfig loading to implicit loading
+  * [docs] update sidebar sorting, add command docs
+  * [cli] re-distriubte tasks (…again)
+  * [seed] make compatible with Django start app’s template option
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Sun, 21 Oct 2018 21:57:37 +0000
+
 supervisr (0.3.5-alpha) unstable; urgency=medium
 
   * [*] bump version: 0.3.4-alpha -> 0.3.5-alpha

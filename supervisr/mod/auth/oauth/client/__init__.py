@@ -2,5 +2,5 @@
 __ui_name__ = 'Supervisr mod/auth/oauth/client'
 __author__ = 'Supervisr Team'
 __email__ = 'supervisr@beryju.org'
-__version__ = '0.3.5-alpha'
+__version__ = '0.3.6-alpha'
 default_app_config = 'supervisr.mod.auth.oauth.client.apps.SupervisrModAuthOAuthClientConfig'
