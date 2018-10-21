@@ -321,7 +321,7 @@ with CONFIG.cd('log'):
                 'level': CONFIG.get('level').get('file'),
                 'class': 'logging.FileHandler',
                 'formatter': 'verbose',
-                'filename': CONFIG.get('file'),
+                'filename': CONFIG.get('file').get(os.environ.get('SUPERVISR_COMPONENT').lower()),
             },
         },
         'loggers': {

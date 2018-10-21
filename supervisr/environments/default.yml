@@ -10,7 +10,11 @@ log:
   syslog:
     host: 127.0.0.1
     port: 514
-  file: /dev/null
+  file:
+    web: /dev/null
+    task-runner: /dev/null
+    task-scheduler: /dev/null
+    task-monitor: /dev/null
 email:
   host: localhost
   port: 25

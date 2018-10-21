@@ -1,4 +1,6 @@
 """supervisr tasks"""
+import os
+
 import cherrypy
 from invoke import task
 from invoke.terminals import WINDOWS
@@ -22,18 +24,21 @@ def worker(ctx, debug=False):
     elif debug:
         ctx.run("celery -A supervisr.core worker -l debug -Ofair --autoscale=10,3 -E", pty=True)
     else:
+        os.environ.setdefault('SUPERVISR_COMPONENT', 'task-runner')
         ctx.run("celery -A supervisr.core worker -l info -Ofair --autoscale=10,3", pty=True)
 
 
 @task
 def worker_scheduler(ctx):
     """Run Celery beat worker"""
+    os.environ.setdefault('SUPERVISR_COMPONENT', 'task-scheduler')
     ctx.run("celery -A supervisr.core beat")
 
 
 @task
 def worker_monitor(ctx):
     """Run Celery flower"""
+    os.environ.setdefault('SUPERVISR_COMPONENT', 'task-monitor')
     ctx.run(("celery -A supervisr.core flower --address=127.0.0.1 --logging=none "
              "--url_prefix=/app/mod/web/proxy/supervisr_flower"))
 
@@ -44,6 +49,7 @@ def web(ctx, pidfile='', production=False):
     """Run CherryPY-based application server"""
     from django.conf import settings
     from supervisr.core.wsgi import application, WSGILogger
+    os.environ.setdefault('SUPERVISR_COMPONENT', 'web')
     # Get default config from django settings
     cherrypy.config.update(settings.CHERRYPY_SERVER)
     if production:

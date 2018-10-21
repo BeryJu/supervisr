@@ -13,7 +13,11 @@ log:
     level:
         console: INFO
         file: DEBUG
-    file: /var/log/supervisr/supervisr.log
+    file:
+        web: /var/log/supervisr/supervisr.log
+        task-runner: /var/log/supervisr/supervisr-tasks.log
+        task-scheduler: /var/log/supervisr/supervisr-tasks-scheduler.log
+        task-monitor: /var/log/supervisr/supervisr-tasks-monitor.log
     # Logs can be sent to a syslog server by enabling this setting
     # syslog:
     #     host: 1.2.3.4
