@@ -18,7 +18,7 @@ LOGGER = logging.getLogger(__name__)
 class SupervisrAppConfig(AppConfig):
     """Base AppConfig Class that logs when it's loaded"""
 
-    init_modules = ['signals', 'models', 'search']
+    init_modules = ['signals', 'models', 'search', 'api.serializers']
     admin_url_name = 'admin-module_default'
     view_user_settings = None
     navbar_enabled = lambda self, request: False
@@ -58,13 +58,13 @@ class SupervisrAppConfig(AppConfig):
         """Load initial modules for decorators"""
         LOGGER.debug("Loaded %s", self.name)
         for module in self.init_modules:
-            if importlib.util.find_spec("%s.%s" % (self.name, module)) is not None:
-                try:
+            try:
+                if importlib.util.find_spec("%s.%s" % (self.name, module)) is not None:
                     importlib.import_module("%s.%s" % (self.name, module))
-                except Exception as exc:  # pylint: disable=broad-except
-                    # Log the error but continue starting
-                    LOGGER.error(exc)
-                LOGGER.debug("Loaded %s.%s", self.name, module)
+                    LOGGER.debug("Loaded %s.%s", self.name, module)
+            except Exception as exc:  # pylint: disable=broad-except
+                # Log the error but continue starting
+                LOGGER.error(exc)
 
     def check_requirements(self):
         """Check requirements(-dev) and see if everything is installed"""

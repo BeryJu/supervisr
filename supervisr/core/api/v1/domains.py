@@ -7,5 +7,6 @@ from supervisr.core.models import Domain
 
 class DomainAPI(UserAcquirableModelAPI):
     """Domain API"""
+
     model = Domain
     form = DomainForm
