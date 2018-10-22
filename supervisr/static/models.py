@@ -44,7 +44,7 @@ class FilePage(StaticPage):
             # join with settings.BASE_DIR
             self.path = os.path.join(settings.BASE_DIR, self.path)
         try:
-            with open(self.path, 'r') as file:
+            with open(self.path, mode='r', encoding='utf8') as file:
                 new_content = file.read()
                 if new_content != self.content:
                     self.content = new_content
