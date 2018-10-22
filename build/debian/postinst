@@ -31,11 +31,12 @@ if [ ! -f '/etc/supervisr/secret_key' ]; then
   sv manage migrate sessions > /dev/null
 fi
 chmod 440 /etc/supervisr/secret_key
-echo " * Starting Services..."
+echo " * (Re-)starting Services..."
 for service in "${services[@]}"
 do
   systemctl enable $service
   systemctl restart $service
+  echo " * (Re-)started $service..."
 done
 
 #DEBHELPER#

@@ -152,6 +152,7 @@ migration_mariadb:
 #     - 229-appliance-packaging
 #   stage: build-release
 build-debian:
+  image: debian:stable
   script:
     - apt-get update && apt-get install -y libncurses5-dev libglib2.0-dev libgeoip-dev libtokyocabinet-dev zlib1g-dev libncursesw5-dev build-essential libbz2-dev dh-autoreconf dh-python dh-systemd dh-virtualenv dpkg-dev debhelper dh-exec
     - ./sv build.debian -u
@@ -172,6 +173,8 @@ deploy-doc:
   stage: deploy-docs
   only:
     - master
+    - tags
+    - /^version/.*$/
   services: []
   environment:
     name: public_docs
@@ -188,6 +191,8 @@ deploy-dev-docs:
   stage: deploy-docs
   only:
     - master
+    - tags
+    - /^version/.*$/
   services: []
   environment:
     name: public_docs
@@ -201,19 +206,18 @@ deploy-dev-docs:
     - './sv env.docs'
     - 'rsync -avh --delete docgen/supervisr/* "beryjuorg@ory1-web-prod-1.ory1.beryju.org:supervisr.beryju.org/dev-docs/${CI_COMMIT_REF_NAME}"'
 
-
 # Deploy
-deploy:
-  before_script: []
-  services: []
-  environment:
-    name: production
-    url: "https://my.beryju.org"
-  only:
-    - prod
-  script:
-    - "eval $(ssh-agent -s)"
-    - "mkdir ~/.ssh -p"
-    - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
-    - "ssh beryjuorg@ory1-web-prod-1.ory1.beryju.org \"./update_supervisr.sh\""
-  stage: deploy
+# deploy:
+#   before_script: []
+#   services: []
+#   environment:
+#     name: production
+#     url: "https://my.beryju.org"
+#   only:
+#     - prod
+#   script:
+#     - "eval $(ssh-agent -s)"
+#     - "mkdir ~/.ssh -p"
+#     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
+#     - "ssh beryjuorg@ory1-web-prod-1.ory1.beryju.org \"./update_supervisr.sh\""
+#   stage: deploy
