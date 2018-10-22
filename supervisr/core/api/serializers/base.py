@@ -7,6 +7,7 @@ from supervisr.core.models import (BaseCredential, ProviderAcquirableSingle,
                                    ProviderInstance, UUIDModel)
 
 
+@REGISTRY.serializer(UUIDModel)
 class UUIDModelSerializer(Serializer[UUIDModel]):
     """Serialize UUIDModel"""
 
@@ -16,6 +17,8 @@ class UUIDModelSerializer(Serializer[UUIDModel]):
             'uuid': parent.annotate(instance.uuid, UUID),
         }
 
+
+@REGISTRY.serializer(BaseCredential)
 class CredentialSerializer(Serializer[BaseCredential]):
     """Serialize CredentialModel"""
 
@@ -28,6 +31,8 @@ class CredentialSerializer(Serializer[BaseCredential]):
             'type': instance.cast().type(),
         }
 
+
+@REGISTRY.serializer(ProviderInstance)
 class ProviderInstanceSerializer(Serializer[ProviderInstance]):
     """Serialize ProviderInstance"""
 
@@ -41,6 +46,8 @@ class ProviderInstanceSerializer(Serializer[ProviderInstance]):
             'capabilities': instance.provider.get_meta.get_capabilities(),
         }
 
+
+@REGISTRY.serializer(ProviderAcquirableSingle)
 class ProviderAcquirableSingleSerializer(Serializer[ProviderAcquirableSingle]):
     """Serialize ProviderAcquirableSingle"""
 
@@ -49,9 +56,3 @@ class ProviderAcquirableSingleSerializer(Serializer[ProviderAcquirableSingle]):
         return {
             'provider_instance': parent.render(instance.provider_instance),
         }
-
-
-REGISTRY.register(ProviderAcquirableSingle, ProviderAcquirableSingleSerializer())
-REGISTRY.register(ProviderInstance, ProviderInstanceSerializer())
-REGISTRY.register(UUIDModel, UUIDModelSerializer())
-REGISTRY.register(BaseCredential, CredentialSerializer())

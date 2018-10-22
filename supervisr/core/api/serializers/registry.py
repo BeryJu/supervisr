@@ -4,6 +4,7 @@ from datetime import date, datetime, timedelta
 from inspect import getmro
 from typing import Any, Generic, Type, TypeVar, Union
 from uuid import UUID
+from functools import wraps
 
 from django.db.models import Model
 
@@ -51,9 +52,12 @@ class SerializerRegistry:
             }
         return value
 
-    def register(self, model: Model, serializer: Serializer):
-        """Register a Serializer"""
-        self.__mapping[model] = serializer
+    def serializer(self, model: Model):
+        """Class decorator to register classes inline."""
+        def inner_wrapper(cls):
+            self.__mapping[model] = cls()
+            return cls
+        return inner_wrapper
 
     def __flatten(self, raw) -> dict:
         """Flatten values from `self.annotate`"""
@@ -85,9 +89,3 @@ class SerializerRegistry:
 
 
 REGISTRY = SerializerRegistry()
-
-# from supervisr.core.models import Domain
-# from supervisr.core.api.serializers.registry import *
-# from supervisr.core.api.serializers.domain import *
-# from pprint import pprint
-# pprint(REGISTRY.render(Domain.objects.first()))

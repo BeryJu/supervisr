@@ -9,6 +9,7 @@ from supervisr.core.api.serializers.registry import (REGISTRY, Serializer,
 from supervisr.core.models import Domain, Event, User
 
 
+@REGISTRY.serializer(User)
 class UserSerializer(Serializer[User]):
     """Serialize User"""
 
@@ -20,6 +21,7 @@ class UserSerializer(Serializer[User]):
         }
 
 
+@REGISTRY.serializer(Domain)
 class DomainSerializer(Serializer[Domain]):
     """Serialize Domain"""
 
@@ -32,6 +34,7 @@ class DomainSerializer(Serializer[Domain]):
         }
 
 
+@REGISTRY.serializer(Event)
 class EventSerializer(Serializer[Event]):
     """Serialize Event"""
 
@@ -43,8 +46,3 @@ class EventSerializer(Serializer[Event]):
             'message': instance.message,
             'created': parent.annotate(timezone.now() - instance.create_date, timedelta),
         }
-
-
-REGISTRY.register(User, UserSerializer())
-REGISTRY.register(Domain, DomainSerializer())
-REGISTRY.register(Event, EventSerializer())
