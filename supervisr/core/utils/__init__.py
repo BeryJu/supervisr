@@ -137,7 +137,11 @@ def get_db_server_version(connection_name: str = DEFAULT_DB_ALIAS, default: str 
     cursor = db_conn.cursor()
     try:
         cursor.execute('SELECT VERSION();')
-        return cursor.fetchone()[0]
+        version = cursor.fetchone()[0]
+        if '-' in version:
+            # Patch for ubuntu/debian mysql versions since they have dashes in the version
+            return version.split('-')[0]
+        return version
     except OperationalError:
         return default
     finally:
