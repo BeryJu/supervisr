@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from supervisr.core.api.serializers.registry import (REGISTRY, Serializer,
                                                      SerializerRegistry)
-from supervisr.core.models import Domain, Event, User
+from supervisr.core.models import Domain, Event, User, ProviderAcquirable, UserAcquirable
 
 
 @REGISTRY.serializer(User)
@@ -45,4 +45,30 @@ class EventSerializer(Serializer[Event]):
             'uuid': parent.annotate(instance.uuid, UUID),
             'message': instance.message,
             'created': parent.annotate(timezone.now() - instance.create_date, timedelta),
+        }
+
+
+@REGISTRY.serializer(ProviderAcquirable)
+class ProviderAcquirableSerializer(Serializer[ProviderAcquirable]):
+    """Serialize ProviderAcquirable"""
+
+    def serialize(self, instance: ProviderAcquirable, parent: SerializerRegistry) -> dict:
+        """Serialize ProviderAcquirable"""
+        return {
+            'providers': {
+                provider.name: provider.uuid for provider in instance.providers.all()
+            }
+        }
+
+
+@REGISTRY.serializer(UserAcquirable)
+class UserAcquirableSerializer(Serializer[UserAcquirable]):
+    """Serialize UserAcquirable"""
+
+    def serialize(self, instance: UserAcquirable, parent: SerializerRegistry) -> dict:
+        """Serialize UserAcquirable"""
+        return {
+            'users': {
+                user.username: parent.render(user) for user in instance.users.all()
+            }
         }
