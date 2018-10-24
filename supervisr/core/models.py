@@ -316,7 +316,11 @@ class Setting(UUIDModel, CreatedUpdatedModel):
         value = Setting.get(*args, inspect_offset=2, **kwargs)
         if not isinstance(value, str):
             value = str(value)
-        return int(value)
+        try:
+            return int(value)
+        except ValueError:
+            # Handle empty setting throwing ValueError
+            return kwargs.get('default', 0)
 
     @staticmethod
     def set(key: str, value: str, namespace='', inspect_offset=1) -> bool:
