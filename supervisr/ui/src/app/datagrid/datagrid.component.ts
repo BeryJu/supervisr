@@ -48,11 +48,11 @@ export class DatagridComponent extends HTMLChildrenComponent implements AfterVie
         let modifier = '';
         if (path.indexOf('|') !== -1) {
             // Split modifier off of path
-            let parts = path.split('|');
+            const parts = path.split('|');
             path = parts[0];
             modifier = parts[1];
         }
-        let value = path.split('.').reduce((o, i) => o[i], obj);
+        const value = path.split('.').reduce((o, i) => o[i], obj);
         // Handle empty value early
         if (value === undefined) {
             return value;
