@@ -3,6 +3,7 @@ from logging import getLogger
 
 from django.apps import apps
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.core.management.sql import emit_post_migrate_signal
 from django.db import DEFAULT_DB_ALIAS, connections
@@ -20,22 +21,22 @@ from supervisr.core.forms.setup import (AdminUserForm, PostInstallForm,
 from supervisr.core.models import Setting, User
 from supervisr.core.utils import is_database_synchronized
 from supervisr.core.views.accounts import LoginView, SignUpView
-from supervisr.core.views.generic import AnonymousRequiredMixin
 from supervisr.core.views.wizards import NamedWizard
 
 LOGGER = getLogger(__name__)
 
 # pylint: disable=unused-argument
-def user_step_condition(wizard):
+def should_create_user(wizard):
     """Returns True if new user should be created, otherwise False"""
     # Only show new user form if initial setup.
     # This errors out on first install as there are no tables yet, so we catch that as well
     try:
-        return len(User.objects.all()) == 1
+        # Ignore system user
+        return (len(User.objects.all()) - 1) == 0
     except (OperationalError, ProgrammingError):
         return True
 
-class SetupWizard(AnonymousRequiredMixin, NamedWizard):
+class SetupWizard(NamedWizard):
     """Setup to set branding, URL and other settings."""
 
     form_list = [
@@ -59,12 +60,11 @@ class SetupWizard(AnonymousRequiredMixin, NamedWizard):
         'post-setup': '_admin/setup/post_setup.html',
     }
     condition_dict = {
-        'user-setup': user_step_condition
+        'user-setup': should_create_user
     }
     title = _('Welcome to supervisr!')
     wizard_size = 'xl'
     migration_progress = {}
-    __should_create_user = False
     __is_upgrade = False
 
     def get_form(self, step=None, data=None, files=None):
@@ -96,7 +96,13 @@ class SetupWizard(AnonymousRequiredMixin, NamedWizard):
 
     def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """Check if this is actually a fresh install, otherwise skip setup"""
-        if not is_database_synchronized() or not user_step_condition(self):
+        if not is_database_synchronized():
+            # Upgrades should only be possible for signed in super-users.
+            # Redirect to login otherwise
+            if not request.user.is_superuser:
+                messages.error(request, _(
+                    'Pending update, can only be installed by Administrators'))
+                return redirect(reverse(settings.LOGIN_URL))
             self.__is_upgrade = True
             self.title = _('supervisr Upgrade')
         if is_database_synchronized() and not settings.TEST:
@@ -110,7 +116,7 @@ class SetupWizard(AnonymousRequiredMixin, NamedWizard):
         user_form = next(iter([form for form in form_list if isinstance(form, AdminUserForm)]),
                          None)
         if user_form:
-            # re-use SignupView's create_user
+            # re-use SignUpView's create_user
             user = SignUpView.create_user(user_form.cleaned_data, request=self.request,
                                           needs_confirmation=False)
             user.is_staff = True

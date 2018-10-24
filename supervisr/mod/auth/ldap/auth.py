@@ -18,4 +18,4 @@ class LDAPBackend(ModelBackend):
         if not LDAPConnector.enabled:
             return None
         _ldap = LDAPConnector()
-        return self._ldap.auth_user(**kwargs)
+        return _ldap.auth_user(**kwargs)

@@ -6,7 +6,8 @@ from django.utils import timezone
 
 from supervisr.core.api.serializers.registry import (REGISTRY, Serializer,
                                                      SerializerRegistry)
-from supervisr.core.models import Domain, Event, User, ProviderAcquirable, UserAcquirable
+from supervisr.core.models import (Domain, Event, ProviderAcquirable, User,
+                                   UserAcquirable)
 
 
 @REGISTRY.serializer(User)
@@ -52,6 +53,7 @@ class EventSerializer(Serializer[Event]):
 class ProviderAcquirableSerializer(Serializer[ProviderAcquirable]):
     """Serialize ProviderAcquirable"""
 
+    # pylint: disable=unused-argument
     def serialize(self, instance: ProviderAcquirable, parent: SerializerRegistry) -> dict:
         """Serialize ProviderAcquirable"""
         return {

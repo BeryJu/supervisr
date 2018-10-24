@@ -4,7 +4,6 @@ from datetime import date, datetime, timedelta
 from inspect import getmro
 from typing import Any, Generic, Type, TypeVar, Union
 from uuid import UUID
-from functools import wraps
 
 from django.db.models import Model
 

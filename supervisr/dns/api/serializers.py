@@ -2,7 +2,8 @@
 
 from supervisr.core.api.serializers.registry import (REGISTRY, Serializer,
                                                      SerializerRegistry)
-from supervisr.dns.models import DataRecord, ReverseZone, SetRecord, Zone
+from supervisr.dns.models import Zone
+
 
 @REGISTRY.serializer(Zone)
 class ZoneSerializer(Serializer[Zone]):
