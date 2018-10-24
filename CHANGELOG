@@ -1,3 +1,23 @@
+supervisr (0.3.7-alpha) unstable; urgency=medium
+
+  * [*] bump version: 0.3.6-alpha -> 0.3.7-alpha
+  * [dns] start migration to data grid for DNS views
+  * [core] Setting.get_int handles empty values better
+  * [ui] add refresh button, add modifiers to values to only show keys, join, length, etc
+  * [mod/stats/influx] save failures to DB
+  * [mod/stats/influx] give up writing after 10 failures
+  * [core] only allow upgrades for superusers
+  * [core] [dns] add more Serializers
+  * [dns] add missing ReverseZone API
+  * [core] fix version check for MySQL version on debian
+  * [core] automatically load serializers
+  * [core] add API serialise Decorator for classes
+  * [mod/auth/ldap] only load LDAPConnector if LDAP is enabled
+  * [static] fix loading of files with non-ascii content
+  * [build] fix debian build image to stable
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Wed, 24 Oct 2018 13:06:10 +0000
+
 supervisr (0.3.6-alpha) unstable; urgency=medium
 
   * [*] bump version: 0.3.5-alpha -> 0.3.6-alpha
