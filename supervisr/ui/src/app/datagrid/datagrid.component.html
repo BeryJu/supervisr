@@ -1,7 +1,7 @@
 <clr-datagrid class="datagrid-compact" [(clrDgSelected)]="selected" [clDgRowSelection]="true" [clrDgLoading]="loading" (clrDgRefresh)="refresh($event)">
-  <clr-dg-action-bar *ngIf="addView !== null">
+  <clr-dg-action-bar *ngIf="actionBarViews.enabled === true">
     <div class="btn-group">
-      <button type="button" class="btn btn-sm btn-secondary" (click)="action('add')">
+      <button type="button" *ngIf="actionBarViews.add !== null" class="btn btn-sm btn-secondary" (click)="action('add')">
         <clr-icon shape="plus"></clr-icon> Add
       </button>
       <button type="button" class="btn btn-sm btn-secondary" (click)="action('edit')" *ngIf="selected.length == 1">

@@ -10,6 +10,15 @@ function sleep(time) {
     return new Promise((resolve) => setTimeout(resolve, time));
 }
 
+export class ActionViews {
+
+    add: string = null;
+    edit: string = null;
+    delete: string = null;
+    enabled: boolean = false;
+
+}
+
 @Component({
     selector: 'datagrid',
     templateUrl: './datagrid.component.html'
@@ -23,10 +32,9 @@ export class DatagridComponent extends HTMLChildrenComponent implements AfterVie
     headerColumns: Array<string> = [];
     bodyColumns: Array<string> = [];
 
-    addView: string = null;
-    editView: string = null;
-    deleteView: string = null;
-    actionBarItems: Array<HTMLElement> = [];
+    actionBarViews: ActionViews = new ActionViews();
+    actionBarItemsPre: Array<HTMLElement> = [];
+    actionBarItemsPost: Array<HTMLElement> = [];
 
     private apiPath: APIPath = null;
     private lastState: ClrDatagridStateInterface = null;
@@ -38,7 +46,10 @@ export class DatagridComponent extends HTMLChildrenComponent implements AfterVie
 
     ngAfterViewInit() {
         const actionBar = $(this.element.nativeElement).find('clr-dg-action-bar');
-        this.actionBarItems.forEach(item => {
+        this.actionBarItemsPre.forEach(item => {
+            actionBar.find('.btn-group').first().prepend(item);
+        });
+        this.actionBarItemsPost.forEach(item => {
             actionBar.find('.btn-group').first().append(item);
         });
     }
@@ -91,11 +102,18 @@ export class DatagridComponent extends HTMLChildrenComponent implements AfterVie
                 this.bodyColumns.push(element.attributes.getNamedItem('field').value);
             } else if (tagName === 'clr-action') {
                 // Action bar declaration
-                this.addView = element.attributes.getNamedItem('add-view').value;
-                this.editView = element.attributes.getNamedItem('edit-view').value;
-                this.deleteView = element.attributes.getNamedItem('delete-view').value;
-            } else {
-                this.actionBarItems.push(element);
+                ['add', 'edit', 'delete'].forEach(attr => {
+                    if (element.attributes.hasOwnProperty(`${attr}-view`)) {
+                        this.actionBarViews[attr] = element.attributes.getNamedItem(`${attr}-view`).value;
+                        this.actionBarViews.enabled = true;
+                    }
+                });
+            } else if (tagName === 'clr-action-post') {
+                // Post-action bar items
+                this.actionBarItemsPost = Array.prototype.slice.call(element.children);
+            } else if (tagName === 'clr-action-pre') {
+                // Pre-action bar items
+                this.actionBarItemsPre = Array.prototype.slice.call(element.children);
             }
         });
     }
@@ -106,9 +124,9 @@ export class DatagridComponent extends HTMLChildrenComponent implements AfterVie
             const item = this.selected[0];
             let view = '';
             if (action === 'edit') {
-                view = this.editView;
+                view = this.actionBarViews.edit;
             } else if (action === 'delete') {
-                view = this.deleteView;
+                view = this.actionBarViews.delete;
             }
             this.api.reverse(view, { 'uuid': item['uuid'] }).subscribe(
                 data => window.location.href = data['data'] + '?back=' + window.location.pathname,
@@ -116,7 +134,7 @@ export class DatagridComponent extends HTMLChildrenComponent implements AfterVie
             );
         } else if (action === 'add') {
             // add things
-            this.api.reverse(this.addView).subscribe(
+            this.api.reverse(this.actionBarViews.add).subscribe(
                 data => window.location.href = data['data'] + '?back=' + window.location.pathname,
                 err => console.error(err)
             );
