@@ -26,6 +26,7 @@ class ReverseZoneForm(forms.ModelForm):
             'soa_rname': forms.TextInput(),
         }
         labels = {
+            'zone_ip': _('Zone IP'),
             'soa_mname': _('SOA MNAME'),
             'soa_rname': _('SOA RNAME'),
             'soa_serial': _('SOA Serial'),
@@ -35,6 +36,7 @@ class ReverseZoneForm(forms.ModelForm):
             'soa_ttl': _('SOA TTL'),
         }
         help_texts = {
+            'netmask': _('CIDR Netmask, e.g. 24'),
             'soa_mname': _('Primary master name server.'),
             'soa_rname': _('Responsible person for this Zone.')
         }

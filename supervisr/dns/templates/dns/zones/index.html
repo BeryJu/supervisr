@@ -9,54 +9,24 @@
 
 {% block content %}
 <h1><clr-icon shape="router" size="48"></clr-icon>{% trans 'DNS Zones' %}</h1>
-<div class="btn-group btn-link btn-icon-link">
-  <a href="{% url 'supervisr_dns:zone-create' %}" class="btn">
-    <clr-icon shape="add"></clr-icon>
-  </a>
-  <a data-ctx-name="edit" class="btn">
-    <clr-icon shape="edit"></clr-icon>
-  </a>
-  <a data-ctx-name="trash" class="btn">
-    <clr-icon shape="trash"></clr-icon>
-  </a>
-  <div class="btn-group-overflow dropdown">
-    <button class="btn dropdown-toggle" clrDropdown>
-      <clr-icon shape="ellipsis-horizontal"></clr-icon>
-    </button>
-    <div class="dropdown-menu">
-      <a href="{% url 'supervisr_dns:migrate-import-bind' %}" class="dropdown-item">{% trans 'Import from Bind Zone' %}</a>
+<angular
+    component="datagrid"
+    api-path="dns::zones::read">
+    <clr-action add-view="supervisr_dns:zone-create"
+                edit-view="supervisr_dns:zone-update"
+                delete-view="supervisr_dns:zone-delete"></clr-action>
+    <clr-header-column field="domain.domain_name">{% trans 'Domain' %}</clr-header-column>
+    <clr-header-column field="users|keys">{% trans 'Users' %}</clr-header-column>
+    <clr-header-column field="providers|keys">{% trans 'Providers' %}</clr-header-column>
+    <clr-header-column field="enabled|bool">{% trans 'Enabled' %}</clr-header-column>
+    <div class="btn-group-overflow dropdown">
+        <button class="btn btn-sm btn-secondary dropdown-toggle" clrDropdown>
+            <clr-icon shape="ellipsis-horizontal"></clr-icon>
+            <clr-icon shape="caret down"></clr-icon>
+        </button>
+        <div class="dropdown-menu">
+            <a href="{% url 'supervisr_dns:migrate-import-bind' %}" class="dropdown-item">{% trans 'Import from Bind Zone' %}</a>
+        </div>
     </div>
-  </div>
-</div>
-<table class="table">
-  <thead>
-    <tr>
-      <th>{% trans 'Domain' %}</th>
-      <th>{% trans 'Owner' %}</th>
-      <th>{% trans 'Records' %}</th>
-      <th>{% trans 'Providers' %}</th>
-      <th>{% trans 'Enabled' %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for zone in instances %}
-    <tr data-selectable data-ctx-edit="{% url 'supervisr_dns:zone-update' uuid=zone.uuid %}?back={{ request.get_full_path }}"
-      data-ctx-trash="{% url 'supervisr_dns:zone-delete' uuid=zone.uuid %}?back={{ request.get_full_path }}">
-      <td>{{ zone.domain }}</td>
-      <td>{{ zone.users.all|join:"," }}</td>
-      <td>{{ zone.records.all|length }}</td>
-      <td>{{ zone.providers.all|join:"," }}</td>
-      <td>{{ zone.enabled }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% include 'blocks/pagination.html' with pages=instances %}
-{% endblock %}
-
-{% block scripts %}
-{{ block.super }}
-<script>
-  clrTableSelect('.container');
-</script>
+</angular>
 {% endblock %}

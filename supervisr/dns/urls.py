@@ -22,6 +22,8 @@ urlpatterns = [
     # Reverse Zones
     url(r'^zones/reverse/$',
         zones.ReverseZoneIndexView.as_view(), name='reverse-zone-index'),
+    url(r'^zones/reverse/create/$',
+        zones.ReverseZoneNewView.as_view(), name='reverse-zone-create'),
     # Records
     url(r'^records/data/create/$',
         records.DataRecordWizard.as_view(), name='record-data-create'),
