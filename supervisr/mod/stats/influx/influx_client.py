@@ -15,7 +15,7 @@ LOGGER = getLogger(__name__)
 
 # pylint: disable=too-many-instance-attributes
 class InfluxClient:
-    """Simple Write-only Influx CLient"""
+    """Simple Write-only Influx Client"""
 
     host = ''
     port = 8086
@@ -23,9 +23,10 @@ class InfluxClient:
     password = '' # nosec
     database = 'supervisr'
 
-    _fqdn = None
-    _install_id = ''
+    __fqdn = None
+    __install_id = ''
     __client = None
+    __failures = 0
 
     def __init__(self):
         """Load settings form DB"""
@@ -34,8 +35,8 @@ class InfluxClient:
         self.username = Setting.get('username')
         self.password = Setting.get('password')
         self.database = Setting.get('database')
-        self._fqdn = getfqdn()
-        self._install_id = Setting.get('install_id', namespace='supervisr.core')
+        self.__fqdn = getfqdn()
+        self.__install_id = Setting.get('install_id', namespace='supervisr.core')
 
     def connect(self):
         """create influxdbclient instance"""
@@ -60,11 +61,14 @@ class InfluxClient:
 
     def write(self, measurement, tags=None, **values):
         """Write data to influx"""
+        if self.__failures >= 10:
+            LOGGER.info("More than 10 write failures to InfluxDB Server. Giving up.")
+            return False
         if not tags:
             tags = {}
         all_tags = {
-            'host': self._fqdn,
-            'install_id': self._install_id,
+            'host': self.__fqdn,
+            'install_id': self.__install_id,
         }
         all_tags.update(self.__flatten(tags))
         try:
@@ -79,6 +83,7 @@ class InfluxClient:
             return result
         except (ConnectionError, InfluxDBClientError) as exc:
             LOGGER.warning(exc)
+            self.__failures += 1
             return False
 
     def close(self):
