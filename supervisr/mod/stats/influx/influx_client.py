@@ -37,6 +37,7 @@ class InfluxClient:
         self.database = Setting.get('database')
         self.__fqdn = getfqdn()
         self.__install_id = Setting.get('install_id', namespace='supervisr.core')
+        self.__failures = Setting.get_int('failures')
 
     def connect(self):
         """create influxdbclient instance"""
@@ -82,8 +83,10 @@ class InfluxClient:
             LOGGER.debug('wrote %s', measurement)
             return result
         except (ConnectionError, InfluxDBClientError) as exc:
-            LOGGER.warning(exc)
+            # Count failures to prevent clogging of log
             self.__failures += 1
+            Setting.set('failures', self.__failures)
+            LOGGER.warning(exc)
             return False
 
     def close(self):
