@@ -1,9 +1,10 @@
-import { Component, ElementRef } from '@angular/core';
+import { Component, ElementRef, AfterViewInit } from '@angular/core';
 import { ClrDatagridStateInterface } from '@clr/angular';
 import { API } from '../services/api';
 import { APIPath } from '../services/path';
 import { HTMLChildrenComponent } from '../base';
 import { Model } from '../services/model';
+import * as $ from 'jquery';
 
 function sleep(time) {
     return new Promise((resolve) => setTimeout(resolve, time));
@@ -13,7 +14,7 @@ function sleep(time) {
     selector: 'datagrid',
     templateUrl: './datagrid.component.html'
 })
-export class DatagridComponent extends HTMLChildrenComponent {
+export class DatagridComponent extends HTMLChildrenComponent implements AfterViewInit {
 
     loading = true;
 
@@ -25,16 +26,60 @@ export class DatagridComponent extends HTMLChildrenComponent {
     addView: string = null;
     editView: string = null;
     deleteView: string = null;
+    actionBarItems: Array<HTMLElement> = [];
 
     private apiPath: APIPath = null;
+    private lastState: ClrDatagridStateInterface = null;
 
-    constructor(private api: API, element: ElementRef) {
+    constructor(private api: API, private element: ElementRef) {
         super();
-        this.apiPath = APIPath.fromString(element.nativeElement.attributes.getNamedItem('api-path').value);
+        this.apiPath = APIPath.fromString(this.element.nativeElement.attributes.getNamedItem('api-path').value);
+    }
+
+    ngAfterViewInit() {
+        const actionBar = $(this.element.nativeElement).find('clr-dg-action-bar');
+        this.actionBarItems.forEach(item => {
+            actionBar.find('.btn-group').first().append(item);
+        });
     }
 
     getValue(obj: object, path: string) {
-        return path.split('.').reduce((o, i) => o[i], obj);
+        // Optionally support modifiers like value|keys
+        let modifier = '';
+        if (path.indexOf('|') !== -1) {
+            // Split modifier off of path
+            let parts = path.split('|');
+            path = parts[0];
+            modifier = parts[1];
+        }
+        let value = path.split('.').reduce((o, i) => o[i], obj);
+        // Handle empty value early
+        if (value === undefined) {
+            return value;
+        }
+        if (modifier === 'keys') {
+            // Return all keys of object
+            return Object.keys(value).join(', ');
+        } else if (modifier === 'join') {
+            // Join array by comma
+            return value.join(', ');
+        } else if (modifier === 'length') {
+            // Get length of string or length of keys
+            if (typeof value === 'string') {
+                return value.length;
+            } else {
+                return Object.keys(value).length;
+            }
+        } else if (modifier === 'bool') {
+            // Beautify bool
+            if (value === true) {
+                return 'Yes';
+            } else if (value === false) {
+                return 'No';
+            }
+        } else {
+            return value.toString();
+        }
     }
 
     onChildren() {
@@ -49,6 +94,8 @@ export class DatagridComponent extends HTMLChildrenComponent {
                 this.addView = element.attributes.getNamedItem('add-view').value;
                 this.editView = element.attributes.getNamedItem('edit-view').value;
                 this.deleteView = element.attributes.getNamedItem('delete-view').value;
+            } else {
+                this.actionBarItems.push(element);
             }
         });
     }
@@ -73,11 +120,15 @@ export class DatagridComponent extends HTMLChildrenComponent {
                 data => window.location.href = data['data'] + '?back=' + window.location.pathname,
                 err => console.error(err)
             );
+        } else if (action === 'refresh') {
+            // refresh from API
+            this.refresh(this.lastState);
         }
     }
 
     refresh(state: ClrDatagridStateInterface) {
         this.loading = true;
+        this.lastState = state;
         this.api
             .path(this.apiPath)
             .filter(state.filters)
