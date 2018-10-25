@@ -4,19 +4,11 @@ import { API } from '../services/api';
 import { APIPath } from '../services/path';
 import { HTMLChildrenComponent } from '../base';
 import { Model } from '../services/model';
+import { ActionViews } from '../services/actionViews';
 import * as $ from 'jquery';
 
 function sleep(time) {
     return new Promise((resolve) => setTimeout(resolve, time));
-}
-
-export class ActionViews {
-
-    add: string = null;
-    edit: string = null;
-    delete: string = null;
-    enabled: boolean = false;
-
 }
 
 @Component({
