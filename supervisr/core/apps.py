@@ -63,12 +63,7 @@ class SupervisrAppConfig(AppConfig):
                     importlib.import_module("%s.%s" % (self.name, module))
                     LOGGER.debug("Loaded %s.%s", self.name, module)
             except Exception as exc:  # pylint: disable=broad-except
-                # If module is declared in BaseClass it's optional, so we don't care about failure
-                if module in SupervisrAppConfig.init_modules:
-                    LOGGER.warning(exc)
-                # Otherwise raise error since module has been declared explicitly
-                else:
-                    raise exc
+                LOGGER.warning(exc)
 
     def check_requirements(self):
         """Check requirements(-dev) and see if everything is installed"""
