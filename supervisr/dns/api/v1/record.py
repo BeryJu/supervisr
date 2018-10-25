@@ -5,14 +5,22 @@ from supervisr.core.api.models import UserAcquirableModelAPI
 from supervisr.core.decorators import logged_in_or_basicauth
 from supervisr.core.utils import get_remote_ip
 from supervisr.dns.api.utils import BadAuthResponse, GoodResponse
-from supervisr.dns.forms.records import DataRecordForm
-from supervisr.dns.models import DataRecord
+from supervisr.dns.forms.records import DataRecordForm, SetRecordForm
+from supervisr.dns.models import DataRecord, SetRecord
 
 
-class RecordAPI(UserAcquirableModelAPI):
+class DataRecordAPI(UserAcquirableModelAPI):
     """Record API"""
+
     model = DataRecord
     form = DataRecordForm
+
+
+class SetRecordAPI(UserAcquirableModelAPI):
+    """Record API"""
+
+    model = SetRecord
+    form = SetRecordForm
 
 
 @logged_in_or_basicauth('Supervisr DNS Update')
