@@ -96,7 +96,8 @@ class SetupWizard(NamedWizard):
 
     def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """Check if this is actually a fresh install, otherwise skip setup"""
-        if not is_database_synchronized():
+        if not is_database_synchronized() and \
+                not Setting.get_bool('setup:is_fresh_install', default=True):
             # Upgrades should only be possible for signed in super-users.
             # Redirect to login otherwise
             if not request.user.is_superuser:
