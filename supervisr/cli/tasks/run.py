@@ -1,7 +1,6 @@
 """supervisr tasks"""
 import os
 
-import cherrypy
 from invoke import task
 from invoke.terminals import WINDOWS
 
@@ -47,33 +46,10 @@ def worker_monitor(ctx):
 # pylint: disable=unused-argument
 def web(ctx, pidfile='', production=False):
     """Run CherryPY-based application server"""
-    from django.conf import settings
-    from supervisr.core.wsgi import application, WSGILogger
+    from supervisr.cli.utils.cherry import run_wsgi
+    from supervisr.core.wsgi import application
     os.environ.setdefault('SUPERVISR_COMPONENT', 'web')
-    # Get default config from django settings
-    cherrypy.config.update(settings.CHERRYPY_SERVER)
-    if production:
-        cherrypy.config.update({
-            'global': {
-                'engine.autoreload.on': False,
-                'environment': 'production'
-            }
-        })
-    # Mount NullObject to serve static files
-    cherrypy.tree.mount(None, '/static', config={
-        '/': {
-            'tools.staticdir.on': True,
-            'tools.staticdir.dir': settings.STATIC_ROOT,
-            'tools.expires.on': True,
-            'tools.expires.secs': 86400,
-            'tools.gzip.on': True,
-        }
-    })
-    cherrypy.tree.graft(WSGILogger(application), '/')
-    if pidfile != '':
-        cherrypy.process.plugins.PIDFile(cherrypy.engine, pidfile).subscribe()
-    cherrypy.engine.start()
-    cherrypy.engine.block()
+    run_wsgi(application, log=True, production=production, static_dir='/static')
 
 @task
 # pylint: disable=invalid-name
