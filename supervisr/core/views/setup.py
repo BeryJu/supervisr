@@ -33,7 +33,7 @@ def should_create_user(wizard):
     try:
         # Ignore system user
         return (len(User.objects.all()) - 1) == 0
-    except (OperationalError, ProgrammingError):
+    except (OperationalError, ProgrammingError): # noqa
         return True
 
 class SetupWizard(NamedWizard):

@@ -1,14 +1,13 @@
 """Supervisr Core check_template_syntax ManagementCommand"""
-import logging
-import sys
 from glob import glob
+from logging import getLogger
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.template import Context, Template, TemplateSyntaxError
 from django.template.loaders.app_directories import get_app_template_dirs
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -29,4 +28,4 @@ class Command(BaseCommand):
                     except TemplateSyntaxError as exc:
                         LOGGER.error('%s errored: %s', short_path, exc)
                         return_code = 1
-        sys.exit(return_code)
+        return return_code

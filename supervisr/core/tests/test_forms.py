@@ -14,7 +14,7 @@ class TestForms(TestCase):
     """Supervisr Core Form Test"""
 
     def setUp(self):
-        super(TestForms, self).setUp()
+        super().setUp()
         self.signup_data = {
             'name': 'Test user',
             'username': 'beryjuorg',

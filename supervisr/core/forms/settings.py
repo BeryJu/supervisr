@@ -17,12 +17,12 @@ class SettingsForm(forms.Form):
     attrs_map = {}
 
     def __init__(self, *args, **kwargs):
-        super(SettingsForm, self).__init__(*args, **kwargs)
-        self._set_objects = self._get_setting_objs()
+        super().__init__(*args, **kwargs)
+        self._set_objects = self._get_setting_objects()
         self._make_widgets()
         self._apply_attrs_map()
 
-    def _get_setting_objs(self) -> dict:
+    def _get_setting_objects(self) -> dict:
         """Make sure all settings can be found"""
         objects = OrderedDict()
         for setting in self.settings:

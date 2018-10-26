@@ -23,6 +23,14 @@ class TestManagementCommands(TestCase):
         call_command_ret('setting', 'list')
         call_command_ret('setting', 'get', 'supervisr.core/install_id')
 
+    def test_template_syntax(self):
+        """Test check_template_syntax command"""
+        call_command_ret('check_template_syntax')
+
+    def test_migrate_all(self):
+        """Test check_migrate_all command"""
+        call_command_ret('migrate_all')
+
     def tearDown(self):
         """Set page down in cleaup"""
         call_command('deploy_page', 'down')

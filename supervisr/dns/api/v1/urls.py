@@ -3,7 +3,8 @@
 from django.conf.urls import url
 
 from supervisr.core.utils.constants import UUID_REGEX
-from supervisr.dns.api.v1.record import DataRecordAPI, SetRecordAPI, dyndns_update
+from supervisr.dns.api.v1.record import (DataRecordAPI, SetRecordAPI,
+                                         dyndns_update)
 from supervisr.dns.api.v1.zone import ReverseZoneAPI, ZoneAPI
 
 urlpatterns = [

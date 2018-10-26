@@ -17,5 +17,4 @@ class TestSetupViews(TestCase):
     def test_migrate(self):
         """Test migration runner"""
         wizard = SetupWizard()
-        for _migration, result in wizard.run_migrate().items():
-            self.assertEqual(result, 'success')
+        self.assertEqual(wizard.run_migrate(), {})
