@@ -1,7 +1,7 @@
 {% load supervisr_utils %}
 
 {
-    "name": "{{ PUPPET.module.owner.username }}-supervisr_dns",
+    "name": "{{ PUPPET.module.owner.username }}-supervisr_nix_dns",
     "version": "{{ PUPPET.version }}",
     "author": "{{ PUPPET.module.owner.username }}",
     "summary": "Manage DNS for supervisr.",
