@@ -1,3 +1,13 @@
+supervisr (0.3.10-alpha) unstable; urgency=medium
+
+  * [*] bump version: 0.3.9-alpha -> 0.3.10-alpha
+  * [core] don’t raise exception for mis-matching requirements
+  * [core] fix error when installing with pip
+  * [ci] disable services for build, remove stale deploy code
+  * [core] host custom pdoc package on https://pkg.beryju.org
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Sat, 27 Oct 2018 22:29:04 +0000
+
 supervisr (0.3.9-alpha) unstable; urgency=medium
 
   * [*] bump version: 0.3.8-alpha -> 0.3.9-alpha

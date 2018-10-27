@@ -1,6 +1,6 @@
 {
   "name": "supervisr-ui",
-  "version": "0.3.9-alpha",
+  "version": "0.3.10-alpha",
   "description": "Frontend components for supervisr",
   "scripts": {
     "build": "FORCE_COLOR=1 npx ng build --prod --output-hashing none --base-href /static/ && ../../sv manage collectstatic --no-input",
