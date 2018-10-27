@@ -11,7 +11,7 @@ def read_simple(path, mode='r'):
     with open(path, mode) as file:
         lines = file.read().split('\n')
         for line in lines:
-            if line.startswith('-e'):
+            if line.startswith('-e') or line.startswith('-i'):
                 lines.remove(line)
         return lines
 
