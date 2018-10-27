@@ -1,3 +1,25 @@
+supervisr (0.3.8-alpha) unstable; urgency=medium
+
+  * [*] bump version: 0.3.7-alpha -> 0.3.8-alpha
+  * [dns] move server config into nix_dns provider
+  * [core] fix setting loading for namespaces
+  * [core] fix too many values to unpack
+  * [core] add name spacing to http config section
+  * [cli] separate cherrypy server into generic function
+  * [core] [dns] cleanup unit tests and minor things
+  * [ui] close dropdown when user clicks on other element
+  * [ui] update dependencies
+  * [ui] fix tslint errors
+  * [core] fix infinite redirect for setup
+  * [core] only warn for module loading fail
+  * [dns] add API for Data and Set Record
+  * [dns] adjust templates for latest ui change
+  * [ui] support post- and pre-actionbar buttons, don’t show add button if no add view is given
+  * [core] better handle initial module loading
+  * [ci] build debian packages on python:3.5
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Sat, 27 Oct 2018 20:07:07 +0000
+
 supervisr (0.3.7-alpha) unstable; urgency=medium
 
   * [*] bump version: 0.3.6-alpha -> 0.3.7-alpha

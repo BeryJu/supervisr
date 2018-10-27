@@ -2,5 +2,5 @@
 __ui_name__ = 'Supervisr mod/auth/ldap'
 __author__ = 'Supervisr Team'
 __email__ = 'supervisr@beryju.org'
-__version__ = '0.3.7-alpha'
+__version__ = '0.3.8-alpha'
 default_app_config = 'supervisr.mod.auth.ldap.apps.SupervisrModAuthLDAPConfig'
