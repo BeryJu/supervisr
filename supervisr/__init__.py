@@ -1,2 +1,2 @@
 """supervisr"""
-__version__ = '0.3.10-alpha'
+__version__ = '0.3.11-alpha'

@@ -1,3 +1,11 @@
+supervisr (0.3.11-alpha) unstable; urgency=medium
+
+  * [*] bump version: 0.3.10-alpha -> 0.3.11-alpha
+  * [core] fix install of pdoc
+  * [ci] automatically install build-deps from debian/control file
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Sat, 27 Oct 2018 23:44:14 +0000
+
 supervisr (0.3.10-alpha) unstable; urgency=medium
 
   * [*] bump version: 0.3.9-alpha -> 0.3.10-alpha
