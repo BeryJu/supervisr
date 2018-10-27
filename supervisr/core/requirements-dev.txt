@@ -17,6 +17,6 @@ bandit<1.5.0
 unittest-xml-reporting
 bumpversion
 # Custom pdoc pacakge with support for google-style docstrings
---extra-index-url https://pkg.beryju.org/repository/pypi/
+--extra-index-url https://pkg.beryju.org/repository/pypi/simple
 pdoc_django
 twine
