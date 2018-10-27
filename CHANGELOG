@@ -1,3 +1,10 @@
+supervisr (0.3.12-alpha) unstable; urgency=medium
+
+  * [*] bump version: 0.3.11-alpha -> 0.3.12-alpha
+  * [core] fix extra_url
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Sat, 27 Oct 2018 23:49:27 +0000
+
 supervisr (0.3.11-alpha) unstable; urgency=medium
 
   * [*] bump version: 0.3.10-alpha -> 0.3.11-alpha

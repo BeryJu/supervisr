@@ -18,7 +18,7 @@ def read_simple(path, mode='r'):
 
 setup(
     name='supervisr',
-    version='0.3.11-alpha',
+    version='0.3.12-alpha',
     description='supervisr your IT.',
     long_description='\n'.join(read_simple('docs/index.md')[2:]),
     long_description_content_type='text/markdown',
