@@ -16,5 +16,8 @@ safety
 bandit<1.5.0
 unittest-xml-reporting
 bumpversion
--e git+https://github.com/BeryJu/pdoc.git@ebb38ec5d2a023a31442757bba697c60d315578f#egg=pdoc
+# Custom pdoc pacakge with support for google-style docstrings
+-i https://pkg.beryju.org/repository/pypi/
+pdoc
+-i https://pypi.python.org/simple
 twine
