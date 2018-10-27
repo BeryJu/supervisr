@@ -156,7 +156,7 @@ build-debian:
   image: debian:stable
   before_script:
     - apt-get update
-    - apt-get install python3 python3-pip graphviz -y
+    - apt install -y python3 python3-pip graphviz build-essential debhelper devscripts equivs wget
     - "python3 --version"
     - "python3 -m pip install -U virtualenv"
     - "rm -rf env/"
@@ -166,6 +166,8 @@ build-debian:
     - "mkdir ~/.ssh"
     - "cp .gitlab/known_hosts ~/.ssh/"
   script:
+    - mk-build-deps build/debian/control
+    - apt install ./*build-deps*deb -f -y
     - apt-get install -y libncurses5-dev libglib2.0-dev libgeoip-dev libtokyocabinet-dev zlib1g-dev libncursesw5-dev build-essential libbz2-dev dh-autoreconf dh-python dh-systemd dh-virtualenv dpkg-dev debhelper dh-exec
     - ./sv build.debian -u
   only:
