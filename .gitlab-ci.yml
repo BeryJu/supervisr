@@ -152,10 +152,11 @@ migration_mariadb:
 #     - 229-appliance-packaging
 #   stage: build-release
 build-debian:
+  services: []
   image: debian:stable
   before_script:
     - apt-get update
-    - apt-get install python3 python3-pip graphviz
+    - apt-get install python3 python3-pip graphviz -y
     - "python3 --version"
     - "python3 -m pip install -U virtualenv"
     - "rm -rf env/"
@@ -172,6 +173,7 @@ build-debian:
     - /^version/.*$/
   stage: build-release
 build-pypi:
+  services: []
   script:
     - ./sv build.pypi --no-test
   only:
@@ -216,19 +218,3 @@ deploy-dev-docs:
     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
     - './sv env.docs'
     - 'rsync -avh --delete docgen/supervisr/* "beryjuorg@ory1-web-prod-1.ory1.beryju.org:supervisr.beryju.org/dev-docs/${CI_COMMIT_REF_NAME}"'
-
-# Deploy
-# deploy:
-#   before_script: []
-#   services: []
-#   environment:
-#     name: production
-#     url: "https://my.beryju.org"
-#   only:
-#     - prod
-#   script:
-#     - "eval $(ssh-agent -s)"
-#     - "mkdir ~/.ssh -p"
-#     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"
-#     - "ssh beryjuorg@ory1-web-prod-1.ory1.beryju.org \"./update_supervisr.sh\""
-#   stage: deploy
