@@ -71,9 +71,9 @@ REQUEST_APPROVAL_PROMPT = 'auto'
 CHERRYPY_SERVER = {}
 for name, namespace in CONFIG.get('http').items():
     CHERRYPY_SERVER[name] = {
-        'server.socket_host': CONFIG.get('listen', '0.0.0.0'), # nosec
-        'server.socket_port': CONFIG.get('port', 8000),
-        'server.thread_pool': CONFIG.get('threads', 30),
+        'server.socket_host': namespace.get('listen', '0.0.0.0'), # nosec
+        'server.socket_port': namespace.get('port', 8000),
+        'server.thread_pool': namespace.get('threads', 30),
         'log.screen': False,
         'log.access_file': '',
         'log.error_file': '',
