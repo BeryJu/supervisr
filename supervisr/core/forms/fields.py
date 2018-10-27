@@ -32,7 +32,6 @@ class StatusField(ChoiceField):
     def clean(self, value=''):
         if self.current < self.minimum:
             value = STATUS_CHOICE_ERROR
-            raise ValidationError(self.below_minimum_message)
         elif self.current < self.recommended:
             value = STATUS_CHOICE_WARNING
         else:
