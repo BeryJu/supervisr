@@ -68,8 +68,9 @@ NOCAPTCHA = True
 
 REQUEST_APPROVAL_PROMPT = 'auto'
 
-with CONFIG.cd('web'):
-    CHERRYPY_SERVER = {
+CHERRYPY_SERVER = {}
+for name, namespace in CONFIG.get('http'):
+    CHERRYPY_SERVER[name] = {
         'server.socket_host': CONFIG.get('listen', '0.0.0.0'), # nosec
         'server.socket_port': CONFIG.get('port', 8000),
         'server.thread_pool': CONFIG.get('threads', 30),

@@ -24,10 +24,11 @@ email:
   use_ssl: false
   from: supervisr <supervisr@domain.tld>
 sentry: ''
-web:
-  listen: 0.0.0.0
-  port: 8000
-  threads: 30
+http:
+  default:
+    listen: 0.0.0.0
+    port: 8000
+    threads: 30
 footer:
   # - text: ''
   #   view: ''

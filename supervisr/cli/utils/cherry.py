@@ -1,12 +1,13 @@
 """supervisr cli cherrypy utils"""
 import cherrypy
 
-def run_wsgi(application, log=True, production=False, static_dir=None):
+
+def run_wsgi(application, log=True, production=False, static_dir=None, config_namespace='default'):
     """Run wsgi application with cherrypy"""
     from supervisr.core.wsgi import WSGILogger
     from django.conf import settings
     # Get default config from django settings
-    cherrypy.config.update(settings.CHERRYPY_SERVER)
+    cherrypy.config.update(settings.CHERRYPY_SERVER.get(config_namespace))
     if production:
         cherrypy.config.update({
             'global': {
