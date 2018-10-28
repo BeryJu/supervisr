@@ -263,11 +263,8 @@ with CONFIG.cd('email'):
 ENVIRONMENT = 'production' if DEBUG is False else 'development'
 
 # Try to get version from git, otherwise get from setup.py
-try:
-    VERSION = raven.fetch_git_sha(os.path.dirname(os.pardir))[:8]
-except raven.exceptions.InvalidGitRepository:
-    from supervisr import __version__  # pylint: disable=no-name-in-module, useless-suppression
-    VERSION = __version__
+from supervisr import __version__  # pylint: disable=no-name-in-module, useless-suppression
+VERSION = __version__
 
 RAVEN_CONFIG = {
     'dsn': CONFIG.get('sentry', ''),
