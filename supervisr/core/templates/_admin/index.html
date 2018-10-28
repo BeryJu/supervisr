@@ -7,8 +7,10 @@
 {% title "Overview - Administrator" %}
 {% endblock %}
 
-{% block content %}
-<h1><clr-icon shape="analytics" size="48"></clr-icon>{% trans "Administrator Dashboard" %}</h1>
+{% block content_area %}
+<div class="container">
+  <h1><clr-icon shape="analytics" size="48"></clr-icon>{% trans "Administrator Dashboard" %}</h1>
+</div>
 <div class="row">
   <div class="col-md-3">
     <div class="card">
@@ -22,33 +24,45 @@
       </div>
     </div>
   </div>
-  <div class="col-md-6">
-    <table class="table">
-      <tbody>
-        <tr>
-          <td>{% trans 'Version' %}</td>
-          <td>{% setting 'VERSION' %}</td>
-        </tr>
-        <tr>
-          <td>{% trans 'Install ID' %}</td>
-          <td>{% supervisr_setting 'install_id' %}</td>
-        </tr>
-      </tbody>
-    </table>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>{% trans 'Celery Workers' %}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for worker in celery_workers %}
-        <tr>
-          <td>{{ worker }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        {% trans "Installation Info" %}
+      </div>
+      <div class="card-block">
+        <div class="card-text">
+          <table class="table">
+            <tbody>
+              <tr>
+                <td>{% trans 'Version' %}</td>
+                <td>{% setting 'VERSION' %}</td>
+              </tr>
+              <tr>
+                <td>{% trans 'Install ID' %}</td>
+                <td>{% supervisr_setting 'install_id' %}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-5">
+    <div class="card">
+      <div class="card-header">
+        {% trans "Workers" %}
+      </div>
+      <div class="card-block">
+        <div class="card-text">
+          <angular
+              component="datagrid"
+              api-path="core::system::workers">
+              <clr-header-column field="name">{% trans 'Name' %}</clr-header-column>
+              <clr-header-column field="status">{% trans 'Status' %}</clr-header-column>
+          </angular>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
