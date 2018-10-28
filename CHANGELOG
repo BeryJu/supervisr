@@ -1,3 +1,19 @@
+supervisr (0.3.14-alpha) unstable; urgency=medium
+
+  * [*] bump version: 0.3.13-alpha -> 0.3.14-alpha
+  * [core] give more userinfos for user API
+  * [core] switch more to datagrid
+  * [core] cleanup api and forms
+  * [core] add users API
+  * [core] move celery workers to API
+  * [core] always load config from __init__
+  * [ui] handle timestamp and link type, rebuild with aot
+  * [core] better handle unexpected error in provider (create Event instance)
+  * [core] correctly handle StreamingResponse in statistic
+  * [core] only add statistics when DEBUG is enabled
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Sun, 28 Oct 2018 19:26:58 +0000
+
 supervisr (0.3.13-alpha) unstable; urgency=medium
 
   * [*] bump version: 0.3.12-alpha -> 0.3.13-alpha
