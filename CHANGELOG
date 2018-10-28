@@ -1,3 +1,11 @@
+supervisr (0.3.13-alpha) unstable; urgency=medium
+
+  * [*] bump version: 0.3.12-alpha -> 0.3.13-alpha
+  * [core] remove direct pdoc dependency since pip can’t handle external links. Add in CI config
+  * [core] add extra dependency link for pdoc_django
+
+ -- Jens Langhammer <jens.langhammer@beryju.org>  Sun, 28 Oct 2018 11:04:43 +0000
+
 supervisr (0.3.12-alpha) unstable; urgency=medium
 
   * [*] bump version: 0.3.11-alpha -> 0.3.12-alpha
