@@ -215,6 +215,7 @@ deploy-dev-docs:
   script:
     - 'apt update'
     - 'apt install -y rsync'
+    - pip install --extra-index-url https://pkg.beryju.org/repository/pypi/simple pdoc_django
     - 'rm -rf docgen/'
     - "eval $(ssh-agent -s)"
     - "echo \"${CI_SSH_PRIVATE}\" | ssh-add -"

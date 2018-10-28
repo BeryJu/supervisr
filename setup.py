@@ -30,9 +30,6 @@ setup(
     extras_require={
         'dev': read_simple('requirements-dev.txt'),
     },
-    dependency_links=[
-        'https://pkg.beryju.org/repository/pypi/pdoc_django/'
-    ],
     test_suite='supervisr.cli.test_runner.test_runner',
     keywords='supervisr sso server management web hosting dns mail email',
     license='MIT',
