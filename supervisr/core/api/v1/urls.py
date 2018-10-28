@@ -9,6 +9,7 @@ from supervisr.core.api.v1.events import EventAPI
 from supervisr.core.api.v1.providers import ProviderAPI
 from supervisr.core.api.v1.system import SystemAPI
 from supervisr.core.api.v1.tasks import TaskAPI
+from supervisr.core.api.v1.users import UserAPI
 from supervisr.core.api.v1.utils import UtilAPI
 
 urlpatterns = [
@@ -20,12 +21,6 @@ urlpatterns = [
     url(r'^providers/(?P<verb>\w+)/$', ProviderAPI.as_view(), name='providers'),
     url(r'^system/(?P<verb>\w+)/$', SystemAPI.as_view(), name='system'),
     url(r'^tasks/(?P<verb>\w+)/$', TaskAPI.as_view(), name='tasks'),
+    url(r'^users/(?P<verb>\w+)/$', UserAPI.as_view(), name='users'),
     url(r'^utils/(?P<verb>\w+)/$', UtilAPI.as_view(), name='utils'),
 ]
-
-# from rest_framework import routers
-# from supervisr.core.api.v1.credentials import CredentialViewSet
-
-# core_router = routers.DefaultRouter()
-# core_router.register(r'userpasswordcredential', CredentialViewSet)
-# urlpatterns = core_router.urls
