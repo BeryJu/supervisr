@@ -1,4 +1,5 @@
 import * as moment from 'moment';
+import { createElement } from '@angular/core/src/view/element';
 
 export class Model {
 
@@ -9,6 +10,13 @@ export class Model {
             switch (type) {
                 case 'timedelta':
                     return moment().subtract(value, 'seconds').fromNow();
+                case 'timestamp':
+                    return moment.unix(value);
+                case 'link':
+                    const link = <HTMLAnchorElement>(document.createElement('a'));
+                    link.href = value;
+                    link.innerText = 'Link';
+                    return link;
                 default:
                     return value;
             }

@@ -1,4 +1,4 @@
-<clr-datagrid class="datagrid-compact" [(clrDgSelected)]="selected" [clDgRowSelection]="true" [clrDgLoading]="loading" (clrDgRefresh)="refresh($event)">
+<clr-datagrid class="datagrid-compact" [(clrDgSelected)]="selected" [clrDgLoading]="loading" (clrDgRefresh)="refresh($event)">
   <clr-dg-action-bar *ngIf="actionBarViews.enabled === true">
     <div class="btn-group">
       <button type="button" *ngIf="actionBarViews.add !== null" class="btn btn-sm btn-secondary" (click)="action('add')">
@@ -28,8 +28,7 @@
   </clr-dg-column>
 
   <clr-dg-row *clrDgItems="let row of dataset" [clrDgItem]="row">
-    <clr-dg-cell *ngFor="let col of bodyColumns">
-      {{ getValue(row, col) }}
+    <clr-dg-cell *ngFor="let col of bodyColumns" [innerHTML]="getValue(row, col)">
     </clr-dg-cell>
   </clr-dg-row>
 

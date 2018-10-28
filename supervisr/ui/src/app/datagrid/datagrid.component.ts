@@ -81,7 +81,12 @@ export class DatagridComponent extends HTMLChildrenComponent implements AfterVie
                 return 'No';
             }
         } else {
-            return value.toString();
+            if (value instanceof HTMLAnchorElement) {
+                /// Don't modify links
+                return value.outerHTML;
+            } else {
+                return value.toString();
+            }
         }
     }
 
