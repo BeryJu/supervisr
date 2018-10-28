@@ -15,9 +15,20 @@ T = TypeVar('T')
 class Serializer(Generic[T]):
     """Serializer for model"""
 
+    is_superuser = False
+    root_model = Model
+
+    def __init__(self, **kwargs):
+        for name, value in kwargs.items():
+            setattr(self, name, value)
+
     def serialize(self, instance: T, parent: 'SerializerRegistry') -> dict:
         """Serialize instance to dict"""
         raise NotImplementedError()
+
+
+class LinkType:
+    """Stub class to annotate a Link"""
 
 
 class SerializerRegistry:
@@ -49,12 +60,17 @@ class SerializerRegistry:
                 '__value': value.total_seconds(),
                 'type': 'timedelta'
             }
+        if field_type == LinkType:
+            return {
+                '__value': value,
+                'type': 'link'
+            }
         return value
 
     def serializer(self, model: Model):
         """Class decorator to register classes inline."""
         def inner_wrapper(cls):
-            self.__mapping[model] = cls()
+            self.__mapping[model] = cls
             return cls
         return inner_wrapper
 
@@ -71,7 +87,7 @@ class SerializerRegistry:
                 flat[key] = value
         return flat
 
-    def render(self, model_instance: Model) -> dict:
+    def render(self, model_instance: Model, **extra) -> dict:
         """Render model while auto-resolving ForeignKeys and ManyToManyFields"""
         serialized = {}
         if isinstance(model_instance, CastableModel):
@@ -80,7 +96,9 @@ class SerializerRegistry:
         # getmro also returns the class of model_instance so we don't need to check that extra
         for superclass in getmro(model_instance.__class__):
             if superclass in self.__mapping:
-                serialized.update(self.__mapping.get(superclass).serialize(model_instance, self))
+                serializer_class = self.__mapping.get(superclass)
+                serializer_instance = serializer_class(**extra)
+                serialized.update(serializer_instance.serialize(model_instance, self))
         serialized = self.__flatten(serialized)
         if serialized == {}:
             raise KeyError("No compatible serializers for %s found" % model_instance.__class__)

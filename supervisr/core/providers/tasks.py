@@ -91,5 +91,5 @@ def provider_do_work(self, action: ProviderAction, provider_pk: int,
         #     meta={'error': str(exc)})
         # ignore the task so no other state is recorded
         raise Ignore()
-    except Exception as exc: # noqa
+    except Exception as exc: # pylint: disable=broad-except
         handle_unexpected_error(exc, self.invoker)

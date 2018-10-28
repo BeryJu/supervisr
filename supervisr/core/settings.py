@@ -49,9 +49,11 @@ import importlib
 import os
 import sys
 
-import raven
 from django.contrib import messages
 
+# Try to get version from git, otherwise get from setup.py
+from supervisr import \
+    __version__  # pylint: disable=no-name-in-module, useless-suppression
 from supervisr.core.utils.config import CONFIG
 
 # WARNING!
@@ -262,8 +264,6 @@ with CONFIG.cd('email'):
 
 ENVIRONMENT = 'production' if DEBUG is False else 'development'
 
-# Try to get version from git, otherwise get from setup.py
-from supervisr import __version__  # pylint: disable=no-name-in-module, useless-suppression
 VERSION = __version__
 
 RAVEN_CONFIG = {

@@ -1,10 +1,11 @@
 """supervisr core domain serializer"""
-from datetime import timedelta
+from datetime import datetime, timedelta
 from uuid import UUID
 
 from django.utils import timezone
 
-from supervisr.core.api.serializers.registry import (REGISTRY, Serializer,
+from supervisr.core.api.serializers.registry import (REGISTRY, LinkType,
+                                                     Serializer,
                                                      SerializerRegistry)
 from supervisr.core.models import (Domain, Event, ProviderAcquirable, User,
                                    UserAcquirable)
@@ -17,9 +18,16 @@ class UserSerializer(Serializer[User]):
     # pylint: disable=unused-argument
     def serialize(self, instance: User, parent: SerializerRegistry) -> dict:
         """Serialize User"""
-        return {
-            'username': instance.short_name,
+        serialized = {
+            'short_name': instance.short_name,
         }
+        if self.is_superuser and self.root_model == User:
+            # User is superuser and we're root -> send more data
+            serialized['email'] = instance.email
+            serialized['username'] = instance.username
+            serialized['date_joined'] = parent.annotate(instance.date_joined, datetime)
+            serialized['impersonate'] = parent.annotate('?__impersonate=%s' % instance.pk, LinkType)
+        return serialized
 
 
 @REGISTRY.serializer(Domain)
