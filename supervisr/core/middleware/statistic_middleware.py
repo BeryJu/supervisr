@@ -3,6 +3,7 @@ from functools import reduce
 from operator import add
 from time import time
 
+from django.conf import settings
 from django.db import connection
 from django.http import HttpRequest, HttpResponse
 from django.urls import resolve
@@ -16,6 +17,8 @@ def statistic_middleware(get_response):
 
     def middleware(request: HttpRequest) -> HttpResponse:
         """Middleware get stats"""
+        if not settings.DEBUG:
+            return get_response(request)
         # get number of db queries before we do anything
         before_queries = len(connection.queries)
 

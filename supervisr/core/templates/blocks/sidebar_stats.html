@@ -2,6 +2,8 @@
 {% load supervisr_utils %}
 {% load supervisr_ifapp %}
 
+{% setting 'DEBUG' as DEBUG %}
+{% if DEBUG %}
 <div class="card footer-card">
   <div class="card-block">
     <ul>
@@ -10,3 +12,4 @@
     </ul>
   </div>
 </div>
+{% endif %}
