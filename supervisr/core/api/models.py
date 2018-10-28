@@ -80,16 +80,12 @@ class ModelAPI(CRUDAPI):
     def model_to_dict(self, queryset: QuerySet):
         """Convert queryset to dict"""
         final_arr = []
+        extra = {
+            'is_superuser': self.request.user.is_superuser,
+            'root_model': queryset.model
+        }
         for model_instance in queryset:
-            # inst_dict = {}
-            # if getattr(model_instance, 'uuid'):
-            #     inst_dict['uuid'] = model_instance.uuid
-            # for field in self.viewable_fields:
-            #     data = getattr(model_instance, field, None)
-            #     if isinstance(data, models.Model):
-            #         data = data.pk
-            #     inst_dict[field] = data
-            final_arr.append(REGISTRY.render(model_instance))
+            final_arr.append(REGISTRY.render(model_instance, **extra))
         return final_arr
 
     @staticmethod

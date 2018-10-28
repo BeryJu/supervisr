@@ -1,6 +1,6 @@
 """supervisr core form fields"""
 
-from django.forms import ChoiceField, ValidationError
+from django.forms import ChoiceField
 
 STATUS_CHOICE_SUCCESS = 'success'
 STATUS_CHOICE_WARNING = 'warning'

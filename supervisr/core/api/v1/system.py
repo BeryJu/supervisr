@@ -1,12 +1,11 @@
 """Supervisr Core APIv1"""
 import celery
-
 from django.core.cache import cache
 
 from supervisr.core.api.base import API
+from supervisr.core.exceptions import UnauthorizedException
 from supervisr.core.signals import get_module_health
 from supervisr.core.utils import check_db_connection
-from supervisr.core.exceptions import UnauthorizedException
 
 
 class SystemAPI(API):

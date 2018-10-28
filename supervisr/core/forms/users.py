@@ -22,7 +22,7 @@ class EditUserForm(forms.Form):
     api_key = forms.CharField(label=_('API Key'), disabled=True, required=False)
 
     def __init__(self, *args, **kwargs):
-        super(EditUserForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         css_files = glob(path.join(settings.STATIC_ROOT, "css/*.theme.css"))
         choices = []
         for theme in css_files:
