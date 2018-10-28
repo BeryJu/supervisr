@@ -3,7 +3,6 @@
 import platform
 import sys
 
-import celery
 from django import get_version as django_version
 from django.conf import settings as django_settings
 from django.contrib import messages
@@ -30,7 +29,6 @@ class IndexView(TemplateView, AdminRequiredMixin):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user_count'] = User.objects.all().count() - 1
-        context['celery_workers'] = celery.current_app.control.inspect().ping()
         return context
 
 
