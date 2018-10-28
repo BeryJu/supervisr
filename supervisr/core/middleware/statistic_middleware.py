@@ -6,6 +6,7 @@ from time import time
 from django.conf import settings
 from django.db import connection
 from django.http import HttpRequest, HttpResponse
+from django.http.response import StreamingHttpResponse
 from django.urls import resolve
 
 from supervisr.core.utils import get_remote_ip, get_reverse_dns
@@ -71,8 +72,9 @@ def statistic_middleware(get_response):
                           'type': StatisticType.AsIs
                       })
         # replace the comment if found
-        if response and response.content:
-            response.content = response.content.replace(
-                b'||TIMING||', str.encode(str(int(total_time * 1000))))
+        if response and not isinstance(response, StreamingHttpResponse):
+            if response.content:
+                response.content = response.content.replace(
+                    b'||TIMING||', str.encode(str(int(total_time * 1000))))
         return response
     return middleware
