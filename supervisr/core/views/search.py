@@ -6,6 +6,7 @@ from logging import getLogger
 from typing import Dict, List
 
 from django.apps import apps
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model, Q
 from django.http import Http404, HttpRequest
@@ -16,7 +17,6 @@ from django.views.generic import TemplateView
 from supervisr.core.models import UserAcquirable
 from supervisr.core.signals import on_search
 from supervisr.core.utils import get_apps
-from supervisr.core.views.generic import LoginRequiredMixin
 
 LOGGER = getLogger(__name__)
 

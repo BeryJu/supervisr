@@ -1,17 +1,18 @@
 """supervisr core graph views"""
 from typing import List, Union
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import ManyToManyField, Model, Q
 from django.http import Http404, HttpRequest, HttpResponse
+from django.views.generic import View
 from graphviz import Digraph
 
 from supervisr.core.models import (CastableModel, ProviderInstance, User,
                                    UserAcquirable)
 from supervisr.core.utils import class_to_path
-from supervisr.core.views.generic import LoginRequiredMixin
 
 
-class GraphView(LoginRequiredMixin):
+class GraphView(View, LoginRequiredMixin):
     """View to generate Graph for a model instance"""
 
     __graph = None

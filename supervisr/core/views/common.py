@@ -2,16 +2,16 @@
 
 import sys
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.views import View
 
 from supervisr.core.api.utils import api_response
 from supervisr.core.models import Event, Product, ProviderInstance
-from supervisr.core.views.generic import LoginRequiredMixin
 
 
-class IndexView(LoginRequiredMixin):
+class IndexView(View, LoginRequiredMixin):
     """Show index view with hosted_applications quicklaunch and recent events"""
 
     def get(self, request: HttpRequest) -> HttpResponse:
