@@ -5,10 +5,10 @@ databases:
     name: supervisr_test
     user: root
     password: 'EK-5jnKfjrGRm<77'
-    host: mariadb
+    host: localhost
     port: ''
     options:
       charset: UTF8MB4
       sql_mode: 'STRICT_TRANS_TABLES'
       init_command: "ALTER DATABASE supervisr_test CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
-redis: redis
+redis: localhost
