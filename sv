@@ -9,6 +9,7 @@ import sys
 virtual_env_name = 'env'
 is_packaged = False
 command = ""
+exit_code = 0
 
 def call(command):
     """Call command, redirect stdout and stderr"""
@@ -92,10 +93,11 @@ if is_packaged:
         sys.exit(1)
     # We are root so we can change users
     inner_command = wrap_virtualenv(command)
-    call('/bin/su -s %s supervisr' % inner_command)
+    exit_code = call('/bin/su -s %s supervisr' % inner_command)
 else:
     if 'VIRTUAL_ENV' in os.environ:
         # Virtualenv is already enabled, just execute command
-        call(command)
+        exit_code = call(command)
     else:
-        call(wrap_virtualenv(command))
+        exit_code = call(wrap_virtualenv(command))
+sys.exit(exit_code)
