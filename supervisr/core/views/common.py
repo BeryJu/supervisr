@@ -11,7 +11,7 @@ from supervisr.core.api.utils import api_response
 from supervisr.core.models import Event, Product, ProviderInstance
 
 
-class IndexView(View, LoginRequiredMixin):
+class IndexView(LoginRequiredMixin, View):
     """Show index view with hosted_applications quicklaunch and recent events"""
 
     def get(self, request: HttpRequest) -> HttpResponse:

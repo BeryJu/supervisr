@@ -22,7 +22,7 @@ TEMPLATES = {
 
 
 # pylint: disable=too-many-ancestors
-class BindZoneImportWizard(BaseWizardView, LoginRequiredMixin):
+class BindZoneImportWizard(LoginRequiredMixin, BaseWizardView):
     """Import DNS records from bind zone"""
 
     title = _('Import Bind Zone')

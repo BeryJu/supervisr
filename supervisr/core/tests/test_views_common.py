@@ -10,7 +10,7 @@ class TestCommonViews(TestCase):
     """Supervisr Core CommonView Test"""
 
     def setUp(self):
-        super(TestCommonViews, self).setUp()
+        super().setUp()
         Setting.set('analytics:ga:enabled', True)
 
     def test_index_view(self):

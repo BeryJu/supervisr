@@ -2,6 +2,7 @@
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
@@ -9,7 +10,7 @@ from django.views.generic import TemplateView
 
 from supervisr.core.forms.settings import SettingsForm
 from supervisr.core.models import Setting
-from supervisr.core.views.generic import AdminRequiredMixin, LoginRequiredMixin
+from supervisr.core.views.generic import AdminRequiredMixin
 
 
 @login_required

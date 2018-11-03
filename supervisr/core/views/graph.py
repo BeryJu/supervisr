@@ -12,7 +12,7 @@ from supervisr.core.models import (CastableModel, ProviderInstance, User,
 from supervisr.core.utils import class_to_path
 
 
-class GraphView(View, LoginRequiredMixin):
+class GraphView(LoginRequiredMixin, View):
     """View to generate Graph for a model instance"""
 
     __graph = None

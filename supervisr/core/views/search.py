@@ -39,7 +39,7 @@ class SearchQuery:
     query = ''
 
 
-class SearchView(TemplateView, LoginRequiredMixin):
+class SearchView(LoginRequiredMixin, TemplateView):
     """Search"""
 
     template_name = 'search/search.html'
