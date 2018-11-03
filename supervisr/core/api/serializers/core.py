@@ -15,7 +15,6 @@ from supervisr.core.models import (Domain, Event, ProviderAcquirable, User,
 class UserSerializer(Serializer[User]):
     """Serialize User"""
 
-    # pylint: disable=unused-argument
     def serialize(self, instance: User, parent: SerializerRegistry) -> dict:
         """Serialize User"""
         serialized = {

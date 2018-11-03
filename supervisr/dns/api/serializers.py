@@ -52,7 +52,6 @@ class DataRecordSerializer(Serializer[DataRecord]):
 class SetRecordSerializer(Serializer[SetRecord]):
     """Serialize SetRecord"""
 
-    # pylint: disable=unused-argument
     def serialize(self, instance: SetRecord, parent: SerializerRegistry) -> dict:
         """Serialize SetRecord"""
         return {
