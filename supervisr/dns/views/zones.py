@@ -1,7 +1,8 @@
 """Supervisr DNS Views"""
 from django.contrib import messages
 from django.db.models import Model, QuerySet
-from django.shortcuts import get_object_or_404, redirect, reverse
+from django.http import Http404
+from django.shortcuts import redirect, reverse
 from django.utils.translation import ugettext as _
 
 from supervisr.core.models import (Domain, ProviderInstance,
@@ -26,12 +27,15 @@ class RecordIndexView(GenericIndexView):
     zone = None
 
     def get_instance(self) -> QuerySet:
-        self.zone = get_object_or_404(Zone,
-                                      uuid=self.kwargs.get('uuid'),
-                                      users__in=[self.request.user])
-        # TODO: Check this zone=self.zone for validity
-        return self.model.objects.filter(zone=self.zone,
-                                         users__in=[self.request.user]).order_by('name')
+        for klass in [ReverseZone, Zone]:
+            zones = klass.objects.filter(uuid=self.kwargs.get('uuid'))
+            if zones.exists():
+                self.zone = zones.first()
+        if not self.zone:
+            raise Http404
+        if self.request.user not in self.zone.users.all():
+            raise Http404
+        return self.zone.records.filter(users__in=[self.request.user]).order_by('name')
 
     def update_kwargs(self, kwargs: dict) -> dict:
         kwargs['zone'] = self.zone

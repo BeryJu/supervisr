@@ -4,7 +4,7 @@
 {% load i18n %}
 
 {% block title %}
-{% title zone.domain.domain_name 'Records' %}
+{% title zone 'Records' %}
 {% endblock %}
 
 {% block header %}
@@ -19,7 +19,7 @@
 {% block content %}
 <h1>
   <clr-icon shape="view-list" size="48"></clr-icon>
-  {% blocktrans with name=zone.domain.domain_name %}
+  {% blocktrans with name=zone %}
     Records for {{ name }}
   {% endblocktrans %}
   <a data-action="show-modal" data-modal="graph-modal">

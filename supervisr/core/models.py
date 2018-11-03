@@ -1,6 +1,4 @@
 """supervisr core models"""
-from __future__ import unicode_literals
-
 import base64
 import inspect
 import json

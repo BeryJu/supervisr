@@ -24,7 +24,7 @@
         {% related_models 'supervisr.dns.models.ReverseZone' as zones %}
         {% for zone in zones %}
         <li>
-          <a href="" class="nav-link">{{ zone.zone_ip }}</a>
+          <a href="{% url 'supervisr_dns:record-list' uuid=zone.uuid %}" class="nav-link {% is_active_url 'supervisr_dns:record-list' uuid=zone.uuid %}" class="nav-link">{{ zone.zone_ip }}</a>
         </li>
         {% endfor %}
       </ul>
