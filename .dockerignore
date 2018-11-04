@@ -5,4 +5,4 @@ assets/
 build/packer/output*
 build/packer/packer_cache/
 supervisr/environments/local.yml
-node_modules
+supervisr/ui/node_modules/

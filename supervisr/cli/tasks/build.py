@@ -42,7 +42,7 @@ def debian(ctx, signed=False, cleanup=True, upload=False):
 def docker(ctx):
     """Build debian package"""
     ctx.run('docker-compose --file build/docker/docker-compose.yml build supervisr')
-    ctx.run(('docker-compose --file build/docker/docker-compose.debug.yml run supervisr '
+    ctx.run(('docker-compose --file build/docker/docker-compose.prebuilt.yml run supervisr '
              'build/docker/start_wrapper.sh "inv env.unittest"'))
 
 @task
