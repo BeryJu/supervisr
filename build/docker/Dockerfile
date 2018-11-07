@@ -1,4 +1,4 @@
-FROM python:3.6-slim-stretch
+FROM debian:buster-slim
 
 LABEL Author="BeryJu.org <supervisr@beryju.org>"
 
@@ -9,9 +9,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 COPY . /supervisr/
 RUN apt-get update && \
-    apt-get install netcat build-essential -y --no-install-recommends && \
+    apt-get install netcat build-essential python3 python3-pip python3-dev -y --no-install-recommends && \
     rm -rf /var/lib/apt/lists/* && \
-    pip install --no-cache-dir -r /supervisr/requirements.txt && \
+    python3 -m pip install --no-cache-dir setuptools && \
+    python3 -m pip install --no-cache-dir -r /supervisr/requirements.txt && \
     apt-get remove --purge -y build-essential && \
     apt-get autoremove --purge -y
 WORKDIR /supervisr/

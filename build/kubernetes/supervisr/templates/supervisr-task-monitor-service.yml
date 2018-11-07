@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    supervisr.component: task-monitor
+    app.kubernetes.io/name: {{ include "supervisr.name" . }}
+    helm.sh/chart: {{ include "supervisr.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ include "supervisr.name" . }}-task-monitor
+spec:
+  clusterIP: None
+  ports:
+  - name: http
+    port: 5555
+  selector:
+    app.kubernetes.io/name: {{ include "supervisr.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    supervisr.component: task-monitor
+status:
+  loadBalancer: {}

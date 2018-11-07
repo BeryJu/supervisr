@@ -12,6 +12,9 @@
   "[html]": {
     "editor.tabSize": 2,
   },
+  "[yaml]": {
+    "editor.tabSize": 2
+  },
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,

@@ -1,0 +1,23 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "supervisr.name" . }}-ingress
+  labels:
+    app.kubernetes.io/name: {{ include "supervisr.name" . }}
+    helm.sh/chart: {{ include "supervisr.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "supervisr.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+  rules:
+    - host: {{ .Values.host }}
+      http:
+        paths:
+          - backend:
+              serviceName: {{ include "supervisr.name" . }}-service
+              servicePort: 8000

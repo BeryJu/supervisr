@@ -1,0 +1,47 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    supervisr.component: task-scheduler
+    app.kubernetes.io/name: {{ include "supervisr.name" . }}
+    helm.sh/chart: {{ include "supervisr.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ include "supervisr.name" . }}-task-scheduler
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "supervisr.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "supervisr.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        supervisr.component: task-scheduler
+    spec:
+      containers:
+        - args:
+            - ./sv
+            - run.worker-scheduler
+          image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          name: {{ include "supervisr.name" . }}-task-scheduler
+          resources: {}
+          volumeMounts:
+            - mountPath: /supervisr/supervisr/data/media
+              name: supervisr-data
+            - mountPath: /supervisr/supervisr/environments
+              name: config-volume
+      restartPolicy: Always
+      volumes:
+        - name: supervisr-data
+          persistentVolumeClaim:
+            claimName: {{ include "supervisr.name" . }}-data
+        - name: config-volume
+          configMap:
+            name: {{ include "supervisr.name" . }}-config

@@ -1,0 +1,10 @@
+apiVersion: v1
+name: supervisr
+version: 0.3.14-alpha
+home: https://supervisr.beryju.org/docs/master/
+sources:
+  - https://git.beryju.org/BeryJu.org/supervisr
+maintainers:
+  - name: Jens Langhammer
+    email: jens@beryju.org
+icon: https://git.beryju.org/BeryJu.org/supervisr/raw/master/supervisr/ui/src/assets/icon.svg
