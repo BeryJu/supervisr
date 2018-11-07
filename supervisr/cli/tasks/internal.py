@@ -6,8 +6,11 @@ import time
 from glob import glob
 from logging import getLogger
 
+import requests
 from invoke import task
 from invoke.terminals import WINDOWS
+
+import supervisr
 
 LOGGER = getLogger(__name__)
 
@@ -21,6 +24,14 @@ def compile_requirements(ctx):
     requirements_dev = glob("supervisr/**/requirements-dev.txt", recursive=True)
     ctx.run("cat %s > requirements.txt" % ' '.join(requirements))
     ctx.run("cat %s > requirements-dev.txt" % ' '.join(requirements + requirements_dev))
+
+
+@task
+# pylint: disable=unused-argument
+def notify_sentry(ctx):
+    """Notify sentry of new release version"""
+    print(requests.post(os.environ.get('SENTRY_RELEASE_URL'),
+                        json={'version': supervisr.__version__}))
 
 
 @task

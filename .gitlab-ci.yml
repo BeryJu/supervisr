@@ -16,6 +16,7 @@ stages:
   - test
   - test-db
   - build-release
+  - build-release-post
   - deploy
   - deploy-docs
 image: python:3.6
@@ -182,6 +183,16 @@ build-pypi:
     - tags
     - /^version/.*$/
   stage: build-release
+
+# Post release notify sentry
+build-notify-sentry:
+  services: []
+  script:
+    - ./sv internal.notify-sentry
+  only:
+    - tags
+    - /^version/.*$/
+  stage: build-release-post
 
 # Deploy documentation
 deploy-doc:
