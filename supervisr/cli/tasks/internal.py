@@ -22,8 +22,12 @@ def compile_requirements(ctx):
         ctx.config.run.shell = "C:\\Windows\\System32\\cmd.exe"
     requirements = glob("supervisr/**/requirements.txt", recursive=True)
     requirements_dev = glob("supervisr/**/requirements-dev.txt", recursive=True)
-    ctx.run("cat %s > requirements.txt" % ' '.join(requirements))
-    ctx.run("cat %s > requirements-dev.txt" % ' '.join(requirements + requirements_dev))
+    with open('requirements.txt', 'w') as _reqs:
+        for file in requirements:
+            _reqs.write('-r %s\n' % file)
+    with open('requirements-dev.txt', 'w') as _reqs:
+        for file in requirements + requirements_dev:
+            _reqs.write('-r %s\n' % file)
 
 
 @task

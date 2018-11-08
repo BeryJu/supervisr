@@ -1,65 +1,16 @@
-ordereddict==1.1
-django>=2.0
-django-formtools
-django-recaptcha
-django-htmlmin
-django-redis
-invoke
-# cherrypy<=11.0.0
-cherrypy
-pymysql
-packaging
-docutils
-pyyaml
-passlib
-Pillow
-raven
-celery
-redis
-flower
-urllib3<1.23,>=1.21.1
-pip>=10
-pycryptodome
-colorlog
-markdown<3.0
-aenum
-graphviz
-# In here you can specify pip modules that should be installed
-dnspython
-requests
-django-oauth-toolkit
-django-cors-middleware
-requests_oauthlib>=0.4.2
-oauthlib>=2.0.6
-ldap3
-beautifulsoup4>=4.6.0
-lxml>=3.8.0
-signxml
-defusedxml
-slumber
-apache-libcloud
-slumber
-django-two-factor-auth
-django-revproxy
-influxdb>=4.1.1
-psutil
-requests
-coverage
-isort
-pylint
-pylint-django
-prospector
-django-debug-toolbar
-recommonmark
-autopep8
-# pycodestyle<2.4.0,>=2.0.0
-mkdocs
-mkdocs-material
-tornado>=5.0
-# pyroma<2.4
-pyroma
-safety
-bandit<1.5.0
-unittest-xml-reporting
-bumpversion
-twine
+-r supervisr/dns/requirements.txt
+-r supervisr/core/requirements.txt
+-r supervisr/puppet/requirements.txt
+-r supervisr/cli/seed/requirements.txt
+-r supervisr/mod/beacon/requirements.txt
+-r supervisr/mod/auth/saml/idp/requirements.txt
+-r supervisr/mod/auth/ldap/requirements.txt
+-r supervisr/mod/auth/oauth/client/requirements.txt
+-r supervisr/mod/auth/oauth/provider/requirements.txt
+-r supervisr/mod/tfa/requirements.txt
+-r supervisr/mod/web_proxy/requirements.txt
+-r supervisr/mod/provider/nix_dns/requirements.txt
+-r supervisr/mod/provider/libcloud/requirements.txt
+-r supervisr/mod/provider/debug/requirements.txt
+-r supervisr/mod/stats/influx/requirements.txt
+-r supervisr/core/requirements-dev.txt
