@@ -1,6 +1,7 @@
 """Supervisr setup.py"""
 import os
 
+from pip._internal.req import parse_requirements
 from setuptools import find_packages, setup
 
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
@@ -16,6 +17,9 @@ def read_simple(path, mode='r'):
         return lines
 
 
+requirements = parse_requirements('requirements.txt', session='hack')
+requirements_dev = parse_requirements('requirements-dev.txt', session='hack')
+
 setup(
     name='supervisr',
     version='0.3.14-alpha',
@@ -26,9 +30,9 @@ setup(
     author_email='supervisr@beryju.org',
     packages=find_packages(),
     include_package_data=True,
-    install_requires=read_simple('requirements.txt'),
+    install_requires=[str(ir.req) for ir in requirements],
     extras_require={
-        'dev': read_simple('requirements-dev.txt'),
+        'dev': [str(ir.req) for ir in requirements_dev],
     },
     test_suite='supervisr.cli.test_runner.test_runner',
     keywords='supervisr sso server management web hosting dns mail email',
