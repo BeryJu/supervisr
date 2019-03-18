@@ -1,7 +1,6 @@
 """Supervisr Core Fields"""
 
 import base64
-import json
 
 import Crypto.Cipher.AES
 from django.conf import settings
@@ -9,32 +8,8 @@ from django.db import models
 from django.utils.encoding import force_bytes, force_text
 
 
-class JSONField(models.TextField):
-    """Field to save json in DB, works on non-postgres"""
-
-    # pylint: disable=unused-argument
-    def from_db_value(self, value, expression, connection, context):
-        """Convert JSON String to object"""
-        if value is None:
-            return value
-
-        return json.loads(value)
-
-    def to_python(self, value):
-        """Convert JSON String to object"""
-        if value is None or isinstance(value, JSONField):
-            return value
-
-        return json.loads(value)
-
-    def get_prep_value(self, value):
-        """Convert back to text"""
-        return json.dumps(value)
-
-
 class SignatureException(Exception):
     """Exception for when decryption fails"""
-    pass
 
 
 class SignedAESEncryption:

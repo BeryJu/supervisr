@@ -1,6 +1,7 @@
 """Supervisr Mail AddressView Test"""
 
-from supervisr.core.models import UserAcquirableRelationship
+from django.contrib.auth.models import UserAcquirableRelationship
+
 from supervisr.core.utils.tests import TestCase, test_request
 from supervisr.mail.models import Address
 from supervisr.mail.views import addresses

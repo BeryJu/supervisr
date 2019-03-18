@@ -144,20 +144,6 @@ class SettingBootstrapper(Bootstrapper):
                 namespace=namespace,
                 defaults={'value': row.get('value')})
 
-
-class PermissionBootstrapper(Bootstrapper):
-    """Bootstrapper to create Permissions"""
-
-    def apply(self, invoker):
-        from supervisr.core.models import GlobalPermission
-        from django.contrib.auth.models import Permission
-        from django.contrib.contenttypes.models import ContentType
-        content_type = ContentType.objects.get_for_model(GlobalPermission)
-        for row in self.rows:
-            row['content_type'] = content_type
-            Permission.objects.get_or_create(**row)
-
-
 class SupervisrCoreConfig(SupervisrAppConfig):
     """Supervisr core app config"""
 
@@ -198,32 +184,17 @@ class SupervisrCoreConfig(SupervisrAppConfig):
 
     def bootstrap(self):
         """Add permissions and settings"""
-        permissions = PermissionBootstrapper()
-        permissions.add(codename='core_product_can_create',
-                        name='Can create supervisr_core Products')
         settings = SettingBootstrapper()
-        settings.add(key='signup:enabled', value=True)
-        settings.add(key='password_reset:enabled', value=True)
         settings.add(key='signin:enabled', value=True)
         settings.add(key='banner:enabled', value=False)
-        settings.add(key='account:email:required', value=True)
         settings.add(key='banner:level', value='info')
         settings.add(key='banner:message', value='')
         settings.add(key='branding', value='supervisr')
         settings.add(key='branding:icon', value='')
         settings.add(key='domain', value='http://localhost/')
-        settings.add(key='recaptcha:enabled', value=False)
-        settings.add(key='recaptcha:private', value='')
-        settings.add(key='recaptcha:public', value='')
         settings.add(key='install_id', value=uuid.uuid4())
         settings.add(key='setup:is_fresh_install', value=True)
-        settings.add(key='password:filter', value=r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)'
-                                                  r'(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}')
-        settings.add(key='password:filter:description', value='Minimum 8 characters at least 1 '
-                                                              'Uppercase Alphabet, 1 Lowercase '
-                                                              'Alphabet, 1 Number and 1 Special '
-                                                              'Character')
-        return permissions, settings
+        return (settings, )
 
     def cleanup_settings(self):
         """Cleanup settings without namespace or key"""

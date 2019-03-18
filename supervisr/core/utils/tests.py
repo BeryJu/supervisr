@@ -3,6 +3,7 @@
 import os
 from io import StringIO
 
+from django.contrib.auth.models import User
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.backends.cached_db import SessionStore
 from django.core.management import call_command
@@ -11,8 +12,7 @@ from django.http.response import HttpResponseNotFound, HttpResponseServerError
 from django.test import RequestFactory
 from django.test import TestCase as DjangoTestCase
 
-from supervisr.core.models import (EmptyCredential, ProviderInstance,
-                                   SVAnonymousUser, User, get_system_user)
+from supervisr.core.models import EmptyCredential, ProviderInstance
 
 
 # pylint: disable=too-many-arguments
@@ -84,7 +84,7 @@ def internal_provider(user):
         name='internal-unittest-%s' % str(user))
     provider, _created = ProviderInstance.objects.get_or_create(
         credentials=credentials,
-        provider_path='supervisr.mod.provider.debug.providers.core.DebugProvider')
+        provider_path='supervisr.provider.debug.providers.core.DebugProvider')
     return provider, credentials
 
 

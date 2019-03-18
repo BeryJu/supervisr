@@ -1,6 +1,6 @@
 # error'str' object has no attribute 'tzinfo'
 
-This error can happen in supervisr.mod.contrib.bacula, when bacula is using an older MySQL version.
+This error can happen in supervisr.contrib.bacula, when bacula is using an older MySQL version.
 Older MySQL versions (<=5.6) don't require default timestampts to be valid, so they get set to `0000-00-00 00:00:00`, which is invalid.
 Use this command on your bacula database to fix the error:
 

@@ -65,7 +65,7 @@ class SupervisrTask(Task):
 
     def prepare(self, **kwargs):
         """Prepare this task, load invoker andadd some utilities"""
-        from supervisr.core.models import User
+        from django.contrib.auth.models import User
         # Get Invoker if possible
         if 'invoker' in kwargs:
             users = User.objects.filter(pk=kwargs.get('invoker'))

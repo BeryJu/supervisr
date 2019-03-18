@@ -4,7 +4,6 @@ from itertools import chain
 from logging import getLogger
 from typing import Generator, List, Union
 
-from supervisr.core.decorators import time
 from supervisr.core.providers.base import BaseProvider
 from supervisr.core.providers.objects import (ProviderObject,
                                               ProviderObjectTranslator)

@@ -2,4 +2,4 @@
 
 from supervisr.core.admin import admin_autoregister
 
-admin_autoregister('supervisr_mod_seed')
+admin_autoregister('supervisr_seed')

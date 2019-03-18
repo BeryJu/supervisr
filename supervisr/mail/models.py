@@ -1,15 +1,15 @@
 """Supervisr Mail Models"""
-import logging
+from logging import getLogger
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from passlib.hash import sha512_crypt
 
-from supervisr.core.models import (CreatedUpdatedModel, Domain, Event,
+from supervisr.core.models import (CreatedUpdatedModel, Domain,
                                    ProviderAcquirable, User, UserAcquirable,
                                    UUIDModel)
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 class MailDomain(UUIDModel, CreatedUpdatedModel, ProviderAcquirable, UserAcquirable):
@@ -79,10 +79,6 @@ class Account(UUIDModel, CreatedUpdatedModel, ProviderAcquirable, UserAcquirable
         """Sets a new password with a new salt"""
         self.password = sha512_crypt.hash(new_password, salt=salt)
         LOGGER.debug("Updated Password Account %s", self.name)
-        Event.create(
-            user=invoker,
-            message=_("Changed Password for Mail Account %(account)s" % {'account': str(self)}),
-            request=request)
         self.save()
 
     def __str__(self):

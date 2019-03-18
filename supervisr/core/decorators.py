@@ -64,60 +64,6 @@ def database_catchall(default):
     return outer_wrapper
 
 
-def reauth_required(view_function):
-    """Decorator to force a re-authentication before continuing"""
-
-    @wraps(view_function)
-    def wrap(*args, **kwargs):
-        """check if user just authenticated or not"""
-
-        req = args[0] if args else None
-        # Check if user is authenticated at all
-        if not req or not req.user or not req.user.is_authenticated:
-            return redirect(reverse('account-login'))
-
-        now = timestamp()
-
-        if RE_AUTH_KEY in req.session and \
-                req.session[RE_AUTH_KEY] < (now - RE_AUTH_MARGAIN):
-            # Timestamp in session but expired
-            del req.session[RE_AUTH_KEY]
-
-        if RE_AUTH_KEY not in req.session:
-            # Timestamp not in session, force user to reauth
-            return redirect(reverse('account-reauth') + '?' +
-                            urlencode({'next': req.path}))
-
-        if RE_AUTH_KEY in req.session and \
-                req.session[RE_AUTH_KEY] >= (now - RE_AUTH_MARGAIN) and \
-                req.session[RE_AUTH_KEY] <= now:
-            # Timestamp in session and valid
-            return view_function(*args, **kwargs)
-
-        # This should never be reached, just return False
-        return False  # pragma: no cover
-    return wrap
-
-
-@contextmanager
-def time(statistic_key):
-    """Decorator to time a method call"""
-    # TODO: Use cProfile here
-    time_start = datetime.now()
-    try:
-        yield
-    finally:
-        time_end = datetime.now()
-        delta = time_end - time_start
-        set_statistic(statistic_key,
-                      value={
-                          'value': delta.total_seconds() * 1000,
-                          'type': StatisticType.Timing
-                      },
-                      hints={
-                          'unit': 'ms'
-                      })
-
 
 def require_setting(path, value, message=_('This function has been administratively disabled.')):
     """Check if setting under *key* has value of *value*

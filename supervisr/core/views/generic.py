@@ -119,12 +119,11 @@ class GenericIndexView(GenericModelView):
 
     def redirect(self, instance) -> Union[HttpResponse, str]:
         """This method isn't used by GenericIndexView"""
-        pass
 
     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle get request"""
         instances = self.get_instance()
-        paginator = Paginator(instances, request.user.rows_per_page)
+        paginator = Paginator(instances, 50)
 
         page = request.GET.get('page')
         try:
@@ -151,7 +150,6 @@ class GenericReadView(GenericModelView):
 
     def redirect(self, instance) -> Union[HttpResponse, str]:
         """Since this a read-only view we don't need this method"""
-        pass
 
     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
         """Handle get request"""

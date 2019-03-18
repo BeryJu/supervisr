@@ -7,10 +7,10 @@ import shutil
 
 import requests
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.files import File
 
 from supervisr.core.celery import CELERY_APP
-from supervisr.core.models import User
 from supervisr.core.tasks import SupervisrTask
 from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 

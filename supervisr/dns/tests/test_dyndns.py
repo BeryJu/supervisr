@@ -1,6 +1,7 @@
 """supervisr dns dyndns tests"""
 
-from supervisr.core.models import UserAcquirableRelationship
+from django.contrib.auth.models import UserAcquirableRelationship
+
 from supervisr.core.utils.tests import TestCase, test_request
 from supervisr.dns.api.v1.record import dyndns_update
 from supervisr.dns.models import DataRecord

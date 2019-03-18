@@ -56,19 +56,9 @@ from supervisr import \
     __version__  # pylint: disable=no-name-in-module, useless-suppression
 from supervisr.core.utils.config import CONFIG
 
-# WARNING!
-# This can only be changed before the first `migrate` is run
-# If you change this afterwards, it may cause serious damage!
-SYSTEM_USER_NAME = 'supervisr'
-USER_PROFILE_ID_START = 5000
-FOOTER_EXTRA_LINKS = CONFIG.get('footer')
 # Structure: see default.yml
 
 REMEMBER_SESSION_AGE = 60 * 60 * 24 * 30  # One Month
-
-NOCAPTCHA = True
-
-REQUEST_APPROVAL_PROMPT = 'auto'
 
 CHERRYPY_SERVER = {}
 for name, namespace in CONFIG.get('http').items():
@@ -87,9 +77,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'captcha',
     'supervisr.core',
-    'formtools',
     'django.contrib.admin',
     'django.contrib.admindocs',
     'raven.contrib.django.raven_compat',
@@ -118,13 +106,6 @@ USE_L10N = True
 USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
-LOGIN_REDIRECT_URL = 'user-index'
-LOGIN_URL = 'account-login'
-
-# Settings are taken from DB, these are dev keys as per
-# https://developers.google.com/recaptcha/docs/faq
-RECAPTCHA_PUBLIC_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
-RECAPTCHA_PRIVATE_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 
 INTERNAL_IPS = ['127.0.0.1']
 
@@ -141,12 +122,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-    'supervisr.core.middleware.redirect_middleware.redirect_middleware',
-    'supervisr.core.middleware.impersonate_middleware.impersonate',
     'supervisr.core.middleware.permanent_message_middleware.permanent_message',
     'htmlmin.middleware.HtmlMinifyMiddleware',
     'htmlmin.middleware.MarkRequestMiddleware',
-    'supervisr.core.middleware.statistic_middleware.statistic_middleware'
 ]
 
 # Message Tag fix for bootstrap CSS Classes
@@ -181,8 +159,6 @@ TEMPLATES = [
 CSRF_COOKIE_NAME = 'supervisr_csrf'
 SESSION_COOKIE_NAME = 'supervisr_sessionid'
 
-API_KEY_PARAM = 'sv-api-key'
-
 WSGI_APPLICATION = 'supervisr.core.wsgi.application'
 
 DATABASES = {}
@@ -195,12 +171,6 @@ for db_alias, db_config in CONFIG.get('databases').items():
         'PASSWORD': db_config.get('password'),
         'OPTIONS': db_config.get('options', {}),
     }
-
-AUTH_USER_MODEL = 'supervisr_core.User'
-AUTHENTICATION_BACKENDS = [
-    'supervisr.core.auth.EmailBackend',
-    'supervisr.core.auth.APIKeyBackend',
-]
 
 DATABASE_ROUTERS = []
 
@@ -224,23 +194,6 @@ STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 )
 
-
-# Apply redis settings from local_settings
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://%s" % CONFIG.get('redis'),
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
-    }
-}
-DJANGO_REDIS_IGNORE_EXCEPTIONS = True
-DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS = True
-
-SESSION_CACHE_ALIAS = "default"
-
-
 # Celery settings
 # Add a 10 minute timeout to all Celery tasks.
 CELERY_TASK_SOFT_TIME_LIMIT = 600
@@ -248,8 +201,8 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULE = {}
 CELERY_CREATE_MISSING_QUEUES = True
 CELERY_TASK_DEFAULT_QUEUE = 'supervisr'
-CELERY_BROKER_URL = 'redis://%s' % CONFIG.get('redis')
-CELERY_RESULT_BACKEND = 'redis://%s' % CONFIG.get('redis')
+CELERY_BROKER_URL = 'amqp://%s' % CONFIG.get('rabbitmq')
+CELERY_RESULT_BACKEND = 'rpc://'
 
 
 with CONFIG.cd('email'):
@@ -389,7 +342,6 @@ for _app in INSTALLED_APPS:
             app_settings = importlib.import_module("%s.settings" % _app)
             INSTALLED_APPS.extend(getattr(app_settings, 'INSTALLED_APPS', []))
             MIDDLEWARE.extend(getattr(app_settings, 'MIDDLEWARE', []))
-            AUTHENTICATION_BACKENDS.extend(getattr(app_settings, 'AUTHENTICATION_BACKENDS', []))
             DATABASE_ROUTERS.extend(getattr(app_settings, 'DATABASE_ROUTERS', []))
             CELERY_BEAT_SCHEDULE.update(getattr(app_settings, 'CELERY_BEAT_SCHEDULE', {}))
         except ImportError:

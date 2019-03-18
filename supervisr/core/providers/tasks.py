@@ -7,8 +7,7 @@ from django.core.exceptions import MultipleObjectsReturned, ValidationError
 from django.db.models import Model
 
 from supervisr.core.celery import CELERY_APP
-from supervisr.core.models import (Event, ProviderInstance, User,
-                                   get_system_user)
+from supervisr.core.models import ProviderInstance, User
 from supervisr.core.providers.exceptions import (ProviderRetryException,
                                                  SupervisrProviderException)
 from supervisr.core.providers.multiplexer import ProviderMultiplexer
@@ -48,15 +47,6 @@ def provider_resolve_helper(provider_pk: int, model_path: str, model_pk) -> Iter
         return translator.to_external(model_instance)
     except Exception as exc:  # noqa
         raise SupervisrProviderException from exc
-
-def handle_unexpected_error(error: Exception, invoker: User):
-    """Create event on unexpected provider error"""
-    user = invoker if invoker.is_superuser else get_system_user()
-    Event.objects.create(
-        user=user,
-        invoker=invoker,
-        message=str(error),
-        send_notification=True)
 
 @CELERY_APP.task(bind=True, max_retries=10, base=SupervisrTask)
 def provider_do_work(self, action: ProviderAction, provider_pk: int,

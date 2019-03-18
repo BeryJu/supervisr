@@ -5,18 +5,12 @@ from smtplib import SMTPException
 from typing import List
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives, get_connection
-from django.dispatch import receiver
 from django.template import loader
-from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
 from htmlmin.minify import html_minify
 
 from supervisr.core.celery import CELERY_APP
-from supervisr.core.models import AccountConfirmation, Setting, User
-from supervisr.core.signals import (on_user_confirm_resend,
-                                    on_user_password_reset_init,
-                                    on_user_sign_up_post)
 from supervisr.core.tasks import SupervisrTask
 
 LOGGER = logging.getLogger(__name__)
@@ -78,67 +72,3 @@ def send_message(
             LOGGER.warning("Failed to send emails %r", exc)
             return True
         raise
-
-
-@receiver(on_user_sign_up_post)
-def mail_handle_user_signed_up(sender, signal, user, request, needs_confirmation, **kwargs):
-    """Send the user a confirmation email"""
-    if not needs_confirmation:
-        return False
-    account_confirmations = AccountConfirmation.objects.filter(
-        user=user,
-        kind=AccountConfirmation.KIND_SIGN_UP)
-    if account_confirmations.first() is not None:
-        account_confirmation = account_confirmations.first()
-    else:
-        return False
-    # Make URL for confirmation email
-    domain = Setting.get('domain')
-    branding = Setting.get('branding')
-    url = domain + reverse('account-confirm', kwargs={'uuid': account_confirmation.pk})
-
-    return user.task_apply_async(
-        send_message,
-        recipients=[user.email],
-        subject=_("Confirm your account on %(branding)s" %
-                  {
-                      'branding': branding
-                  }),
-        template='email/account_confirm.html',
-        template_context={'url': url}
-    )
-
-
-@receiver(on_user_confirm_resend)
-def mail_handle_user_resend_confirm(sender, signal, user, request, **kwargs):
-    """Resend the user a confirmation email"""
-    return mail_handle_user_signed_up(sender, signal, user,
-                                      request, needs_confirmation=True, **kwargs)
-
-
-@receiver(on_user_password_reset_init)
-# pylint: disable=unused-argument
-def mail_handle_pass_reset_init(sender, signal, user, **kwargs):
-    """Send Email when password is to be reset"""
-    account_confirmations = AccountConfirmation.objects.filter(
-        user=user,
-        kind=AccountConfirmation.KIND_PASSWORD_RESET)
-    if account_confirmations.first() is not None:
-        account_confirmations = account_confirmations.first()
-    else:
-        return False
-    # Make URL for confirmation email
-    domain = Setting.get('domain')
-    branding = Setting.get('branding')
-    url = domain + reverse('account-reset_password_confirm',
-                           kwargs={'uuid': account_confirmations.pk})
-    return user.task_apply_async(
-        send_message.delay,
-        recipients=[user.email],
-        subject=_("Step 2/3 - Reset your Password on %(branding)s" %
-                  {
-                      'branding': branding
-                  }),
-        template='email/account_password_reset.html',
-        template_context={'url': url}
-    )

@@ -3,7 +3,7 @@
 Simply run
 
 ```
-sv module.install https://git.beryju.org/BeryJu.org/supervisr_mod_contrib_bacula.git
+sv module.install https://git.beryju.org/BeryJu.org/supervisr_contrib_bacula.git
 systemctl restart supervisr
 ```
 

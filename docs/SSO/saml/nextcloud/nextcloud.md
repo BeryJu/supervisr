@@ -1,7 +1,7 @@
 # Nextcloud
 
 !!! warning
-    This requires the `supervisr.mod.auth.saml.idp` module.
+    This requires the `supervisr.auth.saml.idp` module.
 
 Nextcloud authentication is supported via SAML. This is integrated into the default Nextcloud installation.
 

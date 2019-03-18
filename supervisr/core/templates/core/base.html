@@ -44,15 +44,6 @@
       {% endif %}
     </div>
     <div class="divider"></div>
-    {% if user.is_authenticated %}
-    <form class="search {% is_active 'search' %}" method="GET" action="{% url 'search' %}">
-      <label for="search_input">
-        <input type="hidden" name="filter_app" value="{{ request.GET.filter_app|default:'' }}">
-        <input type="hidden" name="filter_model" value="{{ request.GET.filter_model|default:'' }}">
-        <input id="search_input" name="q" placeholder="{% trans 'Search for keywords...' %}" type="text" {% if request.GET.q %} value="{{ request.GET.q }}" {% endif %}>
-      </label>
-    </form>
-    {% endif %}
     <div class="settings">
       {% if user.is_authenticated %}
       <span class="nav-link hidden-md-down">
@@ -68,20 +59,10 @@
           <clr-icon shape="caret down"></clr-icon>
         </button>
         <div class="dropdown-menu">
-          {% if 'impersonate_id' in request.session %}
-          <a class="dropdown-item" href="?__unimpersonate=True">{% trans 'Stop impersonation' %}</a>
-          <div class="dropdown-divider"></div>
-          {% endif %}
-          <a class="dropdown-item" href="{% url 'user-index' %}">{% trans "Profile" %}</a>
-          <a class="dropdown-item" href="{% url 'account-change_password' %}">{% trans "Change Password" %}</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="{% url 'user-send_feedback' %}">{% trans 'Send Feedback' %}</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="{% url 'account-logout' %}">{% trans "Logout" %}</a>
         </div>
       </div>
       {% else %}
-      <a class="nav-link" href="{% url 'account-login' %}">
+      <a class="nav-link" href="">
         <span class="nav-text">{% trans "Login" %}</span>
       </a>
       {% endif %}

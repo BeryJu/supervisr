@@ -1,4 +1,0 @@
-puppet/*
-output-*
-packer_cache/
-*.ova

@@ -9,13 +9,11 @@ import tarfile
 from tempfile import NamedTemporaryFile
 
 from django import conf
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.core.files import File
 from django.template import loader
 
 from supervisr.core.celery import CELERY_APP
-from supervisr.core.decorators import time
-from supervisr.core.models import User
 from supervisr.core.tasks import SupervisrTask
 from supervisr.puppet.models import PuppetModuleRelease
 from supervisr.puppet.utils import ForgeImporter
@@ -97,7 +95,6 @@ class ReleaseBuilder(SupervisrTask):
             LOGGER.warning(body)
             raise
 
-    @time(statistic_key='puppet.builder.import_deps')
     def import_deps(self):
         """Import dependencies for release"""
         if not self._release:
@@ -122,7 +119,6 @@ class ReleaseBuilder(SupervisrTask):
             LOGGER.debug('Successfully validated %s', path)
         return rendered
 
-    @time(statistic_key='puppet.builder.build')
     def run(self, context=None, db_add=True, force_rebuild=False):
         """Copy non-templates into tar, render templates into tar and import into django"""
         files = glob.glob('%s/**' % self.base_dir, recursive=True)

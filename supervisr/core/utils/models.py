@@ -3,7 +3,6 @@ from typing import Iterable, List
 
 from django.db.models import Field, ManyToManyField, ManyToOneRel, Model
 
-from supervisr.core.decorators import time
 from supervisr.core.models import CastableModel
 
 

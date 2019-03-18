@@ -6,6 +6,7 @@ import sys
 from django import get_version as django_version
 from django.conf import settings as django_settings
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db.models.query import QuerySet
 from django.http import HttpRequest, HttpResponse
@@ -14,7 +15,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic.base import TemplateView
 
 from supervisr.core.mailer import send_message
-from supervisr.core.models import Event, Setting, Task, User, get_system_user
+from supervisr.core.models import Setting, Task
 from supervisr.core.signals import get_module_info, on_setting_update
 from supervisr.core.tasks import debug_progress_task
 from supervisr.core.utils import get_reverse_dns
@@ -30,16 +31,6 @@ class IndexView(TemplateView, AdminRequiredMixin):
         context = super().get_context_data(**kwargs)
         context['user_count'] = User.objects.all().count() - 1
         return context
-
-
-class UserIndexView(GenericIndexView, AdminRequiredMixin):
-    """show list of all users"""
-
-    template = '_admin/users.html'
-    model = User
-
-    def get_instance(self) -> QuerySet:
-        return self.model.objects.all().order_by('date_joined').exclude(pk=get_system_user().pk)
 
 
 class InfoView(TemplateView, AdminRequiredMixin):
@@ -82,16 +73,6 @@ class InfoView(TemplateView, AdminRequiredMixin):
         return context
 
 
-class EventView(GenericIndexView, AdminRequiredMixin):
-    """show list of all events"""
-
-    template = '_admin/events.html'
-    model = Event
-
-    def get_instance(self) -> QuerySet:
-        return self.model.objects.all().order_by('-create_date')
-
-
 class DebugView(TemplateView, AdminRequiredMixin):
     """Show misc debug buttons"""
 
@@ -121,12 +102,6 @@ class DebugView(TemplateView, AdminRequiredMixin):
         elif 'render_email' in request.POST:
             return render(request, 'email/account_confirm.html')
         return super().get(request)
-
-
-class FlowerView(TemplateView, AdminRequiredMixin):
-    """View to show iframe with flower"""
-
-    template_name = '_admin/flower.html'
 
 
 class TasksView(GenericIndexView, AdminRequiredMixin):

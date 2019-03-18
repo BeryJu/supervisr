@@ -36,7 +36,7 @@ def sv_reflection_admin_modules(context):
             url = app.admin_url_name
             view_list.append({
                 'url': url,
-                'default': True if url == SupervisrAppConfig.admin_url_name else False,
+                'default': url == SupervisrAppConfig.admin_url_name,
                 'name': title,
             })
         sorted_list = sorted(view_list, key=lambda x: x.get('name'))
@@ -52,7 +52,7 @@ def sv_reflection_user_modules(context):
     if not cache.get(key):
         app_list = []
         for app in get_apps():
-            if not app.name.startswith('supervisr.mod'):
+            if not app.name.startswith('supervisr'):
                 continue
             view = app.view_user_settings
             if view is not None:

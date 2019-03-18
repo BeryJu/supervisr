@@ -1,7 +1,7 @@
 # OAuth 2
 
 !!! note
-    This requires `supervisr.mod.auth.oauth.provider`.
+    This requires `supervisr.auth.oauth.provider`.
 
 ## OAuth 2 endpoint URLs
 

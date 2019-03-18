@@ -5,7 +5,6 @@ from django.db.models.signals import (m2m_changed, post_migrate, post_save,
                                       pre_delete)
 from django.dispatch import Signal, receiver
 from django.dispatch.dispatcher import NO_RECEIVERS
-from passlib.hash import sha512_crypt
 
 from supervisr.core.apps import SupervisrAppConfig
 from supervisr.core.exceptions import SignalException
@@ -58,23 +57,6 @@ on_user_acquirable_relationship_created = RobustSignal(
 on_user_acquirable_relationship_deleted = RobustSignal(
     stat_name="on_user_acquirable_relationship_deleted", providing_args=['relationship'])
 
-on_user_sign_up = RobustSignal(
-    stat_name="on_user_sign_up",
-    providing_args=['user', 'request', 'password', 'needs_confirmation'])
-on_user_change_password = RobustSignal(
-    stat_name="on_user_change_password", providing_args=['user', 'request', 'password'])
-on_user_sign_up_post = RobustSignal(
-    stat_name="on_user_sign_up_post", providing_args=['user', 'request', 'needs_confirmation'])
-on_user_change_password_post = RobustSignal(
-    stat_name="on_user_change_password_post", providing_args=['user', 'request', 'was_reset'])
-on_user_password_reset_init = RobustSignal(
-    stat_name="on_user_password_reset_init", providing_args=['user'])
-on_user_password_reset_finish = RobustSignal(
-    stat_name="on_user_password_reset_finish", providing_args=['user'])
-on_user_confirmed = RobustSignal(
-    stat_name="on_user_confirmed", providing_args=['user', 'request'])
-on_user_confirm_resend = RobustSignal(
-    stat_name="on_user_confirm_resend", providing_args=['user', 'request'])
 on_post_startup = RobustSignal(
     stat_name="on_post_startup", providing_args=['pid'])
 
@@ -87,12 +69,6 @@ on_migration_post = RobustSignal(
     stat_name="on_migration_post", providing_args=['app_name'])
 on_setting_update = RobustSignal(
     stat_name="on_setting_update", providing_args=[])
-
-# on_check_* Signals return a boolean
-
-# Return wether user with `email` exists
-on_check_user_exists = RobustSignal(
-    stat_name="on_check_user_exists", providing_args=['email'])
 
 # get_* Signals return something other than a boolean
 
@@ -120,15 +96,6 @@ def core_handle_post_migrate(sender, *args, **kwargs):
         on_migration_post.send(sender.name)
 
 
-@receiver(on_user_change_password)
-# pylint: disable=unused-argument
-def crypt6_handle_user_change_pass(signal, user, password, **kwargs):
-    """Update crypt6_password"""
-    # Also update user's crypt6_pass
-    user.crypt6_password = sha512_crypt.hash(password)
-    user.save()
-
-
 @receiver(on_set_statistic)
 # pylint: disable=unused-argument
 def stat_output_verbose(signal, name, values, hints, **kwargs):
@@ -142,9 +109,8 @@ def provider_post_save(sender, instance, created, **kwargs):
     """Forward signal to ChangeBuilder"""
     from supervisr.core.providers.multiplexer import ProviderMultiplexer
     from supervisr.core.providers.objects import ProviderAction
-    from supervisr.core.models import ProviderTriggerMixin, get_system_user
+    from supervisr.core.models import ProviderTriggerMixin
 
-    system_user = get_system_user()
     if issubclass(instance.__class__, ProviderTriggerMixin):
         LOGGER.debug("ProviderTriggerMixin post_save")
         args = (ProviderAction.SAVE, class_to_path(instance.__class__), instance.pk)
@@ -158,9 +124,8 @@ def provider_pre_delete(sender, instance, **kwargs):
     """Forward signal to ChangeBuilder"""
     from supervisr.core.providers.multiplexer import ProviderMultiplexer
     from supervisr.core.providers.objects import ProviderAction
-    from supervisr.core.models import ProviderTriggerMixin, get_system_user
+    from supervisr.core.models import ProviderTriggerMixin
 
-    system_user = get_system_user()
     if issubclass(instance.__class__, ProviderTriggerMixin):
         LOGGER.debug("ProviderTriggerMixin pre_delete")
         args = (ProviderAction.DELETE, class_to_path(instance.__class__), instance.pk)
@@ -187,26 +152,12 @@ def provider_m2m(sender, instance, action, **kwargs):
 # pylint: disable=unused-argument
 def relationship_pre_delete(sender, instance, **kwargs):
     """Send signal when relationship is deleted"""
-    from supervisr.core.models import UserAcquirableRelationship
+    from django.contrib.auth.models import UserAcquirableRelationship
     if sender == UserAcquirableRelationship:
         # Send signal to we are going to be deleted
         on_user_acquirable_relationship_deleted.send(
             sender=UserAcquirableRelationship,
             relationship=instance)
-
-
-@receiver(on_user_sign_up_post)
-# pylint: disable=unused-argument
-def product_handle_post_sign_up(sender, signal, user, **kwargs):
-    """Auto-associates Product with new users. We have a separate function for
-    this since we use the default Django User Model."""
-    from supervisr.core.models import Product, UserAcquirableRelationship
-    to_add = Product.objects.filter(auto_add=True)
-    for product in to_add:
-        UserAcquirableRelationship.objects.create(
-            user=user,
-            model=product)
-
 
 @receiver(post_save)
 # pylint: disable=unused-argument

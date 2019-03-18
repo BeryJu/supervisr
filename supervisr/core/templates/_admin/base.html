@@ -13,7 +13,6 @@
       <label for="admin_general">{% trans "General Settings" %}</label>
       <ul class="nav-list">
         <li><a href="{% url 'admin-index' %}" class="nav-link {% is_active 'admin-index' %}">{% trans "Overview" %}</a></li>
-        <li><a href="{% url 'admin-users' %}" class="nav-link {% is_active 'admin-users' %}">{% trans "Users" %}</a></li>
         <li><a href="{% url 'admin-settings' namespace='supervisr.core' %}" class="nav-link {% is_active 'admin-settings' %}">{% trans "Settings" %}</a></li>
       </ul>
     </section>
@@ -27,9 +26,6 @@
         {% endfor %}
       </ul>
     </section>
-    <a href="{% url 'admin-product_index' %}" class="nav-link {% is_active 'admin-product_index' %}">
-      {% trans 'Products' %}
-    </a>
     <section class="nav-group">
       <input id="admin_modules" type="checkbox">
       <label for="admin_modules">{% trans "Monitoring" %}</label>
@@ -40,16 +36,11 @@
           </a>
         </li>
         <li>
-          <a href="{% url 'admin-events' %}" class="nav-link {% is_active 'admin-events' %}">
-            {% trans "Events" %}
-          </a>
-        </li>
-        <li>
           <a href="{% url 'admin-tasks' %}" class="nav-link {% is_active 'admin-tasks' %}">
             {% trans "Tasks" %}
           </a>
         </li>
-        {% ifapp 'supervisr_mod_web_proxy' as web_proxy_enabled %}
+        {% ifapp 'supervisr_web_proxy' as web_proxy_enabled %}
         {% if web_proxy_enabled %}
         <li>
           <a href="{% url 'admin-flower' %}" class="nav-link {% is_active 'admin-flower' %}">

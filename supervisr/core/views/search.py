@@ -14,7 +14,6 @@ from django.shortcuts import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 
-from supervisr.core.models import UserAcquirable
 from supervisr.core.signals import on_search
 from supervisr.core.utils import get_apps
 

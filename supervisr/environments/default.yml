@@ -42,16 +42,7 @@ redis: localhost
 installed_apps:
   - supervisr.puppet
   - supervisr.dns
-  - supervisr.mod.provider.nix_dns
-  - supervisr.mod.provider.debug
+  - supervisr.provider.nix_dns
+  - supervisr.provider.debug
   - supervisr.mail
-  - supervisr.static
-  - supervisr.mod.web_proxy
-  - supervisr.mod.beacon
-  - supervisr.mod.auth.ldap
-  - supervisr.mod.auth.saml.idp
-  - supervisr.mod.auth.oauth.provider
-  - supervisr.mod.auth.oauth.client
-  - supervisr.mod.tfa
-  - supervisr.mod.stats.influx
-  - supervisr.mod.provider.libcloud
+  - supervisr.provider.libcloud

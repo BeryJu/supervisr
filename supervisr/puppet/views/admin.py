@@ -9,7 +9,6 @@ from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from supervisr.core.models import User, get_system_user
 from supervisr.puppet.builder import ReleaseBuilder
 from supervisr.puppet.models import PuppetModule, PuppetModuleRelease
 
@@ -20,10 +19,8 @@ def index(request: HttpRequest) -> HttpResponse:
     """Admin index"""
     module_count = len(PuppetModule.objects.all())
     download_count = PuppetModuleRelease.objects.all().aggregate(Sum('downloads'))
-    # Show latest version of internal modules
-    supervisr_user = get_system_user()
     versions = {}
-    for mod in PuppetModule.objects.filter(owner=supervisr_user):
+    for mod in PuppetModule.objects.all():
         latest_releases = PuppetModuleRelease.objects \
             .filter(module=mod) \
             .order_by('-pk')

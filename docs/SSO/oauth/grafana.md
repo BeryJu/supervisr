@@ -1,7 +1,7 @@
 # Grafana
 
 !!! warning
-    This requires the `supervisr.mod.auth.oauth.provider` module.
+    This requires the `supervisr.auth.oauth.provider` module.
 
 Grafana authentication is supported via OAuth 2. This is integrated into the default Grafana installation.
 

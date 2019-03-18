@@ -1,7 +1,7 @@
 # Sentry
 
 !!! warning
-    This requires the `supervisr.mod.auth.oauth.provider` module.
+    This requires the `supervisr.auth.oauth.provider` module.
 
 ## Installation
 
