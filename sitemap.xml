@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+     <loc>https://supervisr.beryju.org/docs/master/</loc>
+     <lastmod>2020-01-12</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://supervisr.beryju.org/docs/master/installation/debian_package/</loc>
+     <lastmod>2020-01-12</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://supervisr.beryju.org/docs/master/installation/docker/</loc>
+     <lastmod>2020-01-12</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://supervisr.beryju.org/docs/master/installation/source/</loc>
+     <lastmod>2020-01-12</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://supervisr.beryju.org/docs/master/installation/error_reporting/</loc>
+     <lastmod>2020-01-12</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://supervisr.beryju.org/docs/master/commands/sv/</loc>
+     <lastmod>2020-01-12</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc></loc>
+     
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://supervisr.beryju.org/docs/master/faq/mysql/index_size/</loc>
+     <lastmod>2020-01-12</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://supervisr.beryju.org/docs/master/faq/error_str_object_has_no_attribute_tzinfo/</loc>
+     <lastmod>2020-01-12</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://supervisr.beryju.org/docs/master/API/OAuth 2/</loc>
+     <lastmod>2020-01-12</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://supervisr.beryju.org/docs/master/extending_supervisr/creating_a_module/</loc>
+     <lastmod>2020-01-12</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://supervisr.beryju.org/docs/master/extending_supervisr/overwriting_settings/</loc>
+     <lastmod>2020-01-12</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://supervisr.beryju.org/docs/master/extending_supervisr/ui_integration/</loc>
+     <lastmod>2020-01-12</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://supervisr.beryju.org/docs/master/Modules/Bacula/installation/</loc>
+     <lastmod>2020-01-12</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+</urlset>
